@@ -139,8 +139,26 @@
   BS.STAFF = [ {phone:"911000900", person:"Build Smartly staff", name:"Staff"}, {phone:"911000901", person:"Abdela (owner)", name:"Owner"} ];
   BS.STAFF_PASSWORD = "admin";
   /* Settings the staff page can change (collection `settings`): tariffs and brands. Applied on every device at load and live. */
+  BS.PICS = {};
+  /* picture slots staff can fill from the staff page; each is one settings doc pic-<key> holding a resized JPEG data URL */
+  BS.PIC_SLOTS = [
+    {key:"hero1", label:"Home banner · wide photo of a site in Addis Ababa", w:1600, h:520},
+    {key:"hero2", label:"Home slide 2 · round picture (contractors)", w:700, h:700},
+    {key:"hero3", label:"Home slide 3 · round picture (suppliers)", w:700, h:700},
+    {key:"cat-foundation", label:"Category circle · Foundation", w:700, h:700},
+    {key:"cat-structure", label:"Category circle · Structure", w:700, h:700},
+    {key:"cat-services", label:"Category circle · Electrical and plumbing", w:700, h:700},
+    {key:"cat-finishing", label:"Category circle · Finishing", w:700, h:700},
+    {key:"cat-equipment", label:"Category circle · Equipment rental", w:700, h:700},
+    {key:"ad-cement", label:"Promotion banner · cement brand", w:1200, h:400},
+    {key:"ad-steel", label:"Promotion banner · steel supplier", w:1200, h:400},
+    {key:"ad-contractor", label:"Promotion banner · contractor", w:1200, h:400},
+    {key:"ad-paint", label:"Promotion banner · paint brand", w:1200, h:400}
+  ];
   BS.applySettings = function(docs){
+    BS.PICS = {};
     (docs||[]).forEach(function(d){
+      if(d.id && d.id.indexOf("pic-")===0 && d.data) BS.PICS[d.id.slice(4)] = d.data;
       if(d.id==="tariffs"){ var t=d;
         if(t.perTrip>0) BS.TRUCK.perTrip=+t.perTrip; if(t.perKm>=0) BS.TRUCK.perKm=+t.perKm; if(t.capacityT>0) BS.TRUCK.capacityT=+t.capacityT; if(t.mobilisation>=0) BS.TRUCK.mobilisation=+t.mobilisation;
         if(t.insuranceRate>=0) BS.INSURANCE.rate=+t.insuranceRate; if(t.insuranceMin>=0) BS.INSURANCE.min=+t.insuranceMin;
@@ -165,10 +183,10 @@
   ];
   /* Promotions slideshow: brands, suppliers and contractors who advertise. Example banners for the test site; published newsletter items with a picture join them. */
   BS.ADS = [
-    {who:"Brand", company:"Derba Cement", title:"OPC 42.5 and PPC 32.5 with 9 verified distributors", img:"assets/ad-cement.svg"},
-    {who:"Supplier", company:"Addis Steel & Rebar Trading", title:"Grade 60 rebar with mill certificates, delivered in Addis Ababa", img:"assets/ad-steel.svg"},
-    {who:"Contractor", company:"Tana Construction PLC", title:"Grade 1 contractor, hiring subcontractors for Bole and Lemi Kura", img:"assets/ad-contractor.svg"},
-    {who:"Brand", company:"Kadisco Paint", title:"New colour range for 2026 through verified finishing suppliers", img:"assets/ad-paint.svg"}
+    {key:"ad-cement", who:"Brand", company:"Derba Cement", title:"OPC 42.5 and PPC 32.5 with 9 verified distributors", img:"assets/ad-cement.svg"},
+    {key:"ad-steel", who:"Supplier", company:"Addis Steel & Rebar Trading", title:"Grade 60 rebar with mill certificates, delivered in Addis Ababa", img:"assets/ad-steel.svg"},
+    {key:"ad-contractor", who:"Contractor", company:"Tana Construction PLC", title:"Grade 1 contractor, hiring subcontractors for Bole and Lemi Kura", img:"assets/ad-contractor.svg"},
+    {key:"ad-paint", who:"Brand", company:"Kadisco Paint", title:"New colour range for 2026 through verified finishing suppliers", img:"assets/ad-paint.svg"}
   ];
   BS.PULSE = [
     {item:"Cement OPC 42.5", name:"Cement OPC 42.5", brand:"Dangote", unit:"per quintal (two 50 kg bags)", price:1180, chg:1.7, when:"6 suppliers, this morning", svg:'<svg viewBox="0 0 80 80"><rect x="14" y="18" width="52" height="50" rx="6" fill="#D9D3C7"/><rect x="14" y="18" width="52" height="12" rx="6" fill="#B9AE9C"/><text x="40" y="54" text-anchor="middle" font-family="Sora,Arial" font-size="12" font-weight="700" fill="#1E6B4E">OPC</text></svg>'},

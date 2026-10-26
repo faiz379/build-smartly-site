@@ -537,9 +537,9 @@ details.line-offers[open] summary::before{content:"▾"}
 <div id="view-home" data-view>
   <div class="wrap">
     <div class="hero" id="hero" aria-roledescription="carousel" aria-label="Build Smartly in pictures">
-      <div class="hslide on"><img src="assets/banner.svg" alt="Build Smartly: send your BOQ, get real supplier quotes, choose line by line" width="1600" height="520"><span class="photo-slot">Photo slot 1 · site photo from Addis Ababa</span></div>
-      <div class="hslide msg"><div><span class="eyebrow">For contractors and developers</span><h2>Send your list once. Verified suppliers quote in writing.</h2><p>Cement, steel, blocks, aggregates, finishing and equipment. You compare Offer A, B and C by brand and delivered price, then accept line by line.</p></div><div class="pic"><img src="assets/cat-structure.svg" alt="" width="400" height="400"></div><span class="photo-slot">Photo slot 2 · materials or a delivery</span></div>
-      <div class="hslide msg"><div><span class="eyebrow">For suppliers</span><h2>Requests for your materials, near your stores. Pay only when a deal completes.</h2><p>Keep your price list current from your phone. Quotes are pre-filled, so replying takes seconds.</p></div><div class="pic"><img src="assets/cat-equipment.svg" alt="" width="400" height="400"></div><span class="photo-slot">Photo slot 3 · a supplier yard</span></div>
+      <div class="hslide on"><img data-pic="hero1" src="assets/banner.svg" alt="Build Smartly: send your BOQ, get real supplier quotes, choose line by line" width="1600" height="520"><span class="photo-slot">Photo slot 1 · site photo from Addis Ababa</span></div>
+      <div class="hslide msg"><div><span class="eyebrow">For contractors and developers</span><h2>Send your list once. Verified suppliers quote in writing.</h2><p>Cement, steel, blocks, aggregates, finishing and equipment. You compare Offer A, B and C by brand and delivered price, then accept line by line.</p></div><div class="pic"><img data-pic="hero2" src="assets/cat-structure.svg" alt="" width="400" height="400"></div><span class="photo-slot">Photo slot 2 · materials or a delivery</span></div>
+      <div class="hslide msg"><div><span class="eyebrow">For suppliers</span><h2>Requests for your materials, near your stores. Pay only when a deal completes.</h2><p>Keep your price list current from your phone. Quotes are pre-filled, so replying takes seconds.</p></div><div class="pic"><img data-pic="hero3" src="assets/cat-equipment.svg" alt="" width="400" height="400"></div><span class="photo-slot">Photo slot 3 · a supplier yard</span></div>
       <button class="harrow l" id="hPrev" aria-label="Previous picture"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg></button>
       <button class="harrow r" id="hNext" aria-label="Next picture"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg></button>
       <div class="hdots" id="hDots"></div>
@@ -603,11 +603,11 @@ details.line-offers[open] summary::before{content:"▾"}
     <div class="wrap catband-in">
       <div class="catband-title"><span class="eyebrow">Materials</span><h2>Top categories</h2><p>From the ground to the keys. Tap a circle to request a quote.</p></div>
       <div class="circles">
-        <a class="circle" href="#boq-foundation"><span class="pic"><img src="assets/cat-foundation.svg" alt="" width="400" height="400"></span><strong>Foundation</strong><span>Cement, gravel, steel bars, wire mesh</span></a>
-        <a class="circle" href="#boq-structure"><span class="pic"><img src="assets/cat-structure.svg" alt="" width="400" height="400"></span><strong>Structure</strong><span>Steel columns, blocks, bricks, ready-mix</span></a>
-        <a class="circle" href="#boq-services"><span class="pic"><img src="assets/cat-services.svg" alt="" width="400" height="400"></span><strong>Electrical and plumbing</strong><span>Cables, conduits, pipes, tanks, boards</span></a>
-        <a class="circle" href="#boq-finishing"><span class="pic"><img src="assets/cat-finishing.svg" alt="" width="400" height="400"></span><strong>Finishing</strong><span>Tiles, paint, gypsum, doors, sanitary</span></a>
-        <a class="circle" href="#boq-equipment"><span class="pic"><img src="assets/cat-equipment.svg" alt="" width="400" height="400"></span><strong>Equipment rental</strong><span>Sino trucks, forklifts, trailer beds</span></a>
+        <a class="circle" href="#boq-foundation"><span class="pic"><img data-pic="cat-foundation" src="assets/cat-foundation.svg" alt="" width="400" height="400"></span><strong>Foundation</strong><span>Cement, gravel, steel bars, wire mesh</span></a>
+        <a class="circle" href="#boq-structure"><span class="pic"><img data-pic="cat-structure" src="assets/cat-structure.svg" alt="" width="400" height="400"></span><strong>Structure</strong><span>Steel columns, blocks, bricks, ready-mix</span></a>
+        <a class="circle" href="#boq-services"><span class="pic"><img data-pic="cat-services" src="assets/cat-services.svg" alt="" width="400" height="400"></span><strong>Electrical and plumbing</strong><span>Cables, conduits, pipes, tanks, boards</span></a>
+        <a class="circle" href="#boq-finishing"><span class="pic"><img data-pic="cat-finishing" src="assets/cat-finishing.svg" alt="" width="400" height="400"></span><strong>Finishing</strong><span>Tiles, paint, gypsum, doors, sanitary</span></a>
+        <a class="circle" href="#boq-equipment"><span class="pic"><img data-pic="cat-equipment" src="assets/cat-equipment.svg" alt="" width="400" height="400"></span><strong>Equipment rental</strong><span>Sino trucks, forklifts, trailer beds</span></a>
       </div>
     </div>
   </section>
@@ -1249,8 +1249,7 @@ details.line-offers[open] summary::before{content:"▾"}
   </div>
   <div id="adPanel" hidden style="display:grid;gap:1rem">
     <div class="topbar"><div><span class="eyebrow">Staff</span><h1 style="font-size:1.6rem">Build Smartly operations</h1><p class="small muted" id="adMeta"></p></div><div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap"><button class="btn btn-ghost btn-sm" type="button" id="adLogout">Log out</button></div></div>
-    <div class="queue" id="adTiles"></div>
-    <div class="tabs" id="adTabs"><button class="on" data-tab="overview">Overview</button><button data-tab="requests">Requests</button><button data-tab="suppliers">Suppliers</button><button data-tab="support">Support</button><button data-tab="news">Newsletter</button><button data-tab="members">Members</button><button data-tab="finance">Finance</button><button data-tab="settings">Tariffs and brands</button></div>
+    <div class="tabs" id="adTabs"><button class="on" data-tab="overview">Overview</button><button data-tab="requests">Requests</button><button data-tab="suppliers">Suppliers</button><button data-tab="support">Support</button><button data-tab="news">Newsletter</button><button data-tab="members">Members</button><button data-tab="finance">Finance</button><button data-tab="insights">Insights</button><button data-tab="settings">Settings</button></div>
     <div id="adBody" style="display:grid;gap:1rem"></div>
   </div>
 </div>
@@ -1486,13 +1485,18 @@ function bsSignInByPhone(digits){
   BS.setMe({phone:'+251 '+digits, role:'Request materials'}); return 'new';
 }
 
+/* ---------- Site pictures set by staff (settings docs pic-*): swap the drawn placeholders for real photos ---------- */
+function bsApplyPics(){
+  document.querySelectorAll('img[data-pic]').forEach(function(img){ var k=img.dataset.pic; if(!img.dataset.orig) img.dataset.orig=img.getAttribute('src'); var v=BS.PICS&&BS.PICS[k]; img.src = v || img.dataset.orig; if(k==='hero1'){ var slot=img.parentElement.querySelector('.photo-slot'); if(slot) slot.hidden=!!v; } });
+  if(window.bsAdShows) bsAdShows.forEach(function(f){ f(); });
+}
 /* ---------- Promotions slideshow: example banners plus published newsletter items that carry a picture ---------- */
 var bsAdItems=[], bsAdShows=[];
 function bsAdShow(id, visibleFn){
   var box=document.getElementById(id); if(!box) return; var idx=0, timer=null, items=[];
   function esc(t){ return String(t||'').replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function draw(){
-    items=bsAdItems.concat(BS.ADS); idx=Math.min(idx, items.length-1);
+    items=bsAdItems.concat(BS.ADS.map(function(a){ return Object.assign({}, a, {img:(BS.PICS&&BS.PICS[a.key])||a.img}); })); idx=Math.min(idx, items.length-1);
     box.innerHTML='<div class="atrack">'+items.map(function(a){ return '<a class="aslide" href="#newsletter"><img src="'+esc(a.img)+'" alt="'+esc(a.company)+'" loading="lazy"><span class="acap"><span><span class="tag">Sponsored · '+esc(a.who||'Partner')+'</span> '+esc(a.company)+'</span><span>'+esc(a.title)+'</span></span></a>'; }).join('')+'</div>'+
       '<div class="aarrows"><button type="button" data-ad="-1" aria-label="Previous">‹</button><button type="button" data-ad="1" aria-label="Next">›</button></div><div class="adots">'+items.map(function(_,i){ return '<i'+(i===idx?' class="on"':'')+'></i>'; }).join('')+'</div>';
     go(idx);
@@ -1863,7 +1867,7 @@ function bsSupport(threadId, inputId, sendId){
     $('estBody').innerHTML=rows.map(function(r,i){ return '<div style="display:flex;justify-content:space-between;gap:1rem"><span'+(i===3?' style="font-weight:600"':'')+'>'+r[0]+'</span><strong>'+r[1]+'</strong></div>'; }).join('');
   }
   $('subcity').addEventListener('change', updateEstimate);
-  BS.onSettings(function(){ MIN_DATE=isoPlus(BS.MIN_LEAD_DAYS); $('minLeadText').textContent = BS.MIN_LEAD_DAYS+' days from today ('+MIN_DATE+')'; $('insRateText').textContent=BS.pct(BS.INSURANCE.rate); var pr=document.getElementById('payInsRate'); if(pr) pr.textContent=BS.pct(BS.INSURANCE.rate); var pf=document.getElementById('payFeeText'); if(pf) pf.textContent=(BS.tariffsSetBy?'':'example ')+BS.pct(BS.FEE_RATE); updateEstimate(); });
+  BS.onSettings(function(){ bsApplyPics(); MIN_DATE=isoPlus(BS.MIN_LEAD_DAYS); $('minLeadText').textContent = BS.MIN_LEAD_DAYS+' days from today ('+MIN_DATE+')'; $('insRateText').textContent=BS.pct(BS.INSURANCE.rate); var pr=document.getElementById('payInsRate'); if(pr) pr.textContent=BS.pct(BS.INSURANCE.rate); var pf=document.getElementById('payFeeText'); if(pf) pf.textContent=(BS.tariffsSetBy?'':'example ')+BS.pct(BS.FEE_RATE); updateEstimate(); });
   $('delivery').addEventListener('change', updateEstimate); $('insurance').addEventListener('change', updateEstimate);
   function renderRouting(){
     updateEstimate();
