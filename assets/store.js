@@ -46,9 +46,9 @@
   /* Suppliers on the test site. auto:true suppliers answer requests by themselves (the test site simulates them);
      the named ones are played by the shareholders. Names are realistic distributors, not real companies. */
   BS.SUPPLIERS = [
-    {id:"derba", name:"Derba MIDROC Cement Distributors", branch:"Kality warehouse", cats:["Cement","Aggregates and fill"], auto:true},
-    {id:"mugher", name:"Mugher Cement Agents PLC", branch:"Kirkos store", cats:["Cement"], auto:true},
-    {id:"national", name:"National Cement Depot", branch:"Akaki Kaliti yard", cats:["Cement","Blocks, bricks and stone"], auto:true},
+    {id:"derba", name:"Kality Cement Distributors PLC", branch:"Kality warehouse", cats:["Cement","Aggregates and fill"], auto:true},
+    {id:"mugher", name:"Kirkos Building Materials Trading", branch:"Kirkos store", cats:["Cement"], auto:true},
+    {id:"national", name:"Akaki Cement & Blocks Depot", branch:"Akaki Kaliti yard", cats:["Cement","Blocks, bricks and stone"], auto:true},
     {id:"addissteel", name:"Addis Steel & Rebar Trading", branch:"Akaki yard", cats:["Reinforcement steel","Structural steel and roofing"], auto:true},
     {id:"sheger", name:"Sheger Steel Trading", branch:"Lideta warehouse", cats:["Reinforcement steel","Structural steel and roofing"], auto:true},
     {id:"megablocks", name:"Mega Blocks PLC", branch:"Lemi Kura plant", cats:["Blocks, bricks and stone","Aggregates and fill","Formwork, timber and scaffolding"], auto:true},
@@ -118,9 +118,9 @@
   BS.AUTO = { replyAfter:[240,420,600,900], counterAfter:90, confirmAfter:120, readyAfter:300, dispatchAfter:300, acceptCounterAbove:0.96 };
   /* Introductions for the simulated suppliers' public profiles (test site) */
   BS.SUPPLIER_INTRO = {
-    derba:"Distributor of Derba cement to contractors in Addis Ababa since 2014. Own fleet, deliveries within 24 hours inside the city.",
-    mugher:"Authorised agents for Mugher cement. Bulk and bagged, sub-city depots in Kirkos and Nifas Silk.",
-    national:"National cement and hollow concrete blocks from our Akaki Kaliti yard. Site deliveries with crane trucks.",
+    derba:"Distributor of Derba and Dangote cement to contractors in Addis Ababa since 2014. Own fleet, deliveries within 24 hours inside the city.",
+    mugher:"Agents for Mugher and National cement. Bulk and bagged, sub-city depots in Kirkos and Nifas Silk.",
+    national:"Cement of all major brands and hollow concrete blocks from our Akaki Kaliti yard. Site deliveries with crane trucks.",
     addissteel:"Rebar grade 40 and 60, binding wire and wire mesh. Cutting and bending to drawings.",
     sheger:"Reinforcement and structural steel, local and imported, with mill certificates.",
     megablocks:"Hollow concrete blocks, aggregates and formwork plywood from our Lemi Kura plant.",

@@ -1702,7 +1702,7 @@ function bsSupport(threadId, inputId, sendId){
           var total=totalOf(o), letter=String.fromCharCode(65+i), isAcc=o.status==='accepted', isBest=!acc && best && o.id===best.id && live.length>1;
           var cls='offer'+(isAcc?' accepted':'')+(isBest?' best':'')+((acc&&!isAcc)||o.status==='rejected'?' dim':'');
           return '<div class="'+cls+'"><span class="letter">'+letter+'</span>'+
-            '<span><span class="k">Brand · qty</span>'+(o.brand||'—')+' · '+o.qtyOffered+' '+l.unit+(o.qtyOffered<l.qty?' (partial)':'')+'</span>'+
+            '<span><span class="k">Brand</span><strong>'+(o.brand||'—')+'</strong><span class="small muted"> · '+o.qtyOffered+' '+l.unit+(o.qtyOffered<l.qty?' (partial)':'')+'</span></span>'+
             '<span><span class="k">Unit price</span>'+BS.fmt(o.unitPrice)+' <span class="small muted">'+(o.vat==='incl'?'incl. VAT':'excl. VAT')+'</span></span>'+
             '<span><span class="k">Delivered total</span><strong>'+BS.fmt(total)+'</strong>'+(isBest?'<br><span class="best-tag">Best price</span>':(!acc && live.length>1 && o.status!=='rejected' && total>bestTotal)?'<br><span class="diff">+ '+BS.fmt(total-bestTotal)+' vs best</span>':'')+'</span>'+
             '<span><span class="k">Delivery · lead · valid</span>'+(o.deliveryCost?BS.fmt(o.deliveryCost):'free')+' · '+o.leadDays+' d · '+o.validDays+' d</span>'+
@@ -1727,7 +1727,7 @@ function bsSupport(threadId, inputId, sendId){
         sumHtml='<div class="cmp-head"><strong style="font-family:var(--display)">Best offer per line</strong>'+(openBest.length>1 && !withdrawn ? '<button class="btn btn-ochre btn-sm" data-accept-all="'+b.id+'">Accept the best price on all '+openBest.length+' lines · '+BS.fmt(openBest.reduce(function(t,r){return t+r.bestTotal;},0))+'</button>' : '')+'</div><div class="cmp">'+
           summary.map(function(r){ var o=r.acc||r.best; var tot=o?(o.qtyOffered*o.unitPrice+(+o.deliveryCost||0)):0;
             return '<div class="row'+(r.acc?' acc':'')+'"><span><span class="k">Line '+r.l.n+'</span><span class="n">'+r.l.item+'</span> · '+r.l.qty+' '+r.l.unit+'</span>'+
-              (o ? '<span><span class="k">'+(r.acc?'Accepted':'Best price')+' · '+(o.brand||'')+'</span><strong>'+BS.fmt(tot)+'</strong> <span class="small muted">'+BS.fmt(o.unitPrice)+' per '+r.l.unit+(o.deliveryCost?' + delivery':'')+'</span></span>' : '<span class="small muted">Waiting for offers from '+r.invited+' supplier'+(r.invited!==1?'s':'')+'</span>')+
+              (o ? '<span><span class="k">'+(r.acc?'Accepted':'Best price')+' · brand '+(o.brand||'')+'</span><strong>'+BS.fmt(tot)+'</strong> <span class="small muted">'+BS.fmt(o.unitPrice)+' per '+r.l.unit+(o.deliveryCost?' + delivery':'')+'</span></span>' : '<span class="small muted">Waiting for offers from '+r.invited+' supplier'+(r.invited!==1?'s':'')+'</span>')+
               '<span class="small muted">'+(r.total? r.live+' offer'+(r.live!==1?'s':'')+' open' : '')+'</span>'+
               (r.acc ? '<span class="tag tag-green">'+(r.acc.paidAt?'Paid':r.acc.deliveredAt?'Delivered':r.acc.dispatchedAt?'On the way':r.acc.supplierConfirmed?'Contract':'PO issued')+'</span>' : r.best && !withdrawn ? '<button class="btn btn-primary btn-sm" data-accept="'+r.best.id+'" data-line="'+r.l.n+'" data-boq="'+b.id+'" data-best="1">Accept best</button>' : '<span></span>')+'</div>'; }).join('')+'</div>';
       }
