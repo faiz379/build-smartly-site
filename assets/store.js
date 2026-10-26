@@ -115,7 +115,7 @@
   ];
   /* Simulated suppliers: how many seconds after a request each one answers, and how the simulated supplier
      handles counter-offers and the order steps. Test site only. */
-  BS.AUTO = { replyAfter:[20,45,80,120], counterAfter:30, confirmAfter:40, readyAfter:60, dispatchAfter:60, acceptCounterAbove:0.96 };
+  BS.AUTO = { replyAfter:[240,420,600,900], counterAfter:90, confirmAfter:120, readyAfter:300, dispatchAfter:300, acceptCounterAbove:0.96 };
   /* Introductions for the simulated suppliers' public profiles (test site) */
   BS.SUPPLIER_INTRO = {
     derba:"Distributor of Derba cement to contractors in Addis Ababa since 2014. Own fleet, deliveries within 24 hours inside the city.",
@@ -247,9 +247,11 @@
   /* who am I on this device (demo only). Accounts seen on this device are remembered by mobile number,
      so a number that signs in again after logging out gets its details back (the real app does this server-side). */
   function digitsOf(phone){ return (phone||"").replace(/\D/g,"").replace(/^251/,""); }
-  BS.me = function(){ try { return JSON.parse(localStorage.getItem("bs_demo_me")||"null"); } catch(e){ return null; } };
+  /* "Who am I" lives per browser tab (sessionStorage), so two tabs can be two people, a buyer and a supplier.
+     The last sign-in is also kept for the device, so a new tab starts as that person. */
+  BS.me = function(){ try { var t=sessionStorage.getItem("bs_demo_me"); if(t!==null) return JSON.parse(t); return JSON.parse(localStorage.getItem("bs_demo_me")||"null"); } catch(e){ return null; } };
   BS.setMe = function(obj){
-    try { localStorage.setItem("bs_demo_me", JSON.stringify(obj)); } catch(e){}
+    try { sessionStorage.setItem("bs_demo_me", JSON.stringify(obj)); localStorage.setItem("bs_demo_me", JSON.stringify(obj)); } catch(e){}
     if(obj && obj.phone){ try { var reg=JSON.parse(localStorage.getItem("bs_demo_accounts")||"{}"); reg[digitsOf(obj.phone)]=obj; localStorage.setItem("bs_demo_accounts", JSON.stringify(reg)); } catch(e){} }
   };
   BS.accounts = function(){ try { var reg=JSON.parse(localStorage.getItem("bs_demo_accounts")||"{}"); return Object.keys(reg).map(function(k){ return reg[k]; }).filter(function(a){ return a && a.phone; }); } catch(e){ return []; } };
