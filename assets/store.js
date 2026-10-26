@@ -46,24 +46,24 @@
   /* Suppliers on the test site. auto:true suppliers answer requests by themselves (the test site simulates them);
      the named ones are played by the shareholders. Names are realistic distributors, not real companies. */
   BS.SUPPLIERS = [
-    {id:"derba", name:"Kality Cement Distributors PLC", branch:"Kality warehouse", cats:["Cement","Aggregates and fill"], auto:true},
-    {id:"mugher", name:"Kirkos Building Materials Trading", branch:"Kirkos store", cats:["Cement"], auto:true},
-    {id:"national", name:"Akaki Cement & Blocks Depot", branch:"Akaki Kaliti yard", cats:["Cement","Blocks, bricks and stone"], auto:true},
-    {id:"addissteel", name:"Addis Steel & Rebar Trading", branch:"Akaki yard", cats:["Reinforcement steel","Structural steel and roofing"], auto:true},
-    {id:"sheger", name:"Sheger Steel Trading", branch:"Lideta warehouse", cats:["Reinforcement steel","Structural steel and roofing"], auto:true},
-    {id:"megablocks", name:"Mega Blocks PLC", branch:"Lemi Kura plant", cats:["Blocks, bricks and stone","Aggregates and fill","Formwork, timber and scaffolding"], auto:true},
-    {id:"gullele", name:"Gullele Aggregates", branch:"Gullele quarry", cats:["Aggregates and fill","Equipment rental"], auto:true},
-    {id:"yerer", name:"Yerer Equipment Rental", branch:"Bole Lemi depot", cats:["Equipment rental"], auto:true},
-    {id:"habesha", name:"Habesha Finishing Supplies", branch:"Merkato shop", cats:["Finishing: tiles and floors","Finishing: paint and plaster"], auto:true},
-    {id:"electroplumb", name:"Ethio Electro-Plumb Supplies", branch:"Piassa store", cats:["Electrical","Plumbing and sanitary"], auto:true},
-    {id:"ethiobuild", name:"Ethio Build Mart", branch:"Megenagna showroom and yard", cats:["Cement","Aggregates and fill","Reinforcement steel","Blocks, bricks and stone","Structural steel and roofing","Formwork, timber and scaffolding","Finishing: tiles and floors","Finishing: paint and plaster","Plumbing and sanitary","Electrical","Equipment rental"], auto:true},
-    {id:"addissupplies", name:"Addis Construction Supplies PLC", branch:"Kaliti main store", cats:["Cement","Aggregates and fill","Reinforcement steel","Blocks, bricks and stone","Structural steel and roofing","Formwork, timber and scaffolding","Finishing: tiles and floors","Finishing: paint and plaster","Plumbing and sanitary","Electrical","Equipment rental"], auto:true},
+    {id:"derba", name:"Kality Cement Distributors PLC", branch:"Kality warehouse", sub:"Akaki Kaliti", cats:["Cement","Aggregates and fill"], auto:true},
+    {id:"mugher", name:"Kirkos Building Materials Trading", branch:"Kirkos store", sub:"Kirkos", cats:["Cement"], auto:true},
+    {id:"national", name:"Akaki Cement & Blocks Depot", branch:"Akaki Kaliti yard", sub:"Akaki Kaliti", cats:["Cement","Blocks, bricks and stone"], auto:true},
+    {id:"addissteel", name:"Addis Steel & Rebar Trading", branch:"Akaki yard", sub:"Akaki Kaliti", cats:["Reinforcement steel","Structural steel and roofing"], auto:true},
+    {id:"sheger", name:"Sheger Steel Trading", branch:"Lideta warehouse", sub:"Lideta", cats:["Reinforcement steel","Structural steel and roofing"], auto:true},
+    {id:"megablocks", name:"Mega Blocks PLC", branch:"Lemi Kura plant", sub:"Lemi Kura", cats:["Blocks, bricks and stone","Aggregates and fill","Formwork, timber and scaffolding"], auto:true},
+    {id:"gullele", name:"Gullele Aggregates", branch:"Gullele quarry", sub:"Gullele", cats:["Aggregates and fill","Equipment rental"], auto:true},
+    {id:"yerer", name:"Yerer Equipment Rental", branch:"Bole Lemi depot", sub:"Bole", cats:["Equipment rental"], auto:true},
+    {id:"habesha", name:"Habesha Finishing Supplies", branch:"Merkato shop", sub:"Addis Ketema", cats:["Finishing: tiles and floors","Finishing: paint and plaster"], auto:true},
+    {id:"electroplumb", name:"Ethio Electro-Plumb Supplies", branch:"Piassa store", sub:"Arada", cats:["Electrical","Plumbing and sanitary"], auto:true},
+    {id:"ethiobuild", name:"Ethio Build Mart", branch:"Megenagna showroom and yard", sub:"Yeka", cats:["Cement","Aggregates and fill","Reinforcement steel","Blocks, bricks and stone","Structural steel and roofing","Formwork, timber and scaffolding","Finishing: tiles and floors","Finishing: paint and plaster","Plumbing and sanitary","Electrical","Equipment rental"], auto:true},
+    {id:"addissupplies", name:"Addis Construction Supplies PLC", branch:"Kaliti main store", sub:"Akaki Kaliti", cats:["Cement","Aggregates and fill","Reinforcement steel","Blocks, bricks and stone","Structural steel and roofing","Formwork, timber and scaffolding","Finishing: tiles and floors","Finishing: paint and plaster","Plumbing and sanitary","Electrical","Equipment rental"], auto:true},
     /* played by the shareholders */
-    {id:"abdullah-s", name:"Abdullah Cement & Aggregates PLC", branch:"Akaki Kaliti depot", cats:["Cement","Aggregates and fill"]},
-    {id:"fahad-s", name:"Fahad Steel Trading PLC", branch:"Kality yard", cats:["Reinforcement steel","Structural steel and roofing"]},
-    {id:"osama-s", name:"Osama Blocks & Building Materials", branch:"Lemi Kura plant", cats:["Blocks, bricks and stone","Aggregates and fill","Cement"]},
-    {id:"haji-s", name:"Haji Equipment Rental & Transport", branch:"Bole Lemi depot", cats:["Equipment rental","Formwork, timber and scaffolding"]},
-    {id:"faiz-s", name:"Faiz Electrical & Plumbing Supplies", branch:"Piassa store", cats:["Electrical","Plumbing and sanitary","Finishing: paint and plaster"]}
+    {id:"abdullah-s", name:"Abdullah Cement & Aggregates PLC", branch:"Akaki Kaliti depot", sub:"Akaki Kaliti", cats:["Cement","Aggregates and fill"]},
+    {id:"fahad-s", name:"Fahad Steel Trading PLC", branch:"Kality yard", sub:"Akaki Kaliti", cats:["Reinforcement steel","Structural steel and roofing"]},
+    {id:"osama-s", name:"Osama Blocks & Building Materials", branch:"Lemi Kura plant", sub:"Lemi Kura", cats:["Blocks, bricks and stone","Aggregates and fill","Cement"]},
+    {id:"haji-s", name:"Haji Equipment Rental & Transport", branch:"Bole Lemi depot", sub:"Bole", cats:["Equipment rental","Formwork, timber and scaffolding"]},
+    {id:"faiz-s", name:"Faiz Electrical & Plumbing Supplies", branch:"Piassa store", sub:"Arada", cats:["Electrical","Plumbing and sanitary","Finishing: paint and plaster"]}
   ];
   /* Brands a supplier can pick per material category (admin-editable in the real app) */
   BS.BRANDS = {
@@ -137,6 +137,13 @@
 
   /* Home-page price pulse. Example figures until launch; on the shared link the median of real quotes replaces them.
      chg = change in percent since last week (example). item = catalogue name the live quotes are matched on. */
+  /* Newsletter: what buyers received in the latest issue. Example content for the test site; real items come from the `news` collection. */
+  BS.NEWS = [
+    {issue:"October 2026", kind:"feature", company:"Featured supplier", title:"Kality Cement Distributors: 48-hour delivery inside Addis Ababa", text:"Dangote and Derba 42.5 from the Kality warehouse, bulk and bagged. Quotes pre-filled from a daily price list.", sponsored:true},
+    {issue:"October 2026", kind:"news", company:"Addis Steel & Rebar Trading", title:"New: grade 60 rebar 8 to 32 mm, mill certificates on every lot", text:"Local mill and imported, with test certificates attached to the contract. Binding wire and wire mesh in stock.", sponsored:true},
+    {issue:"October 2026", kind:"news", company:"Habesha Finishing Supplies", title:"New brand: Italian-made ceramic tiles 60x60 at Merkato", text:"Three new designs, boxes of 1.44 m². Samples at the shop; quotes through your request.", sponsored:true},
+    {issue:"October 2026", kind:"platform", company:"Build Smartly", title:"Price pulse: cement up 1.7 %, rebar down 2 % since last week", text:"Medians of the quotes on the platform this week. Send a request to get live offers for your site.", sponsored:false}
+  ];
   BS.PULSE = [
     {item:"Cement OPC 42.5", name:"Cement OPC 42.5", brand:"Dangote", unit:"per quintal (two 50 kg bags)", price:1180, chg:1.7, when:"6 suppliers, this morning", svg:'<svg viewBox="0 0 80 80"><rect x="14" y="18" width="52" height="50" rx="6" fill="#D9D3C7"/><rect x="14" y="18" width="52" height="12" rx="6" fill="#B9AE9C"/><text x="40" y="54" text-anchor="middle" font-family="Sora,Arial" font-size="12" font-weight="700" fill="#1E6B4E">OPC</text></svg>'},
     {item:"Cement PPC 32.5", name:"Cement PPC 32.5", brand:"Derba", unit:"per quintal", price:1050, chg:0, when:"4 suppliers, this morning", svg:'<svg viewBox="0 0 80 80"><rect x="14" y="18" width="52" height="50" rx="6" fill="#E8E2D6"/><rect x="14" y="18" width="52" height="12" rx="6" fill="#C9BFAE"/><text x="40" y="54" text-anchor="middle" font-family="Sora,Arial" font-size="12" font-weight="700" fill="#1E6B4E">PPC</text></svg>'},
@@ -149,6 +156,30 @@
     {item:"Excavator hire with operator", name:"Excavator hire", brand:"Komatsu", unit:"per day, with operator", price:22000, chg:0, when:"2 suppliers, this week", svg:'<svg viewBox="0 0 80 80"><rect x="10" y="40" width="36" height="18" rx="3" fill="#E3A63A"/><rect x="46" y="32" width="22" height="26" rx="3" fill="#C98C22"/><circle cx="22" cy="62" r="7" fill="#14241E"/><circle cx="56" cy="62" r="7" fill="#14241E"/><path d="M18 40l10-16 14 4" fill="none" stroke="#C98C22" stroke-width="5" stroke-linecap="round"/></svg>'}
   ];
 
+  /* ---- Delivery and insurance: example figures until the owner sets real tariffs. ----
+     Distance: sub-city centroids (or a map pin) with a 1.3 road factor. Trucks: 10 t loads, fixed cost per trip plus a per-km rate.
+     Insurance: inland transit cover at 0.4 % of the goods value, minimum ETB 300. */
+  BS.SUBCITY_XY = {"Addis Ketema":[9.035,38.735],"Akaki Kaliti":[8.880,38.790],"Arada":[9.035,38.755],"Bole":[8.990,38.790],"Gullele":[9.070,38.730],"Kirkos":[9.005,38.760],"Kolfe Keranio":[9.020,38.690],"Lemi Kura":[9.030,38.860],"Lideta":[9.010,38.730],"Nifas Silk-Lafto":[8.955,38.730],"Yeka":[9.030,38.810]};
+  BS.CITY_CENTRE = [9.010,38.760];
+  BS.TRUCK = { capacityT:10, perTrip:2500, perKm:250, minKm:4, mobilisation:3500 };
+  BS.INSURANCE = { rate:0.004, min:300 };
+  /* tonnes per unit (approximate, for truck trips); equipment hire is a mobilisation fee instead */
+  BS.TONNES = { quintal:0.1, bag:0.05, ton:1, kg:0.001, "m³":1.6, truckload:10, "m²":0.02, m:0.01, litre:0.0015, bucket:0.02, roll:0.01, sheet:0.02, box:0.02, bundle:0.05, package:0.02, pcs:0.01, trip:0, hour:0, day:0 };
+  BS.TONNES_ITEM = { "HCB 20 cm":0.012, "HCB 15 cm":0.010, "Bricks (clay)":0.003, "Ready-mix concrete C-25":2.4, "Roofing sheet galvanised 0.4 mm":0.005, "Plywood 18 mm formwork":0.025, "Gypsum board 12 mm":0.012, "PPR pipe 25 mm":0.0005, "PVC drainage pipe 110 mm":0.002, "PVC conduit 20 mm":0.0003, "Water tank 5,000 L":0.1, "Electrical cable 2.5 mm²":0.012, "Distribution board 12 way":0.01, "Wire mesh":0.02 };
+  BS.tonnesOf = function(line){ var per = BS.TONNES_ITEM[line.item]; if(per===undefined) per = BS.TONNES[line.unit]; if(per===undefined) per=0.01; return (+line.qty||0)*per; };
+  BS.isHire = function(line){ return BS.catOf(line.item)==="Equipment rental" || /hire/i.test(line.item||""); };
+  BS.km = function(a, b){ if(!a||!b) return 8; var R=6371, dLat=(b[0]-a[0])*Math.PI/180, dLon=(b[1]-a[1])*Math.PI/180, x=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(a[0]*Math.PI/180)*Math.cos(b[0]*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2); var d=2*R*Math.atan2(Math.sqrt(x),Math.sqrt(1-x)); return Math.max(BS.TRUCK.minKm, Math.round(d*1.3*10)/10); };
+  BS.pointOf = function(subOrPin){ if(subOrPin && typeof subOrPin==="object" && subOrPin.lat) return [subOrPin.lat, subOrPin.lng]; return BS.SUBCITY_XY[subOrPin] || BS.CITY_CENTRE; };
+  /* delivery estimate for a set of lines from one dispatch point: {km, trips, cost, hire} */
+  BS.deliveryEstimate = function(lines, fromSub, to){
+    var km=BS.km(BS.pointOf(fromSub), BS.pointOf(to)), tonnes=0, hire=0;
+    (lines||[]).forEach(function(l){ if(!l.item || !(+l.qty>0)) return; if(BS.isHire(l)) hire+=BS.TRUCK.mobilisation; else tonnes+=BS.tonnesOf(l); });
+    var trips = tonnes>0 ? Math.ceil(tonnes/BS.TRUCK.capacityT) : 0;
+    var cost = trips*(BS.TRUCK.perTrip + BS.TRUCK.perKm*km) + hire;
+    return { km:km, trips:trips, tonnes:Math.round(tonnes*10)/10, cost:Math.round(cost/10)*10, hire:hire };
+  };
+  BS.goodsValue = function(lines){ var v=0; (lines||[]).forEach(function(l){ if(!l.item||!(+l.qty>0)) return; var base=BS.baseOf(l.item); if(!base) return; var u=BS.unitsOf(l.item)[0]; var q=+l.qty; if(l.unit!==u){ if(l.unit==="bag" && u==="quintal") q=q/2; else if(l.unit==="ton" && u==="quintal") q=q*10; else if(l.unit==="kg" && u==="quintal") q=q/100; } v+=q*base; }); return Math.round(v); };
+  BS.insuranceFor = function(value){ return value>0 ? Math.max(BS.INSURANCE.min, Math.round(value*BS.INSURANCE.rate)) : 0; };
   BS.fmt = function(n){ return "ETB " + Math.round(n).toLocaleString("en-US"); };
   BS.ref = function(prefix){ var d=new Date(); return prefix+"-"+String(d.getFullYear()).slice(2)+String(d.getMonth()+1).padStart(2,"0")+"-"+String(Math.floor(1000+Math.random()*9000)); };
   BS.catOf = function(name){ var c=BS.CATALOGUE.filter(function(x){return x.name===name;})[0]; return c?c.cat:"Other (staff will classify)"; };
@@ -298,7 +329,7 @@
     });
     return function(){ cancelled = true; if(unsub) unsub(); listeners[col]=(listeners[col]||[]).filter(function(x){return x!==cb;}); };
   };
-  BS.clearLocal = function(){ ["boqs","offers","messages","profiles"].forEach(function(c){ try{ localStorage.removeItem(LS(c)); }catch(e){} notifyLocal(c); }); };
+  BS.clearLocal = function(){ ["boqs","offers","messages","profiles","news"].forEach(function(c){ try{ localStorage.removeItem(LS(c)); }catch(e){} notifyLocal(c); }); };
 
   /* who am I on this device (demo only). Accounts seen on this device are remembered by mobile number,
      so a number that signs in again after logging out gets its details back (the real app does this server-side). */
