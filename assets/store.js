@@ -116,6 +116,21 @@
   /* Simulated suppliers: how many seconds after a request each one answers, and how the simulated supplier
      handles counter-offers and the order steps. Test site only. */
   BS.AUTO = { replyAfter:[20,45,80,120], counterAfter:30, confirmAfter:40, readyAfter:60, dispatchAfter:60, acceptCounterAbove:0.96 };
+  /* Introductions for the simulated suppliers' public profiles (test site) */
+  BS.SUPPLIER_INTRO = {
+    derba:"Distributor of Derba cement to contractors in Addis Ababa since 2014. Own fleet, deliveries within 24 hours inside the city.",
+    mugher:"Authorised agents for Mugher cement. Bulk and bagged, sub-city depots in Kirkos and Nifas Silk.",
+    national:"National cement and hollow concrete blocks from our Akaki Kaliti yard. Site deliveries with crane trucks.",
+    addissteel:"Rebar grade 40 and 60, binding wire and wire mesh. Cutting and bending to drawings.",
+    sheger:"Reinforcement and structural steel, local and imported, with mill certificates.",
+    megablocks:"Hollow concrete blocks, aggregates and formwork plywood from our Lemi Kura plant.",
+    gullele:"Crushed aggregates 01 and 02, sand and scoria fill from our own quarry. Sino truck hire.",
+    yerer:"Excavators, loaders, mixers and Sino trucks with operators, by the day or the trip.",
+    habesha:"Tiles, paint, gypsum and sanitary ware for finishing works. Showroom in Merkato.",
+    electroplumb:"Cables, conduits, distribution boards, PPR and PVC pipes and water tanks.",
+    ethiobuild:"One-stop supplier for every stage of the build, from cement to finishing. Showroom and yard at Megenagna.",
+    addissupplies:"Construction materials wholesaler since 2009. All categories, credit terms for repeat customers."
+  };
   /* Earliest "needed by" date on a request, in days from today. Example value; the owner sets the real minimum. */
   BS.MIN_LEAD_DAYS = 3;
   BS.SUBCITIES = ["Addis Ketema","Akaki Kaliti","Arada","Bole","Gullele","Kirkos","Kolfe Keranio","Lemi Kura","Lideta","Nifas Silk-Lafto","Yeka"];
@@ -201,6 +216,16 @@
     }
     var arr = lsRead(col); arr = arr.map(function(x){ return x.id===docId ? Object.assign({}, x, patch) : x; }); lsWrite(col, arr);
   };
+  /* write a document with a chosen id (replace if it exists) */
+  BS.set = async function(col, docId, data){
+    await BS.ready();
+    var body = Object.assign({}, data, {updatedAt: new Date().toISOString(), createdAt: data.createdAt || new Date().toISOString()});
+    if(mode==="shared"){
+      try { await db.collection(col).doc(docId).set(body); return docId; }
+      catch(e){ degrade(e && e.code); }
+    }
+    var arr = lsRead(col).filter(function(x){ return x.id!==docId; }); arr.push(Object.assign({id:docId}, body)); lsWrite(col, arr); return docId;
+  };
   BS.subscribe = function(col, cb){
     var unsub = null, cancelled = false;
     BS.ready().then(function(){
@@ -217,7 +242,7 @@
     });
     return function(){ cancelled = true; if(unsub) unsub(); listeners[col]=(listeners[col]||[]).filter(function(x){return x!==cb;}); };
   };
-  BS.clearLocal = function(){ ["boqs","offers","messages"].forEach(function(c){ try{ localStorage.removeItem(LS(c)); }catch(e){} notifyLocal(c); }); };
+  BS.clearLocal = function(){ ["boqs","offers","messages","profiles"].forEach(function(c){ try{ localStorage.removeItem(LS(c)); }catch(e){} notifyLocal(c); }); };
 
   /* who am I on this device (demo only). Accounts seen on this device are remembered by mobile number,
      so a number that signs in again after logging out gets its details back (the real app does this server-side). */

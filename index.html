@@ -307,6 +307,18 @@ footer.site a{text-decoration:none}
 .offer .k{font-size:.74rem;color:var(--fg-2);display:block}
 .offer .diff{font-size:.76rem;color:var(--fg-2)}
 .offer .best-tag{font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ochre-ink)}
+.members{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem}
+@media (max-width:900px){.members{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.members{grid-template-columns:1fr}}
+.mem{display:grid;gap:.5rem;align-content:start}
+.mem.sponsored{border-color:var(--ochre)}
+.mem .top{display:flex;gap:.7rem;align-items:center}
+.mem .ini{width:46px;height:46px;border-radius:12px;background:var(--green-deep);color:#F6F7F4;display:grid;place-items:center;font-family:var(--display);font-weight:700;flex:none}
+.mem h3{font-size:1rem}
+.mem .cats{display:flex;flex-wrap:wrap;gap:.3rem}
+.mem .cats span{font-size:.72rem;background:var(--bg-2);border-radius:999px;padding:.15rem .5rem;color:var(--fg-2)}
+.mem p{font-size:.88rem;color:var(--fg-2)}
+.mem .foot{display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:.2rem}
 .cmp{display:grid;gap:.35rem}
 .cmp .row{display:grid;grid-template-columns:2fr 1.6fr 1fr auto;gap:.6rem;align-items:center;border:1px solid var(--line);border-radius:10px;padding:.5rem .8rem;background:var(--white);font-size:.9rem}
 .cmp .row.acc{border-color:var(--green);background:color-mix(in srgb,var(--green) 8%,transparent)}
@@ -474,6 +486,7 @@ details.line-offers[open] summary::before{content:"▾"}
       <span>Build <em>Smartly</em></span>
     </a>
     <ul class="links">
+      <li><a href="#home">Home</a></li>
       <li><a href="#start" style="color:var(--ochre-ink)">Start here</a></li>
       <li><a href="#supply">Materials</a></li>
       <li><a href="#suppliers">For suppliers</a></li>
@@ -633,16 +646,9 @@ details.line-offers[open] summary::before{content:"▾"}
   </section>
 
   <section id="partners" class="wrap hsec" style="padding-top:0">
-    <div class="sec-head" style="text-align:center;max-width:none;justify-items:center"><span class="eyebrow">Our partners</span><h2>Customers and suppliers who build with us.</h2></div>
-    <div class="logos">
-      <div class="logo-box"><svg viewBox="0 0 120 44" aria-hidden="true"><rect x="4" y="8" width="28" height="28" rx="6" fill="#1E6B4E"/><text x="40" y="29" font-family="Sora,Arial" font-size="13" font-weight="700" fill="currentColor">CEMENT CO.</text></svg><span>Supplier logo</span></div>
-      <div class="logo-box"><svg viewBox="0 0 120 44" aria-hidden="true"><circle cx="18" cy="22" r="14" fill="#E3A63A"/><text x="40" y="29" font-family="Sora,Arial" font-size="13" font-weight="700" fill="currentColor">STEELWORKS</text></svg><span>Supplier logo</span></div>
-      <div class="logo-box"><svg viewBox="0 0 120 44" aria-hidden="true"><path d="M6 36L18 8l12 28z" fill="#5B6B64"/><text x="40" y="29" font-family="Sora,Arial" font-size="13" font-weight="700" fill="currentColor">BLOCKS PLC</text></svg><span>Supplier logo</span></div>
-      <div class="logo-box"><svg viewBox="0 0 120 44" aria-hidden="true"><rect x="4" y="14" width="28" height="16" rx="8" fill="#1E6B4E"/><text x="40" y="29" font-family="Sora,Arial" font-size="13" font-weight="700" fill="currentColor">CONTRACTOR</text></svg><span>Customer logo</span></div>
-      <div class="logo-box"><svg viewBox="0 0 120 44" aria-hidden="true"><rect x="6" y="10" width="24" height="24" rx="4" fill="none" stroke="#E3A63A" stroke-width="4"/><text x="40" y="29" font-family="Sora,Arial" font-size="13" font-weight="700" fill="currentColor">DEVELOPER</text></svg><span>Customer logo</span></div>
-      <div class="logo-box"><svg viewBox="0 0 120 44" aria-hidden="true"><circle cx="12" cy="22" r="6" fill="#5B6B64"/><circle cx="26" cy="22" r="6" fill="#5B6B64"/><text x="40" y="29" font-family="Sora,Arial" font-size="13" font-weight="700" fill="currentColor">EQUIP. HIRE</text></svg><span>Supplier logo</span></div>
-    </div>
-    <p class="small muted" style="margin-top:.8rem">Placeholder logos for the prototype. Real customer and supplier logos go here once partnerships are signed.</p>
+    <div class="sec-head" style="text-align:center;max-width:none;justify-items:center"><span class="eyebrow">Members</span><h2>Suppliers and builders who work through Build Smartly.</h2></div>
+    <div class="members" id="homeMembers"></div>
+    <p style="margin-top:1rem;text-align:center"><a class="btn btn-ghost" href="#members">See all members</a> <a class="btn btn-ghost" href="#advertise">Advertise with us</a></p>
   </section>
 
   <section id="aboutus" class="wrap hsec" style="padding-top:0">
@@ -695,9 +701,11 @@ details.line-offers[open] summary::before{content:"▾"}
         </section>
         <section id="signinBox" hidden class="su-step">
           <div><h1 style="font-size:1.6rem" id="liTitle">Sign in</h1><p class="muted" id="liSub">Your mobile number and an SMS code. New number? The account is created for you.</p></div>
+          <div class="field" id="liNameField" hidden><label for="liName">Your name or company</label><input id="liName" autocomplete="organization" placeholder="e.g. Tana Construction PLC"><span class="err" id="liNameErr" hidden>Please enter your name.</span></div>
           <div class="field"><label for="liPhone">Mobile</label><div class="su-phone"><span class="cc">🇪🇹 +251</span><input id="liPhone" type="tel" inputmode="numeric" placeholder="9 12 34 56 78" autocomplete="tel-national"></div><span class="err" id="liErr" hidden>Enter your mobile number, for example 0912345678.</span></div>
           <div class="field" id="liOtpBox" hidden><label>Enter the code we sent</label><div class="su-otp"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"></div><span class="hint" id="liHint">Test site: no SMS is sent. The code is 123456.</span></div>
-          <div class="su-nav"><a class="small muted" href="#signup-supplier">Registering as a supplier? Start here</a><button class="btn btn-primary" type="button" id="liGo">Send code</button></div>
+          <div class="su-nav"><span></span><button class="btn btn-primary" type="button" id="liGo">Send code</button></div>
+          <div class="card" id="liNew" style="display:grid;gap:.6rem;padding:1rem"><strong style="font-family:var(--display)">New to Build Smartly?</strong><p class="small muted">Buyers need only a name and a mobile number. Company details and TIN come later, before your first purchase order. Suppliers register their company, TIN and a password.</p><div style="display:flex;gap:.5rem;flex-wrap:wrap"><a class="btn btn-ghost btn-sm" href="#signup">Create a buyer account</a><a class="btn btn-ochre btn-sm" href="#signup-supplier">Register as a supplier</a></div></div>
           <details class="small muted" style="margin-top:.4rem"><summary style="cursor:pointer">Test accounts for this prototype</summary><p style="margin-top:.4rem">Buyers: <strong>911 000 100</strong> Tana Construction, <strong>911 000 101</strong> Bole Heights. Suppliers: <strong>911 000 001</strong> cement and aggregates, <strong>911 000 002</strong> steel, <strong>911 000 003</strong> blocks, <strong>911 000 004</strong> equipment, <strong>911 000 006</strong> electrical and plumbing. Any other Ethiopian number opens a new buyer account.</p></details>
         </section>
 
@@ -776,16 +784,11 @@ details.line-offers[open] summary::before{content:"▾"}
         <div class="field"><label for="delivery">Delivery</label><select id="delivery"><option>Supplier delivers to site</option><option>I collect from supplier</option><option>Build Smartly arranges delivery</option></select></div>
       </div>
       <input type="hidden" id="validity" value="4">
-      <details>
-        <summary class="small" style="cursor:pointer;font-weight:600;color:var(--green)">More options (payment, partial delivery, insurance)</summary>
-        <div style="display:grid;gap:.9rem;margin-top:.8rem">
-          <div class="grid3"><div class="field"><label for="payment">Preferred payment</label><select id="payment"><option>On delivery</option><option>Advance</option><option>On shipping</option><option>Credit (date to agree)</option></select></div></div>
-          <div class="grid2">
-            <label class="check"><input type="checkbox" id="partial" checked><span>Partial delivery accepted (a line may be split between suppliers)</span></label>
-            <label class="check"><input type="checkbox" id="insurance"><span>Add transit insurance (offered later through a licensed insurer)</span></label>
-          </div>
-        </div>
-      </details>
+      <div class="grid3"><div class="field"><label for="payment">Preferred payment</label><select id="payment"><option>On delivery</option><option>Advance</option><option>On shipping</option><option>Credit (date to agree)</option></select></div></div>
+      <div class="grid2">
+        <label class="check"><input type="checkbox" id="partial" checked><span>Partial delivery accepted (a line may be split between suppliers)</span></label>
+        <label class="check"><input type="checkbox" id="insurance"><span>Add transit insurance (offered later through a licensed insurer)</span></label>
+      </div>
       <input type="hidden" id="company">
     </div>
     <div class="card" id="routing" hidden><strong style="font-family:var(--display)">Where your lines will go</strong><div id="routingBody" style="margin-top:.5rem;display:grid;gap:.3rem;font-size:.92rem"></div></div>
@@ -812,22 +815,6 @@ details.line-offers[open] summary::before{content:"▾"}
     </div>
     <div id="mine"></div>
   </section>
-  <div class="modal" id="poGate" hidden>
-    <div class="card">
-      <div><span class="eyebrow">Before we issue the purchase order</span><h3 style="margin-top:.4rem">Who is buying?</h3><p class="small muted">The PO and contract name the buyer and the supplier. Staff check the TIN against the registry before the PO is confirmed. Asked once.</p></div>
-      <div class="su-choices">
-        <div class="choice"><input type="radio" name="gType" id="g-com" value="Organisation" checked><label for="g-com"><strong>A company or organisation</strong><span>Contractor, developer, trader, factory, cooperative, NGO.</span></label></div>
-        <div class="choice"><input type="radio" name="gType" id="g-ind" value="Individual"><label for="g-ind"><strong>A person</strong><span>Building or renovating for yourself.</span></label></div>
-        <div class="choice"><input type="radio" name="gType" id="g-gov" value="Government"><label for="g-gov"><strong>A government office or public body</strong><span>An official authorisation letter is asked for by staff.</span></label></div>
-      </div>
-      <div class="field"><label for="gName" id="gNameLabel">Legal name of the company</label><input id="gName"><span class="err" id="gNameErr" hidden>Please enter the name.</span></div>
-      <div class="su-row2">
-        <div class="field"><label for="gTin" id="gTinLabel">TIN</label><input id="gTin" inputmode="numeric" placeholder="10 digits"><span class="hint" id="gTinHint">Taxpayer identification number, 10 digits.</span><span class="err" id="gTinErr" hidden>A TIN has exactly 10 digits.</span></div>
-        <div class="field" id="gContactField"><label for="gContact">Contact person</label><input id="gContact" placeholder="Full name"></div>
-      </div>
-      <div class="su-nav"><button class="btn btn-ghost" type="button" id="gCancel">Not now</button><button class="btn btn-primary" type="button" id="gSave">Save and issue the PO</button></div>
-    </div>
-  </div>
   <div class="modal" id="payGate" hidden>
     <div class="card">
       <div><span class="eyebrow">Yagout Pay · secure payment</span><h3 style="margin-top:.4rem">Pay for <span id="payRef"></span></h3><p class="small muted">Telebirr, CBE Birr, bank card or bank transfer. The supplier is paid when the gateway confirms. On the test site no money moves.</p></div>
@@ -977,7 +964,7 @@ details.line-offers[open] summary::before{content:"▾"}
       </div>
 
       <div class="card" style="display:grid;gap:.8rem" id="sec-intro">
-        <div><strong style="font-family:var(--display)">5 · Public profile (optional)</strong><p class="small muted">Shown to visitors only if you publish it, after moderation. No addresses, phone numbers or prices in the text.</p></div>
+        <div><strong style="font-family:var(--display)">5 · Public profile (optional)</strong><p class="small muted">Published in the <a href="#members">Members directory</a> after a staff check. No addresses, phone numbers or prices in the text.</p></div>
         <div class="field"><label for="spIntro">Company introduction</label><textarea id="spIntro" rows="3" placeholder="History, brands, certifications, key products"></textarea></div>
         <div class="pics">
           <label class="wpic up"><input type="file" accept="image/*" hidden><span>＋ Upload logo</span></label>
@@ -987,7 +974,7 @@ details.line-offers[open] summary::before{content:"▾"}
           <label class="wpic up"><input type="file" accept="video/*" hidden><span>＋ Upload video (30 s)</span></label>
         </div>
         <p class="small muted">No phone numbers, addresses, price tags or QR codes in pictures. A moderator checks before publishing.</p>
-        <label class="check"><input type="checkbox" id="spPublish"><span>Publish my public profile</span></label>
+        <label class="check"><input type="checkbox" id="spPublish"><span>Publish my profile in the Members directory</span></label>
       </div>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center"><button class="btn btn-primary" type="button" id="profSave">Save profile</button><span class="small muted" id="profMsg"></span></div>
     </div>
@@ -1015,6 +1002,7 @@ details.line-offers[open] summary::before{content:"▾"}
     <div><span class="eyebrow">Member</span><h1 id="wsName">Your company</h1><p class="small muted" id="wsMeta"></p></div>
     <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap"><span class="status" id="wsStatus"><i></i><span>Connecting…</span></span><button class="btn btn-ghost btn-sm" type="button" id="wsLogout">Log out</button></div>
   </div>
+  <section class="card" id="wsDetails" hidden style="display:grid;gap:.6rem;border-color:var(--ochre)"><div><strong style="font-family:var(--display)">Complete your company details</strong><p class="small muted">Who is buying, legal name and TIN. Needed once, before your first purchase order. You can also do it later, at your first Accept.</p></div><div><button class="btn btn-primary btn-sm" type="button" id="wsDetailsBtn">Add company details</button></div></section>
   <section class="card panel" id="p-tracking"><div><strong style="font-family:var(--display);font-size:1.05rem">Tracking</strong><p class="small muted">Where each request or order stands. Restricted between you and the platform.</p></div><div id="trackBody"></div></section>
   <section class="card panel" id="p-mail" hidden>
     <div class="topbar"><div><strong style="font-family:var(--display);font-size:1.05rem">Mailbox</strong><p class="small muted">Everything we send you, and your line to support, in one place.</p></div><div class="subtabs" id="mailTabs"><button class="on" data-m="notif">Notifications</button><button data-m="inbox">Inbox</button><button data-m="sent">Sent</button><button data-m="sms">Text messages</button><button data-m="support">Support</button></div></div>
@@ -1043,7 +1031,7 @@ details.line-offers[open] summary::before{content:"▾"}
     </div>
     <hr style="border:0;border-top:1px solid var(--line);margin:.3rem 0">
     <div style="display:grid;gap:.8rem">
-      <div><strong style="font-family:var(--display)">Public profile (optional, companies only)</strong><p class="small muted">Company history, brands you work with or projects completed. Shown to visitors only if you publish it, after moderation.</p></div>
+      <div><strong style="font-family:var(--display)">Public profile (optional, companies only)</strong><p class="small muted">Company history, brands you work with or projects completed. Published in the <a href="#members">Members directory</a> after a staff check. No addresses, phone numbers or prices.</p></div>
       <div class="field"><textarea id="intro" rows="3" placeholder="Example: Tana Construction PLC has built 42 residential and commercial projects in Addis Ababa since 2012. We work with Dangote, Derba and Mugher cement and are starting a G+12 mixed-use project in Bole in 2027."></textarea><span class="hint">No phone numbers, addresses or prices in the introduction. Moderators check this.</span></div>
       <div class="pics">
         <label class="wpic up"><input type="file" accept="image/*" hidden><span>＋ Tap to upload picture</span></label>
@@ -1052,7 +1040,8 @@ details.line-offers[open] summary::before{content:"▾"}
         <label class="wpic up"><input type="file" accept="image/*" hidden><span>＋ Tap to upload picture</span></label>
         <label class="wpic up"><input type="file" accept="video/*" hidden><span>＋ Tap to upload video (30 s)</span></label>
       </div>
-      <label class="check"><input type="checkbox"><span>Publish my public profile (after moderation)</span></label>
+      <label class="check"><input type="checkbox" id="wsPublish"><span>Publish my profile in the Members directory</span></label>
+      <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap"><button class="btn btn-primary btn-sm" type="button" id="wsProfSave">Save profile</button><span class="small muted" id="wsProfMsg"></span></div>
     </div>
     <p class="small muted">Language is switched from the top of the page. Company users, approval limits and bank details are added here in the real app, each with its own approval step.</p>
   </section>
@@ -1158,6 +1147,24 @@ details.line-offers[open] summary::before{content:"▾"}
   </div>
 </div>
 
+<!-- ================= MEMBERS DIRECTORY and ADVERTISE ================= -->
+<div id="view-members" data-view hidden class="wrap view">
+  <div><span class="eyebrow">Members</span><h1 style="font-size:1.6rem">Verified suppliers and builders</h1><p class="muted small">Companies that chose to publish a profile. Contact happens only through Build Smartly: send a request and the right suppliers quote. No addresses, phone numbers or prices are shown here.</p></div>
+  <div class="subtabs" id="memTabs"><button class="on" data-m="all">All</button><button data-m="supplier">Suppliers</button><button data-m="buyer">Builders and developers</button></div>
+  <div class="members" id="memberList"></div>
+  <p class="small muted">A profile is published only after Build Smartly staff have reviewed it. Sponsored cards are marked. <a href="#advertise">Advertise with us</a>.</p>
+</div>
+<div id="view-advertise" data-view hidden class="wrap view">
+  <div><span class="eyebrow">Advertise with us</span><h1 style="font-size:1.6rem">Put your brand in front of every buyer on the platform</h1><p class="muted small">Sponsored places are always marked and never change the order of offers a buyer sees. Prices below are examples; the owner sets the final rates.</p></div>
+  <div class="trust">
+    <div class="card"><span class="tag tag-ochre">Sponsored</span><h3 style="margin-top:.5rem">Featured member</h3><p>Your card at the top of the members directory and on the home page, with logo and introduction.</p><p class="small"><strong>Example: ETB 3,000 per month</strong></p></div>
+    <div class="card"><span class="tag tag-ochre">Sponsored</span><h3 style="margin-top:.5rem">Price pulse tile</h3><p>A tile in the moving price strip on the home page, seen on every visit.</p><p class="small"><strong>Example: ETB 5,000 per month</strong></p></div>
+    <div class="card"><span class="tag tag-ochre">Sponsored</span><h3 style="margin-top:.5rem">Member banner</h3><p>A slide in the banner inside every member's workspace: a discount, a new product, a brand.</p><p class="small"><strong>Example: ETB 4,000 per month</strong></p></div>
+    <div class="card"><span class="tag tag-green">Free</span><h3 style="margin-top:.5rem">Verified profile</h3><p>Every verified company can publish a profile in the directory at no cost, after review.</p><p class="small"><strong>ETB 0</strong></p></div>
+  </div>
+  <div class="card panel"><div><strong style="font-family:var(--display)">How to book</strong><p class="small muted">Write to support from your Mailbox, or use the contact page. Finance issues an invoice; the placement goes live after payment and a content check (no phone numbers, addresses or prices in the artwork).</p></div><div style="display:flex;gap:.5rem;flex-wrap:wrap"><a class="btn btn-primary btn-sm" href="#workspace">Open my Mailbox</a><a class="btn btn-ghost btn-sm" href="#contact">Contact page</a></div></div>
+</div>
+
 <!-- ================= START HERE (test site guide) ================= -->
 <div id="view-start" data-view hidden class="wrap view">
   <div><span class="eyebrow">Test site</span><h1 style="font-size:1.6rem">Start here</h1><p class="muted">Build Smartly is the working name. Everything on this site works, but no SMS is sent and no money moves. Use the logins below. The same person can act as a buyer and as a supplier.</p></div>
@@ -1234,9 +1241,25 @@ details.line-offers[open] summary::before{content:"▾"}
 <footer class="site">
   <div class="wrap">
     <span>© 2026 Build Smartly S.C. · Addis Ababa, Ethiopia · <span style="user-select:all">hello@buildsmartly.et</span> (placeholder)<br><span class="lang-note" id="langNote" hidden>Draft translation for the mockup. A native speaker reviews every word before launch.</span></span>
-    <nav><a href="#start">Start here</a><a href="#supply">Materials</a><a href="#how">How it works</a><a href="#suppliers">For suppliers</a><a href="#partners">Partners</a><a href="#aboutus">About us</a><a href="#contact">Contact</a><a href="#faq">FAQ</a><a href="#terms">Terms</a><a href="#privacy">Privacy</a><a href="#brand">Brand kit</a></nav>
+    <nav><a href="#start">Start here</a><a href="#supply">Materials</a><a href="#how">How it works</a><a href="#suppliers">For suppliers</a><a href="#members">Members</a><a href="#advertise">Advertise</a><a href="#aboutus">About us</a><a href="#contact">Contact</a><a href="#faq">FAQ</a><a href="#terms">Terms</a><a href="#privacy">Privacy</a><a href="#brand">Brand kit</a></nav>
   </div>
 </footer>
+  <div class="modal" id="poGate" hidden>
+    <div class="card">
+      <div><span class="eyebrow">Before we issue the purchase order</span><h3 style="margin-top:.4rem">Who is buying?</h3><p class="small muted">The PO and contract name the buyer and the supplier. Staff check the TIN against the registry before the PO is confirmed. Asked once.</p></div>
+      <div class="su-choices">
+        <div class="choice"><input type="radio" name="gType" id="g-com" value="Organisation" checked><label for="g-com"><strong>A company or organisation</strong><span>Contractor, developer, trader, factory, cooperative, NGO.</span></label></div>
+        <div class="choice"><input type="radio" name="gType" id="g-ind" value="Individual"><label for="g-ind"><strong>A person</strong><span>Building or renovating for yourself.</span></label></div>
+        <div class="choice"><input type="radio" name="gType" id="g-gov" value="Government"><label for="g-gov"><strong>A government office or public body</strong><span>An official authorisation letter is asked for by staff.</span></label></div>
+      </div>
+      <div class="field"><label for="gName" id="gNameLabel">Legal name of the company</label><input id="gName"><span class="err" id="gNameErr" hidden>Please enter the name.</span></div>
+      <div class="su-row2">
+        <div class="field"><label for="gTin" id="gTinLabel">TIN</label><input id="gTin" inputmode="numeric" placeholder="10 digits"><span class="hint" id="gTinHint">Taxpayer identification number, 10 digits.</span><span class="err" id="gTinErr" hidden>A TIN has exactly 10 digits.</span></div>
+        <div class="field" id="gContactField"><label for="gContact">Contact person</label><input id="gContact" placeholder="Full name"></div>
+      </div>
+      <div class="su-nav"><button class="btn btn-ghost" type="button" id="gCancel">Not now</button><button class="btn btn-primary" type="button" id="gSave">Save and issue the PO</button></div>
+    </div>
+  </div>
 <div class="mock" aria-hidden="true">Test site · working name</div>
 
 <script src="assets/firebase-config.js" onerror="this.remove()"></script>
@@ -1244,7 +1267,7 @@ details.line-offers[open] summary::before{content:"▾"}
 <script>
 /* ---------- Router: one page, views switched by hash ---------- */
 window.BSRoute = (function(){
-  var views=['home','signup','boq','supplier','workspace','brand','review','contact','faq','terms','privacy','start'];
+  var views=['home','signup','boq','supplier','workspace','brand','review','contact','faq','terms','privacy','start','members','advertise'];
   var hooks={};
   function show(name){
     views.forEach(function(v){ var el=document.getElementById('view-'+v); if(el) el.hidden = v!==name; });
@@ -1267,6 +1290,7 @@ window.BSRoute = (function(){
     if(h==='workspace'){ show('workspace'); if(hooks.workspace) hooks.workspace(); window.scrollTo(0,0); return; }
     if(h==='brand'){ show('brand'); window.scrollTo(0,0); return; }
     if(h==='start'){ show('start'); window.scrollTo(0,0); return; }
+    if(h==='members'||h==='advertise'){ show(h); if(hooks[h]) hooks[h](); window.scrollTo(0,0); return; }
     show('home');
   }
   window.addEventListener('hashchange', function(){ var h=(location.hash||'#home').replace('#',''); if(h!==current) routeTo(h); });
@@ -1390,7 +1414,7 @@ function bsSignInByPhone(digits){
     var items=BS.PULSE.map(function(p){ return Object.assign({}, p); }), live=0;
     (offers||[]).forEach(function(o){ if(o.unitPrice>0){ var p=items.filter(function(x){return x.item===o.itemName;})[0]; if(p){ p._q=(p._q||[]).concat([o.unitPrice]); } } });
     items.forEach(function(p){ if(p._q && p._q.length>=2){ var s=p._q.sort(function(a,b){return a-b;}); var med=s[Math.floor(s.length/2)]; p.chg=p.price? (med-p.price)/p.price*100 : 0; p.price=med; p.when=s.length+' quotes on Build Smartly'; live++; } });
-    var html=''; items.forEach(function(p,i){ html+=pulseTick(p); if(i===3) html+='<div class="tick ad"><span class="name">Advertise here</span><span class="unit">Sponsored slot for suppliers and brands</span><span class="price">Clearly labelled, never affects quotes</span><span class="when">Contact the Build Smartly team</span></div>'; });
+    var html=''; items.forEach(function(p,i){ html+=pulseTick(p); if(i===3) html+='<a class="tick ad" href="#advertise" style="text-decoration:none"><span class="name">Advertise here</span><span class="unit">Sponsored tile for suppliers and brands</span><span class="price">Always marked, never changes the offers</span><span class="when">See the options</span></a>'; });
     html+='<div class="tick ad"><span class="name">New here?</span><span class="unit">No account needed to build your list</span><span class="price">Your mobile number is your account</span><span class="when">Company details only when you accept an offer</span></div>';
     track.innerHTML=html;
     document.getElementById('pulseTag').textContent = live ? 'Live on this link' : 'Example figures';
@@ -1458,7 +1482,7 @@ function bsSupport(threadId, inputId, sendId){
 (function(){
   var $=function(id){return document.getElementById(id);};
   /* --- sign in / create: one box, the number is the account --- */
-  var liOtp=bsOtp($('liOtpBox'), function(){ $('liGo').click(); }), liStage=0;
+  var liOtp=bsOtp($('liOtpBox'), function(){ $('liGo').click(); }), liStage=0, liKind='signin';
   function liReset(){ liStage=0; $('liOtpBox').hidden=true; liOtp.reset(); $('liGo').textContent='Send code'; $('liErr').hidden=true; }
   /* accounts already used on this phone: one tap to switch (demo shortcut) */
   function renderAccts(){
@@ -1472,8 +1496,9 @@ function bsSupport(threadId, inputId, sendId){
     $('signinBox').hidden=supplier; $('wizard').hidden=!supplier;
     $('suSideTitle').textContent = supplier ? 'Suppliers: three short steps.' : 'Your mobile number is your account.';
     $('suSideText').textContent = supplier ? 'Mobile and code, then the company name, TIN and a password. Licence and TIN copies are uploaded in the portal before your first quote.' : 'Enter your number, type the SMS code, done. Company details and TIN are asked for only when you accept an offer. Documents only before your first order.';
-    $('liTitle').textContent = kind==='signup' ? 'Create account' : 'Sign in';
-    $('liSub').textContent = kind==='signup' ? 'Your mobile number and an SMS code. That is the whole account.' : 'Your mobile number and an SMS code. New number? The account is created for you.';
+    $('liTitle').textContent = kind==='signup' ? 'Create a buyer account' : 'Sign in';
+    $('liSub').textContent = kind==='signup' ? 'Your name, your mobile number and an SMS code. Company details and TIN are asked for before your first purchase order.' : 'Your mobile number and an SMS code.';
+    $('liNameField').hidden = kind!=='signup'; $('liNew').hidden = kind==='signup'; liKind=kind;
     liReset(); if(supplier){ showStep(1); $('acctBox').hidden=true; if(window.__bsPrefillPhone){ $('phone').value=window.__bsPrefillPhone; window.__bsPrefillPhone=''; } } else { renderAccts(); }
   });
   function afterSignIn(kind){
@@ -1486,10 +1511,13 @@ function bsSupport(threadId, inputId, sendId){
     BSRoute.go(kind==='new' ? 'boq' : 'workspace');
   }
   $('liGo').onclick=function(){
+    var nm=$('liName').value.trim(); if(liKind==='signup'){ $('liNameErr').hidden=!!nm; if(!nm){ $('liName').focus(); return; } }
     var digits=bsDigits($('liPhone').value); var ok=/^[97]\d{8}$/.test(digits); $('liErr').hidden=ok; if(!ok){ $('liPhone').focus(); return; }
     if(liStage===0){ liStage=1; $('liOtpBox').hidden=false; $('liGo').textContent='Verify code'; liOtp.focus(); return; }
     if(liOtp.code()!==BS.DEMO_CODE){ $('liHint').textContent=liOtp.code().length<6?'Enter all 6 digits.':'Wrong code. The test code is '+BS.DEMO_CODE+'.'; return; }
-    var kind=bsSignInByPhone(digits); liReset(); afterSignIn(kind);
+    var kind=bsSignInByPhone(digits); var m=BS.me()||{}; if(nm && !(m.company||m.name)){ BS.setMe(Object.assign({}, m, {name:nm, company:nm})); }
+    if(liKind==='signup' && kind==='new'){ liReset(); if(window.BSAuth) BSAuth.refresh(); bsToast('Account created. Add your company details when you are ready.'); BSRoute.go('workspace'); return; }
+    liReset(); afterSignIn(kind);
   };
   $('liPhone').addEventListener('keydown', function(e){ if(e.key==='Enter') $('liGo').click(); });
 
@@ -1741,6 +1769,7 @@ function bsSupport(threadId, inputId, sendId){
   function gateLabels(){ var t=document.querySelector('input[name=gType]:checked').value; $('gNameLabel').textContent = t==='Individual' ? 'Your full name' : t==='Government' ? 'Name of the office' : 'Legal name of the company'; $('gTinLabel').textContent = t==='Government' ? 'TIN of the office (if it has one)' : 'TIN'; $('gTinHint').textContent = t==='Individual' ? 'Your personal taxpayer number, 10 digits. If you have none, staff will ask for your Fayda ID instead.' : t==='Government' ? 'Optional. Staff will ask for the authorisation letter.' : 'Taxpayer identification number, 10 digits. Checked against the registry before the PO is confirmed.'; $('gContactField').hidden = t==='Individual'; }
   document.querySelectorAll('input[name=gType]').forEach(function(r){ r.addEventListener('change', gateLabels); });
   function openGate(){ var m=BS.me()||{}; if(m.company && !$('gName').value) $('gName').value=m.company; gateLabels(); $('poGate').hidden=false; $('gName').focus(); }
+  window.bsOpenGate=function(){ pendingAccept=null; openGate(); };
   $('gCancel').onclick=function(){ $('poGate').hidden=true; pendingAccept=null; renderMine(); };
   $('gSave').onclick=async function(){
     var t=document.querySelector('input[name=gType]:checked').value, name=$('gName').value.trim(), tin=$('gTin').value.replace(/[\s-]/g,''), ok=true;
@@ -1748,10 +1777,10 @@ function bsSupport(threadId, inputId, sendId){
     var okTin = t==='Government' ? (!tin || /^\d{10}$/.test(tin)) : /^\d{10}$/.test(tin); $('gTinErr').hidden=okTin; ok=ok&&okTin;
     if(!ok) return;
     var me2=BS.me()||{}; BS.setMe(Object.assign({}, me2, {type:t, name:name, company: t==='Individual' ? '' : name, tin: tin||'(office, none)', contact:$('gContact').value.trim()}));
-    if(window.BSAuth) BSAuth.refresh(); $('who').textContent='Signed in as '+name;
+    if(window.BSAuth) BSAuth.refresh(); $('who').textContent='Signed in as '+name; if(window.BSWorkspaceRefresh) BSWorkspaceRefresh();
     /* the customer name on earlier requests is updated so the PO carries the legal name */
     for(var i=0;i<boqs.length;i++){ if(boqs[i].ownerPhone===(me2.phone||'').replace(/\D/g,'').replace(/^251/,'') && boqs[i].company!==name){ await BS.update('boqs', boqs[i].id, {company:name}); boqs[i].company=name; } }
-    $('poGate').hidden=true; var p=pendingAccept; pendingAccept=null; if(p){ if(p.all) await acceptMany(p.all); else await acceptOffer(p.offerId, p.boqId, p.line); }
+    $('poGate').hidden=true; var p=pendingAccept; pendingAccept=null; if(p){ if(p.all) await acceptMany(p.all); else await acceptOffer(p.offerId, p.boqId, p.line); } else { bsToast('Company details saved.'); }
   };
   /* cheapest open offer on every line that has no accepted offer yet */
   function bestOffersFor(boqId){
@@ -1941,6 +1970,7 @@ function bsSupport(threadId, inputId, sendId){
     profile.type=$('supType').value; profile.brands=$('brands').value.trim(); profile.terms=$('dTerms').value; profile.agree=$('agree').checked; profile.intro=$('spIntro').value.trim(); profile.publish=$('spPublish').checked;
     profile.docs.lic=$('dLic').value.trim(); profile.docs.issuer=$('dIssuer').value; profile.docs.exp=$('dExp').value; profile.docs.vat=$('dVat').value;
     saveProfile(); $('profMsg').textContent='Saved.'; bsToast('Profile saved.'); render();
+    if(window.bsPublishProfile) bsPublishProfile({intro:profile.intro, publish:profile.publish, cats:profile.cats.slice(), supplierId:sup.id});
   };
 
   /* ----- price list ----- */
@@ -2122,8 +2152,9 @@ function bsSupport(threadId, inputId, sendId){
 (function(){
   var $=function(id){return document.getElementById(id);};
   var company='';
-  function refreshMe(){ var me=BS.me()||{}; company=(me.company||'').trim(); $('wsName').textContent = company || me.name || (me.phone ? 'Member '+me.phone : 'Your company'); var isSup=!!(me.supplierId || (me.role&&me.role!=='Request materials')); $('tileSupplier').hidden=!isSup; $('wsMeta').textContent = me.tin ? ((me.type==='Individual'?'Person':me.type==='Government'?'Government office':'Company')+' · TIN on file · Buyer verified'+(isSup?' · also a supplier':'')) : 'Buyer · your company details and TIN are asked once, when you accept your first offer'+(isSup?' · also a supplier':''); }
-  refreshMe(); BSRoute.on('workspace', function(){ refreshMe(); render(); });
+  function refreshMe(){ var me=BS.me()||{}; company=(me.company||'').trim(); var wd=$('wsDetails'); if(wd) wd.hidden=!!me.tin || !me.phone; $('wsName').textContent = company || me.name || (me.phone ? 'Member '+me.phone : 'Your company'); var isSup=!!(me.supplierId || (me.role&&me.role!=='Request materials')); $('tileSupplier').hidden=!isSup; $('wsMeta').textContent = me.tin ? ((me.type==='Individual'?'Person':me.type==='Government'?'Government office':'Company')+' · TIN on file · Buyer verified'+(isSup?' · also a supplier':'')) : 'Buyer · your company details and TIN are asked once, when you accept your first offer'+(isSup?' · also a supplier':''); }
+  refreshMe(); BSRoute.on('workspace', function(){ refreshMe(); render(); }); window.BSWorkspaceRefresh=refreshMe;
+  $('wsDetailsBtn').onclick=function(){ if(window.bsOpenGate) bsOpenGate(); };
   BS.SUBCITIES.forEach(function(s){ var o=document.createElement('option'); o.textContent=s; $('locSub').appendChild(o); });
   bsStatus('wsStatus','Online','On this device only');
   document.querySelectorAll('.tile[data-panel]').forEach(function(t){ t.onclick=function(){ document.querySelectorAll('.tile').forEach(function(x){x.classList.toggle('on',x===t);}); ['tracking','mail','settings'].forEach(function(p){ $('p-'+p).hidden = p!==t.dataset.panel; }); if(t.dataset.panel==='mail'){ $('nNotif').hidden=true; } }; });
@@ -2213,6 +2244,31 @@ document.addEventListener('change', function(e){
   else { box.classList.add('filled'); box.style.background='var(--green-deep)'; label.textContent='Video: '+f.name+' · tap to replace'; }
   bsToast('Uploaded. A moderator checks it before it appears publicly.');
 });
+
+/* ---------- Public profiles: published to the Members directory (collection "profiles") ---------- */
+window.bsPublishProfile = async function(fields){
+  var me=BS.me()||{}; var ph=bsDigits(me.phone); if(!ph) return;
+  var isSup=!!(me.supplierId || (me.role && me.role!=='Request materials'));
+  await BS.set('profiles', 'p-'+ph, Object.assign({phone:ph, name:me.company||me.name||'', kind:isSup?'supplier':'buyer', type:me.type||'Organisation', status:'approved', memberSince:(BS.known(ph)||{}).createdAt||new Date().toISOString()}, fields));
+};
+(function(){
+  var profiles=[]; var hooksBound=false;
+  function esc(t){ return String(t||'').replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function seeded(){ return BS.SUPPLIERS.filter(function(s){ return s.auto; }).map(function(s,i){ return {id:'seed-'+s.id, name:s.name, kind:'supplier', cats:s.cats, intro:BS.SUPPLIER_INTRO[s.id]||'', publish:true, status:'approved', sponsored:i<2, memberSince:'2026-0'+((i%8)+1)+'-01'}; }); }
+  function all(){ var mine=profiles.filter(function(p){ return p.publish && p.status==='approved' && p.name; }); return seeded().concat(mine).sort(function(a,b){ return (b.sponsored?1:0)-(a.sponsored?1:0); }); }
+  function card(p){ var ini=(p.name||'?').split(/\s+/).slice(0,2).map(function(w){return w.charAt(0);}).join('').toUpperCase();
+    return '<div class="card mem'+(p.sponsored?' sponsored':'')+'"><div class="top"><span class="ini">'+esc(ini)+'</span><div><h3>'+esc(p.name)+'</h3><span class="small muted">'+(p.kind==='supplier'?'Supplier':'Builder or developer')+' · member since '+String(p.memberSince||'').slice(0,7)+'</span></div></div>'+
+      (p.cats&&p.cats.length?'<div class="cats">'+p.cats.slice(0,4).map(function(c){ return '<span>'+esc(c)+'</span>'; }).join('')+'</div>':'')+
+      (p.intro?'<p>'+esc(p.intro.length>160?p.intro.slice(0,157)+'…':p.intro)+'</p>':'')+
+      '<div class="foot"><span class="tag tag-green">Verified · business details reviewed</span>'+(p.sponsored?'<span class="tag tag-ochre">Sponsored</span>':'')+(p.kind==='supplier'?'<a class="btn btn-ghost btn-sm" href="#boq">Request a quote</a>':'')+'</div></div>'; }
+  var filter='all';
+  function render(){ var list=all(); var mt=document.getElementById('memberList'); if(mt) mt.innerHTML = list.filter(function(p){ return filter==='all' || p.kind===filter; }).map(card).join('') || '<div class="empty">No members published yet.</div>'; var hm=document.getElementById('homeMembers'); if(hm) hm.innerHTML=list.slice(0,6).map(card).join(''); }
+  var mt=document.getElementById('memTabs'); if(mt) mt.addEventListener('click', function(e){ var b=e.target.closest('[data-m]'); if(!b) return; mt.querySelectorAll('button').forEach(function(x){ x.classList.toggle('on', x===b); }); filter=b.dataset.m; render(); });
+  BS.subscribe('profiles', function(d){ profiles=d; render(); });
+  BSRoute.on('members', render);
+  /* workspace: save introduction and publish flag */
+  var save=document.getElementById('wsProfSave'); if(save) save.onclick=async function(){ var me=BS.me()||{}; if(!me.phone){ bsToast('Sign in first.'); return; } if(me.type==='Individual'){ bsToast('Public profiles are for companies and organisations only.'); return; } await bsPublishProfile({intro:document.getElementById('intro').value.trim(), publish:document.getElementById('wsPublish').checked}); document.getElementById('wsProfMsg').textContent = document.getElementById('wsPublish').checked ? 'Saved. Your profile is in the Members directory.' : 'Saved. Not published.'; bsToast(document.getElementById('wsPublish').checked ? 'Profile published in the Members directory.' : 'Profile saved, not published.'); };
+})();
 
 /* ---------- Start here: logins from the store ---------- */
 (function(){
