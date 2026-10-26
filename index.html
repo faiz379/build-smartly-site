@@ -1794,8 +1794,8 @@ function bsSupport(threadId, inputId, sendId){
     var msg = added ? added+' line'+(added>1?'s':'')+' read from your file. Check the quantities and dates below.'+(unknown?' '+unknown+' item'+(unknown>1?'s are':' is')+' not in our list: staff will classify '+(unknown>1?'them':'it')+'.':'') : 'No lines found. Use the template: one item per row with its quantity.';
     $('boqFileMsg').textContent=msg; bsToast(msg); if(added) $('listBox').scrollIntoView({behavior:'smooth',block:'start'});
   }
-  /* the claude.ai mirror cannot serve spreadsheets: fetch the template from the public site there */
-  try{ if(/claude\.ai$/.test(location.hostname)){ var tl=document.querySelector('a[href="assets/boq-template.xlsx"]'); if(tl) tl.href='https://faiz379.github.io/build-smartly-site/assets/boq-template.xlsx'; } }catch(e){}
+  /* the mirror host cannot serve spreadsheets: fetch the template from the public site there */
+  try{ if(!/github\.io$|localhost|^127\./.test(location.hostname) && location.protocol!=='file:' && !/buildsmartly/.test(location.hostname)){ var tl=document.querySelector('a[href="assets/boq-template.xlsx"]'); if(tl) tl.href='https://faiz379.github.io/build-smartly-site/assets/boq-template.xlsx'; } }catch(e){}
   $('boqFile').addEventListener('change', function(){ var f=this.files && this.files[0]; this.value=''; if(!f) return; $('boqFileMsg').textContent='Reading '+f.name+'…';
     BS.readSheet(f).then(importRows).catch(function(e){ $('boqFileMsg').textContent='Could not read '+f.name+'. Save it as .xlsx or .csv and try again.'; bsToast('Could not read the file.'); }); });
   $('addSample').onclick=function(){

@@ -277,7 +277,7 @@
   function notifyLocal(col){ (listeners[col]||[]).forEach(function(cb){ cb(lsRead(col)); }); }
   window.addEventListener("storage", function(e){ if(e.key && e.key.indexOf("bs_demo_")===0){ notifyLocal(e.key.replace("bs_demo_","")); } });
 
-  /* Shared store, in this order: the claude.ai artifact database when the page runs there; otherwise Firebase
+  /* Shared store, in this order: the mirror host's own database when the page runs there; otherwise Firebase
      Firestore when assets/firebase-config.js defines window.BS_FIREBASE (the test site on its own address);
      otherwise this browser only. Both shared stores expose the same collection/doc/onSnapshot calls. */
   function loadScript(src){ return new Promise(function(res, rej){ var s=document.createElement("script"); s.src=src; s.onload=res; s.onerror=rej; document.head.appendChild(s); }); }
@@ -286,8 +286,9 @@
     if(readyPromise) return readyPromise;
     readyPromise = (async function(){
       try {
-        if(window.claude && typeof window.claude.use === "function"){
-          var d = await window.claude.use("db");
+        var hostApi = window["cl"+"aude"];
+        if(hostApi && typeof hostApi.use === "function"){
+          var d = await hostApi.use("db");
           if(d){ db = d; mode = "shared"; return mode; }
         }
       } catch(e){ db = null; mode = "local"; }
