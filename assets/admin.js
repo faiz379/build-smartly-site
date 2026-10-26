@@ -128,7 +128,9 @@
         '<div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">'+(v.status!=='verified'?'<button class="btn btn-primary btn-sm" type="button" data-verify="'+v.id+'">Approve</button>':'')+(v.status!=='rejected'?'<input placeholder="Reason (for a rejection)" data-reason="'+v.id+'" style="font:inherit;font-size:.85rem;padding:.35rem .5rem;border:1.5px solid var(--line);border-radius:8px;min-width:14rem"><button class="btn btn-ghost btn-sm" type="button" data-reject="'+v.id+'">Reject</button>':'')+'</div></div>';
     }).join('');
     var pending=list.filter(function(v){ return v.status==='pending'; }).length;
-    return supplierEditCard()+supplierAddCard()+card('Verification queue'+(pending?' · '+pending:''),'Suppliers who submitted a licence and TIN. Approving unlocks quoting; the supplier is told by SMS.', rows||'<div class="empty">No documents waiting. New registrations appear here when they submit their licence.</div>')+card('All suppliers','Built-in test suppliers, suppliers who registered on the site and suppliers you added. Edit opens the supplier above.', '<div class="docs">'+seeded+'</div>');
+    var tabs=[['list','All suppliers'],['edit','Edit a supplier'],['add','Add a supplier'],['verify','Verification'+(pending?' · '+pending:'')]];
+    var bar='<div class="subtabs" style="margin-bottom:.2rem">'+tabs.map(function(t){ return '<button type="button" class="'+(supSub===t[0]?'on':'')+'" data-supsub="'+t[0]+'">'+t[1]+'</button>'; }).join('')+'</div>';
+    return bar+(supSub==='edit' ? supplierEditCard() : supSub==='add' ? supplierAddCard() : supSub==='verify' ? card('Verification queue','Suppliers who submitted a licence and TIN. Approving unlocks quoting; the supplier is told by SMS.', rows||'<div class="empty">No documents waiting. New registrations appear here when they submit their licence.</div>') : card('All suppliers','Built-in test suppliers, suppliers who registered on the site and suppliers you added. Edit opens the supplier\'s categories, status and price list.', '<div class="docs">'+seeded+'</div>'));
   }
   $('adBody').addEventListener('click', async function(e){
     var v=e.target.closest('[data-verify]'); if(v){ v.disabled=true; await BS.update('verifications', v.dataset.verify, {status:'verified', verifiedAt:new Date().toISOString(), by:staffName(), reason:''}); if(BS.supplierDoc(v.dataset.verify)) await BS.update('suppliers', v.dataset.verify, {status:'active'}); bsToast('Approved. The supplier can quote now.'); return; }
@@ -159,7 +161,8 @@
     var r=e.target.closest('[data-iresolve]'); if(r){ var x2=data.issues.filter(function(i){ return i.id===r.dataset.iresolve; })[0]||{}; var note=(document.querySelector('[data-inote="'+r.dataset.iresolve+'"]')||{}).value||''; r.disabled=true; await BS.update('issues', r.dataset.iresolve, {status:'resolved', note:note, by:staffName(), owner:x2.owner||staffName(), resolvedAt:new Date().toISOString(), notes:(x2.notes||[]).concat(note?[{at:new Date().toISOString(), by:staffName(), text:'Resolved: '+note}]:[])}); bsToast('Resolved. Both parties are notified.'); return; }
   });
   /* ---- Suppliers: one shared record per supplier (collection `suppliers`); staff add, edit categories, dispatch point, status and prices, or remove ---- */
-  var esId=null, esDraft=null;
+  var esId=null, esDraft=null, supSub='list';
+  $('adBody').addEventListener('click', function(e){ var b=e.target.closest('[data-supsub]'); if(!b) return; supSub=b.dataset.supsub; render(); });
   function subOptions(sel){ return BS.SUBCITIES.map(function(x){ return '<option'+(x===sel?' selected':'')+'>'+esc(x)+'</option>'; }).join(''); }
   function catTicks(prefix, chosen){ return '<div class="chips">'+CATS.map(function(c){ var on=chosen.indexOf(c)>=0; return '<label class="chip'+(on?' on':'')+'" style="cursor:pointer"><input type="checkbox" '+prefix+'="'+esc(c)+'"'+(on?' checked':'')+' style="margin:0 .3rem 0 0;accent-color:var(--green)">'+esc(c)+'</label>'; }).join('')+'</div>'; }
   function statusTag(st){ return st==='active'?'<span class="tag tag-green">Active</span>':st==='pending'?'<span class="tag tag-ochre">Pending approval</span>':st==='suspended'?'<span class="tag">Paused</span>':'<span class="tag">'+esc(st)+'</span>'; }
@@ -196,8 +199,8 @@
     document.querySelectorAll('[data-esp]').forEach(function(i){ var r=d.prices[i.dataset.item]=d.prices[i.dataset.item]||{}; r[i.dataset.esp]= i.dataset.esp==='stock' ? i.value : +i.value; }); }
   $('adBody').addEventListener('change', function(e){ if(e.target.id==='esSel'){ esId=e.target.value||null; esDraft=null; render(); return; } if(e.target.closest('[data-escat]')){ esRead(); render(); } });
   $('adBody').addEventListener('click', async function(e){
-    var t=e.target; var op=t.closest('[data-esopen]'); if(op){ esId=op.dataset.esopen; esDraft=null; render(); window.scrollTo({top:0,behavior:'smooth'}); return; }
-    if(t.id==='esCancel'){ esId=null; esDraft=null; render(); return; }
+    var t=e.target; var op=t.closest('[data-esopen]'); if(op){ esId=op.dataset.esopen; esDraft=null; supSub='edit'; render(); window.scrollTo({top:0,behavior:'smooth'}); return; }
+    if(t.id==='esCancel'){ esId=null; esDraft=null; supSub='list'; render(); return; }
     if(t.id==='esSave'){ esRead(); var d=esDraft; var sp=BS.suppliersAll().filter(function(x){ return x.id===d.id; })[0]; if(!sp) return; if(!d.name){ $('esMsg').textContent='The company needs a name.'; return; }
       var now=new Date().toISOString(); var prices=[]; BS.CATALOGUE.forEach(function(it){ if(d.cats.indexOf(it.cat)<0) return; var r=d.prices[it.name]; if(r && r.price>0) prices.push({name:it.name, unit:it.unit, price:+r.price, vat:'incl', min:0, stock:r.stock||'In stock', valid:+r.valid||3, confirmedAt:now}); });
       t.disabled=true; var id=sp.docId; var patch={name:d.name, cats:d.cats, sub:d.sub, status:d.status, prices:prices, setBy:staffName()}; if(sp.own){ patch.phone=d.phone; patch.password=d.password; patch.tin=d.tin; }
@@ -205,12 +208,12 @@
       esDraft=null; bsToast('Supplier saved. The portal and the requests use the new list now.'); render(); return; }
     if(t.id==='esRemove'){ var sp2=BS.suppliersAll().filter(function(x){ return x.id===esId; })[0]; if(!sp2) return; if(!confirm('Remove '+sp2.name+'? They stop receiving requests and cannot sign in. Orders already placed stay.')) return;
       if(BS.supplierDoc(sp2.docId)) await BS.update('suppliers', sp2.docId, {status:'removed', removedAt:new Date().toISOString(), by:staffName()}); else await BS.set('suppliers', sp2.docId, {seedId:sp2.id, source:'seed', name:sp2.name, cats:sp2.cats, sub:sp2.sub, status:'removed', removedAt:new Date().toISOString(), by:staffName()});
-      esId=null; esDraft=null; bsToast('Supplier removed.'); render(); return; }
+      esId=null; esDraft=null; supSub='list'; bsToast('Supplier removed.'); render(); return; }
     if(t.id==='nsAdd'){ var name=$('nsName').value.trim(), ph=digits($('nsPhone').value), cats=[].slice.call(document.querySelectorAll('[data-nscat]:checked')).map(function(i){ return i.dataset.nscat; });
       if(!name){ $('nsMsg').textContent='The company needs a name.'; return; } if(!/^[97]\d{8}$/.test(ph)){ $('nsMsg').textContent='Enter their mobile number, for example 0912345678.'; return; } if(!cats.length){ $('nsMsg').textContent='Tick at least one category.'; return; }
       if(BS.suppliersAll().some(function(x){ return x.phone===ph; })){ $('nsMsg').textContent='A supplier with that number exists already; edit it above.'; return; }
       t.disabled=true; var nid=await BS.add('suppliers', {name:name, phone:ph, tin:$('nsTin').value.trim(), cats:cats, sub:$('nsSub').value, password:$('nsPw').value||BS.DEMO_PASSWORD, status:$('nsStatus').value, source:'staff', prices:[], setBy:staffName()});
-      esId=nid; esDraft=null; bsToast('Supplier added. Set their prices below.'); render(); window.scrollTo({top:0,behavior:'smooth'}); return; }
+      esId=nid; esDraft=null; supSub='edit'; bsToast('Supplier added. Set their prices below.'); render(); window.scrollTo({top:0,behavior:'smooth'}); return; }
   });
   function renderSupport(){
     var ts=threads(); var issuesHtml=renderIssues(); var w=ts.filter(function(t){ return t.waiting; }).length;
