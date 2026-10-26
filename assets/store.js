@@ -56,6 +56,8 @@
     {id:"yerer", name:"Yerer Equipment Rental", branch:"Bole Lemi depot", cats:["Equipment rental"], auto:true},
     {id:"habesha", name:"Habesha Finishing Supplies", branch:"Merkato shop", cats:["Finishing: tiles and floors","Finishing: paint and plaster"], auto:true},
     {id:"electroplumb", name:"Ethio Electro-Plumb Supplies", branch:"Piassa store", cats:["Electrical","Plumbing and sanitary"], auto:true},
+    {id:"ethiobuild", name:"Ethio Build Mart", branch:"Megenagna showroom and yard", cats:["Cement","Aggregates and fill","Reinforcement steel","Blocks, bricks and stone","Structural steel and roofing","Formwork, timber and scaffolding","Finishing: tiles and floors","Finishing: paint and plaster","Plumbing and sanitary","Electrical","Equipment rental"], auto:true},
+    {id:"addissupplies", name:"Addis Construction Supplies PLC", branch:"Kaliti main store", cats:["Cement","Aggregates and fill","Reinforcement steel","Blocks, bricks and stone","Structural steel and roofing","Formwork, timber and scaffolding","Finishing: tiles and floors","Finishing: paint and plaster","Plumbing and sanitary","Electrical","Equipment rental"], auto:true},
     /* played by the shareholders */
     {id:"abdullah-s", name:"Abdullah Cement & Aggregates PLC", branch:"Akaki Kaliti depot", cats:["Cement","Aggregates and fill"]},
     {id:"fahad-s", name:"Fahad Steel Trading PLC", branch:"Kality yard", cats:["Reinforcement steel","Structural steel and roofing"]},
@@ -107,7 +109,9 @@
     {phone:"911000007", supplierId:"mugher"},
     {phone:"911000008", supplierId:"national"},
     {phone:"911000009", supplierId:"sheger"},
-    {phone:"911000010", supplierId:"gullele"}
+    {phone:"911000010", supplierId:"gullele"},
+    {phone:"911000011", supplierId:"ethiobuild"},
+    {phone:"911000012", supplierId:"addissupplies"}
   ];
   /* Simulated suppliers: how many seconds after a request each one answers, and how the simulated supplier
      handles counter-offers and the order steps. Test site only. */

@@ -92,10 +92,15 @@ header.site{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;backgrou
 .nav-cta{display:flex;gap:.5rem;align-items:center}
 .lang{font:inherit;font-size:.85rem;font-weight:600;border:1.5px solid var(--line);border-radius:999px;padding:.4rem .7rem;background:var(--white);color:var(--fg)}
 .menu-btn{display:none;background:none;border:1.5px solid var(--line);border-radius:10px;padding:.45rem .6rem;color:var(--fg);cursor:pointer}
+.acct{position:relative}
+.acct summary{list-style:none;display:inline-flex;align-items:center;gap:.35rem;max-width:14rem}
+.acct summary::-webkit-details-marker{display:none}
+.acct summary #authName{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acct-menu{position:absolute;right:0;top:calc(100% + .4rem);background:var(--white);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);display:grid;min-width:12rem;padding:.35rem;z-index:30}
+.acct-menu a,.acct-menu button{font:inherit;font-size:.9rem;font-weight:600;text-decoration:none;color:var(--fg);background:none;border:0;text-align:left;padding:.55rem .8rem;border-radius:8px;cursor:pointer}
+.acct-menu a:hover,.acct-menu button:hover{background:var(--bg-2)}
 @media (max-width:900px){
-  .links,.nav-cta .btn-ghost{display:none}
-  .nav-cta #authLogout{display:inline-flex}
-  .nav-cta #authName{display:none}
+  .links{display:none}
   .menu-btn{display:inline-flex}
   .lang{padding:.35rem .4rem;font-size:.8rem}
   .nav.open .links{display:flex;flex-direction:column;align-items:flex-start;gap:.9rem;position:absolute;left:0;right:0;top:100%;background:var(--bg);border-bottom:1px solid var(--line);padding:1rem max(16px,env(safe-area-inset-left,0px)) 1.2rem}
@@ -112,7 +117,6 @@ footer.site a{text-decoration:none}
 .acct-list button strong{font-family:var(--display)}
 .acct-list button span{font-size:.8rem;color:var(--fg-2)}
 .acct-list button:hover{border-color:var(--green)}
-@media (max-width:900px){.nav-cta #authSwitch{display:inline-flex}}
 .mock{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.35rem .7rem;border-radius:999px;opacity:.85;z-index:30}
 
 /* HOME */
@@ -303,6 +307,18 @@ footer.site a{text-decoration:none}
 .offer .k{font-size:.74rem;color:var(--fg-2);display:block}
 .offer .diff{font-size:.76rem;color:var(--fg-2)}
 .offer .best-tag{font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ochre-ink)}
+.cmp{display:grid;gap:.35rem}
+.cmp .row{display:grid;grid-template-columns:2fr 1.6fr 1fr auto;gap:.6rem;align-items:center;border:1px solid var(--line);border-radius:10px;padding:.5rem .8rem;background:var(--white);font-size:.9rem}
+.cmp .row.acc{border-color:var(--green);background:color-mix(in srgb,var(--green) 8%,transparent)}
+.cmp .row .k{font-size:.72rem;color:var(--fg-2);display:block}
+.cmp .row .n{font-family:var(--display);font-weight:600}
+@media (max-width:760px){.cmp .row{grid-template-columns:1fr 1fr}.cmp .row > :first-child{grid-column:1/-1}}
+.cmp-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.5rem;margin:.6rem 0 .4rem}
+details.line-offers{border-top:1px solid var(--line);padding-top:.4rem;margin-top:.5rem}
+details.line-offers summary{cursor:pointer;font-size:.88rem;font-weight:600;color:var(--green);list-style:none;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+details.line-offers summary::-webkit-details-marker{display:none}
+details.line-offers summary::before{content:"▸";font-size:.8rem}
+details.line-offers[open] summary::before{content:"▾"}
 .steps-mini{display:flex;flex-wrap:wrap;gap:.3rem;font-size:.76rem}
 .steps-mini span{border:1px solid var(--line);border-radius:999px;padding:.15rem .55rem;color:var(--fg-2);background:var(--white)}
 .steps-mini span.done{border-color:var(--green);color:var(--green)}
@@ -459,19 +475,23 @@ footer.site a{text-decoration:none}
     </a>
     <ul class="links">
       <li><a href="#start" style="color:var(--ochre-ink)">Start here</a></li>
-      <li><a href="#supply">Construction supply</a></li>
-      <li><a href="#how">How it works</a></li>
+      <li><a href="#supply">Materials</a></li>
       <li><a href="#suppliers">For suppliers</a></li>
-      <li><a href="#partners">Partners</a></li>
       <li><a href="#aboutus">About</a></li>
-      <li><a href="#workspace">My workspace</a></li>
-      <li><a href="#supplier">Supplier portal</a></li>
-      <li><a href="#brand">Brand</a></li>
     </ul>
     <div class="nav-cta">
       <select id="lang" class="lang" aria-label="Language"><option value="en">English</option><option value="am">አማርኛ</option><option value="om">Afaan Oromoo</option></select>
-      <span id="authOut" style="display:contents"><a class="btn btn-ghost btn-sm" href="#signin">Sign in</a><a class="btn btn-primary btn-sm" href="#signup">Sign up</a></span>
-      <span id="authIn" style="display:none;align-items:center;gap:.5rem"><a class="btn btn-primary btn-sm" id="authHome" href="#workspace">My workspace</a><span class="small muted" id="authName"></span><a class="btn btn-ghost btn-sm" href="#signin" id="authSwitch">Switch</a><button class="btn btn-ghost btn-sm" type="button" id="authLogout">Log out</button></span>
+      <span id="authOut" style="display:contents"><a class="btn btn-primary btn-sm" href="#signin">Sign in</a></span>
+      <details class="acct" id="authIn" hidden>
+        <summary class="btn btn-primary btn-sm"><span id="authName">Account</span> <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l5 5 5-5"/></svg></summary>
+        <div class="acct-menu">
+          <a href="#workspace" id="authHome">My workspace</a>
+          <a href="#supplier" id="authPortal">Supplier portal</a>
+          <a href="#boq">Send a request</a>
+          <a href="#signin" id="authSwitch">Switch account</a>
+          <button type="button" id="authLogout">Log out</button>
+        </div>
+      </details>
       <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
       </button>
@@ -546,7 +566,7 @@ footer.site a{text-decoration:none}
 
   <section id="supply" class="catband">
     <div class="wrap catband-in">
-      <div class="catband-title"><span class="eyebrow">Construction supply</span><h2>Top categories</h2><p>From the ground to the keys. Tap a circle to request a quote.</p></div>
+      <div class="catband-title"><span class="eyebrow">Materials</span><h2>Top categories</h2><p>From the ground to the keys. Tap a circle to request a quote.</p></div>
       <div class="circles">
         <a class="circle" href="#boq-foundation"><span class="pic"><img src="assets/cat-foundation.svg" alt="" width="400" height="400"></span><strong>Foundation</strong><span>Cement, gravel, steel bars, wire mesh</span></a>
         <a class="circle" href="#boq-structure"><span class="pic"><img src="assets/cat-structure.svg" alt="" width="400" height="400"></span><strong>Structure</strong><span>Steel columns, blocks, bricks, ready-mix</span></a>
@@ -1214,7 +1234,7 @@ footer.site a{text-decoration:none}
 <footer class="site">
   <div class="wrap">
     <span>© 2026 Build Smartly S.C. · Addis Ababa, Ethiopia · <span style="user-select:all">hello@buildsmartly.et</span> (placeholder)<br><span class="lang-note" id="langNote" hidden>Draft translation for the mockup. A native speaker reviews every word before launch.</span></span>
-    <nav><a href="#start">Start here</a><a href="#supply">Construction supply</a><a href="#suppliers">For suppliers</a><a href="#aboutus">About us</a><a href="#contact">Contact</a><a href="#faq">FAQ</a><a href="#terms">Terms</a><a href="#privacy">Privacy</a><a href="#brand">Brand kit</a></nav>
+    <nav><a href="#start">Start here</a><a href="#supply">Materials</a><a href="#how">How it works</a><a href="#suppliers">For suppliers</a><a href="#partners">Partners</a><a href="#aboutus">About us</a><a href="#contact">Contact</a><a href="#faq">FAQ</a><a href="#terms">Terms</a><a href="#privacy">Privacy</a><a href="#brand">Brand kit</a></nav>
   </div>
 </footer>
 <div class="mock" aria-hidden="true">Test site · working name</div>
@@ -1263,7 +1283,7 @@ window.BSRoute = (function(){
 (function(){
   var T={
     am:{
-      "Construction supply":"የግንባታ አቅርቦት","How it works":"እንዴት ይሰራል","For suppliers":"ለአቅራቢዎች","Partners":"አጋሮች","About":"ስለ እኛ","Sign in":"ግባ","Sign up":"ይመዝገቡ","My workspace":"የእኔ ገጽ","Supplier portal":"የአቅራቢ ገጽ","Brand":"ብራንድ",
+      "Construction supply":"የግንባታ አቅርቦት","Materials":"ዕቃዎች","Start here":"እዚህ ይጀምሩ","Switch account":"መለያ ቀይር","Log out":"ውጣ","How it works":"እንዴት ይሰራል","For suppliers":"ለአቅራቢዎች","Partners":"አጋሮች","About":"ስለ እኛ","Sign in":"ግባ","Sign up":"ይመዝገቡ","My workspace":"የእኔ ገጽ","Supplier portal":"የአቅራቢ ገጽ","Brand":"ብራንድ",
       "Construction materials procurement · for businesses":"የግንባታ ዕቃዎች ግዥ · ለንግድ ድርጅቶች",
       "Send your BOQ. Get real supplier quotes. Choose line by line.":"BOQ ይላኩ። እውነተኛ የአቅራቢ ዋጋዎችን ያግኙ። በየመስመሩ ይምረጡ።",
       "Send your list once. Verified suppliers send written quotes. You compare them side by side and choose per item. We issue the PO.":"ዝርዝርዎን አንድ ጊዜ ይላኩ። የተረጋገጡ አቅራቢዎች የጽሑፍ ዋጋ ይልካሉ። ጎን ለጎን ያወዳድሩ እና በየዕቃው ይምረጡ። እኛ የግዢ ትዕዛዝ እናወጣለን።",
@@ -1288,7 +1308,7 @@ window.BSRoute = (function(){
       "Request a quote":"ዋጋ ይጠይቁ","New request":"አዲስ ጥያቄ","Send request to suppliers":"ጥያቄውን ለአቅራቢዎች ይላኩ","Supplier login":"የአቅራቢ መግቢያ","Tracking":"ክትትል","Notification box":"የማሳወቂያ ሳጥን","Inbox":"ገቢ መልዕክት","Outbox":"ወጪ መልዕክት","Buying inquiry":"የግዢ ጥያቄ","Give an offer":"ቅናሽ ይስጡ","Settings":"ቅንብሮች"
     },
     om:{
-      "Construction supply":"Dhiyeessii ijaarsaa","How it works":"Akkamitti hojjeta","For suppliers":"Dhiyeessitootaaf","Partners":"Michoota","About":"Waa'ee keenya","Sign in":"Seeni","Sign up":"Galmaa'i","My workspace":"Fuula koo","Supplier portal":"Fuula dhiyeessitootaa","Brand":"Mallattoo",
+      "Construction supply":"Dhiyeessii ijaarsaa","Materials":"Meeshaalee","Start here":"Asii jalqabi","Switch account":"Herrega jijjiiri","Log out":"Ba'i","How it works":"Akkamitti hojjeta","For suppliers":"Dhiyeessitootaaf","Partners":"Michoota","About":"Waa'ee keenya","Sign in":"Seeni","Sign up":"Galmaa'i","My workspace":"Fuula koo","Supplier portal":"Fuula dhiyeessitootaa","Brand":"Mallattoo",
       "Construction materials procurement · for businesses":"Bittaa meeshaalee ijaarsaa · dhaabbilee daldalaatiif",
       "Send your BOQ. Get real supplier quotes. Choose line by line.":"BOQ keessan ergaa. Gatii dhugaa dhiyeessitootaa argadhaa. Sarara sararaan filadhaa.",
       "Send your list once. Verified suppliers send written quotes. You compare them side by side and choose per item. We issue the PO.":"Tarree keessan al tokko ergaa. Dhiyeessitoonni mirkanaa'an gatii barreeffamaa ergu. Cinaa cinaan wal bira qabdanii meeshaa meeshaan filattu. Nuti ajaja bittaa baafna.",
@@ -1393,11 +1413,13 @@ window.BSAuth = (function(){
     var me=BS.me()||{}; var inEl=document.getElementById('authIn'), outEl=document.getElementById('authOut');
     var signed=!!me.phone;
     inEl.style.display = signed ? 'inline-flex' : 'none'; outEl.style.display = signed ? 'none' : 'contents';
-    if(signed){ var isSup = me.supplierId || (me.role && me.role!=='Request materials'); document.getElementById('authName').textContent = me.company || me.name || ''; var home=document.getElementById('authHome'); home.href = isSup ? '#supplier' : '#workspace'; home.textContent = isSup ? 'Supplier portal' : 'My workspace'; }
+    inEl.hidden=!signed; inEl.style.display='';
+    if(signed){ var isSup = !!(me.supplierId || (me.role && me.role!=='Request materials')); var nm=(me.person||me.company||me.name||'Account'); document.getElementById('authName').textContent = nm.length>18 ? nm.slice(0,17)+'…' : nm; document.getElementById('authPortal').hidden=!isSup; }
     var wsOut=document.getElementById('wsLogout'); if(wsOut) wsOut.hidden=!signed;
     if(window.BSRefreshMine) BSRefreshMine();
   }
   document.getElementById('authLogout').onclick=function(){ BS.setMe({}); refresh(); bsToast('Signed out.'); BSRoute.go('home'); };
+  document.addEventListener('click', function(e){ var d=document.getElementById('authIn'); if(d && d.open && !e.target.closest('summary')) d.open=false; });
   var wsOut=document.getElementById('wsLogout'); if(wsOut) wsOut.onclick=function(){ document.getElementById('authLogout').click(); };
   window.addEventListener('hashchange', refresh); document.addEventListener('click', function(){ setTimeout(refresh, 50); });
   refresh(); return {refresh:refresh};
@@ -1641,6 +1663,7 @@ function bsSupport(threadId, inputId, sendId){
       var anyAcc=offers.some(function(o){return o.boqId===b.id && o.status==='accepted';});
       var withdrawn=b.status==='withdrawn', open=!withdrawn && left>0;
       var head='<div class="boq-head"><div><h3>'+b.ref+' · '+b.lines.length+' lines · '+b.subcity+'</h3><span class="small muted">'+b.deliveryTerm+' · '+b.paymentTerm+(b.partial?' · partial OK':'')+(b.extended?' · deadline extended once':'')+'</span></div><div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap">'+(withdrawn?'<span class="tag">Withdrawn</span>':'<span class="deadline">'+(left>0?'Quotes close in '+left+' day'+(left>1?'s':''):'Deadline passed')+'</span>'+(!anyAcc?'<button class="btn btn-ghost btn-sm" data-withdraw="'+b.id+'">Withdraw</button>':'')+(!b.extended&&!anyAcc?'<button class="btn btn-ghost btn-sm" data-extend="'+b.id+'" data-days="'+b.validityDays+'">Extend '+b.validityDays+' days</button>':''))+'</div></div>';
+      var summary=[];
       var body=b.lines.map(function(l){
         var totalOf=function(o){ return o.qtyOffered*o.unitPrice+(+o.deliveryCost||0); };
         /* cheapest delivered total first: that is the comparison the customer came for */
@@ -1663,9 +1686,24 @@ function bsSupport(threadId, inputId, sendId){
              : '<span style="display:grid;gap:.3rem">'+(o.counter&&o.counter.state==='declined'?'<span class="small muted">Supplier declined '+BS.fmt(o.counter.price)+'. Original price stands.</span>':'')+'<span style="display:flex;gap:.3rem;flex-wrap:wrap"><button class="btn btn-primary btn-sm" data-accept="'+o.id+'" data-line="'+l.n+'" data-boq="'+b.id+'">Accept</button><button class="btn btn-ghost btn-sm" data-reject="'+o.id+'">Reject</button></span>'+(o.counter&&o.counter.state==='declined'?'':'<span style="display:flex;gap:.3rem"><input type="number" min="1" step="1" placeholder="Your price per '+l.unit+'" data-cin="'+o.id+'" style="width:9rem;font:inherit;font-size:.85rem;padding:.35rem .5rem;border:1.5px solid var(--line);border-radius:8px;background:var(--white);color:var(--fg)"><button class="btn btn-ghost btn-sm" data-counter="'+o.id+'">Counter</button></span>')+'</span>')+'</div>';
         }).join('');
         var invited=BS.SUPPLIERS.filter(function(s){return s.cats.indexOf(l.cat)>=0;}).length;
-        return '<div><div class="small" style="font-weight:600;margin:.4rem 0 .3rem">Line '+l.n+' · '+l.item+' · '+l.qty+' '+l.unit+' <span class="tag">'+l.cat+'</span>'+(os.length?' <span class="muted" style="font-weight:400">· '+os.length+' of '+invited+' suppliers quoted'+(live.length>1&&!acc?', cheapest first':'')+'</span>':'')+'</div>'+(os.length? '<div class="offers">'+rows+'</div>' : '<div class="small muted">Waiting for offers from '+invited+' invited supplier'+(invited!==1?'s':'')+'…</div>')+'</div>';
+        var countering=os.some(function(o){ return o.counter && o.counter.state==='open'; });
+        summary.push({l:l, best:(!acc && best)?best:null, acc:acc||null, live:live.length, total:os.length, invited:invited, bestTotal:bestTotal});
+        var openIt = !!acc || countering || b.lines.length<=2;
+        var title='Line '+l.n+' · '+l.item+' · '+l.qty+' '+l.unit+(os.length?' · '+os.length+' of '+invited+' suppliers quoted':'');
+        return '<details class="line-offers"'+(openIt?' open':'')+'><summary>'+title+(acc?' <span class="tag tag-green">Accepted</span>':os.length?' <span class="muted" style="font-weight:400">see all offers'+(live.length>1&&!acc?', cheapest first':'')+'</span>':'')+'</summary>'+(os.length? '<div class="offers" style="margin-top:.5rem">'+rows+'</div>' : '<div class="small muted" style="margin-top:.4rem">Waiting for offers from '+invited+' invited supplier'+(invited!==1?'s':'')+'…</div>')+'</details>';
       }).join('');
-      card.innerHTML=head+body; box.appendChild(card);
+      /* one-glance summary: one row per line, best offer, one tap to accept; all lines at once */
+      var openBest=summary.filter(function(r){ return r.best; });
+      var sumHtml='';
+      if(summary.some(function(r){ return r.total; })){
+        sumHtml='<div class="cmp-head"><strong style="font-family:var(--display)">Best offer per line</strong>'+(openBest.length>1 && !withdrawn ? '<button class="btn btn-ochre btn-sm" data-accept-all="'+b.id+'">Accept the best price on all '+openBest.length+' lines · '+BS.fmt(openBest.reduce(function(t,r){return t+r.bestTotal;},0))+'</button>' : '')+'</div><div class="cmp">'+
+          summary.map(function(r){ var o=r.acc||r.best; var tot=o?(o.qtyOffered*o.unitPrice+(+o.deliveryCost||0)):0;
+            return '<div class="row'+(r.acc?' acc':'')+'"><span><span class="k">Line '+r.l.n+'</span><span class="n">'+r.l.item+'</span> · '+r.l.qty+' '+r.l.unit+'</span>'+
+              (o ? '<span><span class="k">'+(r.acc?'Accepted':'Best price')+' · '+(o.brand||'')+'</span><strong>'+BS.fmt(tot)+'</strong> <span class="small muted">'+BS.fmt(o.unitPrice)+' per '+r.l.unit+(o.deliveryCost?' + delivery':'')+'</span></span>' : '<span class="small muted">Waiting for offers from '+r.invited+' supplier'+(r.invited!==1?'s':'')+'</span>')+
+              '<span class="small muted">'+(r.total? r.live+' offer'+(r.live!==1?'s':'')+' open' : '')+'</span>'+
+              (r.acc ? '<span class="tag tag-green">'+(r.acc.paidAt?'Paid':r.acc.deliveredAt?'Delivered':r.acc.dispatchedAt?'On the way':r.acc.supplierConfirmed?'Contract':'PO issued')+'</span>' : r.best && !withdrawn ? '<button class="btn btn-primary btn-sm" data-accept="'+r.best.id+'" data-line="'+r.l.n+'" data-boq="'+b.id+'" data-best="1">Accept best</button>' : '<span></span>')+'</div>'; }).join('')+'</div>';
+      }
+      card.innerHTML=head+sumHtml+body; box.appendChild(card);
     });
   }
   /* after acceptance the same row carries the order through to payment */
@@ -1713,17 +1751,26 @@ function bsSupport(threadId, inputId, sendId){
     if(window.BSAuth) BSAuth.refresh(); $('who').textContent='Signed in as '+name;
     /* the customer name on earlier requests is updated so the PO carries the legal name */
     for(var i=0;i<boqs.length;i++){ if(boqs[i].ownerPhone===(me2.phone||'').replace(/\D/g,'').replace(/^251/,'') && boqs[i].company!==name){ await BS.update('boqs', boqs[i].id, {company:name}); boqs[i].company=name; } }
-    $('poGate').hidden=true; var p=pendingAccept; pendingAccept=null; if(p) await acceptOffer(p.offerId, p.boqId, p.line);
+    $('poGate').hidden=true; var p=pendingAccept; pendingAccept=null; if(p){ if(p.all) await acceptMany(p.all); else await acceptOffer(p.offerId, p.boqId, p.line); }
   };
-  async function acceptOffer(offerId, boqId, line){
+  /* cheapest open offer on every line that has no accepted offer yet */
+  function bestOffersFor(boqId){
+    var b=boqs.filter(function(x){return x.id===boqId;})[0]; if(!b) return [];
+    return b.lines.map(function(l){ var os=offers.filter(function(o){ return o.boqId===b.id && o.lineN===l.n && o.status!=='rejected' && !(o.counter&&o.counter.state==='open'); }); if(os.some(function(o){return o.status==='accepted';})) return null; os.sort(function(a,c){ return (a.qtyOffered*a.unitPrice+(+a.deliveryCost||0))-(c.qtyOffered*c.unitPrice+(+c.deliveryCost||0)); }); return os[0] ? {offerId:os[0].id, boqId:b.id, line:l.n} : null; }).filter(Boolean);
+  }
+  async function acceptMany(list){ for(var i=0;i<list.length;i++){ await acceptOffer(list[i].offerId, list[i].boqId, list[i].line, true); } bsToast(list.length+' purchase orders issued, one per line. Each supplier must reconfirm price and stock.'); }
+  async function acceptOffer(offerId, boqId, line, quiet){
     var boq=boqs.filter(function(x){return x.id===boqId;})[0]; var po=(boq?boq.ref:'BS')+'-L'+line; var m=BS.me()||{};
     await BS.update('offers', offerId, {status:'accepted', poRef:'PO-'+po, acceptedAt:new Date().toISOString(), customerRevealed: m.company||m.name||(boq?boq.company:''), customerTin:m.tin||''});
-    bsToast('PO-'+po+' issued. The supplier has been notified and must reconfirm price and stock.');
+    if(!quiet) bsToast('PO-'+po+' issued. The supplier has been notified and must reconfirm price and stock.');
   }
   $('mine').addEventListener('click', async function(e){
     var b=e.target.closest('[data-accept]');
     if(b){ if(!buyerKnown()){ pendingAccept={offerId:b.dataset.accept, boqId:b.dataset.boq, line:b.dataset.line}; openGate(); return; }
       b.disabled=true; b.textContent='Issuing PO…'; await acceptOffer(b.dataset.accept, b.dataset.boq, b.dataset.line); return; }
+    var ba=e.target.closest('[data-accept-all]');
+    if(ba){ var all=bestOffersFor(ba.dataset.acceptAll); if(!all.length) return; if(!buyerKnown()){ pendingAccept={all:all}; openGate(); return; }
+      ba.disabled=true; ba.textContent='Issuing POs…'; await acceptMany(all); return; }
     var r=e.target.closest('[data-reject]');
     if(r){ r.disabled=true; await BS.update('offers', r.dataset.reject, {status:'rejected', rejectedAt:new Date().toISOString()}); bsToast('Offer rejected. The supplier has been informed.'); return; }
     var c=e.target.closest('[data-counter]');
