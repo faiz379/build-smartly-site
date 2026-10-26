@@ -128,14 +128,17 @@ footer.site .staff-link:hover{opacity:1;text-decoration:underline}
 /* HOME */
 .hero-banner{display:block;width:100%;height:auto;border-radius:24px;margin-top:1.2rem;box-shadow:var(--shadow)}
 .hero{position:relative;margin-top:1.2rem;border-radius:24px;overflow:hidden;box-shadow:var(--shadow);aspect-ratio:1600/520;background:var(--green-deep)}
-.hslide{position:absolute;inset:0;opacity:0;transition:opacity .8s ease}
+.hslide{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .8s ease}
 .hslide.on{opacity:1}
 .hslide img{width:100%;height:100%;object-fit:cover;display:block}
-.hslide.msg{display:grid;grid-template-columns:1.2fr .8fr;align-items:center;gap:1rem;padding:clamp(1rem,3vw,2.6rem);color:var(--band-fg);background:linear-gradient(120deg,#0D2C21 0%,#1E6B4E 55%,#1F3A5F 100%);background-size:220% 220%;animation:heroShift 18s ease-in-out infinite;overflow:hidden}
-.hslide.msg::before,.hslide.msg::after{content:"";position:absolute;border-radius:50%;pointer-events:none;filter:blur(10px)}
-.hslide.msg::before{width:46%;aspect-ratio:1;right:-10%;top:-30%;background:radial-gradient(circle,rgba(227,166,58,.35),transparent 65%);animation:floatA 12s ease-in-out infinite}
-.hslide.msg::after{width:36%;aspect-ratio:1;left:-8%;bottom:-40%;background:radial-gradient(circle,rgba(246,247,244,.18),transparent 65%);animation:floatB 15s ease-in-out infinite}
-.hslide.msg>*{position:relative;z-index:1}
+.hslide.msg{max-width:none;border:0;border-radius:0;font-size:inherit;justify-self:auto;display:flex;align-items:center;padding:clamp(1rem,3.2vw,2.8rem) clamp(1rem,4vw,3.2rem);color:#fff;overflow:hidden;background:var(--green-deep)}
+.hslide.msg .bg{position:absolute;left:0;top:0;right:auto;bottom:auto;width:100%!important;height:100%!important;max-width:none;object-fit:cover;z-index:0;transform-origin:center;animation:kenburns 22s ease-in-out infinite alternate}
+.hslide.msg::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(13,44,33,.94) 0%,rgba(13,44,33,.78) 42%,rgba(13,44,33,.35) 72%,rgba(13,44,33,.15) 100%)}
+.hslide.msg .hcopy{position:relative;z-index:2;max-width:min(36rem,62%);display:grid;gap:.45rem;text-shadow:0 2px 14px rgba(0,0,0,.45)}
+.hslide.msg .hbtns{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.35rem;text-shadow:none}
+.hslide.msg .hbtns .btn-ghost{border-color:rgba(255,255,255,.55);color:#fff;background:rgba(255,255,255,.08)}
+@keyframes kenburns{from{transform:scale(1)}to{transform:scale(1.08)}}
+@media (max-width:600px){.hslide.msg .hcopy{max-width:100%}.hslide.msg::before{background:linear-gradient(180deg,rgba(13,44,33,.55) 0%,rgba(13,44,33,.88) 100%)}.hslide.msg p{display:none}}
 @keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
 @keyframes floatA{0%,100%{transform:translate(0,0)}50%{transform:translate(-6%,8%)}}
 @keyframes floatB{0%,100%{transform:translate(0,0)}50%{transform:translate(8%,-10%)}}
@@ -152,10 +155,11 @@ footer.site .staff-link:hover{opacity:1;text-decoration:underline}
 @media (max-width:700px){.statsgrid{grid-template-columns:repeat(2,1fr)}}
 .circle .pic{transition:transform .4s cubic-bezier(.2,.8,.2,1),box-shadow .4s ease!important}
 .circle:hover .pic{transform:scale(1.08) rotate(-2deg)!important;box-shadow:0 14px 36px rgba(0,0,0,.35),0 0 0 6px rgba(227,166,58,.35)!important}
-@media (prefers-reduced-motion:reduce){.hslide.msg,.hslide.msg::before,.hslide.msg::after,.view{animation:none}.reveal{opacity:1;transform:none;transition:none}.btn,.card{transition:none}}
+@media (prefers-reduced-motion:reduce){.hslide.msg .bg,.view{animation:none}.reveal{opacity:1;transform:none;transition:none}.btn,.card{transition:none}}
 .hslide.msg .eyebrow{color:var(--ochre)}
-.hslide.msg h2{font-size:clamp(1.1rem,2.6vw,2rem);margin-top:.4rem}
-.hslide.msg p{color:var(--band-muted);font-size:clamp(.8rem,1.4vw,1rem);margin-top:.5rem;max-width:34rem}
+.hslide.msg h2{font-size:clamp(1rem,2.1vw,1.75rem);line-height:1.15;margin-top:.1rem;max-width:30rem}
+.hslide.msg p{color:#E6EDE8;font-size:clamp(.8rem,1.15vw,.95rem);max-width:30rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+@media (max-width:1000px){.hslide.msg p{display:none}}
 .hslide.msg .pic{justify-self:center;width:min(60%,260px);aspect-ratio:1;border-radius:50%;overflow:hidden;background:#F6F7F4;box-shadow:0 10px 30px rgba(0,0,0,.3)}
 .hslide.msg .pic img{width:100%;height:100%}
 .hslide .photo-slot{position:absolute;right:1rem;bottom:1rem;font-size:.7rem;background:rgba(0,0,0,.45);color:#F6F7F4;padding:.25rem .6rem;border-radius:999px}
@@ -164,7 +168,7 @@ footer.site .staff-link:hover{opacity:1;text-decoration:underline}
 .hdots button.on{background:var(--ochre)}
 .harrow{position:absolute;top:50%;transform:translateY(-50%);z-index:2;background:rgba(20,36,30,.45);border:0;color:#F6F7F4;width:36px;height:36px;border-radius:50%;cursor:pointer;display:grid;place-items:center}
 .harrow.l{left:.6rem}.harrow.r{right:.6rem}
-@media (max-width:600px){.hero{aspect-ratio:4/3}.hslide.msg{grid-template-columns:1fr}.hslide.msg .pic{display:none}.harrow{display:none}}
+@media (max-width:600px){.hero{aspect-ratio:4/3}.hslide.msg .pic{display:none}.harrow{display:none}}
 @media (prefers-reduced-motion:reduce){.hslide{transition:none}}
 .helpbtn{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:60;display:inline-flex;align-items:center;gap:.45rem;background:var(--green);color:#F6F7F4;border:0;border-radius:999px;padding:.7rem 1rem;font:inherit;font-family:var(--display);font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25);cursor:pointer;transition:transform .2s}
 .helpbtn:hover{transform:translateY(-2px)}
@@ -604,8 +608,8 @@ details.line-offers[open] summary::before{content:"▾"}
   <div class="wrap">
     <div class="hero" id="hero" aria-roledescription="carousel" aria-label="Build Smartly in pictures">
       <div class="hslide on"><img data-pic="hero1" src="assets/photos/hero1.jpg" alt="Build Smartly: send your BOQ, get real supplier quotes, choose line by line" width="1600" height="520"><span class="photo-slot">Addis Ababa at dusk · photo credits in the footer</span></div>
-      <div class="hslide msg"><div><span class="eyebrow">For contractors and developers</span><h2>Send your list once. Verified suppliers quote in writing.</h2><p>Cement, steel, blocks, aggregates, finishing and equipment. You compare Offer A, B and C by brand and delivered price, then accept line by line.</p></div><div class="pic"><img data-pic="hero2" src="assets/photos/hero2.jpg" alt="" width="400" height="400"></div></div>
-      <div class="hslide msg"><div><span class="eyebrow">For suppliers</span><h2>Requests for your materials, near your stores. Pay only when a deal completes.</h2><p>Keep your price list current from your phone. Quotes are pre-filled, so replying takes seconds.</p></div><div class="pic"><img data-pic="hero3" src="assets/photos/hero3.jpg" alt="" width="400" height="400"></div></div>
+      <div class="hslide msg"><img class="bg" data-pic="hero2" src="assets/photos/hero2.jpg" alt="" width="1600" height="520"><div class="hcopy"><span class="eyebrow">For contractors and developers</span><h2>Send your list once. Verified suppliers quote in writing.</h2><p>Cement, steel, blocks, aggregates, finishing and equipment. Compare Offer A, B and C by brand and delivered price, then accept line by line.</p><div class="hbtns"><a class="btn btn-ochre btn-sm" href="#boq">Send a request</a><a class="btn btn-ghost btn-sm" href="#how">How it works</a></div></div></div>
+      <div class="hslide msg"><img class="bg" data-pic="hero3" src="assets/photos/hero3.jpg" alt="" width="1600" height="520"><div class="hcopy"><span class="eyebrow">For suppliers</span><h2>Requests for your materials, near your stores. Pay only when a deal completes.</h2><p>Keep your price list current from your phone. Quotes are pre-filled, so replying takes seconds.</p><div class="hbtns"><a class="btn btn-ochre btn-sm" href="#signup-supplier">Register as a supplier</a><a class="btn btn-ghost btn-sm" href="#supplier">Supplier sign-in</a></div></div></div>
       <button class="harrow l" id="hPrev" aria-label="Previous picture"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg></button>
       <button class="harrow r" id="hNext" aria-label="Next picture"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg></button>
       <div class="hdots" id="hDots"></div>
@@ -1336,7 +1340,7 @@ details.line-offers[open] summary::before{content:"▾"}
   </div>
   <div id="adPanel" hidden style="display:grid;gap:1rem">
     <div class="topbar"><div><span class="eyebrow">Staff</span><h1 style="font-size:1.6rem">Build Smartly operations</h1><p class="small muted" id="adMeta"></p></div><div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap"><div class="field" style="min-width:16rem"><input id="adSearch" type="search" placeholder="Search a PO, request, company, number…" aria-label="Search"></div><button class="btn btn-ghost btn-sm" type="button" id="adLogout">Log out</button></div></div>
-    <div class="tabs" id="adTabs"><button class="on" data-tab="overview">Overview</button><button data-tab="requests">Requests</button><button data-tab="suppliers">Suppliers</button><button data-tab="support">Support</button><button data-tab="news">Newsletter</button><button data-tab="members">Members</button><button data-tab="finance">Finance</button><button data-tab="insights">Insights</button><button data-tab="settings">Settings</button></div>
+    <div class="tabs" id="adTabs"><button class="on" data-tab="overview">Overview</button><button data-tab="requests">Requests</button><button data-tab="suppliers">Suppliers</button><button data-tab="support">Support</button><button data-tab="news">Newsletter</button><button data-tab="members">Members</button><button data-tab="finance">Finance</button><button data-tab="catalogue">Catalogue</button><button data-tab="insights">Insights</button><button data-tab="settings">Settings</button></div>
     <div id="adBody" style="display:grid;gap:1rem"></div>
   </div>
 </div>
@@ -1857,7 +1861,7 @@ function bsSupport(threadId, inputId, sendId){
   function isoPlus(days){ var d=new Date(); d.setDate(d.getDate()+days); return d.toISOString().slice(0,10); }
   var MIN_DATE=isoPlus(BS.MIN_LEAD_DAYS);
   $('minLeadText').textContent = BS.MIN_LEAD_DAYS+' days from today ('+MIN_DATE+')';
-  function itemOptions(stage){ return BS.CATALOGUE.filter(function(c){ return stage==='all' || c.stage===stage; }); }
+  function itemOptions(stage){ return BS.CATALOGUE.filter(function(c){ return !c.hidden && (stage==='all' || c.stage===stage); }); }
   function lineFor(name){ return lines.filter(function(l){ return l.item===name; })[0]; }
   /* the catalogue as tick boxes; ticking adds a line, unticking removes it */
   function renderPicks(){
@@ -1984,7 +1988,7 @@ function bsSupport(threadId, inputId, sendId){
     $('estBody').innerHTML=rows.map(function(r,i){ return '<div style="display:flex;justify-content:space-between;gap:1rem"><span'+(i===3?' style="font-weight:600"':'')+'>'+r[0]+'</span><strong>'+r[1]+'</strong></div>'; }).join('');
   }
   $('subcity').addEventListener('change', updateEstimate);
-  BS.onSettings(function(){ bsApplyPics(); MIN_DATE=isoPlus(BS.MIN_LEAD_DAYS); $('minLeadText').textContent = BS.MIN_LEAD_DAYS+' days from today ('+MIN_DATE+')'; $('insRateText').textContent=BS.pct(BS.INSURANCE.rate); var pr=document.getElementById('payInsRate'); if(pr) pr.textContent=BS.pct(BS.INSURANCE.rate); var pf=document.getElementById('payFeeText'); if(pf) pf.textContent=(BS.tariffsSetBy?'':'example ')+BS.pct(BS.FEE_RATE); updateEstimate(); });
+  BS.onSettings(function(){ bsApplyPics(); renderPicks(); MIN_DATE=isoPlus(BS.MIN_LEAD_DAYS); $('minLeadText').textContent = BS.MIN_LEAD_DAYS+' days from today ('+MIN_DATE+')'; $('insRateText').textContent=BS.pct(BS.INSURANCE.rate); var pr=document.getElementById('payInsRate'); if(pr) pr.textContent=BS.pct(BS.INSURANCE.rate); var pf=document.getElementById('payFeeText'); if(pf) pf.textContent=(BS.tariffsSetBy?'':'example ')+BS.pct(BS.FEE_RATE); updateEstimate(); });
   $('delivery').addEventListener('change', updateEstimate); $('insurance').addEventListener('change', updateEstimate);
   function renderRouting(){
     updateEstimate();
@@ -2372,7 +2376,7 @@ function bsSupport(threadId, inputId, sendId){
   function priceRow(name){ return prices.filter(function(p){ return p.name===name; })[0]; }
   /* tick boxes over the catalogue (the supplier's categories); a tick adds a row to fill in, an untick removes it */
   function renderPlPicks(){
-    var opts=BS.CATALOGUE.filter(function(c){ return !profile.cats.length || profile.cats.indexOf(c.cat)>=0; });
+    var opts=BS.CATALOGUE.filter(function(c){ return !c.hidden && (!profile.cats.length || profile.cats.indexOf(c.cat)>=0); });
     $('plPicks').innerHTML = opts.length ? opts.map(function(c){ var on=!!priceRow(c.name); return '<label class="pick'+(on?' on':'')+'"><input type="checkbox" value="'+c.name.replace(/"/g,'&quot;')+'"'+(on?' checked':'')+'><span>'+c.name+'<small>'+c.cat+' · per '+c.unit+'</small></span></label>'; }).join('') : '<div class="empty">Choose your categories under Settings first.</div>';
   }
   $('plPicks').addEventListener('change', function(e){

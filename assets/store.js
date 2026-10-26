@@ -143,8 +143,8 @@
   /* picture slots staff can fill from the staff page; each is one settings doc pic-<key> holding a resized JPEG data URL */
   BS.PIC_SLOTS = [
     {key:"hero1", label:"Home banner · wide photo of a site in Addis Ababa", w:1600, h:520},
-    {key:"hero2", label:"Home slide 2 · round picture (contractors)", w:700, h:700},
-    {key:"hero3", label:"Home slide 3 · round picture (suppliers)", w:700, h:700},
+    {key:"hero2", label:"Home slide 2 · wide photo behind the contractors message", w:1600, h:520},
+    {key:"hero3", label:"Home slide 3 · wide photo behind the suppliers message", w:1600, h:520},
     {key:"cat-foundation", label:"Category circle · Foundation", w:700, h:700},
     {key:"cat-structure", label:"Category circle · Structure", w:700, h:700},
     {key:"cat-services", label:"Category circle · Electrical and plumbing", w:700, h:700},
@@ -164,6 +164,8 @@
         if(t.insuranceRate>=0) BS.INSURANCE.rate=+t.insuranceRate; if(t.insuranceMin>=0) BS.INSURANCE.min=+t.insuranceMin;
         if(t.minLeadDays>=0) BS.MIN_LEAD_DAYS=+t.minLeadDays; if(t.feeRate>=0) BS.FEE_RATE=+t.feeRate; if(t.validityDays>0) BS.VALIDITY_DAYS=+t.validityDays;
         BS.tariffsSetBy = t.setBy||""; }
+      if(d.id==="catalogue" && Array.isArray(d.items) && d.items.length){ BS.CATALOGUE.length=0; d.items.forEach(function(it){ BS.CATALOGUE.push(it); }); BS.catalogueSetBy=d.setBy||""; }
+      if(d.id==="categories" && Array.isArray(d.list)){ BS.extraCategories=d.list.slice(); d.list.forEach(function(c){ if(c.name && BS.CATEGORIES.indexOf(c.name)<0){ BS.CATEGORIES.splice(BS.CATEGORIES.length-1,0,c.name); } if(c.name && c.desk) BS.DESKS[c.name]=c.desk; if(c.name && c.brands && !BS.BRANDS[c.name]) BS.BRANDS[c.name]=c.brands; }); }
       if(d.id==="brands" && d.map){ Object.keys(d.map).forEach(function(c){ if(Array.isArray(d.map[c]) && d.map[c].length) BS.BRANDS[c]=d.map[c].slice(); }); }
     });
     (BS._settingsCbs||[]).forEach(function(cb){ try{ cb(); }catch(e){} });
