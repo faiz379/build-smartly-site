@@ -133,6 +133,25 @@
   };
   /* Earliest "needed by" date on a request, in days from today. Example value; the owner sets the real minimum. */
   BS.MIN_LEAD_DAYS = 3;
+  BS.FEE_RATE = 0.015;        /* platform fee on each completed sale, example until the owner sets it */
+  BS.VALIDITY_DAYS = 4;       /* days suppliers have to reply to a request */
+  /* Staff accounts for the admin page (test site). */
+  BS.STAFF = [ {phone:"911000900", person:"Build Smartly staff", name:"Staff"}, {phone:"911000901", person:"Abdela (owner)", name:"Owner"} ];
+  BS.STAFF_PASSWORD = "admin";
+  /* Settings the staff page can change (collection `settings`): tariffs and brands. Applied on every device at load and live. */
+  BS.applySettings = function(docs){
+    (docs||[]).forEach(function(d){
+      if(d.id==="tariffs"){ var t=d;
+        if(t.perTrip>0) BS.TRUCK.perTrip=+t.perTrip; if(t.perKm>=0) BS.TRUCK.perKm=+t.perKm; if(t.capacityT>0) BS.TRUCK.capacityT=+t.capacityT; if(t.mobilisation>=0) BS.TRUCK.mobilisation=+t.mobilisation;
+        if(t.insuranceRate>=0) BS.INSURANCE.rate=+t.insuranceRate; if(t.insuranceMin>=0) BS.INSURANCE.min=+t.insuranceMin;
+        if(t.minLeadDays>=0) BS.MIN_LEAD_DAYS=+t.minLeadDays; if(t.feeRate>=0) BS.FEE_RATE=+t.feeRate; if(t.validityDays>0) BS.VALIDITY_DAYS=+t.validityDays;
+        BS.tariffsSetBy = t.setBy||""; }
+      if(d.id==="brands" && d.map){ Object.keys(d.map).forEach(function(c){ if(Array.isArray(d.map[c]) && d.map[c].length) BS.BRANDS[c]=d.map[c].slice(); }); }
+    });
+    (BS._settingsCbs||[]).forEach(function(cb){ try{ cb(); }catch(e){} });
+  };
+  BS.onSettings = function(cb){ (BS._settingsCbs=BS._settingsCbs||[]).push(cb); };
+  BS.pct = function(r){ return (Math.round(r*1000)/10)+" %"; };
   BS.SUBCITIES = ["Addis Ketema","Akaki Kaliti","Arada","Bole","Gullele","Kirkos","Kolfe Keranio","Lemi Kura","Lideta","Nifas Silk-Lafto","Yeka"];
 
   /* Home-page price pulse. Example figures until launch; on the shared link the median of real quotes replaces them.
@@ -329,7 +348,7 @@
     });
     return function(){ cancelled = true; if(unsub) unsub(); listeners[col]=(listeners[col]||[]).filter(function(x){return x!==cb;}); };
   };
-  BS.clearLocal = function(){ ["boqs","offers","messages","profiles","news"].forEach(function(c){ try{ localStorage.removeItem(LS(c)); }catch(e){} notifyLocal(c); }); };
+  BS.clearLocal = function(){ ["boqs","offers","messages","profiles","news","verifications","settings"].forEach(function(c){ try{ localStorage.removeItem(LS(c)); }catch(e){} notifyLocal(c); }); };
 
   /* who am I on this device (demo only). Accounts seen on this device are remembered by mobile number,
      so a number that signs in again after logging out gets its details back (the real app does this server-side). */
@@ -342,5 +361,6 @@
     if(obj && obj.phone){ try { var reg=JSON.parse(localStorage.getItem("bs_demo_accounts")||"{}"); reg[digitsOf(obj.phone)]=obj; localStorage.setItem("bs_demo_accounts", JSON.stringify(reg)); } catch(e){} }
   };
   BS.accounts = function(){ try { var reg=JSON.parse(localStorage.getItem("bs_demo_accounts")||"{}"); return Object.keys(reg).map(function(k){ return reg[k]; }).filter(function(a){ return a && a.phone; }); } catch(e){ return []; } };
+  BS.ready().then(function(){ BS.subscribe("settings", BS.applySettings); });
   BS.known = function(digits){ try { return JSON.parse(localStorage.getItem("bs_demo_accounts")||"{}")[digits] || null; } catch(e){ return null; } };
 })();
