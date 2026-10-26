@@ -705,8 +705,9 @@ details.line-offers[open] summary::before{content:"▾"}
           <div class="field"><label for="liPhone">Mobile</label><div class="su-phone"><span class="cc">🇪🇹 +251</span><input id="liPhone" type="tel" inputmode="numeric" placeholder="9 12 34 56 78" autocomplete="tel-national"></div><span class="err" id="liErr" hidden>Enter your mobile number, for example 0912345678.</span></div>
           <div class="field" id="liOtpBox" hidden><label>Enter the code we sent</label><div class="su-otp"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"></div><span class="hint" id="liHint">Test site: no SMS is sent. The code is 123456.</span></div>
           <div class="su-nav"><span></span><button class="btn btn-primary" type="button" id="liGo">Send code</button></div>
+          <div class="card" id="liSupplier" style="padding:.9rem;display:flex;gap:.6rem;align-items:center;justify-content:space-between;flex-wrap:wrap"><span><strong style="font-family:var(--display)">Are you a supplier?</strong><br><span class="small muted">Suppliers sign in to the supplier portal with their mobile number and password.</span></span><a class="btn btn-ochre btn-sm" href="#supplier">Supplier sign-in</a></div>
           <div class="card" id="liNew" style="display:grid;gap:.6rem;padding:1rem"><strong style="font-family:var(--display)">New to Build Smartly?</strong><p class="small muted">Buyers need only a name and a mobile number. Company details and TIN come later, before your first purchase order. Suppliers register their company, TIN and a password.</p><div style="display:flex;gap:.5rem;flex-wrap:wrap"><a class="btn btn-ghost btn-sm" href="#signup">Create a buyer account</a><a class="btn btn-ochre btn-sm" href="#signup-supplier">Register as a supplier</a></div></div>
-          <details class="small muted" style="margin-top:.4rem"><summary style="cursor:pointer">Test accounts for this prototype</summary><p style="margin-top:.4rem">Buyers: <strong>911 000 100</strong> Tana Construction, <strong>911 000 101</strong> Bole Heights. Suppliers: <strong>911 000 001</strong> cement and aggregates, <strong>911 000 002</strong> steel, <strong>911 000 003</strong> blocks, <strong>911 000 004</strong> equipment, <strong>911 000 006</strong> electrical and plumbing. Any other Ethiopian number opens a new buyer account.</p></details>
+          <details class="small muted" style="margin-top:.4rem"><summary style="cursor:pointer">Test accounts</summary><p style="margin-top:.4rem">Buyers: <strong>0911 000 201</strong> Abdullah, <strong>202</strong> Fahad, <strong>203</strong> Osama, <strong>204</strong> Haji, <strong>205</strong> Faiz (code 123456). Suppliers: the same names on <strong>0911 000 301</strong> to <strong>305</strong>, password <strong>smartly</strong>, through <a href="#supplier">Supplier sign-in</a>. Any other Ethiopian number also works as a new buyer. Full list on <a href="#start">Start here</a>.</p></details>
         </section>
 
         <section id="wizard" class="su-step">
@@ -770,7 +771,9 @@ details.line-offers[open] summary::before{content:"▾"}
         <div class="field" style="flex:1;min-width:200px"><input id="otherItem" placeholder="Something not in the list? Type it here" aria-label="Other item"></div>
         <button class="btn btn-ghost" type="button" id="addOther">Add it</button>
         <button class="btn btn-ghost" type="button" id="addSample">Try with an example list</button>
-        <button class="btn btn-ghost" type="button" disabled>Upload Excel (soon)</button>
+        <a class="btn btn-ghost" href="assets/boq-template.xlsx" download="Build-Smartly-BOQ-template.xlsx">Download the Excel template</a>
+        <label class="btn btn-ghost" style="cursor:pointer">Upload your filled Excel<input type="file" id="boqFile" accept=".xlsx,.csv,.txt" hidden></label>
+        <span class="small muted" id="boqFileMsg" style="flex-basis:100%">Send the template to your site engineer, get it back filled in, and upload it here. Excel (.xlsx) or CSV.</span>
       </div>
       <div id="listBox" hidden style="display:grid;gap:.6rem">
         <div><strong style="font-family:var(--display)">Your list</strong><p class="small muted">Type the quantity for each item and when you need it. Earliest date: <span id="minLeadText"></span> (example rule, the owner sets the real minimum).</p></div>
@@ -1585,13 +1588,14 @@ function bsSupport(threadId, inputId, sendId){
     var box=$('lines'); box.innerHTML='';
     lines.forEach(function(l,i){
       var d=document.createElement('div'); d.className='line';
+      var units=l.item==='__other'?BS.UNITS:BS.unitsOf(l.item), mn=l.item==='__other'?1:BS.minOf(l.item); if(units.indexOf(l.unit)<0) l.unit=units[0];
       d.innerHTML =
         '<div class="field f-item"><label>Item</label><div class="itemname">'+(l.item==='__other'?(l.other||'Other item'):l.item)+'</div></div>'+
-        '<div class="field"><label>Quantity</label><input type="number" min="1" step="1" data-k="qty" data-i="'+i+'" value="'+(l.qty||'')+'" placeholder="0"></div>'+
-        '<div class="field"><label>Unit</label><select data-k="unit" data-i="'+i+'">'+BS.UNITS.map(function(u){return '<option'+(u===l.unit?' selected':'')+'>'+u+'</option>';}).join('')+'</select></div>'+
+        '<div class="field"><label>Quantity</label><input type="number" min="1" step="1" data-k="qty" data-i="'+i+'" value="'+(l.qty||'')+'" placeholder="'+(mn>1?'min '+mn:'0')+'"></div>'+
+        '<div class="field"><label>Unit</label><select data-k="unit" data-i="'+i+'">'+units.map(function(u){return '<option'+(u===l.unit?' selected':'')+'>'+u+'</option>';}).join('')+'</select></div>'+
         '<div class="field"><label>Needed by</label><input type="date" data-k="needed" data-i="'+i+'" min="'+MIN_DATE+'" value="'+(l.needed||MIN_DATE)+'"></div>'+
         '<button class="rm" type="button" data-rm="'+i+'" aria-label="Remove line">×</button>'+
-        '<div class="cat-tag"><span class="tag">'+(l.cat||'Category')+'</span><span>→ '+(BS.DESKS[l.cat]||'desk')+'</span></div>';
+        '<div class="cat-tag"><span class="tag">'+(l.cat||'Category')+'</span><span>→ '+(BS.DESKS[l.cat]||'desk')+(mn>1?' · minimum order '+mn+' '+BS.unitsOf(l.item)[0]+' (example figure)':'')+'</span></div>';
       box.appendChild(d);
     });
     $('listBox').hidden = lines.length===0;
@@ -1609,6 +1613,30 @@ function bsSupport(threadId, inputId, sendId){
   $('stage').addEventListener('change', renderPicks);
   $('addOther').onclick=function(){ var n=$('otherItem').value.trim(); if(!n){ $('otherItem').focus(); return; } lines.push({item:'__other', other:n, qty:'', unit:'pcs', needed:MIN_DATE, cat:'Other (staff will classify)'}); $('otherItem').value=''; renderLines(); };
   $('otherItem').addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); $('addOther').click(); } });
+  /* uploaded BOQ: find the header row, match each item to the catalogue, add the lines */
+  function importRows(rows){
+    var hi=-1, map={};
+    rows.forEach(function(r,i){ if(hi>=0) return; var txt=r.map(function(c){ return String(c).toLowerCase(); }); var it=txt.findIndex(function(c){ return /^item|material|description/.test(c); }); if(it>=0){ hi=i; map.item=it; txt.forEach(function(c,j){ if(/qty|quantity/.test(c)) map.qty=j; else if(/^unit/.test(c)) map.unit=j; else if(/need|date|deliver/.test(c)) map.needed=j; }); } });
+    if(hi<0){ map={item:0, qty:1, unit:2, needed:3}; }
+    if(map.qty===undefined) map.qty=map.item+1; if(map.unit===undefined) map.unit=map.item+2; if(map.needed===undefined) map.needed=map.item+3;
+    var added=0, unknown=0;
+    rows.slice(hi+1).forEach(function(r){
+      var text=String(r[map.item]||'').trim(); if(!text) return;
+      var qty=parseFloat(String(r[map.qty]||'').replace(/[^\d.]/g,'')); if(!(qty>0)) qty='';
+      var c=BS.findItem(text), unit=String(r[map.unit]||'').trim().toLowerCase(), nd=r[map.needed], needed=MIN_DATE;
+      if(typeof nd==='number' && nd>20000) needed=BS.excelDate(nd); else if(nd && !isNaN(Date.parse(String(nd)))) needed=new Date(Date.parse(String(nd))).toISOString().slice(0,10);
+      if(needed<MIN_DATE) needed=MIN_DATE;
+      var units=c?BS.unitsOf(c.name):BS.UNITS; if(unit==='m3') unit='m³'; if(unit==='m2') unit='m²'; if(units.indexOf(unit)<0) unit=units[0];
+      if(c){ var ex=lineFor(c.name); if(ex){ ex.qty=qty||ex.qty; ex.unit=unit; ex.needed=needed; } else lines.push({item:c.name, qty:qty, unit:unit, needed:needed, cat:c.cat}); }
+      else { unknown++; lines.push({item:'__other', other:text, qty:qty, unit:unit, needed:needed, cat:'Other (staff will classify)'}); }
+      added++;
+    });
+    renderLines();
+    var msg = added ? added+' line'+(added>1?'s':'')+' read from your file. Check the quantities and dates below.'+(unknown?' '+unknown+' item'+(unknown>1?'s are':' is')+' not in our list: staff will classify '+(unknown>1?'them':'it')+'.':'') : 'No lines found. Use the template: one item per row with its quantity.';
+    $('boqFileMsg').textContent=msg; bsToast(msg); if(added) $('listBox').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  $('boqFile').addEventListener('change', function(){ var f=this.files && this.files[0]; this.value=''; if(!f) return; $('boqFileMsg').textContent='Reading '+f.name+'…';
+    BS.readSheet(f).then(importRows).catch(function(e){ $('boqFileMsg').textContent='Could not read '+f.name+'. Save it as .xlsx or .csv and try again.'; bsToast('Could not read the file.'); }); });
   $('addSample').onclick=function(){
     var iso=isoPlus(Math.max(10, BS.MIN_LEAD_DAYS)); $('stage').value='all';
     lines=[{item:'Cement OPC 42.5',qty:400,unit:'quintal',needed:iso,cat:'Cement'},{item:'Rebar 12 mm grade 60',qty:60,unit:'quintal',needed:iso,cat:'Reinforcement steel'},{item:'HCB 20 cm',qty:3000,unit:'pcs',needed:iso,cat:'Blocks, bricks and stone'},{item:'Aggregate 02 (coarse)',qty:40,unit:'m³',needed:iso,cat:'Aggregates and fill'},{item:'Electrical cable 2.5 mm²',qty:10,unit:'roll',needed:iso,cat:'Electrical'},{item:'Excavator hire with operator',qty:3,unit:'day',needed:iso,cat:'Equipment rental'}];
@@ -1634,6 +1662,8 @@ function bsSupport(threadId, inputId, sendId){
     var missing=lines.filter(function(l){ return !(+l.qty>0); }).length;
     if(missing){ err.textContent='Type the quantity for '+(missing===1?'the item':'all '+missing+' items')+' in your list.'; err.hidden=false; $('lines').scrollIntoView({behavior:'smooth',block:'center'}); return; }
     if(lines.some(function(l){ return l.needed && l.needed<MIN_DATE; })){ err.textContent='A needed-by date is earlier than '+MIN_DATE+'.'; err.hidden=false; return; }
+    var small=lines.filter(function(l){ return l.item!=='__other' && l.unit===BS.unitsOf(l.item)[0] && +l.qty<BS.minOf(l.item); })[0];
+    if(small){ err.textContent=small.item+': the minimum order is '+BS.minOf(small.item)+' '+small.unit+' (example figure, the owner sets the real minimums).'; err.hidden=false; $('lines').scrollIntoView({behavior:'smooth',block:'center'}); return; }
     if(!me2.phone){ saveDraft(); $('sendAuth').hidden=false; $('submit').hidden=true; $('submitHint').hidden=true; $('sendAuth').scrollIntoView({behavior:'smooth',block:'center'}); $('saName').focus(); return; }
     doSend();
   };
@@ -1702,7 +1732,7 @@ function bsSupport(threadId, inputId, sendId){
           var total=totalOf(o), letter=String.fromCharCode(65+i), isAcc=o.status==='accepted', isBest=!acc && best && o.id===best.id && live.length>1;
           var cls='offer'+(isAcc?' accepted':'')+(isBest?' best':'')+((acc&&!isAcc)||o.status==='rejected'?' dim':'');
           return '<div class="'+cls+'"><span class="letter">'+letter+'</span>'+
-            '<span><span class="k">Brand</span><strong>'+(o.brand||'—')+'</strong><span class="small muted"> · '+o.qtyOffered+' '+l.unit+(o.qtyOffered<l.qty?' (partial)':'')+'</span></span>'+
+            '<span><span class="k">Brand</span><b>'+(o.brand||'—')+'</b><span class="small muted"> · '+o.qtyOffered+' '+l.unit+(o.qtyOffered<l.qty?' (partial)':'')+'</span></span>'+
             '<span><span class="k">Unit price</span>'+BS.fmt(o.unitPrice)+' <span class="small muted">'+(o.vat==='incl'?'incl. VAT':'excl. VAT')+'</span></span>'+
             '<span><span class="k">Delivered total</span><strong>'+BS.fmt(total)+'</strong>'+(isBest?'<br><span class="best-tag">Best price</span>':(!acc && live.length>1 && o.status!=='rejected' && total>bestTotal)?'<br><span class="diff">+ '+BS.fmt(total-bestTotal)+' vs best</span>':'')+'</span>'+
             '<span><span class="k">Delivery · lead · valid</span>'+(o.deliveryCost?BS.fmt(o.deliveryCost):'free')+' · '+o.leadDays+' d · '+o.validDays+' d</span>'+

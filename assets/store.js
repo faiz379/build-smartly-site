@@ -5,42 +5,42 @@
   var BS = window.BS = {};
 
   BS.CATALOGUE = [
-    {name:"Cement OPC 42.5", cat:"Cement", unit:"quintal", stage:"foundation", base:1180},
-    {name:"Cement PPC 32.5", cat:"Cement", unit:"quintal", stage:"foundation", base:1050},
-    {name:"Sand (fine)", cat:"Aggregates and fill", unit:"m³", stage:"foundation", base:14500},
-    {name:"Aggregate 02 (coarse)", cat:"Aggregates and fill", unit:"m³", stage:"foundation", base:2350},
-    {name:"Aggregate 01 (fine)", cat:"Aggregates and fill", unit:"m³", stage:"foundation", base:2600},
-    {name:"Red ash (scoria) fill", cat:"Aggregates and fill", unit:"truckload", stage:"foundation", base:9000},
-    {name:"Masonry stone", cat:"Blocks, bricks and stone", unit:"m³", stage:"foundation", base:2800},
-    {name:"Rebar 8 mm grade 60", cat:"Reinforcement steel", unit:"quintal", stage:"foundation", base:9900},
-    {name:"Rebar 10 mm grade 60", cat:"Reinforcement steel", unit:"quintal", stage:"foundation", base:9850},
-    {name:"Rebar 12 mm grade 60", cat:"Reinforcement steel", unit:"quintal", stage:"structure", base:9800},
-    {name:"Rebar 16 mm grade 60", cat:"Reinforcement steel", unit:"quintal", stage:"structure", base:9750},
-    {name:"Binding wire", cat:"Reinforcement steel", unit:"kg", stage:"foundation", base:160},
-    {name:"Wire mesh", cat:"Reinforcement steel", unit:"sheet", stage:"foundation", base:1900},
-    {name:"HCB 20 cm", cat:"Blocks, bricks and stone", unit:"pcs", stage:"structure", base:38},
-    {name:"HCB 15 cm", cat:"Blocks, bricks and stone", unit:"pcs", stage:"structure", base:32},
-    {name:"Bricks (clay)", cat:"Blocks, bricks and stone", unit:"pcs", stage:"structure", base:9},
-    {name:"Ready-mix concrete C-25", cat:"Cement", unit:"m³", stage:"structure", base:8900},
-    {name:"Steel column RHS 100x100", cat:"Structural steel and roofing", unit:"m", stage:"structure", base:2400},
-    {name:"Roofing sheet galvanised 0.4 mm", cat:"Structural steel and roofing", unit:"sheet", stage:"structure", base:1450},
-    {name:"Plywood 18 mm formwork", cat:"Formwork, timber and scaffolding", unit:"sheet", stage:"structure", base:2600},
-    {name:"Ceramic floor tiles 40x40", cat:"Finishing: tiles and floors", unit:"m²", stage:"finishing", base:950},
-    {name:"Emulsion paint", cat:"Finishing: paint and plaster", unit:"litre", stage:"finishing", base:390},
-    {name:"Gypsum board 12 mm", cat:"Finishing: paint and plaster", unit:"sheet", stage:"finishing", base:1100},
-    {name:"PPR pipe 25 mm", cat:"Plumbing and sanitary", unit:"m", stage:"services", base:180},
-    {name:"PVC drainage pipe 110 mm", cat:"Plumbing and sanitary", unit:"m", stage:"services", base:520},
-    {name:"Water tank 5,000 L", cat:"Plumbing and sanitary", unit:"pcs", stage:"services", base:38000},
-    {name:"Electrical cable 2.5 mm²", cat:"Electrical", unit:"roll", stage:"services", base:6200},
-    {name:"PVC conduit 20 mm", cat:"Electrical", unit:"pcs", stage:"services", base:95},
-    {name:"Distribution board 12 way", cat:"Electrical", unit:"pcs", stage:"services", base:4200},
-    {name:"Sino truck (10 wheel) hire", cat:"Equipment rental", unit:"trip", stage:"equipment", base:6500},
-    {name:"Excavator hire with operator", cat:"Equipment rental", unit:"day", stage:"equipment", base:22000},
-    {name:"Forklift hire", cat:"Equipment rental", unit:"day", stage:"equipment", base:9000},
-    {name:"Trailer bed hire", cat:"Equipment rental", unit:"trip", stage:"equipment", base:12000},
-    {name:"Concrete mixer hire", cat:"Equipment rental", unit:"day", stage:"equipment", base:3500}
+    {name:"Cement OPC 42.5", cat:"Cement", unit:"quintal", stage:"foundation", units:["quintal","bag","ton"], min:10, base:1180},
+    {name:"Cement PPC 32.5", cat:"Cement", unit:"quintal", stage:"foundation", units:["quintal","bag","ton"], min:10, base:1050},
+    {name:"Sand (fine)", cat:"Aggregates and fill", unit:"m³", stage:"foundation", units:["m³","truckload"], min:8, base:14500},
+    {name:"Aggregate 02 (coarse)", cat:"Aggregates and fill", unit:"m³", stage:"foundation", units:["m³","truckload"], min:8, base:2350},
+    {name:"Aggregate 01 (fine)", cat:"Aggregates and fill", unit:"m³", stage:"foundation", units:["m³","truckload"], min:8, base:2600},
+    {name:"Red ash (scoria) fill", cat:"Aggregates and fill", unit:"truckload", stage:"foundation", units:["truckload","m³"], min:1, base:9000},
+    {name:"Masonry stone", cat:"Blocks, bricks and stone", unit:"m³", stage:"foundation", units:["m³","truckload"], min:8, base:2800},
+    {name:"Rebar 8 mm grade 60", cat:"Reinforcement steel", unit:"quintal", stage:"foundation", units:["quintal","ton","pcs"], min:5, base:9900},
+    {name:"Rebar 10 mm grade 60", cat:"Reinforcement steel", unit:"quintal", stage:"foundation", units:["quintal","ton","pcs"], min:5, base:9850},
+    {name:"Rebar 12 mm grade 60", cat:"Reinforcement steel", unit:"quintal", stage:"structure", units:["quintal","ton","pcs"], min:5, base:9800},
+    {name:"Rebar 16 mm grade 60", cat:"Reinforcement steel", unit:"quintal", stage:"structure", units:["quintal","ton","pcs"], min:5, base:9750},
+    {name:"Binding wire", cat:"Reinforcement steel", unit:"kg", stage:"foundation", units:["kg","roll"], min:25, base:160},
+    {name:"Wire mesh", cat:"Reinforcement steel", unit:"sheet", stage:"foundation", units:["sheet","roll"], min:10, base:1900},
+    {name:"HCB 20 cm", cat:"Blocks, bricks and stone", unit:"pcs", stage:"structure", units:["pcs"], min:500, base:38},
+    {name:"HCB 15 cm", cat:"Blocks, bricks and stone", unit:"pcs", stage:"structure", units:["pcs"], min:500, base:32},
+    {name:"Bricks (clay)", cat:"Blocks, bricks and stone", unit:"pcs", stage:"structure", units:["pcs"], min:1000, base:9},
+    {name:"Ready-mix concrete C-25", cat:"Cement", unit:"m³", stage:"structure", units:["m³"], min:6, base:8900},
+    {name:"Steel column RHS 100x100", cat:"Structural steel and roofing", unit:"m", stage:"structure", units:["m","pcs"], min:12, base:2400},
+    {name:"Roofing sheet galvanised 0.4 mm", cat:"Structural steel and roofing", unit:"sheet", stage:"structure", units:["sheet","bundle"], min:20, base:1450},
+    {name:"Plywood 18 mm formwork", cat:"Formwork, timber and scaffolding", unit:"sheet", stage:"structure", units:["sheet"], min:10, base:2600},
+    {name:"Ceramic floor tiles 40x40", cat:"Finishing: tiles and floors", unit:"m²", stage:"finishing", units:["m²","box"], min:20, base:950},
+    {name:"Emulsion paint", cat:"Finishing: paint and plaster", unit:"litre", stage:"finishing", units:["litre","bucket"], min:20, base:390},
+    {name:"Gypsum board 12 mm", cat:"Finishing: paint and plaster", unit:"sheet", stage:"finishing", units:["sheet"], min:10, base:1100},
+    {name:"PPR pipe 25 mm", cat:"Plumbing and sanitary", unit:"m", stage:"services", units:["m","pcs"], min:50, base:180},
+    {name:"PVC drainage pipe 110 mm", cat:"Plumbing and sanitary", unit:"m", stage:"services", units:["m","pcs"], min:30, base:520},
+    {name:"Water tank 5,000 L", cat:"Plumbing and sanitary", unit:"pcs", stage:"services", units:["pcs"], min:1, base:38000},
+    {name:"Electrical cable 2.5 mm²", cat:"Electrical", unit:"roll", stage:"services", units:["roll","m"], min:1, base:6200},
+    {name:"PVC conduit 20 mm", cat:"Electrical", unit:"pcs", stage:"services", units:["pcs","bundle"], min:50, base:95},
+    {name:"Distribution board 12 way", cat:"Electrical", unit:"pcs", stage:"services", units:["pcs"], min:1, base:4200},
+    {name:"Sino truck (10 wheel) hire", cat:"Equipment rental", unit:"trip", stage:"equipment", units:["trip","day"], min:1, base:6500},
+    {name:"Excavator hire with operator", cat:"Equipment rental", unit:"day", stage:"equipment", units:["day","hour"], min:1, base:22000},
+    {name:"Forklift hire", cat:"Equipment rental", unit:"day", stage:"equipment", units:["day","hour"], min:1, base:9000},
+    {name:"Trailer bed hire", cat:"Equipment rental", unit:"trip", stage:"equipment", units:["trip","day"], min:1, base:12000},
+    {name:"Concrete mixer hire", cat:"Equipment rental", unit:"day", stage:"equipment", units:["day","hour"], min:1, base:3500}
   ];
-  BS.UNITS = ["pcs","bag","quintal","ton","kg","m³","truckload","m²","m","litre","roll","sheet","bundle","package","trip","hour","day"];
+  BS.UNITS = ["pcs","bag","quintal","ton","kg","m³","truckload","m²","m","litre","bucket","roll","sheet","box","bundle","package","trip","hour","day"]; /* free-text items only; catalogue items carry their own units and an example minimum order */
   BS.CATEGORIES = ["Cement","Aggregates and fill","Reinforcement steel","Blocks, bricks and stone","Structural steel and roofing","Formwork, timber and scaffolding","Finishing: tiles and floors","Finishing: paint and plaster","Plumbing and sanitary","Electrical","Equipment rental","Other (staff will classify)"];
   BS.DESKS = {"Cement":"Structural materials desk","Aggregates and fill":"Structural materials desk","Blocks, bricks and stone":"Structural materials desk","Reinforcement steel":"Steel desk","Structural steel and roofing":"Steel desk","Formwork, timber and scaffolding":"Timber and equipment desk","Equipment rental":"Timber and equipment desk","Finishing: tiles and floors":"Finishing desk","Finishing: paint and plaster":"Finishing desk","Plumbing and sanitary":"Services desk","Electrical":"Services desk","Other (staff will classify)":"Technical supervisor"};
   /* Suppliers on the test site. auto:true suppliers answer requests by themselves (the test site simulates them);
@@ -154,6 +154,62 @@
   BS.catOf = function(name){ var c=BS.CATALOGUE.filter(function(x){return x.name===name;})[0]; return c?c.cat:"Other (staff will classify)"; };
   BS.baseOf = function(name){ var c=BS.CATALOGUE.filter(function(x){return x.name===name;})[0]; return c?c.base:0; };
   BS.unitOf = function(name){ var c=BS.CATALOGUE.filter(function(x){return x.name===name;})[0]; return c?c.unit:"pcs"; };
+  BS.itemOf = function(name){ return BS.CATALOGUE.filter(function(x){return x.name===name;})[0]; };
+  BS.unitsOf = function(name){ var c=BS.itemOf(name); return c ? (c.units||[c.unit]) : BS.UNITS; };
+  BS.minOf = function(name){ var c=BS.itemOf(name); return c ? (c.min||1) : 1; };
+  /* loose match for names typed or uploaded from Excel: exact, then starts-with, then contains */
+  BS.findItem = function(text){
+    var t=String(text||"").trim().toLowerCase(); if(!t) return null;
+    var c=BS.CATALOGUE.filter(function(x){return x.name.toLowerCase()===t;})[0]; if(c) return c;
+    c=BS.CATALOGUE.filter(function(x){return x.name.toLowerCase().indexOf(t)===0 || t.indexOf(x.name.toLowerCase())===0;})[0]; if(c) return c;
+    return BS.CATALOGUE.filter(function(x){ var k=x.name.toLowerCase().split(" ")[0]; return k.length>3 && t.indexOf(k)>=0 && (x.name.toLowerCase().split(" ")[1]||"") && t.indexOf(x.name.toLowerCase().split(" ")[1])>=0; })[0] || null;
+  };
+
+  /* ---- Reading an uploaded BOQ: .xlsx (read here, no library) or .csv / tab-separated text. Returns rows as arrays of cell values. ---- */
+  function csvRows(text){
+    var sep = text.indexOf("\t")>=0 ? "\t" : (text.split(";").length>text.split(",").length ? ";" : ",");
+    return text.split(/\r?\n/).map(function(line){
+      var out=[], cur="", q=false;
+      for(var i=0;i<line.length;i++){ var ch=line[i];
+        if(q){ if(ch==='"'){ if(line[i+1]==='"'){ cur+='"'; i++; } else q=false; } else cur+=ch; }
+        else if(ch==='"') q=true; else if(ch===sep){ out.push(cur); cur=""; } else cur+=ch; }
+      out.push(cur); return out;
+    }).filter(function(r){ return r.some(function(c){ return String(c).trim()!==""; }); });
+  }
+  function unxml(t){ return String(t).replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&#(\d+);/g,function(_,d){return String.fromCharCode(+d);}).replace(/&amp;/g,"&"); }
+  function xlsxRows(u8){
+    var dv=new DataView(u8.buffer,u8.byteOffset,u8.byteLength), dec=new TextDecoder();
+    var i=u8.length-22; while(i>=0 && dv.getUint32(i,true)!==0x06054b50) i--; if(i<0) return Promise.reject(new Error("not an Excel file"));
+    var count=dv.getUint16(i+10,true), p=dv.getUint32(i+16,true), entries={};
+    for(var k=0;k<count;k++){ if(dv.getUint32(p,true)!==0x02014b50) break;
+      var fnl=dv.getUint16(p+28,true), exl=dv.getUint16(p+30,true), cml=dv.getUint16(p+32,true);
+      entries[dec.decode(u8.subarray(p+46,p+46+fnl))]={method:dv.getUint16(p+10,true), csize:dv.getUint32(p+20,true), off:dv.getUint32(p+42,true)};
+      p+=46+fnl+exl+cml; }
+    function get(name){ var e=entries[name]; if(!e) return Promise.resolve("");
+      var lf=e.off, start=lf+30+dv.getUint16(lf+26,true)+dv.getUint16(lf+28,true), data=u8.subarray(start,start+e.csize);
+      if(e.method===0) return Promise.resolve(dec.decode(data));
+      var ds=new DecompressionStream("deflate-raw"), w=ds.writable.getWriter(); w.write(data); w.close(); return new Response(ds.readable).text(); }
+    return Promise.all([get("xl/workbook.xml"), get("xl/_rels/workbook.xml.rels"), get("xl/sharedStrings.xml")]).then(function(r){
+      var sheet="xl/worksheets/sheet1.xml", m=/<sheet\b[^>]*\br:id="([^"]+)"/.exec(r[0]);
+      if(m){ var rel=new RegExp('<Relationship\\b[^>]*\\bId="'+m[1]+'"[^>]*>').exec(r[1]); var tg=rel && /Target="([^"]+)"/.exec(rel[0]); if(tg) sheet = tg[1].charAt(0)==="/" ? tg[1].slice(1) : "xl/"+tg[1].replace(/^\.\//,""); }
+      var ss=[]; (r[2].match(/<si>[\s\S]*?<\/si>/g)||[]).forEach(function(si){ ss.push(unxml((si.match(/<t[^>]*>[\s\S]*?<\/t>/g)||[]).map(function(t){ return t.replace(/^<t[^>]*>/,"").replace(/<\/t>$/,""); }).join(""))); });
+      return get(sheet).then(function(xml){
+        var rows=[]; (xml.match(/<row\b[\s\S]*?<\/row>/g)||[]).forEach(function(row){
+          var cells=[]; var re=/<c\b([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g, c;
+          while((c=re.exec(row))){ var attrs=c[1], body=c[2]||"", ref=/r="([A-Z]+)/.exec(attrs), col=0; if(ref){ for(var j=0;j<ref[1].length;j++) col=col*26+(ref[1].charCodeAt(j)-64); col--; } else col=cells.length;
+            var type=(/t="([^"]+)"/.exec(attrs)||[])[1], v=(/<v>([\s\S]*?)<\/v>/.exec(body)||[])[1], val="";
+            if(type==="s") val=ss[+v]||""; else if(type==="inlineStr") val=unxml((body.match(/<t[^>]*>[\s\S]*?<\/t>/g)||[]).map(function(t){ return t.replace(/^<t[^>]*>/,"").replace(/<\/t>$/,""); }).join("")); else if(type==="str"||type==="b") val=unxml(v||""); else val = v===undefined ? "" : +v;
+            cells[col]=val; }
+          for(var z=0;z<cells.length;z++) if(cells[z]===undefined) cells[z]="";
+          if(cells.some(function(x){ return String(x).trim()!==""; })) rows.push(cells); });
+        return rows; }); });
+  }
+  BS.readSheet = function(file){
+    var name=(file.name||"").toLowerCase();
+    if(/\.xlsx$/.test(name)) return file.arrayBuffer().then(function(b){ return xlsxRows(new Uint8Array(b)); });
+    return file.text().then(csvRows);
+  };
+  BS.excelDate = function(n){ return new Date(Date.UTC(1899,11,30)+Math.round(n)*86400000).toISOString().slice(0,10); };
   BS.days = function(ms){ return Math.max(0, Math.ceil(ms/86400000)); };
 
   /* ---- Store ---- */
