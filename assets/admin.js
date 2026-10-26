@@ -3,7 +3,7 @@
    Staff sign in with a staff number and the staff password; the session is kept per browser tab. */
 (function(){
   var $=function(id){ return document.getElementById(id); };
-  var data={boqs:[],offers:[],messages:[],profiles:[],news:[],verifications:[],settings:[]};
+  var data={boqs:[],offers:[],messages:[],profiles:[],news:[],verifications:[],settings:[],issues:[]}, query='';
   var tab='overview', mode='local', booted=false, adTilesHtml='';
   var CATS=BS.CATEGORIES.filter(function(c){ return c.indexOf('Other')<0; });
   function esc(t){ return String(t||'').replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
@@ -27,7 +27,7 @@
   function showPanel(){ $('adLogin').hidden=true; $('adPanel').hidden=false; $('adMeta').textContent='Signed in as '+staffName()+' · '+(mode==='shared'?'shared database: every device sees the same records':'this device only: shared database not configured yet'); render(); }
   BSRoute.on('admin', function(){ if(isAdmin()) showPanel(); else showLogin(); });
   BS.ready().then(function(m){ mode=m; if(isAdmin() && !$('adPanel').hidden) $('adMeta').textContent='Signed in as '+staffName()+' · '+(m==='shared'?'shared database':'this device only'); });
-  ['boqs','offers','messages','profiles','news','verifications','settings'].forEach(function(c){ BS.subscribe(c, function(d){ data[c]=d||[]; if(c==='settings') BS.applySettings(d||[]); if(isAdmin() && !$('adPanel').hidden) render(); }); });
+  ['boqs','offers','messages','profiles','news','verifications','settings','issues'].forEach(function(c){ BS.subscribe(c, function(d){ data[c]=d||[]; if(c==='settings') BS.applySettings(d||[]); if(isAdmin() && !$('adPanel').hidden) render(); }); });
   $('adTabs').addEventListener('click', function(e){ var b=e.target.closest('[data-tab]'); if(!b) return; tab=b.dataset.tab; render(); });
 
   /* ---- helpers over the records ---- */
@@ -36,7 +36,7 @@
   function openBoq(b){ return b.status!=='withdrawn' && new Date(b.deadlineAt)>new Date(); }
   function unclassified(){ var out=[]; data.boqs.forEach(function(b){ (b.lines||[]).forEach(function(l){ if(/Other/.test(l.cat||'')) out.push({b:b,l:l}); }); }); return out; }
   function threads(){
-    var by={}; data.messages.forEach(function(m){ var k=m.phone||'?'; (by[k]=by[k]||{phone:k,name:'',msgs:[]}).msgs.push(m); if(m.name) by[k].name=m.name; });
+    var by={}; data.messages.forEach(function(m){ if(m.orderId) return; var k=m.phone||'?'; (by[k]=by[k]||{phone:k,name:'',msgs:[]}).msgs.push(m); if(m.name) by[k].name=m.name; });
     return Object.keys(by).map(function(k){ var t=by[k]; t.msgs.sort(function(a,c){ return (a.createdAt||'').localeCompare(c.createdAt||''); }); var last=t.msgs[t.msgs.length-1]; t.last=last; t.waiting = t.msgs.filter(function(m){ return m.who==='customer'; }).length>0 && !t.msgs.some(function(m){ return m.who==='staff' && m.staff; }) || (last && last.who==='customer'); return t; }).sort(function(a,c){ return (c.last.createdAt||'').localeCompare(a.last.createdAt||''); });
   }
   function paid(){ return data.offers.filter(function(o){ return o.paidAt; }).sort(function(a,c){ return (c.paidAt||'').localeCompare(a.paidAt||''); }); }
@@ -47,16 +47,29 @@
     var pendV=data.verifications.filter(function(v){ return v.status==='pending'; }).length;
     var waiting=threads().filter(function(t){ return t.waiting; }).length;
     var pendN=data.news.filter(function(x){ return x.status==='pending'; }).length;
+    var openI=data.issues.filter(function(x){ return x.status==='open'; }).length;
     var inProg=data.offers.filter(function(o){ return o.status==='accepted' && !o.paidAt; }).length;
     var fees=0; paid().forEach(function(o){ fees+=offerTotal(o)*BS.FEE_RATE; });
-    var tiles=[[data.boqs.filter(openBoq).length,'Open requests','requests'],[unclassified().length,'Lines to classify','requests'],[pendV,'Suppliers awaiting verification','suppliers'],[waiting,'Support threads waiting','support'],[pendN,'Newsletter items pending','news'],[inProg,'Orders in progress','finance'],[paid().length,'Orders paid','finance'],[BS.fmt(fees),'Fees earned ('+BS.pct(BS.FEE_RATE)+')','finance']];
+    var tiles=[[data.boqs.filter(openBoq).length,'Open requests','requests'],[unclassified().length,'Lines to classify','requests'],[pendV,'Suppliers awaiting verification','suppliers'],[waiting,'Support threads waiting','support'],[pendN,'Newsletter items pending','news'],[openI,'Problems reported','support'],[inProg,'Orders in progress','finance'],[paid().length,'Orders paid','finance'],[BS.fmt(fees),'Fees earned ('+BS.pct(BS.FEE_RATE)+')','finance']];
     adTilesHtml='<div class="queue" id="adTiles">'+tiles.map(function(t){ return '<button type="button" class="q" data-go="'+t[2]+'" style="text-align:left;cursor:pointer;font:inherit"><strong style="font-size:1.4rem">'+t[0]+'</strong><span class="small muted">'+t[1]+'</span></button>'; }).join('')+'</div>';
     $('adTabs').querySelectorAll('button').forEach(function(b){ b.classList.toggle('on', b.dataset.tab===tab); });
     var r={overview:renderOverview, requests:renderRequests, suppliers:renderSuppliers, support:renderSupport, news:renderNews, members:renderMembers, finance:renderFinance, insights:renderInsights, settings:renderSettings}[tab]||renderOverview;
-    $('adBody').innerHTML=r();
+    $('adBody').innerHTML=searchHtml()+r();
   }
   $('adBody').addEventListener('click', function(e){ var b=e.target.closest('[data-go]'); if(!b) return; tab=b.dataset.go; render(); });
 
+  function searchHtml(){
+    var q=query.trim().toLowerCase(); if(!q) return '';
+    var hit=function(){ return Array.prototype.slice.call(arguments).some(function(v){ return String(v||'').toLowerCase().indexOf(q)>=0; }); };
+    var rows=[];
+    data.boqs.forEach(function(b){ if(hit(b.ref,b.company,b.ownerPhone,b.customerNo,b.subcity)) rows.push('<div class="doc"><span class="ico">RQ</span><span><strong>'+esc(b.ref)+'</strong> · '+esc(b.company)+' · '+esc(b.subcity)+' · '+(b.lines||[]).length+' lines · '+esc(b.status)+'</span><a class="btn btn-ghost btn-sm" href="#" data-tab-go="requests">Open</a></div>'); });
+    data.offers.filter(function(o){ return o.status==='accepted'; }).forEach(function(o){ if(hit(o.poRef,o.supplierName,o.customerRevealed,o.paymentRef,o.handoverCode)) rows.push('<div class="doc"><span class="ico">PO</span><span><strong>'+esc(o.poRef)+'</strong> · '+esc(o.customerRevealed)+' ← '+esc(o.supplierName)+' · '+BS.fmt(offerTotal(o))+' · '+(o.paidAt?'paid':o.deliveredAt?'delivered':o.dispatchedAt?'on the way':o.contractAt?'contract':'PO')+'</span><a class="btn btn-ghost btn-sm" href="#order-'+o.id+'">Order page</a></div>'); });
+    data.verifications.forEach(function(v){ if(hit(v.company,v.phone,v.tin,v.lic)) rows.push('<div class="doc"><span class="ico">SU</span><span><strong>'+esc(v.company)+'</strong> · '+fmtPhone(v.phone)+' · '+esc(v.status)+'</span><a class="btn btn-ghost btn-sm" href="#" data-tab-go="suppliers">Open</a></div>'); });
+    BS.SUPPLIERS.forEach(function(x){ if(hit(x.name,x.sub)) rows.push('<div class="doc"><span class="ico">SU</span><span><strong>'+esc(x.name)+'</strong> · '+esc(x.cats.join(', '))+'</span><span class="tag tag-green">Verified</span></div>'); });
+    data.issues.forEach(function(x){ if(hit(x.poRef,x.who,x.text)) rows.push('<div class="doc"><span class="ico">!</span><span><strong>'+esc(x.poRef)+'</strong> · '+esc(x.text)+' · '+esc(x.status)+'</span><a class="btn btn-ghost btn-sm" href="#order-'+x.offerId+'">Order page</a></div>'); });
+    return card('Search · '+esc(query), rows.length+' result'+(rows.length===1?'':'s')+' across requests, orders, suppliers and problems.', rows.length?'<div class="docs">'+rows.slice(0,30).join('')+'</div>':'<div class="empty">Nothing matches.</div>');
+  }
+  $('adSearch').addEventListener('input', function(){ query=this.value; render(); });
   function card(title, sub, body){ return '<section class="card" style="display:grid;gap:.7rem"><div><strong style="font-family:var(--display);font-size:1.05rem">'+title+'</strong>'+(sub?'<p class="small muted">'+sub+'</p>':'')+'</div>'+body+'</section>'; }
   function renderOverview(){
     var recent=[];
@@ -70,6 +83,7 @@
     var pv=data.verifications.filter(function(v){return v.status==='pending';}).length; if(pv) todo.push('<a href="#" data-tab-go="suppliers">'+pv+' supplier(s) waiting for verification</a>');
     var w=threads().filter(function(t){return t.waiting;}).length; if(w) todo.push('<a href="#" data-tab-go="support">'+w+' support thread(s) waiting for an answer</a>');
     var pn=data.news.filter(function(x){return x.status==='pending';}).length; if(pn) todo.push('<a href="#" data-tab-go="news">'+pn+' newsletter item(s) to check</a>');
+    var oi=data.issues.filter(function(x){return x.status==='open';}).length; if(oi) todo.push('<a href="#" data-tab-go="support">'+oi+' problem(s) reported on orders</a>');
     return adTilesHtml+'<div class="grid2" style="align-items:start">'+card('To do today','', todo.length?'<ul style="margin:0;padding-left:1.1rem;display:grid;gap:.3rem">'+todo.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul>':'<div class="empty">Nothing waiting. New requests, documents and messages appear here as they come in.</div>')+
       card('Latest activity','Across all members, newest first.','<div class="docs">'+(recent.slice(0,15).map(function(r){ return '<div class="doc"><span class="small muted" style="white-space:nowrap">'+when(r[0])+'</span><span>'+r[1]+'</span><span></span></div>'; }).join('')||'<div class="empty">No activity yet.</div>')+'</div>')+'</div>';
   }
@@ -115,9 +129,14 @@
     var c=e.target.closest('[data-close]'); if(c){ c.disabled=true; await BS.update('boqs', c.dataset.close, {status:'withdrawn', withdrawnAt:new Date().toISOString(), closedBy:staffName()}); bsToast('Request closed.'); return; }
   });
 
+  function renderIssues(){
+    var list=data.issues.slice().sort(function(a,c){ return (a.status==='open'?0:1)-(c.status==='open'?0:1) || (c.createdAt||'').localeCompare(a.createdAt||''); });
+    return card('Problems reported on orders','Damage, wrong quantity, delay, invoice. Open the order to read the messages, then resolve with a note; both parties are notified.', list.length?'<div class="docs">'+list.map(function(x){ return '<div class="doc"><span class="ico">!</span><span><strong>'+esc(x.poRef)+'</strong> · '+esc(x.who)+' ('+esc(x.role)+') · '+when(x.createdAt)+'<br>'+esc(x.text)+(x.status==='resolved'?'<br><span class="small muted">Resolved by '+esc(x.by||'staff')+(x.note?': '+esc(x.note):'')+'</span>':'')+'</span><span style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center"><a class="btn btn-ghost btn-sm" href="#order-'+x.offerId+'">Order page</a>'+(x.status==='open'?'<input placeholder="Resolution note" data-inote="'+x.id+'" style="font:inherit;font-size:.85rem;padding:.35rem .5rem;border:1.5px solid var(--line);border-radius:8px;min-width:10rem"><button class="btn btn-primary btn-sm" type="button" data-iresolve="'+x.id+'">Resolve</button>':'<span class="tag tag-green">Resolved</span>')+'</span></div>'; }).join('')+'</div>':'<div class="empty">Nothing reported.</div>');
+  }
+  $('adBody').addEventListener('click', async function(e){ var r=e.target.closest('[data-iresolve]'); if(!r) return; var note=(document.querySelector('[data-inote="'+r.dataset.iresolve+'"]')||{}).value||''; r.disabled=true; await BS.update('issues', r.dataset.iresolve, {status:'resolved', note:note, by:staffName(), resolvedAt:new Date().toISOString()}); bsToast('Resolved. Both parties are notified.'); });
   function renderSupport(){
-    var ts=threads(); if(!ts.length) return card('Support inbox','Messages members send from their Mailbox.','<div class="empty">No messages yet.</div>');
-    return ts.map(function(t){
+    var ts=threads(); var issuesHtml=renderIssues(); if(!ts.length) return issuesHtml+card('Support inbox','Messages members send from their Mailbox.','<div class="empty">No messages yet.</div>');
+    return issuesHtml+ts.map(function(t){
       var msgs=t.msgs.map(function(m){ return '<div class="msg '+(m.who==='staff'?'me':'')+'"><div class="t">'+(m.who==='staff'?(m.staff?esc(m.staff):'Auto-reply'):esc(t.name||'Member'))+' · '+when(m.createdAt)+'</div>'+esc(m.text)+'</div>'; }).join('');
       return '<section class="card" style="display:grid;gap:.6rem"><div style="display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap;align-items:center"><div><strong style="font-family:var(--display)">'+esc(t.name||'Member')+'</strong> <span class="small muted">'+fmtPhone(t.phone)+'</span></div>'+(t.waiting?'<span class="tag tag-ochre">Waiting for an answer</span>':'<span class="tag tag-green">Answered</span>')+'</div><div class="chat" style="max-height:16rem;overflow:auto">'+msgs+'</div><div class="chat-in"><div class="field"><input placeholder="Reply as Build Smartly support…" data-reply="'+esc(t.phone)+'"></div><button class="btn btn-primary btn-sm" type="button" data-send="'+esc(t.phone)+'">Send</button></div></section>';
     }).join('');
@@ -151,11 +170,11 @@
 
   function renderFinance(){
     var rows=paid(), goods=0, fees=0;
-    var html=rows.map(function(o){ var b=boqOf(o.boqId)||{}; var t=offerTotal(o), f=Math.round(t*BS.FEE_RATE); goods+=t; fees+=f; return '<tr><td>'+when(o.paidAt)+'</td><td>'+esc(o.poRef)+'</td><td>'+esc(b.company||o.customerRevealed||'')+'</td><td>'+esc(o.supplierName)+'</td><td style="text-align:right">'+BS.fmt(t)+'</td><td style="text-align:right">'+BS.fmt(f)+'</td><td>'+esc(o.paymentRef||'')+'</td></tr>'; }).join('');
+    var html=rows.map(function(o){ var b=boqOf(o.boqId)||{}; var t=offerTotal(o), f=Math.round(t*BS.FEE_RATE); goods+=t; fees+=f; return '<tr><td>'+when(o.paidAt)+'</td><td><a href="#order-'+o.id+'">'+esc(o.poRef)+'</a></td><td>'+esc(b.company||o.customerRevealed||'')+'</td><td>'+esc(o.supplierName)+'</td><td style="text-align:right">'+BS.fmt(t)+'</td><td style="text-align:right">'+BS.fmt(f)+'</td><td>'+esc(o.paymentRef||'')+'</td></tr>'; }).join('');
     var inprog=data.offers.filter(function(o){ return o.status==='accepted' && !o.paidAt; });
     return card('Completed sales and fees','Fee '+BS.pct(BS.FEE_RATE)+' of each paid order (example rate until the owner sets it). Settled with the supplier when the gateway confirms.',
       (rows.length? '<div style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:.9rem"><thead><tr style="text-align:left;color:var(--fg-2)"><th>Paid</th><th>PO</th><th>Buyer</th><th>Supplier</th><th style="text-align:right">Order value</th><th style="text-align:right">Fee</th><th>Payment ref</th></tr></thead><tbody>'+html+'</tbody><tfoot><tr style="font-weight:700"><td colspan="4">Total · '+rows.length+' orders</td><td style="text-align:right">'+BS.fmt(goods)+'</td><td style="text-align:right">'+BS.fmt(fees)+'</td><td></td></tr></tfoot></table></div><div><button class="btn btn-ghost btn-sm" type="button" id="adCsv">Download as CSV</button></div>' : '<div class="empty">No paid orders yet.</div>'))+
-      card('Orders in progress','Accepted, not yet paid.', inprog.length? '<div class="docs">'+inprog.map(function(o){ var b=boqOf(o.boqId)||{}; return '<div class="doc"><span class="ico">PO</span><span><strong>'+esc(o.poRef)+'</strong> · '+esc(b.company||'')+' ← '+esc(o.supplierName)+' · '+BS.fmt(offerTotal(o))+'</span><span class="tag">'+(o.deliveredAt?'Delivered, payment due':o.dispatchedAt?'On the way':o.readyAt?'Goods ready':o.supplierConfirmed?'Contract':'Awaiting reconfirmation')+'</span></div>'; }).join('')+'</div>' : '<div class="empty">None.</div>');
+      card('Orders in progress','Accepted, not yet paid.', inprog.length? '<div class="docs">'+inprog.map(function(o){ var b=boqOf(o.boqId)||{}; return '<div class="doc"><span class="ico">PO</span><span><strong><a href="#order-'+o.id+'">'+esc(o.poRef)+'</a></strong> · '+esc(b.company||'')+' ← '+esc(o.supplierName)+' · '+BS.fmt(offerTotal(o))+'</span><span class="tag">'+(o.deliveredAt?'Delivered, payment due':o.dispatchedAt?'On the way':o.readyAt?'Goods ready':o.contractAt?'Contract in force':o.supplierConfirmed?'Awaiting buyer agreement':'Awaiting reconfirmation')+'</span></div>'; }).join('')+'</div>' : '<div class="empty">None.</div>');
   }
   $('adBody').addEventListener('click', function(e){
     if(e.target.id!=='adCsv') return;

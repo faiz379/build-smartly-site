@@ -374,7 +374,7 @@
     });
     return function(){ cancelled = true; if(unsub) unsub(); listeners[col]=(listeners[col]||[]).filter(function(x){return x!==cb;}); };
   };
-  BS.clearLocal = function(){ ["boqs","offers","messages","profiles","news","verifications","settings"].forEach(function(c){ try{ localStorage.removeItem(LS(c)); }catch(e){} notifyLocal(c); }); };
+  BS.clearLocal = function(){ ["boqs","offers","messages","profiles","news","verifications","settings","issues"].forEach(function(c){ try{ localStorage.removeItem(LS(c)); }catch(e){} notifyLocal(c); }); };
 
   /* who am I on this device (demo only). Accounts seen on this device are remembered by mobile number,
      so a number that signs in again after logging out gets its details back (the real app does this server-side). */
