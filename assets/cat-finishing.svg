@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Finishing: tiles, paint, roller, door and tap">
+  <circle cx="200" cy="200" r="200" fill="#F6F7F4"/>
+  <ellipse cx="200" cy="330" rx="150" ry="20" fill="#E3DED3"/>
+  <!-- tiles -->
+  <g stroke="#F6F7F4" stroke-width="4">
+    <rect x="50" y="200" width="60" height="60" fill="#E8DCCB"/><rect x="110" y="200" width="60" height="60" fill="#D5C2A8"/>
+    <rect x="50" y="260" width="60" height="60" fill="#D5C2A8"/><rect x="110" y="260" width="60" height="60" fill="#E8DCCB"/>
+  </g>
+  <!-- paint bucket and roller -->
+  <g>
+    <rect x="200" y="230" width="90" height="90" rx="8" fill="#F0EEE8" stroke="#B9B4A8" stroke-width="3"/>
+    <ellipse cx="245" cy="232" rx="45" ry="10" fill="#E3A63A"/>
+    <path d="M205 232 Q245 260 285 232" fill="#C98C22"/>
+    <rect x="300" y="150" width="60" height="30" rx="8" fill="#E3A63A"/>
+    <path d="M330 180 v40 h30 v60" fill="none" stroke="#5B6B64" stroke-width="8" stroke-linecap="round"/>
+  </g>
+  <!-- door -->
+  <rect x="200" y="70" width="80" height="140" rx="6" fill="#7A5C3A"/>
+  <rect x="212" y="84" width="56" height="50" rx="3" fill="#8E6B45"/><rect x="212" y="146" width="56" height="50" rx="3" fill="#8E6B45"/>
+  <circle cx="266" cy="142" r="5" fill="#E3A63A"/>
+  <!-- tap -->
+  <g fill="none" stroke="#5B6B64" stroke-width="10" stroke-linecap="round"><path d="M80 130 h50 a20 20 0 0 1 20 20 v20"/></g>
+  <circle cx="80" cy="130" r="14" fill="#1E6B4E"/>
+  <path d="M150 180 q0 14 -6 20 q-6 -6 -6 -20z" fill="#1E6B4E"/>
+</svg>

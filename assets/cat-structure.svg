@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Structure: concrete frame with hollow blocks and a crane">
+  <circle cx="200" cy="200" r="200" fill="#F6F7F4"/>
+  <ellipse cx="200" cy="330" rx="150" ry="20" fill="#E3DED3"/>
+  <!-- crane -->
+  <g stroke="#E3A63A" stroke-width="8" fill="none" stroke-linecap="round"><path d="M70 330V70M70 70H230M70 100L130 70M70 130L190 70"/></g>
+  <path d="M200 70v50" stroke="#5B6B64" stroke-width="3"/><rect x="186" y="120" width="28" height="18" rx="3" fill="#B9B4A8"/>
+  <!-- concrete frame -->
+  <g fill="#A8ADA6">
+    <rect x="150" y="150" width="200" height="16"/><rect x="150" y="230" width="200" height="16"/><rect x="150" y="310" width="200" height="16"/>
+    <rect x="150" y="150" width="16" height="176"/><rect x="242" y="150" width="16" height="176"/><rect x="334" y="150" width="16" height="176"/>
+  </g>
+  <!-- hollow blocks in bays -->
+  <g fill="#C9C4B8" stroke="#A8A39A" stroke-width="2">
+    <rect x="170" y="250" width="30" height="18"/><rect x="202" y="250" width="30" height="18"/><rect x="186" y="270" width="30" height="18"/><rect x="170" y="290" width="30" height="18"/><rect x="202" y="290" width="30" height="18"/>
+    <rect x="262" y="250" width="30" height="18"/><rect x="294" y="250" width="30" height="18"/><rect x="278" y="270" width="30" height="18"/>
+  </g>
+  <!-- rebar sticking up -->
+  <g stroke="#7A5C3A" stroke-width="4" stroke-linecap="round"><path d="M158 150v-30M250 150v-30M342 150v-30"/></g>
+  <!-- ready-mix truck hint -->
+  <g>
+    <rect x="40" y="290" width="70" height="30" rx="5" fill="#1E6B4E"/>
+    <path d="M60 290 Q75 250 110 262 L110 290z" fill="#1E6B4E"/>
+    <circle cx="58" cy="322" r="9" fill="#14241E"/><circle cx="96" cy="322" r="9" fill="#14241E"/>
+  </g>
+</svg>

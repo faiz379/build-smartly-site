@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Electrical and plumbing: cable reel, pipes, distribution board and water tank">
+  <circle cx="200" cy="200" r="200" fill="#F6F7F4"/>
+  <ellipse cx="200" cy="330" rx="150" ry="20" fill="#E3DED3"/>
+  <!-- cable reel -->
+  <g>
+    <circle cx="110" cy="250" r="62" fill="#D9D3C7"/><circle cx="110" cy="250" r="44" fill="#1E6B4E"/><circle cx="110" cy="250" r="12" fill="#D9D3C7"/>
+    <path d="M150 220 q60 -40 110 10" fill="none" stroke="#1E6B4E" stroke-width="8" stroke-linecap="round"/>
+  </g>
+  <!-- distribution board -->
+  <rect x="240" y="80" width="110" height="90" rx="8" fill="#F0EEE8" stroke="#B9B4A8" stroke-width="3"/>
+  <g fill="#14241E"><rect x="254" y="98" width="14" height="24" rx="2"/><rect x="274" y="98" width="14" height="24" rx="2"/><rect x="294" y="98" width="14" height="24" rx="2"/><rect x="314" y="98" width="14" height="24" rx="2"/></g>
+  <g fill="#E3A63A"><rect x="254" y="134" width="14" height="24" rx="2"/><rect x="274" y="134" width="14" height="24" rx="2"/></g>
+  <!-- pipes -->
+  <g fill="none" stroke-linecap="round" stroke-width="18">
+    <path d="M230 300 H330 a20 20 0 0 0 20 -20 V210" stroke="#1E6B4E"/>
+    <path d="M200 260 H260" stroke="#5B6B64"/>
+  </g>
+  <g fill="none" stroke-linecap="round" stroke-width="8" stroke="#F6F7F4" opacity=".4"><path d="M236 296 H326"/></g>
+  <!-- water tank -->
+  <g><rect x="60" y="80" width="90" height="100" rx="20" fill="#14241E"/><rect x="60" y="80" width="90" height="24" rx="12" fill="#2B3A33"/><text x="105" y="150" text-anchor="middle" font-family="Sora, Arial" font-size="18" font-weight="700" fill="#F6F7F4">5000 L</text></g>
+</svg>

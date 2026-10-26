@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Equipment rental: Sino truck and excavator">
+  <circle cx="200" cy="200" r="200" fill="#F6F7F4"/>
+  <ellipse cx="200" cy="330" rx="155" ry="20" fill="#E3DED3"/>
+  <!-- excavator -->
+  <g>
+    <rect x="40" y="250" width="110" height="50" rx="8" fill="#E3A63A"/>
+    <rect x="70" y="210" width="60" height="44" rx="8" fill="#C98C22"/>
+    <rect x="80" y="218" width="26" height="20" rx="3" fill="#F6F7F4"/>
+    <rect x="30" y="296" width="130" height="26" rx="13" fill="#14241E"/>
+    <circle cx="60" cy="309" r="8" fill="#5B6B64"/><circle cx="95" cy="309" r="8" fill="#5B6B64"/><circle cx="130" cy="309" r="8" fill="#5B6B64"/>
+    <path d="M130 240 L190 170 L230 200" fill="none" stroke="#C98C22" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M230 200 q30 20 10 50 l-30 -10z" fill="#5B6B64"/>
+  </g>
+  <!-- Sino truck -->
+  <g>
+    <path d="M200 300 V230 l30 -30 h120 l10 10 v90z" fill="#1E6B4E"/>
+    <rect x="300" y="210" width="50" height="34" rx="4" fill="#F6F7F4"/>
+    <rect x="200" y="300" width="160" height="12" fill="#12402F"/>
+    <rect x="214" y="236" width="80" height="50" rx="4" fill="#2B5A47"/>
+    <circle cx="232" cy="314" r="16" fill="#14241E"/><circle cx="262" cy="314" r="16" fill="#14241E"/><circle cx="332" cy="314" r="16" fill="#14241E"/>
+    <circle cx="232" cy="314" r="6" fill="#5B6B64"/><circle cx="262" cy="314" r="6" fill="#5B6B64"/><circle cx="332" cy="314" r="6" fill="#5B6B64"/>
+    <text x="252" y="268" text-anchor="middle" font-family="Sora, Arial" font-size="18" font-weight="800" fill="#E3A63A">SINO</text>
+  </g>
+  <!-- forklift hint -->
+  <g><rect x="320" y="110" width="40" height="40" rx="6" fill="#E3A63A"/><rect x="300" y="150" width="60" height="20" rx="4" fill="#C98C22"/><path d="M300 170 v20 h-30" fill="none" stroke="#5B6B64" stroke-width="8"/><circle cx="312" cy="178" r="8" fill="#14241E"/><circle cx="350" cy="178" r="8" fill="#14241E"/></g>
+</svg>
