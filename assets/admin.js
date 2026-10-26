@@ -19,10 +19,10 @@
   $('adGo').onclick=function(){
     var d=digits($('adPhone').value), st=BS.STAFF.filter(function(a){ return a.phone===d; })[0];
     var ok=!!st && $('adPw').value===BS.STAFF_PASSWORD; $('adErr').hidden=ok; if(!ok){ $('adPw').focus(); return; }
-    setAdmin(true, st.person); $('adPw').value=''; showPanel(); bsToast('Signed in as '+st.person+'.');
+    setAdmin(true, st.person); BS.clearMeTab(); $('adPw').value=''; showPanel(); if(window.BSAuth) BSAuth.refresh(); bsToast('Signed in as '+st.person+'.');
   };
   $('adPw').addEventListener('keydown', function(e){ if(e.key==='Enter') $('adGo').click(); });
-  $('adLogout').onclick=function(){ setAdmin(false,''); showLogin(); bsToast('Signed out of the staff page.'); };
+  $('adLogout').onclick=function(){ setAdmin(false,''); showLogin(); if(window.BSAuth) BSAuth.refresh(); bsToast('Signed out of the staff page.'); };
   function showLogin(){ $('adLogin').hidden=false; $('adPanel').hidden=true; }
   function showPanel(){ $('adLogin').hidden=true; $('adPanel').hidden=false; $('adMeta').textContent='Signed in as '+staffName()+' · '+(mode==='shared'?'shared database: every device sees the same records':'this device only: shared database not configured yet'); render(); }
   BSRoute.on('admin', function(){ if(isAdmin()) showPanel(); else showLogin(); });

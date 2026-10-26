@@ -515,9 +515,10 @@ details.line-offers[open] summary::before{content:"▾"}
       <details class="acct" id="authIn" hidden>
         <summary class="btn btn-primary btn-sm"><span id="authName">Account</span> <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l5 5 5-5"/></svg></summary>
         <div class="acct-menu">
+          <a href="#staff" id="authStaff" hidden>Staff page</a>
           <a href="#workspace" id="authHome">My workspace</a>
           <a href="#supplier" id="authPortal">Supplier portal</a>
-          <a href="#boq">Send a request</a>
+          <a href="#boq" id="authBoq">Send a request</a>
           <a href="#signin" id="authSwitch">Switch account</a>
           <button type="button" id="authLogout">Log out</button>
         </div>
@@ -1576,14 +1577,16 @@ bsAdShow('nwAds', function(){ return !document.getElementById('view-advertise').
 window.BSAuth = (function(){
   function refresh(){
     var me=BS.me()||{}; var inEl=document.getElementById('authIn'), outEl=document.getElementById('authOut');
-    var signed=!!me.phone;
+    var staff=BS.isStaff && BS.isStaff(); var signed=!!me.phone || staff;
     inEl.style.display = signed ? 'inline-flex' : 'none'; outEl.style.display = signed ? 'none' : 'contents';
     inEl.hidden=!signed; inEl.style.display='';
-    if(signed){ var isSup = !!(me.supplierId || (me.role && me.role!=='Request materials')); var nm=(me.person||me.company||me.name||'Account'); document.getElementById('authName').textContent = nm.length>18 ? nm.slice(0,17)+'…' : nm; document.getElementById('authPortal').hidden=!isSup; }
+    ['authStaff','authHome','authPortal','authBoq','authSwitch'].forEach(function(id){ document.getElementById(id).hidden = staff ? id!=='authStaff' : id==='authStaff'; });
+    if(staff){ var sn=BS.staffName(); document.getElementById('authName').textContent = 'Staff · '+(sn.length>12 ? sn.slice(0,11)+'…' : sn); }
+    else if(signed){ var isSup = !!(me.supplierId || (me.role && me.role!=='Request materials')); var nm=(me.person||me.company||me.name||'Account'); document.getElementById('authName').textContent = nm.length>18 ? nm.slice(0,17)+'…' : nm; document.getElementById('authPortal').hidden=!isSup; }
     var wsOut=document.getElementById('wsLogout'); if(wsOut) wsOut.hidden=!signed;
     if(window.BSRefreshMine) BSRefreshMine();
   }
-  document.getElementById('authLogout').onclick=function(){ BS.setMe({}); refresh(); bsToast('Signed out.'); BSRoute.go('home'); };
+  document.getElementById('authLogout').onclick=function(){ if(BS.isStaff && BS.isStaff()){ try{ sessionStorage.setItem('bs_demo_admin',''); sessionStorage.setItem('bs_demo_admin_name',''); }catch(e){} refresh(); bsToast('Signed out of the staff page.'); BSRoute.go('home'); return; } BS.setMe({}); refresh(); bsToast('Signed out.'); BSRoute.go('home'); };
   document.addEventListener('click', function(e){ var d=document.getElementById('authIn'); if(d && d.open && !e.target.closest('summary')) d.open=false; });
   var wsOut=document.getElementById('wsLogout'); if(wsOut) wsOut.onclick=function(){ document.getElementById('authLogout').click(); };
   window.addEventListener('hashchange', refresh); document.addEventListener('click', function(){ setTimeout(refresh, 50); });

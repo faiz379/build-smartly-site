@@ -368,6 +368,10 @@
     try { sessionStorage.setItem("bs_demo_me", JSON.stringify(obj)); localStorage.setItem("bs_demo_me", JSON.stringify(obj)); } catch(e){}
     if(obj && obj.phone){ try { var reg=JSON.parse(localStorage.getItem("bs_demo_accounts")||"{}"); reg[digitsOf(obj.phone)]=obj; localStorage.setItem("bs_demo_accounts", JSON.stringify(reg)); } catch(e){} }
   };
+  /* sign this tab out without touching the device default (used when staff sign in) */
+  BS.clearMeTab = function(){ try { sessionStorage.setItem("bs_demo_me", "{}"); } catch(e){} };
+  BS.isStaff = function(){ try { return sessionStorage.getItem("bs_demo_admin")==="1"; } catch(e){ return false; } };
+  BS.staffName = function(){ try { return sessionStorage.getItem("bs_demo_admin_name")||"Staff"; } catch(e){ return "Staff"; } };
   BS.accounts = function(){ try { var reg=JSON.parse(localStorage.getItem("bs_demo_accounts")||"{}"); return Object.keys(reg).map(function(k){ return reg[k]; }).filter(function(a){ return a && a.phone; }); } catch(e){ return []; } };
   BS.ready().then(function(){ BS.subscribe("settings", BS.applySettings); });
   BS.known = function(digits){ try { return JSON.parse(localStorage.getItem("bs_demo_accounts")||"{}")[digits] || null; } catch(e){ return null; } };
