@@ -429,6 +429,18 @@ details.line-offers[open] summary::before{content:"▾"}
 .banner .dots i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.35)}
 .banner .dots i.on{background:var(--ochre)}
 .banner .arrows{position:absolute;left:1rem;bottom:.6rem;display:flex;gap:.3rem}
+.adshow{position:relative;border-radius:var(--radius);overflow:hidden;background:var(--green-deep);box-shadow:var(--shadow,0 6px 24px rgba(0,0,0,.08))}
+.adshow .atrack{display:flex;transition:transform .5s ease}
+.adshow .aslide{flex:0 0 100%;position:relative;display:block;text-decoration:none;color:#fff}
+.adshow .aslide img{display:block;width:100%;aspect-ratio:3/1;object-fit:cover;background:#1F3A5F}
+.adshow .acap{position:absolute;left:0;right:0;bottom:0;padding:.55rem .9rem 1.6rem;background:linear-gradient(transparent,rgba(0,0,0,.6));font-size:.85rem;display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap}
+.adshow .acap .tag{text-transform:none;letter-spacing:0;background:rgba(255,255,255,.18);color:#fff}
+.adshow .adots{position:absolute;right:1rem;bottom:.6rem;display:flex;gap:.35rem}
+.adshow .adots i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4)}
+.adshow .adots i.on{background:var(--ochre)}
+.adshow .aarrows{position:absolute;left:1rem;bottom:.45rem;display:flex;gap:.3rem}
+.adshow .aarrows button{background:rgba(255,255,255,.18);border:0;color:#fff;border-radius:999px;width:28px;height:28px;cursor:pointer;font-size:1rem}
+@media (max-width:600px){.adshow .acap{position:static;background:rgba(0,0,0,.35);font-size:.78rem;padding:.45rem .7rem 1.7rem;display:grid;gap:.15rem}.adshow .acap .tag{font-size:.6rem}}
 .banner .arrows button{background:rgba(255,255,255,.12);border:0;color:var(--band-fg);border-radius:999px;width:30px;height:30px;cursor:pointer}
 @media (prefers-reduced-motion:reduce){.banner .slides{transition:none}}
 .chain{display:grid;gap:.4rem}
@@ -580,6 +592,10 @@ details.line-offers[open] summary::before{content:"▾"}
     </div>
   </div>
 
+  <section class="wrap" id="partners" style="padding-block:1.6rem 0">
+    <div class="sec-head" style="display:flex;justify-content:space-between;align-items:end;gap:1rem;flex-wrap:wrap"><div><span class="eyebrow">Partners and promotions</span><h2 style="font-size:1.4rem">Brands, suppliers and builders on Build Smartly</h2></div><a class="small" href="#newsletter">Advertise your brand →</a></div>
+    <div class="adshow" id="homeAds"></div>
+  </section>
   <section id="supply" class="catband">
     <div class="wrap catband-in">
       <div class="catband-title"><span class="eyebrow">Materials</span><h2>Top categories</h2><p>From the ground to the keys. Tap a circle to request a quote.</p></div>
@@ -1094,16 +1110,8 @@ details.line-offers[open] summary::before{content:"▾"}
     <p class="small muted">Language is switched from the top of the page. Company users, approval limits and bank details are added here in the real app, each with its own approval step.</p>
   </section>
   <section>
-    <p class="eyebrow" style="margin-bottom:.5rem">Special discounted products and services for platform members</p>
-    <div class="banner" id="banner">
-      <div class="slides" id="slides">
-        <div class="bslide"><span class="eyebrow">Cement · this week</span><h3>OPC 42.5 at ETB 1,120 per quintal for orders above 200 quintals</h3><p>Delivered within Addis Ababa. Offer from a verified supplier, valid until Friday. Example placeholder.</p></div>
-        <div class="bslide"><span class="eyebrow">Equipment</span><h3>Sino truck trips from ETB 6,500 inside the city</h3><p>Book through "Buying inquiry" under Equipment rental. Example placeholder.</p></div>
-        <div class="bslide"><span class="eyebrow">New</span><h3>Finishing materials open next phase</h3><p>Tiles, paint, gypsum, doors and sanitary ware. Register interest from the home page.</p></div>
-      </div>
-      <div class="arrows"><button id="bPrev" aria-label="Previous">‹</button><button id="bNext" aria-label="Next">›</button></div>
-      <div class="dots" id="dots"></div>
-    </div>
+    <p class="eyebrow" style="margin-bottom:.5rem">Partners and promotions for platform members</p>
+    <div class="adshow" id="wsAds"></div>
   </section>
 </div>
 
@@ -1203,22 +1211,24 @@ details.line-offers[open] summary::before{content:"▾"}
   <p class="small muted">A profile is published only after Build Smartly staff have reviewed it. Sponsored cards are marked. <a href="#newsletter">Newsletter and promotions</a>.</p>
 </div>
 <div id="view-advertise" data-view hidden class="wrap view">
-  <div><span class="eyebrow">Newsletter and promotions</span><h1 style="font-size:1.6rem">Tell every buyer on the platform about your brand</h1><p class="muted small">Build Smartly sends a newsletter to all registered buyers: a link by SMS, Telegram and e-mail. Suppliers and brands pay to appear in it; a verified profile in the Members directory is free. Sponsored places are always marked and never change the order of offers a buyer sees. Prices are examples; the owner sets the final rates.</p></div>
+  <div><span class="eyebrow">Newsletter and promotions</span><h1 style="font-size:1.6rem">Tell everyone on the platform about your brand</h1><p class="muted small">Build Smartly sends a newsletter to all registered members: a link by SMS, Telegram and e-mail. Brands, suppliers and contractors can all advertise: a banner with your picture in the slideshow on the home page and in every member's workspace, and an item in the newsletter. A verified profile in the Members directory is free. Sponsored places are always marked and never change the order of offers a buyer sees. Prices are examples; the owner sets the final rates.</p></div>
+  <div class="adshow" id="nwAds" style="margin-bottom:1rem"></div>
   <div class="grid2" style="align-items:start">
     <div class="card panel" style="display:grid;gap:.7rem"><div><strong style="font-family:var(--display);font-size:1.05rem">Latest issue</strong><p class="small muted">What buyers received this month. Also in every member's Mailbox under Newsletter.</p></div><div id="newsList" style="display:grid;gap:.6rem"></div></div>
     <div class="card panel" id="newsFormBox" style="display:grid;gap:.7rem">
       <div><strong style="font-family:var(--display);font-size:1.05rem">Send your news for the next issue</strong><p class="small muted">A new brand, a new supply, a price offer or your company's progress. Staff check the text (no phone numbers or addresses), finance sends the invoice, and it goes out in the next issue.</p></div>
-      <div class="field"><label for="nwCompany">Company</label><input id="nwCompany" placeholder="Your company name"></div>
+      <div class="su-row2"><div class="field"><label for="nwWho">You are</label><select id="nwWho"><option>Brand or manufacturer</option><option>Supplier</option><option>Contractor or developer</option><option>Other</option></select></div><div class="field"><label for="nwCompany">Company or brand</label><input id="nwCompany" placeholder="Your company or brand name"></div></div>
       <div class="field"><label for="nwKind">Placement</label><select id="nwKind"><option value="news">Newsletter item · example ETB 5,000 per issue</option><option value="feature">Featured supplier of the month · example ETB 15,000</option><option value="pulse">Price pulse tile on the home page · example ETB 5,000 per month</option><option value="banner">Banner inside every member's workspace · example ETB 4,000 per month</option><option value="directory">Highlighted card in the Members directory · example ETB 3,000 per month</option></select></div>
       <div class="field"><label for="nwTitle">Headline</label><input id="nwTitle" maxlength="90" placeholder="e.g. New: Dangote 42.5 in stock at Kality, 48-hour delivery"></div>
       <div class="field"><label for="nwText">Text (up to 300 characters)</label><textarea id="nwText" rows="3" maxlength="300" style="font:inherit;font-size:.95rem;padding:.6rem;border:1.5px solid var(--line);border-radius:10px;background:var(--white);color:var(--fg);width:100%"></textarea></div>
-      <label class="wpic up" style="aspect-ratio:auto;height:4.5rem;min-height:0"><input type="file" accept="image/*" hidden><span>＋ Picture or logo (optional)</span></label>
+      <label class="wpic up" style="aspect-ratio:auto;height:4.5rem;min-height:0"><input type="file" accept="image/*" hidden id="nwPic"><span id="nwPicLabel">＋ Banner picture (optional, shown in the slideshow; 3:1 works best)</span></label>
+      <img id="nwPicPrev" alt="" hidden style="width:100%;aspect-ratio:3/1;object-fit:cover;border-radius:12px">
       <span class="err small" id="nwErr" hidden></span>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center"><button class="btn btn-primary btn-sm" type="button" id="nwSend">Send to Build Smartly</button><span class="small muted" id="nwMsg"></span></div>
     </div>
   </div>
   <div class="trust" style="margin-top:1rem">
-    <div class="card"><span class="tag tag-ochre">Sponsored</span><h3 style="margin-top:.5rem">Newsletter item</h3><p>Your headline, text and picture in the monthly issue sent to every registered buyer.</p><p class="small"><strong>Example: ETB 5,000 per issue</strong></p></div>
+    <div class="card"><span class="tag tag-ochre">Sponsored</span><h3 style="margin-top:.5rem">Newsletter item and banner</h3><p>Your headline, text and picture in the monthly issue, and your banner in the slideshow on the home page and in every member's workspace.</p><p class="small"><strong>Example: ETB 5,000 per issue</strong></p></div>
     <div class="card"><span class="tag tag-ochre">Sponsored</span><h3 style="margin-top:.5rem">Featured supplier</h3><p>Top of the newsletter, top of the members directory and a card on the home page for a month.</p><p class="small"><strong>Example: ETB 15,000 per month</strong></p></div>
     <div class="card"><span class="tag tag-ochre">Sponsored</span><h3 style="margin-top:.5rem">Price pulse tile and member banner</h3><p>A tile in the moving price strip on the home page, or a slide in the banner inside every member's workspace.</p><p class="small"><strong>Example: ETB 4,000 to 5,000 per month</strong></p></div>
     <div class="card"><span class="tag tag-green">Free</span><h3 style="margin-top:.5rem">Verified profile</h3><p>Every verified company can publish a profile in the Members directory at no cost, after review.</p><p class="small"><strong>ETB 0</strong></p></div>
@@ -1472,12 +1482,34 @@ function bsSignInByPhone(digits){
   BS.setMe({phone:'+251 '+digits, role:'Request materials'}); return 'new';
 }
 
+/* ---------- Promotions slideshow: example banners plus published newsletter items that carry a picture ---------- */
+var bsAdItems=[], bsAdShows=[];
+function bsAdShow(id, visibleFn){
+  var box=document.getElementById(id); if(!box) return; var idx=0, timer=null, items=[];
+  function esc(t){ return String(t||'').replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function draw(){
+    items=bsAdItems.concat(BS.ADS); idx=Math.min(idx, items.length-1);
+    box.innerHTML='<div class="atrack">'+items.map(function(a){ return '<a class="aslide" href="#newsletter"><img src="'+esc(a.img)+'" alt="'+esc(a.company)+'" loading="lazy"><span class="acap"><span><span class="tag">Sponsored · '+esc(a.who||'Partner')+'</span> '+esc(a.company)+'</span><span>'+esc(a.title)+'</span></span></a>'; }).join('')+'</div>'+
+      '<div class="aarrows"><button type="button" data-ad="-1" aria-label="Previous">‹</button><button type="button" data-ad="1" aria-label="Next">›</button></div><div class="adots">'+items.map(function(_,i){ return '<i'+(i===idx?' class="on"':'')+'></i>'; }).join('')+'</div>';
+    go(idx);
+  }
+  function go(k){ if(!items.length) return; idx=(k+items.length)%items.length; var t=box.querySelector('.atrack'); if(t) t.style.transform='translateX(-'+(idx*100)+'%)'; box.querySelectorAll('.adots i').forEach(function(x,j){ x.classList.toggle('on', j===idx); }); }
+  box.addEventListener('click', function(e){ var b=e.target.closest('[data-ad]'); if(!b) return; e.preventDefault(); go(idx+(+b.dataset.ad)); });
+  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){ timer=setInterval(function(){ if(!document.hidden && (!visibleFn || visibleFn())) go(idx+1); }, 6000); }
+  draw(); bsAdShows.push(draw);
+}
+(function(){ BS.ready().then(function(){ BS.subscribe('news', function(d){ bsAdItems=(d||[]).filter(function(x){ return x.status==='published' && x.img; }).sort(function(a,b){ return (b.createdAt||'').localeCompare(a.createdAt||''); }).map(function(x){ return {who:x.who||'Partner', company:x.company, title:x.title, img:x.img}; }); bsAdShows.forEach(function(f){ f(); }); }); }); })();
+bsAdShow('homeAds', function(){ return !document.getElementById('view-home').hidden; });
+bsAdShow('nwAds', function(){ return !document.getElementById('view-advertise').hidden; });
+
 /* ---------- Newsletter: example issue plus items suppliers send (collection `news`) ---------- */
 (function(){
   var $=function(id){return document.getElementById(id);}; var items=[];
   var KIND={news:'Newsletter item', feature:'Featured supplier', pulse:'Price pulse tile', banner:'Member banner', directory:'Directory highlight', platform:'From Build Smartly'};
   function esc(t){ return String(t||'').replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
-  function card(x){ return '<div style="display:grid;gap:.25rem;border:1px solid var(--line);border-radius:12px;padding:.7rem .8rem;background:var(--white)"><span style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center"><span class="tag '+(x.status==='pending'?'':x.sponsored===false||x.kind==='platform'?'tag-green':'tag-ochre')+'">'+(x.status==='pending'?'Pending review':x.kind==='platform'?'Build Smartly':'Sponsored · '+(KIND[x.kind]||'Newsletter item'))+'</span><span class="small muted">'+esc(x.company)+(x.issue?' · '+esc(x.issue):'')+'</span></span><strong>'+esc(x.title)+'</strong><span class="small">'+esc(x.text)+'</span></div>'; }
+  var picData='';
+  $('nwPic').addEventListener('change', function(){ var f=this.files&&this.files[0]; if(!f || f.type.indexOf('image/')!==0) return; var r=new FileReader(); r.onload=function(){ var img=new Image(); img.onload=function(){ var w=Math.min(1200,img.width||1), h=Math.max(1,Math.round((img.height||1)*w/(img.width||1))); var c=document.createElement('canvas'); c.width=w; c.height=h; c.getContext('2d').drawImage(img,0,0,w,h); picData=c.toDataURL('image/jpeg',0.8); $('nwPicPrev').src=picData; $('nwPicPrev').hidden=false; $('nwPicLabel').textContent='Picture added: '+f.name; }; img.onerror=function(){ bsToast('That picture could not be read. Use a JPG or PNG.'); }; img.src=r.result; }; r.readAsDataURL(f); });
+  function card(x){ return '<div style="display:grid;gap:.25rem;border:1px solid var(--line);border-radius:12px;padding:.7rem .8rem;background:var(--white)">'+(x.img?'<img src="'+x.img+'" alt="" style="width:100%;aspect-ratio:3/1;object-fit:cover;border-radius:8px;margin-bottom:.3rem">':'')+'<span style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center"><span class="tag '+(x.status==='pending'?'':x.sponsored===false||x.kind==='platform'?'tag-green':'tag-ochre')+'">'+(x.status==='pending'?'Pending review':x.kind==='platform'?'Build Smartly':'Sponsored · '+(KIND[x.kind]||'Newsletter item'))+'</span><span class="small muted">'+esc(x.company)+(x.issue?' · '+esc(x.issue):'')+'</span></span><strong>'+esc(x.title)+'</strong><span class="small">'+esc(x.text)+'</span></div>'; }
   function render(){
     var me=BS.me()||{}, mine=(me.phone||'').replace(/\D/g,'').replace(/^251/,'');
     var list=items.filter(function(x){ return x.status==='published' || (x.status==='pending' && mine && x.phone===mine); }).sort(function(a,b){ return (b.createdAt||'').localeCompare(a.createdAt||''); }).concat(BS.NEWS);
@@ -1493,8 +1525,8 @@ function bsSignInByPhone(digits){
     if(/\+?\d[\d\s-]{7,}/.test(title+' '+text)){ err.textContent='No phone numbers in the text, please. Buyers contact you through the platform.'; err.hidden=false; return; }
     if(!me.phone){ err.textContent='Sign in first (mobile number and code), so we know who to invoice.'; err.hidden=false; return; }
     $('nwSend').disabled=true;
-    await BS.add('news', {company:company, kind:$('nwKind').value, title:title, text:text, phone:(me.phone||'').replace(/\D/g,'').replace(/^251/,''), status:'pending', createdAt:new Date().toISOString()});
-    $('nwTitle').value=''; $('nwText').value=''; $('nwSend').disabled=false;
+    await BS.add('news', {company:company, who:$('nwWho').value, kind:$('nwKind').value, title:title, text:text, img:picData, phone:(me.phone||'').replace(/\D/g,'').replace(/^251/,''), status:'pending', createdAt:new Date().toISOString()});
+    $('nwTitle').value=''; $('nwText').value=''; $('nwSend').disabled=false; picData=''; $('nwPicPrev').hidden=true; $('nwPicLabel').textContent='＋ Banner picture (optional, shown in the slideshow; 3:1 works best)';
     $('nwMsg').textContent='Received. Staff check the text, finance sends the invoice, and it goes out in the next issue.'; bsToast('Your news is with Build Smartly for the next issue.');
   };
 })();
@@ -2474,11 +2506,7 @@ function bsSupport(threadId, inputId, sendId){
   function renderLocs(){ $('locList').innerHTML = locs.length ? locs.map(function(l){ return '<div class="doc"><span class="ico">LOC</span><span>'+l.type+' · '+l.sub+', Addis Ababa'+(l.pin?' · map link saved':'')+'</span><span class="tag">Private</span></div>'; }).join('') : '<div class="empty">No locations yet. Suppliers who add dispatch points receive more requests.</div>'; }
   $('locAdd').onclick=function(){ locs.push({type:$('locType').value, sub:$('locSub').value, pin:$('locPin').value}); try{ localStorage.setItem('bs_demo_locs', JSON.stringify(locs)); }catch(e){} $('locPin').value=''; renderLocs(); };
   renderLocs();
-  var idx=0, n=document.querySelectorAll('#slides .bslide').length, dots=$('dots');
-  for(var i=0;i<n;i++){ var d=document.createElement('i'); if(i===0) d.className='on'; dots.appendChild(d); }
-  function go(k){ idx=(k+n)%n; $('slides').style.transform='translateX(-'+(idx*100)+'%)'; dots.querySelectorAll('i').forEach(function(x,j){x.classList.toggle('on',j===idx);}); }
-  $('bPrev').onclick=function(){go(idx-1);}; $('bNext').onclick=function(){go(idx+1);};
-  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){ setInterval(function(){ if(!document.hidden && !document.getElementById('view-workspace').hidden) go(idx+1); }, 5000); }
+  bsAdShow('wsAds', function(){ return !document.getElementById('view-workspace').hidden; });
 })();
 
 /* ---------- Picture, logo and video uploads (preview on the device) ---------- */

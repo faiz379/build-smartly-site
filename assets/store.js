@@ -163,6 +163,13 @@
     {issue:"October 2026", kind:"news", company:"Habesha Finishing Supplies", title:"New brand: Italian-made ceramic tiles 60x60 at Merkato", text:"Three new designs, boxes of 1.44 m². Samples at the shop; quotes through your request.", sponsored:true},
     {issue:"October 2026", kind:"platform", company:"Build Smartly", title:"Price pulse: cement up 1.7 %, rebar down 2 % since last week", text:"Medians of the quotes on the platform this week. Send a request to get live offers for your site.", sponsored:false}
   ];
+  /* Promotions slideshow: brands, suppliers and contractors who advertise. Example banners for the test site; published newsletter items with a picture join them. */
+  BS.ADS = [
+    {who:"Brand", company:"Derba Cement", title:"OPC 42.5 and PPC 32.5 with 9 verified distributors", img:"assets/ad-cement.svg"},
+    {who:"Supplier", company:"Addis Steel & Rebar Trading", title:"Grade 60 rebar with mill certificates, delivered in Addis Ababa", img:"assets/ad-steel.svg"},
+    {who:"Contractor", company:"Tana Construction PLC", title:"Grade 1 contractor, hiring subcontractors for Bole and Lemi Kura", img:"assets/ad-contractor.svg"},
+    {who:"Brand", company:"Kadisco Paint", title:"New colour range for 2026 through verified finishing suppliers", img:"assets/ad-paint.svg"}
+  ];
   BS.PULSE = [
     {item:"Cement OPC 42.5", name:"Cement OPC 42.5", brand:"Dangote", unit:"per quintal (two 50 kg bags)", price:1180, chg:1.7, when:"6 suppliers, this morning", svg:'<svg viewBox="0 0 80 80"><rect x="14" y="18" width="52" height="50" rx="6" fill="#D9D3C7"/><rect x="14" y="18" width="52" height="12" rx="6" fill="#B9AE9C"/><text x="40" y="54" text-anchor="middle" font-family="Sora,Arial" font-size="12" font-weight="700" fill="#1E6B4E">OPC</text></svg>'},
     {item:"Cement PPC 32.5", name:"Cement PPC 32.5", brand:"Derba", unit:"per quintal", price:1050, chg:0, when:"4 suppliers, this morning", svg:'<svg viewBox="0 0 80 80"><rect x="14" y="18" width="52" height="50" rx="6" fill="#E8E2D6"/><rect x="14" y="18" width="52" height="12" rx="6" fill="#C9BFAE"/><text x="40" y="54" text-anchor="middle" font-family="Sora,Arial" font-size="12" font-weight="700" fill="#1E6B4E">PPC</text></svg>'},
