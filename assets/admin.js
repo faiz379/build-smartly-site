@@ -28,7 +28,11 @@
   BSRoute.on('admin', function(){ if(isAdmin()) showPanel(); else showLogin(); });
   BS.ready().then(function(m){ mode=m; if(isAdmin() && !$('adPanel').hidden) $('adMeta').textContent='Signed in as '+staffName()+' · '+(m==='shared'?'shared database':'this device only'); });
   ['boqs','offers','messages','profiles','news','verifications','settings','issues'].forEach(function(c){ BS.subscribe(c, function(d){ data[c]=d||[]; if(c==='settings') BS.applySettings(d||[]); if(isAdmin() && !$('adPanel').hidden) render(); }); });
-  $('adTabs').addEventListener('click', function(e){ var b=e.target.closest('[data-tab]'); if(!b) return; tab=b.dataset.tab; render(); });
+  $('adTabs').addEventListener('click', function(e){ var b=e.target.closest('[data-tab]'); if(!b) return; tab=b.dataset.tab; render(); $('adLayout').classList.remove('open'); $('adBurger').setAttribute('aria-expanded','false'); window.scrollTo({top:0,behavior:'smooth'}); });
+  /* three-line button: on a phone it opens the menu as a drawer; on a wide screen it folds the sidebar to icons */
+  $('adBurger').onclick=function(){ var L=$('adLayout'); if(window.matchMedia('(max-width:860px)').matches){ var o=!L.classList.contains('open'); L.classList.toggle('open', o); $('adBurger').setAttribute('aria-expanded', o?'true':'false'); } else { L.classList.toggle('fold'); try{ localStorage.setItem('bs_adfold', L.classList.contains('fold')?'1':''); }catch(e){} } };
+  $('adScrim').onclick=function(){ $('adLayout').classList.remove('open'); $('adBurger').setAttribute('aria-expanded','false'); };
+  try{ if(localStorage.getItem('bs_adfold')==='1') $('adLayout').classList.add('fold'); }catch(e){}
 
   /* ---- helpers over the records ---- */
   function boqOf(id){ return data.boqs.filter(function(b){ return b.id===id; })[0]; }
@@ -53,6 +57,8 @@
     var tiles=[[data.boqs.filter(openBoq).length,'Open requests','requests'],[unclassified().length,'Lines to classify','requests'],[pendV,'Suppliers awaiting verification','suppliers'],[waiting,'Support threads waiting','support'],[pendN,'Newsletter items pending','news'],[openI,'Problems open','support'],[inProg,'Orders in progress','finance'],[paid().length,'Orders paid','finance'],[BS.fmt(fees),'Fees earned ('+BS.pct(BS.FEE_RATE)+')','finance']];
     adTilesHtml='<div class="queue" id="adTiles">'+tiles.map(function(t){ return '<button type="button" class="q" data-go="'+t[2]+'" style="text-align:left;cursor:pointer;font:inherit"><strong style="font-size:1.4rem">'+t[0]+'</strong><span class="small muted">'+t[1]+'</span></button>'; }).join('')+'</div>';
     $('adTabs').querySelectorAll('button').forEach(function(b){ b.classList.toggle('on', b.dataset.tab===tab); });
+    try{ var badges={support: threads().filter(function(t){ return t.waiting; }).length + data.issues.filter(function(i){ return i.status!=='resolved'; }).length, suppliers: data.verifications.filter(function(v){ return v.status==='pending'; }).length, requests: unclassified().length, news: data.news.filter(function(x){ return x.status==='pending'; }).length};
+      $('adTabs').querySelectorAll('button').forEach(function(b){ var n=badges[b.dataset.tab]||0; var old=b.querySelector('.badge'); if(old) old.remove(); if(n){ var sp=document.createElement('span'); sp.className='badge'; sp.textContent=n; b.appendChild(sp); } }); }catch(e){}
     var r={overview:renderOverview, requests:renderRequests, suppliers:renderSuppliers, support:renderSupport, news:renderNews, members:renderMembers, finance:renderFinance, insights:renderInsights, catalogue:renderCatalogue, settings:renderSettings}[tab]||renderOverview;
     $('adBody').innerHTML=searchHtml()+r();
   }
@@ -152,11 +158,24 @@
     var r=e.target.closest('[data-iresolve]'); if(r){ var x2=data.issues.filter(function(i){ return i.id===r.dataset.iresolve; })[0]||{}; var note=(document.querySelector('[data-inote="'+r.dataset.iresolve+'"]')||{}).value||''; r.disabled=true; await BS.update('issues', r.dataset.iresolve, {status:'resolved', note:note, by:staffName(), owner:x2.owner||staffName(), resolvedAt:new Date().toISOString(), notes:(x2.notes||[]).concat(note?[{at:new Date().toISOString(), by:staffName(), text:'Resolved: '+note}]:[])}); bsToast('Resolved. Both parties are notified.'); return; }
   });
   function renderSupport(){
-    var ts=threads(); var issuesHtml=renderIssues(); if(!ts.length) return issuesHtml+card('Support inbox','Messages members send from their Mailbox.','<div class="empty">No messages yet.</div>');
-    return issuesHtml+ts.map(function(t){
+    var ts=threads(); var issuesHtml=renderIssues(); var w=ts.filter(function(t){ return t.waiting; }).length;
+    var head='<div style="display:flex;justify-content:space-between;align-items:end;gap:.6rem;flex-wrap:wrap"><div><strong style="font-family:var(--display);font-size:1.05rem">Support inbox</strong><p class="small muted" style="margin:.1rem 0 0">Every message members send from their Mailbox, the help box or the supplier portal. Reply here; the member sees it in the Mailbox and gets an SMS.</p></div>'+(w?'<span class="tag tag-ochre">'+w+' waiting for an answer</span>':'<span class="tag">Nothing waiting</span>')+'</div>';
+    var orderHtml=renderOrderChats();
+    if(!ts.length) return '<section class="card" style="display:grid;gap:.6rem">'+head+'<div class="empty">No messages yet.</div></section>'+orderHtml+issuesHtml;
+    return '<section class="card" style="display:grid;gap:.6rem">'+head+'</section>'+ts.map(function(t){
       var msgs=t.msgs.map(function(m){ return '<div class="msg '+(m.who==='staff'?'me':'')+'"><div class="t">'+(m.who==='staff'?(m.staff?esc(m.staff):'Auto-reply'):esc(t.name||'Member'))+' · '+when(m.createdAt)+'</div>'+esc(m.text)+'</div>'; }).join('');
       return '<section class="card" style="display:grid;gap:.6rem"><div style="display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap;align-items:center"><div><strong style="font-family:var(--display)">'+esc(t.name||'Member')+'</strong> <span class="small muted">'+fmtPhone(t.phone)+'</span></div>'+(t.waiting?'<span class="tag tag-ochre">Waiting for an answer</span>':'<span class="tag tag-green">Answered</span>')+'</div><div class="chat" style="max-height:16rem;overflow:auto">'+msgs+'</div><div class="chat-in"><div class="field"><input placeholder="Reply as Build Smartly support…" data-reply="'+esc(t.phone)+'"></div><button class="btn btn-primary btn-sm" type="button" data-send="'+esc(t.phone)+'">Send</button></div></section>';
-    }).join('');
+    }).join('')+orderHtml+issuesHtml;
+  }
+  function renderOrderChats(){
+    var by={}; data.messages.forEach(function(m){ if(!m.orderId) return; (by[m.orderId]=by[m.orderId]||[]).push(m); });
+    var ids=Object.keys(by); var intro='<div><strong style="font-family:var(--display);font-size:1.05rem">Conversations on orders</strong><p class="small muted" style="margin:.1rem 0 0">What buyers and suppliers write to each other on each purchase order. Staff can read every thread and answer on the order page.</p></div>';
+    if(!ids.length) return '<section class="card" style="display:grid;gap:.6rem">'+intro+'<div class="empty">No conversations on orders yet.</div></section>';
+    var rows=ids.map(function(id){ var ms=by[id].sort(function(a,c){ return (a.createdAt||'').localeCompare(c.createdAt||''); }); var o=data.offers.filter(function(x){ return x.id===id; })[0]||{}; var b=boqOf(o.boqId)||{}; return {id:id, ms:ms, o:o, b:b, last:ms[ms.length-1]}; }).sort(function(a,c){ return (c.last.createdAt||'').localeCompare(a.last.createdAt||''); });
+    return '<section class="card" style="display:grid;gap:.6rem">'+intro+rows.map(function(r){ var o=r.o;
+      var msgs=r.ms.map(function(m){ return '<div class="msg '+(m.who==='staff'?'me':'')+'"><div class="t">'+(m.who==='buyer'?esc(o.customerRevealed||r.b.company||'Buyer'):m.who==='supplier'?esc(o.supplierName||'Supplier'):'Build Smartly staff')+' · '+when(m.createdAt)+'</div>'+esc(m.text)+'</div>'; }).join('');
+      return '<details class="card" style="padding:.7rem .9rem"><summary style="cursor:pointer;display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap;align-items:center"><span><strong style="font-family:var(--display)">'+esc(o.poRef||'Order')+'</strong> <span class="small muted">'+esc(o.customerRevealed||r.b.company||'Buyer')+' ↔ '+esc(o.supplierName||'Supplier')+' · '+esc(o.item||'')+'</span></span><span class="small muted">'+r.ms.length+' message'+(r.ms.length>1?'s':'')+' · last '+when(r.last.createdAt)+'</span></summary><div class="chat" style="margin-top:.6rem">'+msgs+'</div><div style="margin-top:.5rem"><a class="btn btn-ghost btn-sm" href="#order-'+esc(r.id)+'">Open the order and reply</a></div></details>';
+    }).join('')+'</section>';
   }
   async function sendReply(phone){ var inp=document.querySelector('[data-reply="'+phone+'"]'); var text=inp?inp.value.trim():''; if(!text) return; inp.value=''; await BS.add('messages', {phone:phone, who:'staff', staff:staffName(), text:text}); bsToast('Sent. The member sees it in the Mailbox and gets an SMS.'); }
   $('adBody').addEventListener('click', function(e){ var b=e.target.closest('[data-send]'); if(b) sendReply(b.dataset.send); });

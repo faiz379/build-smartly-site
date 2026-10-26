@@ -79,6 +79,36 @@ img{max-width:100%}
 .tabs button{font:inherit;font-family:var(--display);font-weight:600;background:none;border:0;border-bottom:3px solid transparent;padding:.7rem 1rem;color:var(--fg-2);cursor:pointer;white-space:nowrap}
 .tabs button.on{color:var(--fg);border-bottom-color:var(--ochre)}
 .tabs button .badge{background:var(--green);color:#F6F7F4;border-radius:999px;font-size:.7rem;padding:.1rem .45rem;margin-left:.3rem}
+/* staff page: left navigation. Wide screens: a sidebar with icons and names, the three-line button folds it to icons only. Phones: the three-line button opens it as a drawer. */
+.adlayout{display:grid;grid-template-columns:13.5rem minmax(0,1fr);gap:1rem;align-items:start;position:relative}
+.adlayout.fold{grid-template-columns:3.6rem minmax(0,1fr)}
+.adburger{grid-column:1;width:3.6rem;height:2.6rem;border:1px solid var(--line);background:var(--white);border-radius:10px;display:grid;place-items:center;gap:0;cursor:pointer;padding:.55rem .9rem;box-sizing:border-box}
+.adburger span{display:block;width:20px;height:2px;background:var(--fg);border-radius:2px}
+.adburger span+span{margin-top:4px}
+.adnav{grid-column:1;display:grid;align-content:start;gap:.15rem;background:var(--white);border:1px solid var(--line);border-radius:14px;padding:.4rem;position:sticky;top:5rem}
+.adnav button{font:inherit;font-family:var(--display);font-weight:600;background:none;border:0;border-radius:10px;padding:.6rem .7rem;color:var(--fg-2);cursor:pointer;display:flex;align-items:center;gap:.6rem;text-align:left;white-space:nowrap;width:100%}
+.adnav button i{font-style:normal;width:1.6rem;height:1.6rem;border-radius:8px;background:var(--bg-2,#EEF3EF);display:grid;place-items:center;font-size:.8rem;flex:none;color:var(--green)}
+.adnav button.on{background:var(--bg-2,#EEF3EF);color:var(--fg)}
+.adnav button.on i{background:var(--green);color:#F6F7F4}
+.adnav button .badge{margin-left:auto}
+.adlayout.fold .adnav{padding:.3rem}
+.adlayout.fold .adnav button{padding:.55rem;justify-content:center}
+.adlayout.fold .adnav button b{display:none}
+.adlayout.fold .adnav button .badge{position:absolute;margin:0;transform:translate(.9rem,-.8rem)}
+.adlayout.fold .adnav button{position:relative}
+.adlayout.fold .adnav button:hover b{display:block;position:absolute;left:3.4rem;background:var(--fg);color:#F6F7F4;padding:.3rem .6rem;border-radius:8px;font-size:.85rem;z-index:5}
+.adlayout #adBody{grid-column:2;grid-row:1/span 2}
+.adscrim{display:none}
+@media (max-width:860px){
+  .adlayout,.adlayout.fold{grid-template-columns:1fr}
+  .adburger{grid-column:1;grid-row:1;width:auto;justify-self:start;padding:.55rem .8rem}
+  .adlayout #adBody{grid-column:1;grid-row:2}
+  .adnav{position:fixed;top:0;left:0;bottom:0;width:16rem;max-width:80vw;border-radius:0 14px 14px 0;z-index:60;transform:translateX(-105%);transition:transform .25s;overflow-y:auto;padding-top:1rem}
+  .adlayout.open .adnav{transform:none}
+  .adlayout.open .adscrim{display:block;position:fixed;inset:0;background:rgba(13,44,33,.45);z-index:55}
+  .adlayout.fold .adnav button b{display:block}
+  .adlayout.fold .adnav button{justify-content:flex-start;padding:.6rem .7rem}
+}
 .empty{color:var(--fg-2);font-size:.92rem;border:1.5px dashed var(--line);border-radius:12px;padding:1rem;text-align:center}
 .toast{position:fixed;right:max(12px,env(safe-area-inset-right,0px));bottom:calc(52px + env(safe-area-inset-bottom,0px));background:var(--green-deep);color:var(--band-fg);padding:.7rem 1rem;border-radius:12px;box-shadow:var(--shadow);font-size:.9rem;z-index:40;max-width:min(92vw,360px)}
 .deadline{font-size:.8rem;color:var(--ochre-ink);font-weight:600}
@@ -297,7 +327,7 @@ footer.site .staff-link:hover{opacity:1;text-decoration:underline}
 .portal .row span{color:var(--band-muted)}
 .portal .fine{font-size:.76rem;color:var(--band-muted)}
 @media (max-width:860px){.band .wrap{grid-template-columns:1fr}}
-.trust{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.trust{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}.trust[hidden]{display:none}
 .trust .card{display:grid;gap:.4rem}
 .trust .card p{color:var(--fg-2);font-size:.9rem}
 @media (max-width:860px){.trust{grid-template-columns:repeat(2,1fr)}}
@@ -1298,7 +1328,7 @@ details.line-offers[open] summary::before{content:"▾"}
   <div class="adshow" id="nwAds" style="margin-bottom:1rem"></div>
   <div class="grid2" style="align-items:start">
     <div class="card panel" style="display:grid;gap:.7rem"><div><strong style="font-family:var(--display);font-size:1.05rem">Latest issue</strong><p class="small muted">What buyers received this month. Also in every member's Mailbox under Newsletter.</p></div><div id="newsList" style="display:grid;gap:.6rem"></div></div>
-    <div class="card panel" id="adInvite" style="display:grid;gap:.7rem;align-content:start"><div><span class="tag tag-ochre">For brands, suppliers and contractors</span><strong style="display:block;font-family:var(--display);font-size:1.05rem;margin-top:.5rem">Interested in advertising?</strong><p class="small muted">A newsletter item, a banner in the slideshow, a featured-supplier card or a price-pulse tile. Staff check the text, finance sends the invoice, and it goes out in the next issue.</p></div><div><button class="btn btn-ochre" type="button" id="adInviteBtn">I want to advertise</button></div></div>
+    <div class="card panel" id="adInvite" style="display:grid;gap:.7rem;align-content:start"><div><span class="tag tag-ochre">For brands, suppliers and contractors</span><strong style="display:block;font-family:var(--display);font-size:1.05rem;margin-top:.5rem">Interested in advertising?</strong><p class="small muted">A newsletter item, a banner in the slideshow, a featured-supplier card or a price-pulse tile. Press the button to see the placements, the example prices and the form.</p></div><div><button class="btn btn-ochre" type="button" id="adInviteBtn">I want to advertise</button></div></div>
     <div class="card panel" id="newsFormBox" style="display:none;gap:.7rem">
       <div><strong style="font-family:var(--display);font-size:1.05rem">Send your news for the next issue</strong><p class="small muted">A new brand, a new supply, a price offer or your company's progress. Staff check the text (no phone numbers or addresses), finance sends the invoice, and it goes out in the next issue.</p></div>
       <div class="su-row2"><div class="field"><label for="nwWho">You are</label><select id="nwWho"><option>Brand or manufacturer</option><option>Supplier</option><option>Contractor or developer</option><option>Other</option></select></div><div class="field"><label for="nwCompany">Company or brand</label><input id="nwCompany" placeholder="Your company or brand name"></div></div>
@@ -1311,7 +1341,7 @@ details.line-offers[open] summary::before{content:"▾"}
       <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center"><button class="btn btn-primary btn-sm" type="button" id="nwSend">Send to Build Smartly</button><span class="small muted" id="nwMsg"></span></div>
     </div>
   </div>
-  <div class="trust" style="margin-top:1rem">
+  <div class="trust" id="adPrices" hidden style="margin-top:1rem">
     <div class="card"><span class="tag tag-ochre">Sponsored</span><h3 style="margin-top:.5rem">Newsletter item and banner</h3><p>Your headline, text and picture in the monthly issue, and your banner in the slideshow on the home page and in every member's workspace.</p><p class="small"><strong>Example: ETB 5,000 per issue</strong></p></div>
     <div class="card"><span class="tag tag-ochre">Sponsored</span><h3 style="margin-top:.5rem">Featured supplier</h3><p>Top of the newsletter, top of the members directory and a card on the home page for a month.</p><p class="small"><strong>Example: ETB 15,000 per month</strong></p></div>
     <div class="card"><span class="tag tag-ochre">Sponsored</span><h3 style="margin-top:.5rem">Price pulse tile and member banner</h3><p>A tile in the moving price strip on the home page, or a slide in the banner inside every member's workspace.</p><p class="small"><strong>Example: ETB 4,000 to 5,000 per month</strong></p></div>
@@ -1341,8 +1371,23 @@ details.line-offers[open] summary::before{content:"▾"}
   </div>
   <div id="adPanel" hidden style="display:grid;gap:1rem">
     <div class="topbar"><div><span class="eyebrow">Staff</span><h1 style="font-size:1.6rem">Build Smartly operations</h1><p class="small muted" id="adMeta"></p></div><div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap"><div class="field" style="min-width:16rem"><input id="adSearch" type="search" placeholder="Search a PO, request, company, number…" aria-label="Search"></div><button class="btn btn-ghost btn-sm" type="button" id="adLogout">Log out</button></div></div>
-    <div class="tabs" id="adTabs"><button class="on" data-tab="overview">Overview</button><button data-tab="requests">Requests</button><button data-tab="suppliers">Suppliers</button><button data-tab="support">Support</button><button data-tab="news">Newsletter</button><button data-tab="members">Members</button><button data-tab="finance">Finance</button><button data-tab="catalogue">Catalogue</button><button data-tab="insights">Insights</button><button data-tab="settings">Settings</button></div>
-    <div id="adBody" style="display:grid;gap:1rem"></div>
+    <div class="adlayout" id="adLayout">
+      <button class="adburger" type="button" id="adBurger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+      <nav class="adnav" id="adTabs" aria-label="Staff sections">
+        <button class="on" data-tab="overview"><i>▦</i><b>Overview</b></button>
+        <button data-tab="requests"><i>☰</i><b>Requests</b></button>
+        <button data-tab="suppliers"><i>✓</i><b>Suppliers</b></button>
+        <button data-tab="support"><i>✉</i><b>Support</b></button>
+        <button data-tab="news"><i>▣</i><b>Newsletter</b></button>
+        <button data-tab="members"><i>♟</i><b>Members</b></button>
+        <button data-tab="finance"><i>Br</i><b>Finance</b></button>
+        <button data-tab="catalogue"><i>▤</i><b>Catalogue</b></button>
+        <button data-tab="insights"><i>↗</i><b>Insights</b></button>
+        <button data-tab="settings"><i>⚙</i><b>Settings</b></button>
+      </nav>
+      <div class="adscrim" id="adScrim"></div>
+      <div id="adBody" style="display:grid;gap:1rem;min-width:0"></div>
+    </div>
   </div>
 </div>
 
@@ -1628,7 +1673,7 @@ bsAdShow('nwAds', function(){ return !document.getElementById('view-advertise').
     document.querySelectorAll('.news-list').forEach(function(el){ el.innerHTML=html; });
   }
   BS.ready().then(function(){ BS.subscribe("news", function(d){ items=d||[]; render(); }); render(); });
-  function showAdForm(){ $('adInvite').hidden=true; $('newsFormBox').style.display='grid'; }
+  function showAdForm(){ $('adInvite').hidden=true; $('newsFormBox').style.display='grid'; $('adPrices').hidden=false; }
   $('adInviteBtn').onclick=function(){ showAdForm(); $('newsFormBox').scrollIntoView({behavior:'smooth',block:'start'}); setTimeout(function(){ $('nwCompany').focus(); },400); };
   BSRoute.on('news', function(){ var me=BS.me()||{}; if(!$('nwCompany').value) $('nwCompany').value=me.company||me.name||''; if(location.hash==='#advertise') showAdForm(); render(); });
   $('nwSend').onclick=async function(){
