@@ -38,8 +38,32 @@
     {name:"Excavator hire with operator", cat:"Equipment rental", unit:"day", stage:"equipment", units:["day","hour"], min:1, base:22000},
     {name:"Forklift hire", cat:"Equipment rental", unit:"day", stage:"equipment", units:["day","hour"], min:1, base:9000},
     {name:"Trailer bed hire", cat:"Equipment rental", unit:"trip", stage:"equipment", units:["trip","day"], min:1, base:12000},
-    {name:"Concrete mixer hire", cat:"Equipment rental", unit:"day", stage:"equipment", units:["day","hour"], min:1, base:3500}
+    {name:"Concrete mixer hire", cat:"Equipment rental", unit:"day", stage:"equipment", units:["day","hour"], min:1, base:3500},
+    {name:"Backhoe loader hire with operator", cat:"Equipment rental", unit:"day", stage:"equipment", units:["day","hour"], min:1, base:14000},
+    {name:"Wheel loader hire with operator", cat:"Equipment rental", unit:"day", stage:"equipment", units:["day","hour"], min:1, base:18000},
+    {name:"Bulldozer hire with operator", cat:"Equipment rental", unit:"day", stage:"equipment", units:["day","hour"], min:1, base:26000},
+    {name:"Motor grader hire with operator", cat:"Equipment rental", unit:"day", stage:"equipment", units:["day","hour"], min:1, base:24000},
+    {name:"Roller compactor hire", cat:"Equipment rental", unit:"day", stage:"equipment", units:["day","hour"], min:1, base:12000},
+    {name:"Plate compactor hire", cat:"Equipment rental", unit:"day", stage:"equipment", units:["day","week"], min:1, base:1500},
+    {name:"Tower crane hire", cat:"Equipment rental", unit:"month", stage:"equipment", units:["month"], min:1, base:450000},
+    {name:"Mobile crane hire (25 t)", cat:"Equipment rental", unit:"day", stage:"equipment", units:["day","hour"], min:1, base:35000},
+    {name:"Concrete pump hire", cat:"Equipment rental", unit:"day", stage:"equipment", units:["day","m³"], min:1, base:30000},
+    {name:"Dump truck hire (12 m³)", cat:"Equipment rental", unit:"trip", stage:"equipment", units:["trip","day"], min:1, base:5500},
+    {name:"Water tanker hire (10,000 l)", cat:"Equipment rental", unit:"trip", stage:"equipment", units:["trip","day"], min:1, base:4500},
+    {name:"Diesel generator hire (100 kVA)", cat:"Equipment rental", unit:"day", stage:"equipment", units:["day","week","month"], min:1, base:6000},
+    {name:"Concrete vibrator hire", cat:"Equipment rental", unit:"day", stage:"equipment", units:["day","week"], min:1, base:900},
+    {name:"Scaffolding set hire (100 m²)", cat:"Equipment rental", unit:"month", stage:"equipment", units:["month","week"], min:1, base:25000},
+    {name:"Bar bending and cutting machine hire", cat:"Equipment rental", unit:"day", stage:"equipment", units:["day","week"], min:1, base:2500},
+    {name:"Welding machine hire", cat:"Equipment rental", unit:"day", stage:"equipment", units:["day","week"], min:1, base:1200},
+    {name:"Water pump hire (dewatering)", cat:"Equipment rental", unit:"day", stage:"equipment", units:["day","week"], min:1, base:1800}
   ];
+  /* Pictures beside the categories and the equipment in every item list (assets/photos/cat and assets/photos/items; credits in assets/photos/credits.json). */
+  BS.CAT_PICS = {"Cement":"sc-cement","Aggregates and fill":"sc-aggregates","Reinforcement steel":"sc-rebar","Blocks, bricks and stone":"sc-blocks","Structural steel and roofing":"sc-structural","Formwork, timber and scaffolding":"sc-formwork","Finishing: tiles and floors":"sc-tiles","Finishing: paint and plaster":"sc-paint","Plumbing and sanitary":"sc-plumbing","Electrical":"sc-electrical","Equipment rental":"sc-equipment"};
+  BS.ITEM_PICS = {"Sino truck (10 wheel) hire":"eq-sino-truck","Excavator hire with operator":"eq-excavator","Forklift hire":"eq-forklift","Trailer bed hire":"eq-trailer","Concrete mixer hire":"eq-mixer","Backhoe loader hire with operator":"eq-backhoe","Wheel loader hire with operator":"eq-wheel-loader","Bulldozer hire with operator":"eq-bulldozer","Motor grader hire with operator":"eq-grader","Roller compactor hire":"eq-roller","Plate compactor hire":"eq-plate-compactor","Tower crane hire":"eq-tower-crane","Mobile crane hire (25 t)":"eq-mobile-crane","Concrete pump hire":"eq-concrete-pump","Dump truck hire (12 m³)":"eq-dump-truck","Water tanker hire (10,000 l)":"eq-water-tanker","Diesel generator hire (100 kVA)":"eq-generator","Concrete vibrator hire":"eq-vibrator","Scaffolding set hire (100 m²)":"eq-scaffolding","Bar bending and cutting machine hire":"eq-bar-bender","Welding machine hire":"eq-welder","Water pump hire (dewatering)":"eq-water-pump"};
+  BS.catPic = function(cat){ var k=BS.CAT_PICS[cat]; return k ? ((BS.PICS&&BS.PICS[k]) || "assets/photos/cat/"+k+".jpg") : ""; };
+  BS.itemPic = function(name){ var k=BS.ITEM_PICS[name]; return k ? ((BS.PICS&&BS.PICS[k]) || "assets/photos/items/"+k+".jpg") : ""; };
+  BS.BRAND_LOGOS = {};
+  BS.ADS_HIDDEN = [];
   BS.UNITS = ["pcs","bag","quintal","ton","kg","m³","truckload","m²","m","litre","bucket","roll","sheet","box","bundle","package","trip","hour","day"]; /* free-text items only; catalogue items carry their own units and an example minimum order */
   BS.CATEGORIES = ["Cement","Aggregates and fill","Reinforcement steel","Blocks, bricks and stone","Structural steel and roofing","Formwork, timber and scaffolding","Finishing: tiles and floors","Finishing: paint and plaster","Plumbing and sanitary","Electrical","Equipment rental","Other (staff will classify)"];
   BS.DESKS = {"Cement":"Structural materials desk","Aggregates and fill":"Structural materials desk","Blocks, bricks and stone":"Structural materials desk","Reinforcement steel":"Steel desk","Structural steel and roofing":"Steel desk","Formwork, timber and scaffolding":"Timber and equipment desk","Equipment rental":"Timber and equipment desk","Finishing: tiles and floors":"Finishing desk","Finishing: paint and plaster":"Finishing desk","Plumbing and sanitary":"Services desk","Electrical":"Services desk","Other (staff will classify)":"Technical supervisor"};
@@ -167,6 +191,8 @@
       if(d.id==="catalogue" && Array.isArray(d.items) && d.items.length){ BS.CATALOGUE.length=0; d.items.forEach(function(it){ BS.CATALOGUE.push(it); }); BS.catalogueSetBy=d.setBy||""; }
       if(d.id==="categories" && Array.isArray(d.list)){ BS.extraCategories=d.list.slice(); d.list.forEach(function(c){ if(c.name && BS.CATEGORIES.indexOf(c.name)<0){ BS.CATEGORIES.splice(BS.CATEGORIES.length-1,0,c.name); } if(c.name && c.desk) BS.DESKS[c.name]=c.desk; if(c.name && c.brands && !BS.BRANDS[c.name]) BS.BRANDS[c.name]=c.brands; }); }
       if(d.id==="brands" && d.map){ Object.keys(d.map).forEach(function(c){ if(Array.isArray(d.map[c]) && d.map[c].length) BS.BRANDS[c]=d.map[c].slice(); }); }
+      if(d.id==="brandLogos" && d.map){ BS.BRAND_LOGOS=d.map; }
+      if(d.id==="ads" && Array.isArray(d.hidden)){ BS.ADS_HIDDEN=d.hidden.slice(); }
     });
     (BS._settingsCbs||[]).forEach(function(cb){ try{ cb(); }catch(e){} });
   };
@@ -350,6 +376,14 @@
     }
     var arr = lsRead(col); arr = arr.map(function(x){ return x.id===docId ? Object.assign({}, x, patch) : x; }); lsWrite(col, arr);
   };
+  BS.remove = async function(col, docId){
+    await BS.ready();
+    if(mode==="shared"){
+      try { await db.collection(col).doc(docId).delete(); return; }
+      catch(e){ degrade(e && e.code); }
+    }
+    lsWrite(col, lsRead(col).filter(function(x){ return x.id!==docId; }));
+  };
   /* write a document with a chosen id (replace if it exists) */
   BS.set = async function(col, docId, data){
     await BS.ready();
@@ -394,5 +428,27 @@
   BS.staffName = function(){ try { return sessionStorage.getItem("bs_demo_admin_name")||"Staff"; } catch(e){ return "Staff"; } };
   BS.accounts = function(){ try { var reg=JSON.parse(localStorage.getItem("bs_demo_accounts")||"{}"); return Object.keys(reg).map(function(k){ return reg[k]; }).filter(function(a){ return a && a.phone; }); } catch(e){ return []; } };
   BS.ready().then(function(){ BS.subscribe("settings", BS.applySettings); });
+  /* Suppliers as one shared list: the built-in ones (BS.SUPPLIERS) plus the `suppliers` collection, which holds suppliers registered
+     on the site or added by staff, and staff edits to the built-in ones (same doc id "seed-<id>", field seedId). Status: active,
+     pending (documents not yet approved), suspended, removed. Prices live in the doc too, so the supplier portal and the staff page edit the same list. */
+  BS.supplierDocs = []; BS._supCbs = [];
+  BS.onSuppliers = function(cb){ BS._supCbs.push(cb); };
+  BS.suppliersAll = function(){
+    var docs = BS.supplierDocs || [], out = [];
+    BS.SUPPLIERS.forEach(function(s){
+      var d = docs.filter(function(x){ return x.seedId===s.id; })[0];
+      if(d && d.status==="removed") return;
+      out.push(Object.assign({}, s, d ? {name:d.name||s.name, cats:(d.cats&&d.cats.length)?d.cats.slice():s.cats, sub:d.sub||s.sub, status:d.status||"active", prices:Array.isArray(d.prices)?d.prices:null, docId:d.id} : {status:"active", docId:"seed-"+s.id}));
+    });
+    docs.forEach(function(d){
+      if(d.seedId || d.status==="removed") return;
+      out.push({id:d.id, name:d.name||"", branch:d.branch||"", sub:d.sub||"Akaki Kaliti", cats:(d.cats||[]).slice(), own:true, phone:d.phone||"", tin:d.tin||"", password:d.password||"", status:d.status||"pending", prices:Array.isArray(d.prices)?d.prices:[], docId:d.id, auto:false, source:d.source||"registered"});
+    });
+    return out;
+  };
+  BS.activeSuppliers = function(){ return BS.suppliersAll().filter(function(s){ return s.status==="active"; }); };
+  BS.supplierById = function(id){ return BS.suppliersAll().filter(function(s){ return s.id===id; })[0] || BS.SUPPLIERS.filter(function(s){ return s.id===id; })[0] || null; };
+  BS.supplierDoc = function(docId){ return (BS.supplierDocs||[]).filter(function(d){ return d.id===docId; })[0] || null; };
+  BS.ready().then(function(){ BS.subscribe("suppliers", function(d){ BS.supplierDocs = d||[]; (BS._supCbs||[]).forEach(function(cb){ try{ cb(); }catch(e){} }); }); });
   BS.known = function(digits){ try { return JSON.parse(localStorage.getItem("bs_demo_accounts")||"{}")[digits] || null; } catch(e){ return null; } };
 })();

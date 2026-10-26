@@ -374,6 +374,14 @@ footer.site .staff-link:hover{opacity:1;text-decoration:underline}
 .pick input{accent-color:var(--green);width:20px;height:20px;flex:none;margin:0}
 .pick span{min-width:0}
 .pick small{display:block;color:var(--fg-2);font-size:.74rem}
+.pick img.pi{width:3.4rem;height:2.5rem;object-fit:cover;border-radius:7px;flex:none;background:var(--bg-2)}
+.pgrp{grid-column:1/-1;display:flex;align-items:center;gap:.7rem;margin-top:.6rem;padding-bottom:.2rem;border-bottom:1px solid var(--line)}
+.pgrp:first-child{margin-top:0}
+.pgrp img{width:4.2rem;height:2.9rem;object-fit:cover;border-radius:9px;flex:none;background:var(--bg-2)}
+.pgrp strong{font-family:var(--display);display:block}
+.pgrp small{display:block;color:var(--fg-2);font-size:.76rem}
+.blogo{width:2.4rem;height:1.3rem;object-fit:contain;vertical-align:middle;margin-right:.35rem;border-radius:4px;background:#fff}
+.chip img{width:1.8rem;height:1rem;object-fit:contain;vertical-align:middle;margin-right:.3rem;background:#fff;border-radius:3px}
 .pick.on{border-color:var(--green);background:color-mix(in srgb,var(--green) 9%,transparent)}
 @media (max-width:900px){.picks{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:560px){.picks{grid-template-columns:1fr}}
@@ -942,14 +950,14 @@ details.line-offers[open] summary::before{content:"▾"}
       </div>
       <input type="hidden" id="validity" value="4">
       <div class="grid2">
-        <div class="field"><label for="delivery">Delivery</label><select id="delivery"><option>Supplier delivers to site</option><option>I collect from supplier</option><option>Build Smartly arranges delivery</option></select><span class="hint" id="deliveryHint"></span></div>
+        <div class="field"><label for="delivery">Delivery</label><select id="delivery"><option>Supplier delivers to site</option><option>I collect from supplier</option></select><span class="hint" id="deliveryHint"></span></div>
         <div class="field"><label for="payment">Preferred payment</label><select id="payment"><option>On delivery</option><option>Advance</option><option>On shipping</option><option>Credit (date to agree)</option></select></div>
       </div>
       <div class="grid2">
         <label class="check"><input type="checkbox" id="partial" checked><span>Partial delivery accepted (a line may be split between suppliers)</span></label>
-        <label class="check"><input type="checkbox" id="insurance"><span>Add transit insurance · <strong id="insText">ETB 0</strong> <span class="small muted">(<span id="insRateText">0.4 %</span> of the goods value, example rate, through a licensed insurer)</span></span></label>
+        <span class="small muted" style="align-self:center">Transport by Build Smartly and transit insurance are offered when you accept an offer, with the real figures for that order.</span>
       </div>
-      <div class="card" id="estBox" hidden style="background:var(--bg);display:grid;gap:.35rem;padding:.9rem"><strong style="font-family:var(--display)">Estimated costs</strong><div id="estBody" class="small" style="display:grid;gap:.25rem"></div><span class="small muted">Goods from recent prices on the platform; delivery from distance and truck trips; example tariffs until the owner sets them. Real figures come with the offers.</span></div>
+      <input type="checkbox" id="insurance" hidden>
       <input type="hidden" id="company">
     </div>
     <div class="card" id="routing" hidden><strong style="font-family:var(--display)">Where your lines will go</strong><div id="routingBody" style="margin-top:.5rem;display:grid;gap:.3rem;font-size:.92rem"></div></div>
@@ -1251,7 +1259,6 @@ details.line-offers[open] summary::before{content:"▾"}
     </div>
     <p class="small muted">Headings: Sora. Text: Manrope. Ethiopic script: Noto Sans Ethiopic.</p>
   </section>
-  <section class="card" id="brand-credits" style="display:grid;gap:.5rem"><h3>Photo credits</h3><p class="small muted">Photographs on the test site are used under Creative Commons licences and were cropped to fit. Each one links to its source page and licence. Promotion banners combine these photographs with example sponsor text for the test site.</p><ul class="small" style="margin:0;padding-left:1.1rem;display:grid;gap:.25rem"><li><strong>Home banner:</strong> <a href="https://commons.wikimedia.org/wiki/File:Sunset_on_the_rising_city,_Addis_Ababa_-_Flickr_-_jeanotr.jpg" target="_blank" rel="noopener">Sunset on the rising city, Addis Ababa - Flickr - jeanotr.jpg</a> by Jean Rebiffé from Addis Ababa, Ethiopia, CC BY 2.0, via Wikimedia Commons, cropped.</li><li><strong>Home slide 2:</strong> <a href="https://commons.wikimedia.org/wiki/File:Working_their_way_out_of_poverty_(8756741421).jpg" target="_blank" rel="noopener">Working their way out of poverty (8756741421).jpg</a> by DFID - UK Department for International Development, CC BY 2.0, via Wikimedia Commons, cropped.</li><li><strong>Home slide 3:</strong> <a href="https://commons.wikimedia.org/wiki/File:Factory_of_National_Cement_Share_Company.jpg" target="_blank" rel="noopener">Factory of National Cement Share Company.jpg</a> by DFID - UK Department for International Development, CC BY 3.0, via Wikimedia Commons, cropped.</li><li><strong>Foundation:</strong> <a href="https://commons.wikimedia.org/wiki/File:Cementing_Ethiopias_progress_(8757865770).jpg" target="_blank" rel="noopener">Cementing Ethiopias progress (8757865770).jpg</a> by DFID - UK Department for International Development, CC BY 2.0, via Wikimedia Commons, cropped.</li><li><strong>Structure:</strong> <a href="https://commons.wikimedia.org/wiki/File:High_Rise,_Addis_Ababa_(10113833385).jpg" target="_blank" rel="noopener">High Rise, Addis Ababa (10113833385).jpg</a> by Rod Waddington from Kergunyah, Australia, CC BY-SA 2.0, via Wikimedia Commons, cropped.</li><li><strong>Electrical and plumbing:</strong> <a href="https://commons.wikimedia.org/wiki/File:PVC_plumbing_fittings_in_Awka.jpg" target="_blank" rel="noopener">PVC plumbing fittings in Awka.jpg</a> by Johnnybam, CC BY-SA 4.0, via Wikimedia Commons, cropped.</li><li><strong>Finishing:</strong> <a href="https://commons.wikimedia.org/wiki/File:Floor_tile_installation_in_the_back_of_house_area_of_the_LIRR_passenger_concourse._08-29-2019_(48647691101).jpg" target="_blank" rel="noopener">Floor tile installation in the back of house area of the LIRR passenger concourse. 08-29-2019 (48647691101).jpg</a> by MTA Capital Construction Mega Projects, CC BY 2.0, via Wikimedia Commons, cropped.</li><li><strong>Equipment rental:</strong> <a href="https://commons.wikimedia.org/wiki/File:Caterpillar_330_excavator_on_a_pile_of_dirt.jpg" target="_blank" rel="noopener">Caterpillar 330 excavator on a pile of dirt.jpg</a> by Matthew T Rader, CC BY-SA 4.0, via Wikimedia Commons, cropped.</li><li><strong>Promotion banner (cement):</strong> <a href="https://commons.wikimedia.org/wiki/File:Cement_bags_in_Douma.jpg" target="_blank" rel="noopener">Cement bags in Douma.jpg</a> by Alex.Simon89, CC BY 4.0, via Wikimedia Commons, cropped.</li><li><strong>Promotion banner (steel):</strong> <a href="https://commons.wikimedia.org/wiki/File:Steel_reinforcement_rods.jpg" target="_blank" rel="noopener">Steel reinforcement rods.jpg</a> by Markus Koljonen (Dilaudid), CC BY-SA 3.0, via Wikimedia Commons, cropped.</li><li><strong>Promotion banner (contractor):</strong> <a href="https://commons.wikimedia.org/wiki/File:Building_homes,_hospitals_and_more_(8757869312).jpg" target="_blank" rel="noopener">Building homes, hospitals and more (8757869312).jpg</a> by DFID - UK Department for International Development, CC BY 2.0, via Wikimedia Commons, cropped.</li><li><strong>Promotion banner (paint):</strong> <a href="https://commons.wikimedia.org/wiki/File:ARRANGED_PAINT_BUCKET_IN_GOMBE.jpg" target="_blank" rel="noopener">ARRANGED PAINT BUCKET IN GOMBE.jpg</a> by Yahuzaishat, CC BY-SA 4.0, via Wikimedia Commons, cropped.</li></ul></section>
 </div>
 
 <!-- ================= CONTACT ================= -->
@@ -1379,6 +1386,7 @@ details.line-offers[open] summary::before{content:"▾"}
         <button data-tab="suppliers"><i>✓</i><b>Suppliers</b></button>
         <button data-tab="support"><i>✉</i><b>Support</b></button>
         <button data-tab="news"><i>▣</i><b>Newsletter</b></button>
+        <button data-tab="promos"><i>★</i><b>Promotions</b></button>
         <button data-tab="members"><i>♟</i><b>Members</b></button>
         <button data-tab="finance"><i>Br</i><b>Finance</b></button>
         <button data-tab="catalogue"><i>▤</i><b>Catalogue</b></button>
@@ -1469,13 +1477,14 @@ details.line-offers[open] summary::before{content:"▾"}
   <div class="wrap">
     <span>© 2026 Build Smartly S.C. · Addis Ababa, Ethiopia · <span style="user-select:all">hello@buildsmartly.et</span> (placeholder)<br><span class="lang-note" id="langNote" hidden>Draft translation for the mockup. A native speaker reviews every word before launch.</span></span>
     <nav><a href="#start">Start here</a><a href="#supply">Materials</a><a href="#how">How it works</a><a href="#suppliers">For suppliers</a><a href="#members">Members</a><a href="#newsletter">Newsletter</a><a href="#aboutus">About us</a><a href="#contact">Contact</a><a href="#faq">FAQ</a><a href="#terms">Terms</a><a href="#privacy">Privacy</a><a href="#brand">Brand kit</a></nav>
-    <a href="#brand-credits" class="small muted" style="flex-basis:100%;text-align:right;font-size:.78rem">Photo credits</a>
     <a href="#staff" class="staff-link">Staff sign-in</a>
   </div>
 </footer>
   <div class="modal" id="poGate" hidden>
     <div class="card">
-      <div><span class="eyebrow">Before we issue the purchase order</span><h3 style="margin-top:.4rem">Who is buying?</h3><p class="small muted">The PO and contract name the buyer and the supplier. Staff check the TIN against the registry before the PO is confirmed. Asked once.</p></div>
+      <div><span class="eyebrow">Before we issue the purchase order</span><div id="gDeliv"></div></div>
+      <div id="gCompany" style="display:grid;gap:.9rem">
+      <div><h3 style="margin-top:.2rem">Who is buying?</h3><p class="small muted">The PO and contract name the buyer and the supplier. Staff check the TIN against the registry before the PO is confirmed. Asked once.</p></div>
       <div class="su-choices">
         <div class="choice"><input type="radio" name="gType" id="g-com" value="Organisation" checked><label for="g-com"><strong>A company or organisation</strong><span>Contractor, developer, trader, factory, cooperative, NGO.</span></label></div>
         <div class="choice"><input type="radio" name="gType" id="g-ind" value="Individual"><label for="g-ind"><strong>A person</strong><span>Building or renovating for yourself.</span></label></div>
@@ -1485,6 +1494,7 @@ details.line-offers[open] summary::before{content:"▾"}
       <div class="su-row2">
         <div class="field"><label for="gTin" id="gTinLabel">TIN</label><input id="gTin" inputmode="numeric" placeholder="10 digits"><span class="hint" id="gTinHint">Taxpayer identification number, 10 digits.</span><span class="err" id="gTinErr" hidden>A TIN has exactly 10 digits.</span></div>
         <div class="field" id="gContactField"><label for="gContact">Contact person</label><input id="gContact" placeholder="Full name"></div>
+      </div>
       </div>
       <div class="su-nav"><button class="btn btn-ghost" type="button" id="gCancel">Not now</button><button class="btn btn-primary" type="button" id="gSave">Save and issue the PO</button></div>
     </div>
@@ -1514,7 +1524,6 @@ window.BSRoute = (function(){
     current=h||'home';
     try{ if(history && history.replaceState){ history.replaceState(null,'','#'+current); } }catch(e){}
     var homeAnchors=['home','top','about','supply','how','suppliers','partners','aboutus'];
-    if(h==='brand-credits'){ show('brand'); setTimeout(function(){ var t=document.getElementById('brand-credits'); if(t) t.scrollIntoView({behavior:'smooth',block:'start'}); },30); return; }
     if(h==='newsletter'||h==='advertise'){ show('advertise'); if(hooks.news) hooks.news(); window.scrollTo(0,0); return; }
     if(h==='admin'||h==='staff'){ show('admin'); if(hooks.admin) hooks.admin(); window.scrollTo(0,0); return; }
     if(h.indexOf('order-')===0){ show('order'); if(hooks.order) hooks.order(h.slice(6)); return; }
@@ -1639,12 +1648,22 @@ function bsApplyPics(){
 }
 /* ---------- Promotions slideshow: example banners plus published newsletter items that carry a picture ---------- */
 var bsAdItems=[], bsAdShows=[];
-function bsAdShow(id, visibleFn){
+/* Item tick boxes grouped by category, with the category picture beside the group name and a picture on each piece of equipment. */
+function bsPickList(opts, isOn){
+  var esc=function(t){ return String(t||'').replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+  var groups=[]; opts.forEach(function(c){ var g=groups.filter(function(x){ return x.cat===c.cat; })[0]; if(!g){ g={cat:c.cat, items:[]}; groups.push(g); } g.items.push(c); });
+  return groups.map(function(g){ var pic=BS.catPic(g.cat);
+    return '<div class="pgrp">'+(pic?'<img src="'+esc(pic)+'" alt="" loading="lazy" onerror="this.remove()">':'')+'<span><strong>'+esc(g.cat)+'</strong><small>'+esc(BS.DESKS[g.cat]||'')+' · '+g.items.length+' item'+(g.items.length===1?'':'s')+'</small></span></div>'+
+      g.items.map(function(c){ var on=!!isOn(c); var ip=BS.itemPic(c.name); return '<label class="pick'+(on?' on':'')+(ip?' haspic':'')+'"><input type="checkbox" value="'+esc(c.name)+'"'+(on?' checked':'')+'>'+(ip?'<img class="pi" src="'+esc(ip)+'" alt="" loading="lazy" onerror="this.remove()">':'')+'<span>'+esc(c.name)+'<small>per '+esc(c.unit)+(c.min>1?' · min '+c.min:'')+'</small></span></label>'; }).join('');
+  }).join('');
+}
+function bsAdShow(id, visibleFn, place){
   var box=document.getElementById(id); if(!box) return; var idx=0, timer=null, items=[];
   function esc(t){ return String(t||'').replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function draw(){
-    items=bsAdItems.concat(BS.ADS.map(function(a){ return Object.assign({}, a, {img:(BS.PICS&&BS.PICS[a.key])||a.img}); })); idx=Math.min(idx, items.length-1);
-    box.innerHTML='<div class="atrack">'+items.map(function(a){ return '<a class="aslide" href="#newsletter"><img src="'+esc(a.img)+'" alt="'+esc(a.company)+'" loading="lazy"><span class="acap"><span><span class="tag">Sponsored · '+esc(a.who||'Partner')+'</span> '+esc(a.company)+'</span><span>'+esc(a.title)+'</span></span></a>'; }).join('')+'</div>'+
+    items=bsPromoItems.filter(function(a){ return a.active!==false && (!a.placement || a.placement==='all' || !place || a.placement===place); }).concat(bsAdItems).concat(BS.ADS.filter(function(a){ return (BS.ADS_HIDDEN||[]).indexOf(a.key)<0; }).map(function(a){ return Object.assign({}, a, {img:(BS.PICS&&BS.PICS[a.key])||a.img}); })); idx=Math.min(idx, items.length-1);
+    if(!items.length){ box.innerHTML='<div class="empty">No promotions at the moment.</div>'; return; }
+    box.innerHTML='<div class="atrack">'+items.map(function(a){ return '<a class="aslide" href="'+esc(a.link||'#newsletter')+'"'+(/^https?:/.test(a.link||'')?' target="_blank" rel="noopener"':'')+'><img src="'+esc(a.img)+'" alt="'+esc(a.company)+'" loading="lazy"><span class="acap"><span><span class="tag">Sponsored · '+esc(a.who||'Partner')+'</span> '+esc(a.company)+'</span><span>'+esc(a.title)+'</span></span></a>'; }).join('')+'</div>'+
       '<div class="aarrows"><button type="button" data-ad="-1" aria-label="Previous">‹</button><button type="button" data-ad="1" aria-label="Next">›</button></div><div class="adots">'+items.map(function(_,i){ return '<i'+(i===idx?' class="on"':'')+'></i>'; }).join('')+'</div>';
     go(idx);
   }
@@ -1653,9 +1672,11 @@ function bsAdShow(id, visibleFn){
   if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){ timer=setInterval(function(){ if(!document.hidden && (!visibleFn || visibleFn())) go(idx+1); }, 6000); }
   draw(); bsAdShows.push(draw);
 }
+var bsPromoItems=[];
+(function(){ BS.ready().then(function(){ BS.subscribe('promotions', function(d){ bsPromoItems=(d||[]).slice().sort(function(a,b){ return (a.order||0)-(b.order||0) || (b.createdAt||'').localeCompare(a.createdAt||''); }); bsAdShows.forEach(function(f){ f(); }); }); BS.onSettings && BS.onSettings(function(){ bsAdShows.forEach(function(f){ f(); }); }); }); })();
 (function(){ BS.ready().then(function(){ BS.subscribe('news', function(d){ bsAdItems=(d||[]).filter(function(x){ return x.status==='published' && x.img; }).sort(function(a,b){ return (b.createdAt||'').localeCompare(a.createdAt||''); }).map(function(x){ return {who:x.who||'Partner', company:x.company, title:x.title, img:x.img}; }); bsAdShows.forEach(function(f){ f(); }); }); }); })();
-bsAdShow('homeAds', function(){ return !document.getElementById('view-home').hidden; });
-bsAdShow('nwAds', function(){ return !document.getElementById('view-advertise').hidden; });
+bsAdShow('homeAds', function(){ return !document.getElementById('view-home').hidden; }, 'home');
+bsAdShow('nwAds', function(){ return !document.getElementById('view-advertise').hidden; }, 'newsletter');
 
 /* ---------- Newsletter: example issue plus items suppliers send (collection `news`) ---------- */
 (function(){
@@ -1703,10 +1724,10 @@ bsAdShow('nwAds', function(){ return !document.getElementById('view-advertise').
   /* live figures */
   function setCount(id, v){ var el=document.getElementById(id); if(!el) return; el.dataset.count=String(v); if(el.dataset.done){ el.textContent=(+v).toLocaleString('en-US'); } }
   BS.ready().then(function(){
-    BS.subscribe('verifications', function(d){ setCount('stSuppliers', BS.SUPPLIERS.length + (d||[]).filter(function(v){ return v.status==='verified'; }).length); });
+    BS.onSuppliers(function(){ setCount('stSuppliers', BS.activeSuppliers().length); });
     BS.subscribe('offers', function(d){ setCount('stOffers', (d||[]).length); });
   });
-  setCount('stSuppliers', BS.SUPPLIERS.length);
+  setCount('stSuppliers', BS.activeSuppliers().length);
 })();
 
 /* ---------- Home: menu, hero pictures and price pulse ---------- */
@@ -1862,6 +1883,7 @@ function bsSupport(threadId, inputId, sendId){
     var name=data.legal, id=ownId(name);
     var profile={ docs:{lic:$('wLic').value.trim(), issuer:'Addis Ababa Trade Bureau', exp:$('wExp').value, tin:data.tin, vat:$('wVat').value, submitted:submitted, verified:false}, type:$('wType').value, brands:'', cats:wcats.slice(), locs:[{type:'Main store', sub:$('wSub').value, pin:''}], zones:[$('wSub').value], terms:'Delivered, extra charge per zone', agree:true, intro:'', publish:false };
     try{ localStorage.setItem('bs_demo_supprofile_'+id, JSON.stringify(profile)); }catch(e){}
+    BS.set('suppliers', id, {name:name, phone:bsDigits(data.phone), tin:data.tin, cats:wcats.slice(), sub:$('wSub').value, password:data.password||'', status:'pending', source:'registered', prices:[]});
     if(submitted){ var files=[]; ['wLicFile','wTinFile','wVatFile'].forEach(function(fid){ var f=$(fid).files&&$(fid).files[0]; if(f) files.push(f.name); }); BS.set('verifications', id, {supplierId:id, company:name, phone:bsDigits(data.phone), tin:data.tin, lic:profile.docs.lic, exp:profile.docs.exp, vat:profile.docs.vat, cats:wcats.slice(), sub:$('wSub').value, files:files, status:'pending', submittedAt:new Date().toISOString()}); }
     var rows=[['Company',name],['Entity type',$('entity').value],['TIN',data.tin],['Contact',(data.contact||'')+(data.jobtitle?' · '+data.jobtitle:'')],['Mobile',data.phone],['Email',data.email],['City',$('city').value],['Supplies',wcats.join(', ')],['Dispatch point',$('wSub').value],['Documents', submitted ? 'Submitted · staff review within 2 working days' : 'Not yet · upload them under Settings in the portal']];
     var dl=$('summary'); dl.innerHTML=''; rows.forEach(function(r){ var dt=document.createElement('dt'); dt.textContent=r[0]; var dd=document.createElement('dd'); dd.textContent=r[1]; dl.appendChild(dt); dl.appendChild(dd); });
@@ -1895,6 +1917,7 @@ function bsSupport(threadId, inputId, sendId){
 
 /* ---------- BOQ (customer) ---------- */
 (function(){
+  function esc(t){ return String(t||'').replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   var $=function(id){return document.getElementById(id);};
   var me = BS.me() || {};
   if(me.company) $('company').value = me.company;
@@ -1915,7 +1938,7 @@ function bsSupport(threadId, inputId, sendId){
   /* the catalogue as tick boxes; ticking adds a line, unticking removes it */
   function renderPicks(){
     var stage=$('stage').value;
-    $('picks').innerHTML = itemOptions(stage).map(function(c){ var on=!!lineFor(c.name); return '<label class="pick'+(on?' on':'')+'"><input type="checkbox" value="'+c.name.replace(/"/g,'&quot;')+'"'+(on?' checked':'')+'><span>'+c.name+'<small>'+c.cat+' · per '+c.unit+'</small></span></label>'; }).join('');
+    $('picks').innerHTML = bsPickList(itemOptions(stage), function(c){ return !!lineFor(c.name); });
   }
   $('picks').addEventListener('change', function(e){
     var t=e.target; if(t.type!=='checkbox') return; var name=t.value;
@@ -2016,7 +2039,7 @@ function bsSupport(threadId, inputId, sendId){
       function(){ $('pinText').textContent=pinLabel(); bsToast('Could not get your location. Allow location access, or pin on the map.'); }, {timeout:10000, maximumAge:60000});
   };
   /* ---- estimate: goods from recent prices, delivery from distance and truck trips, insurance at the example rate ---- */
-  function nearestSub(cat, to){ var best=null, bk=1e9; BS.SUPPLIERS.forEach(function(s){ if(s.cats.indexOf(cat)<0) return; var k=BS.km(BS.pointOf(s.sub), BS.pointOf(to)); if(k<bk){ bk=k; best=s.sub; } }); return best||'Akaki Kaliti'; }
+  function nearestSub(cat, to){ var best=null, bk=1e9; BS.activeSuppliers().forEach(function(s){ if(s.cats.indexOf(cat)<0) return; var k=BS.km(BS.pointOf(s.sub), BS.pointOf(to)); if(k<bk){ bk=k; best=s.sub; } }); return best||'Akaki Kaliti'; }
   function estimate(){
     var good=lines.filter(function(l){ return l.item && +l.qty>0; }), to=siteTarget(), groups={};
     good.forEach(function(l){ var c=l.cat||'Other'; (groups[c]=groups[c]||[]).push(l); });
@@ -2026,24 +2049,16 @@ function bsSupport(threadId, inputId, sendId){
     var goods=BS.goodsValue(good); return { goods:goods, delivery:del, insurance:BS.insuranceFor(goods), term:$('delivery').value };
   }
   function updateEstimate(){
-    var e=estimate(); $('insText').textContent=BS.fmt(e.insurance);
-    var term=e.term; $('deliveryHint').textContent = term==='I collect from supplier' ? 'Ex-works prices. You send your own truck to the supplier.' : term==='Build Smartly arranges delivery' ? 'Suppliers quote ex-works; Build Smartly adds the transport at the tariff below and it appears on your invoice.' : 'Suppliers quote a delivered price that includes their transport to your site.';
-    if(!e.goods){ $('estBox').hidden=true; return; } $('estBox').hidden=false;
-    var ins=$('insurance').checked ? e.insurance : 0, delShown = term==='I collect from supplier' ? 0 : e.delivery.cost;
-    var rows=[['Goods ('+lines.filter(function(l){return l.item&&+l.qty>0;}).length+' lines, from recent prices)', BS.fmt(e.goods)],
-      ['Delivery'+(e.delivery.trips?' · '+e.delivery.trips+' truck trip'+(e.delivery.trips>1?'s':'')+', nearest suppliers about '+e.delivery.km+' km away':''), term==='I collect from supplier' ? 'your own transport' : BS.fmt(delShown)+(term==='Supplier delivers to site'?' (inside the delivered price)':'')],
-      ['Transit insurance', $('insurance').checked ? BS.fmt(ins) : 'not added'],
-      ['Estimated total', BS.fmt(e.goods+delShown+ins)]];
-    $('estBody').innerHTML=rows.map(function(r,i){ return '<div style="display:flex;justify-content:space-between;gap:1rem"><span'+(i===3?' style="font-weight:600"':'')+'>'+r[0]+'</span><strong>'+r[1]+'</strong></div>'; }).join('');
+    var term=$('delivery').value; $('deliveryHint').textContent = term==='I collect from supplier' ? 'Ex-works prices. You send your own truck, or let Build Smartly arrange the transport when you accept an offer.' : 'Suppliers quote a delivered price that includes their transport to your site.';
   }
   $('subcity').addEventListener('change', updateEstimate);
-  BS.onSettings(function(){ bsApplyPics(); renderPicks(); MIN_DATE=isoPlus(BS.MIN_LEAD_DAYS); $('minLeadText').textContent = BS.MIN_LEAD_DAYS+' days from today ('+MIN_DATE+')'; $('insRateText').textContent=BS.pct(BS.INSURANCE.rate); var pr=document.getElementById('payInsRate'); if(pr) pr.textContent=BS.pct(BS.INSURANCE.rate); var pf=document.getElementById('payFeeText'); if(pf) pf.textContent=(BS.tariffsSetBy?'':'example ')+BS.pct(BS.FEE_RATE); updateEstimate(); });
+  BS.onSettings(function(){ bsApplyPics(); renderPicks(); MIN_DATE=isoPlus(BS.MIN_LEAD_DAYS); $('minLeadText').textContent = BS.MIN_LEAD_DAYS+' days from today ('+MIN_DATE+')'; var pr=document.getElementById('payInsRate'); if(pr) pr.textContent=BS.pct(BS.INSURANCE.rate); var pf=document.getElementById('payFeeText'); if(pf) pf.textContent=(BS.tariffsSetBy?'':'example ')+BS.pct(BS.FEE_RATE); updateEstimate(); });
   $('delivery').addEventListener('change', updateEstimate); $('insurance').addEventListener('change', updateEstimate);
   function renderRouting(){
     updateEstimate();
     var groups={}; lines.forEach(function(l){ if(!l.item) return; var c=l.cat||'Other (staff will classify)'; groups[c]=(groups[c]||0)+1; });
     var keys=Object.keys(groups); $('routing').hidden = keys.length===0;
-    $('routingBody').innerHTML = keys.map(function(c){ var sup=BS.SUPPLIERS.filter(function(s){return s.cats.indexOf(c)>=0;}).length; return '<div>'+groups[c]+' line'+(groups[c]>1?'s':'')+' · <strong>'+c+'</strong> → '+(BS.DESKS[c]||'')+' · '+(sup?sup+' verified supplier'+(sup>1?'s':'')+' will be invited':'staff will classify first')+'</div>'; }).join('');
+    $('routingBody').innerHTML = keys.map(function(c){ var sup=BS.activeSuppliers().filter(function(s){return s.cats.indexOf(c)>=0;}).length; return '<div>'+groups[c]+' line'+(groups[c]>1?'s':'')+' · <strong>'+c+'</strong> → '+(BS.DESKS[c]||'')+' · '+(sup?sup+' verified supplier'+(sup>1?'s':'')+' will be invited':'staff will classify first')+'</div>'; }).join('');
   }
   function hash(s){ var h=0; for(var i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))|0; } return h; }
   /* the list is saved on this device as you type, so you can leave and continue where you stopped */
@@ -2130,7 +2145,7 @@ function bsSupport(threadId, inputId, sendId){
           var total=totalOf(o), letter=String.fromCharCode(65+i), isAcc=o.status==='accepted', isBest=!acc && best && o.id===best.id && live.length>1;
           var cls='offer'+(isAcc?' accepted':'')+(isBest?' best':'')+((acc&&!isAcc)||o.status==='rejected'?' dim':'');
           return '<div class="'+cls+'"><span class="letter">'+letter+'</span>'+
-            '<span><span class="k">Brand</span><b>'+(o.brand||'—')+'</b><span class="small muted"> · '+o.qtyOffered+' '+l.unit+(o.qtyOffered<l.qty?' (partial)':'')+'</span></span>'+
+            '<span><span class="k">Brand</span>'+(BS.BRAND_LOGOS[o.brand]?'<img class="blogo" src="'+BS.BRAND_LOGOS[o.brand]+'" alt="">':'')+'<b>'+(o.brand||'—')+'</b><span class="small muted"> · '+o.qtyOffered+' '+l.unit+(o.qtyOffered<l.qty?' (partial)':'')+'</span></span>'+
             '<span><span class="k">Unit price</span>'+BS.fmt(o.unitPrice)+' <span class="small muted">'+(o.vat==='incl'?'incl. VAT':'excl. VAT')+'</span></span>'+
             '<span><span class="k">Delivered total</span><strong>'+BS.fmt(total)+'</strong>'+(isBest?'<br><span class="best-tag">Best price</span>':(!acc && live.length>1 && o.status!=='rejected' && total>bestTotal)?'<br><span class="diff">+ '+BS.fmt(total-bestTotal)+' vs best</span>':'')+'</span>'+
             '<span><span class="k">Delivery · lead · valid</span>'+(o.deliveryCost?BS.fmt(o.deliveryCost):'free')+' · '+o.leadDays+' d · '+o.validDays+' d</span>'+
@@ -2141,7 +2156,7 @@ function bsSupport(threadId, inputId, sendId){
              : (o.counter && o.counter.state==='open') ? '<span class="tag tag-ochre" style="text-transform:none;letter-spacing:0">You proposed '+BS.fmt(o.counter.price)+' per '+l.unit+' · waiting for the supplier</span>'
              : '<span style="display:grid;gap:.3rem">'+(o.counter&&o.counter.state==='declined'?'<span class="small muted">Supplier declined '+BS.fmt(o.counter.price)+'. Original price stands.</span>':'')+'<span style="display:flex;gap:.3rem;flex-wrap:wrap"><button class="btn btn-primary btn-sm" data-accept="'+o.id+'" data-line="'+l.n+'" data-boq="'+b.id+'">Accept</button><button class="btn btn-ghost btn-sm" data-reject="'+o.id+'">Reject</button></span>'+(o.counter&&o.counter.state==='declined'?'':'<span style="display:flex;gap:.3rem"><input type="number" min="1" step="1" placeholder="Your price per '+l.unit+'" data-cin="'+o.id+'" style="width:9rem;font:inherit;font-size:.85rem;padding:.35rem .5rem;border:1.5px solid var(--line);border-radius:8px;background:var(--white);color:var(--fg)"><button class="btn btn-ghost btn-sm" data-counter="'+o.id+'">Counter</button></span>')+'</span>')+'</div>';
         }).join('');
-        var invited=BS.SUPPLIERS.filter(function(s){return s.cats.indexOf(l.cat)>=0;}).length;
+        var invited=BS.activeSuppliers().filter(function(s){return s.cats.indexOf(l.cat)>=0;}).length;
         var countering=os.some(function(o){ return o.counter && o.counter.state==='open'; });
         summary.push({l:l, best:(!acc && best)?best:null, acc:acc||null, live:live.length, total:os.length, invited:invited, bestTotal:bestTotal});
         var openIt = !!acc || countering || b.lines.length<=2;
@@ -2159,7 +2174,7 @@ function bsSupport(threadId, inputId, sendId){
               '<span class="small muted">'+(r.total? r.live+' offer'+(r.live!==1?'s':'')+' open' : '')+'</span>'+
               (r.acc ? '<span class="tag tag-green">'+(r.acc.paidAt?'Paid':r.acc.deliveredAt?'Delivered':r.acc.dispatchedAt?'On the way':r.acc.supplierConfirmed?'Contract':'PO issued')+'</span>' : r.best && !withdrawn ? '<button class="btn btn-primary btn-sm" data-accept="'+r.best.id+'" data-line="'+r.l.n+'" data-boq="'+b.id+'" data-best="1">Accept best</button>' : '<span></span>')+'</div>'; }).join('')+'</div>';
       }
-      var extra=[]; if(b.deliveryTerm==='Build Smartly arranges delivery') extra.push('Build Smartly delivery is added per line at the example tariff when you accept'); if(b.insurance) extra.push('Transit insurance 0.4 % of each accepted line (example rate)');
+      var extra=[];
       if(b.pin) extra.push('Site pinned on the map · shared with the chosen supplier in the PO');
       var extraHtml = extra.length ? '<p class="small muted" style="margin:.4rem 0 0">'+extra.join(' · ')+'</p>' : '';
       card.innerHTML=head+sumHtml+extraHtml+body; box.appendChild(card);
@@ -2169,8 +2184,11 @@ function bsSupport(threadId, inputId, sendId){
   /* extras on top of the offer: Build Smartly transport (when the buyer chose it) and transit insurance (when ticked) */
   function lineExtras(b, l, o){
     var goods=o.qtyOffered*o.unitPrice+(+o.deliveryCost||0), delivery=0, insurance=0;
-    if(b && b.deliveryTerm==='Build Smartly arranges delivery'){ var sub=o.supplierSub||(BS.SUPPLIERS.filter(function(s){return s.id===o.supplierId;})[0]||{}).sub||'Akaki Kaliti'; delivery=BS.deliveryEstimate([{item:l.item, qty:o.qtyOffered, unit:l.unit}], sub, b.pin||b.subcity).cost; }
-    if(b && b.insurance) insurance=Math.max(100, Math.round(goods*BS.INSURANCE.rate));
+    var sub=o.supplierSub||(BS.supplierById(o.supplierId)||{}).sub||'Akaki Kaliti';
+    var platform = o.platformDelivery!==undefined ? !!o.platformDelivery : !!(b && b.deliveryTerm==='Build Smartly arranges delivery');
+    if(platform) delivery = +o.deliveryAmt>0 ? +o.deliveryAmt : BS.deliveryEstimate([{item:l.item, qty:o.qtyOffered, unit:l.unit}], sub, (b&&(b.pin||b.subcity))||'Bole').cost;
+    var insured = o.insurance!==undefined ? !!o.insurance : !!(b && b.insurance);
+    if(insured) insurance = +o.insuranceAmt>0 ? +o.insuranceAmt : BS.insuranceFor(goods);
     return { goods:goods, delivery:delivery, insurance:insurance, total:goods+delivery+insurance };
   }
   window.bsLineExtras=lineExtras;
@@ -2211,19 +2229,56 @@ function bsSupport(threadId, inputId, sendId){
   function buyerKnown(){ var m=BS.me()||{}; return !!(m.tin && (m.company||m.name)); }
   function gateLabels(){ var t=document.querySelector('input[name=gType]:checked').value; $('gNameLabel').textContent = t==='Individual' ? 'Your full name' : t==='Government' ? 'Name of the office' : 'Legal name of the company'; $('gTinLabel').textContent = t==='Government' ? 'TIN of the office (if it has one)' : 'TIN'; $('gTinHint').textContent = t==='Individual' ? 'Your personal taxpayer number, 10 digits. If you have none, staff will ask for your Fayda ID instead.' : t==='Government' ? 'Optional. Staff will ask for the authorisation letter.' : 'Taxpayer identification number, 10 digits. Checked against the registry before the PO is confirmed.'; $('gContactField').hidden = t==='Individual'; }
   document.querySelectorAll('input[name=gType]').forEach(function(r){ r.addEventListener('change', gateLabels); });
-  function openGate(){ var m=BS.me()||{}; if(m.company && !$('gName').value) $('gName').value=m.company; gateLabels(); $('poGate').hidden=false; $('gName').focus(); }
-  window.bsOpenGate=function(){ pendingAccept=null; openGate(); };
+  /* one accepted line: the offer, its request line and the figures for transport by Build Smartly and for insurance */
+  function gateItem(it){
+    var o=offers.filter(function(x){return x.id===it.offerId;})[0]; var b=boqs.filter(function(x){return x.id===it.boqId;})[0]||{}; var l=(b.lines||[]).filter(function(x){return x.n===+it.line;})[0]||{};
+    if(!o) return null; var goods=o.qtyOffered*o.unitPrice+(+o.deliveryCost||0);
+    var sub=o.supplierSub||(BS.supplierById(o.supplierId)||{}).sub||'Akaki Kaliti';
+    var est=BS.deliveryEstimate([{item:l.item, qty:o.qtyOffered, unit:l.unit}], sub, b.pin||b.subcity||'Bole');
+    return {it:it, o:o, b:b, l:l, goods:goods, est:est, insurance:BS.insuranceFor(goods), delivers:b.deliveryTerm!=='I collect from supplier', hire:BS.isHire(l)};
+  }
+  function gateDelivHtml(items){
+    var gi=items.map(gateItem).filter(Boolean); if(!gi.length) return '';
+    var fmt=BS.fmt; var goods=0, ins=0, trans=0, trips=0, collect=gi.filter(function(g){ return !g.delivers && !g.hire; });
+    gi.forEach(function(g){ goods+=g.goods; ins+=g.insurance; }); collect.forEach(function(g){ trans+=g.est.cost; trips+=g.est.trips; });
+    var rows=gi.map(function(g){ return '<div style="display:flex;justify-content:space-between;gap:.6rem"><span>'+esc(g.l.item)+' · '+g.o.qtyOffered+' '+esc(g.l.unit)+'</span><strong>'+fmt(g.goods)+(g.delivers&&!g.hire?' <span class="small muted">delivered</span>':'')+'</strong></div>'; }).join('');
+    var delivery = collect.length
+      ? '<div class="su-choices" style="margin-top:.4rem"><div class="choice"><input type="radio" name="gDel" id="gDel-own" value="own" checked><label for="gDel-own"><strong>I collect with my own transport</strong><span>Ex-works: you load at the supplier\'s depot ('+esc(collect.map(function(g){ return g.o.supplierSub||''; }).filter(Boolean).join(', ')||'dispatch point in the PO')+').</span></label></div><div class="choice"><input type="radio" name="gDel" id="gDel-bs" value="bs"><label for="gDel-bs"><strong>Build Smartly arranges the transport · '+fmt(trans)+'</strong><span>'+trips+' truck trip'+(trips===1?'':'s')+' to '+esc(gi[0].b.subcity||'your site')+(gi[0].b.pin?' (pinned site)':'')+', example tariff until the owner sets it. Added to your invoice.</span></label></div></div>'
+      : '<p class="small muted" style="margin:.3rem 0 0">'+(gi.some(function(g){return g.hire;})?'Equipment is mobilised to your site by the supplier; the price above includes it.':'Delivered to '+esc(gi[0].b.subcity||'your site')+(gi[0].b.pin?' (pinned site)':'')+' by the supplier. The price above includes transport.')+'</p>';
+    return '<h3 style="margin-top:.4rem">Delivery and cover for this order</h3><div class="small" style="display:grid;gap:.25rem;margin:.4rem 0">'+rows+(gi.length>1?'<div style="display:flex;justify-content:space-between;gap:.6rem;border-top:1px solid var(--line);padding-top:.25rem"><span>Goods</span><strong>'+fmt(goods)+'</strong></div>':'')+'</div>'+delivery+
+      '<label class="check" style="margin-top:.6rem"><input type="checkbox" id="gIns"><span>Add transit insurance · <strong>'+fmt(ins)+'</strong> <span class="small muted">('+BS.pct(BS.INSURANCE.rate)+' of the goods value, example rate, through a licensed insurer; paid with the order)</span></span></label>'+
+      '<p class="small muted" style="margin:.5rem 0 0">You pay after delivery, through Yagout Pay, with the receipt as your record. Nothing is charged now.</p>';
+  }
+  function gatePatchFor(it){
+    var g=gateItem(it); if(!g) return {}; var bs=document.getElementById('gDel-bs'); var platform=!!(bs && bs.checked && !g.delivers && !g.hire); var ins=!!(document.getElementById('gIns')||{}).checked;
+    return {platformDelivery:platform, deliveryAmt:platform?g.est.cost:0, deliveryTrips:platform?g.est.trips:0, insurance:ins, insuranceAmt:ins?g.insurance:0};
+  }
+  function openGate(items){
+    var m=BS.me()||{}; if(m.company && !$('gName').value) $('gName').value=m.company; gateLabels();
+    var html=gateDelivHtml(items||[]); $('gDeliv').innerHTML=html; $('gDeliv').hidden=!html;
+    var needCompany=!buyerKnown(); $('gCompany').hidden=!needCompany; $('gCompany').style.display=needCompany?'grid':'none';
+    $('gSave').textContent = items&&items.length ? (items.length>1?'Issue the purchase orders':'Issue the purchase order') : 'Save';
+    $('poGate').hidden=false; if(needCompany) $('gName').focus();
+  }
+  window.bsOpenGate=function(){ pendingAccept=null; openGate([]); };
   $('gCancel').onclick=function(){ $('poGate').hidden=true; pendingAccept=null; renderMine(); };
   $('gSave').onclick=async function(){
-    var t=document.querySelector('input[name=gType]:checked').value, name=$('gName').value.trim(), tin=$('gTin').value.replace(/[\s-]/g,''), ok=true;
-    $('gNameErr').hidden=!!name; ok=ok&&!!name;
-    var okTin = t==='Government' ? (!tin || /^\d{10}$/.test(tin)) : /^\d{10}$/.test(tin); $('gTinErr').hidden=okTin; ok=ok&&okTin;
-    if(!ok) return;
-    var me2=BS.me()||{}; BS.setMe(Object.assign({}, me2, {type:t, name:name, company: t==='Individual' ? '' : name, tin: tin||'(office, none)', contact:$('gContact').value.trim()}));
-    if(window.BSAuth) BSAuth.refresh(); $('who').textContent='Signed in as '+name; if(window.BSWorkspaceRefresh) BSWorkspaceRefresh();
-    /* the customer name on earlier requests is updated so the PO carries the legal name */
-    for(var i=0;i<boqs.length;i++){ if(boqs[i].ownerPhone===(me2.phone||'').replace(/\D/g,'').replace(/^251/,'') && boqs[i].company!==name){ await BS.update('boqs', boqs[i].id, {company:name}); boqs[i].company=name; } }
-    $('poGate').hidden=true; var p=pendingAccept; pendingAccept=null; if(p){ if(p.all) await acceptMany(p.all); else await acceptOffer(p.offerId, p.boqId, p.line); } else { bsToast('Company details saved.'); }
+    if(!buyerKnown()){
+      var t=document.querySelector('input[name=gType]:checked').value, name=$('gName').value.trim(), tin=$('gTin').value.replace(/[\s-]/g,''), ok=true;
+      $('gNameErr').hidden=!!name; ok=ok&&!!name;
+      var okTin = t==='Government' ? (!tin || /^\d{10}$/.test(tin)) : /^\d{10}$/.test(tin); $('gTinErr').hidden=okTin; ok=ok&&okTin;
+      if(!ok) return;
+      var me2=BS.me()||{}; BS.setMe(Object.assign({}, me2, {type:t, name:name, company: t==='Individual' ? '' : name, tin: tin||'(office, none)', contact:$('gContact').value.trim()}));
+      if(window.BSAuth) BSAuth.refresh(); $('who').textContent='Signed in as '+name; if(window.BSWorkspaceRefresh) BSWorkspaceRefresh();
+      /* the customer name on earlier requests is updated so the PO carries the legal name */
+      for(var i=0;i<boqs.length;i++){ if(boqs[i].ownerPhone===(me2.phone||'').replace(/\D/g,'').replace(/^251/,'') && boqs[i].company!==name){ await BS.update('boqs', boqs[i].id, {company:name}); boqs[i].company=name; } }
+    }
+    var p=pendingAccept; pendingAccept=null; var list = p ? (p.all || [p]) : [];
+    var patches=list.map(function(it){ return gatePatchFor(it); });
+    $('poGate').hidden=true;
+    if(list.length>1){ for(var k=0;k<list.length;k++){ await acceptOffer(list[k].offerId, list[k].boqId, list[k].line, true, patches[k]); } bsToast(list.length+' purchase orders issued, one per line. Each supplier must reconfirm price and stock.'); }
+    else if(list.length===1){ await acceptOffer(list[0].offerId, list[0].boqId, list[0].line, false, patches[0]); }
+    else { bsToast('Company details saved.'); }
   };
   /* cheapest open offer on every line that has no accepted offer yet */
   function bestOffersFor(boqId){
@@ -2231,18 +2286,16 @@ function bsSupport(threadId, inputId, sendId){
     return b.lines.map(function(l){ var os=offers.filter(function(o){ return o.boqId===b.id && o.lineN===l.n && o.status!=='rejected' && !(o.counter&&o.counter.state==='open'); }); if(os.some(function(o){return o.status==='accepted';})) return null; os.sort(function(a,c){ return (a.qtyOffered*a.unitPrice+(+a.deliveryCost||0))-(c.qtyOffered*c.unitPrice+(+c.deliveryCost||0)); }); return os[0] ? {offerId:os[0].id, boqId:b.id, line:l.n} : null; }).filter(Boolean);
   }
   async function acceptMany(list){ for(var i=0;i<list.length;i++){ await acceptOffer(list[i].offerId, list[i].boqId, list[i].line, true); } bsToast(list.length+' purchase orders issued, one per line. Each supplier must reconfirm price and stock.'); }
-  async function acceptOffer(offerId, boqId, line, quiet){
+  async function acceptOffer(offerId, boqId, line, quiet, extra){
     var boq=boqs.filter(function(x){return x.id===boqId;})[0]; var po=(boq?boq.ref:'BS')+'-L'+line; var m=BS.me()||{};
-    await BS.update('offers', offerId, {status:'accepted', poRef:'PO-'+po, acceptedAt:new Date().toISOString(), customerRevealed: m.company||m.name||(boq?boq.company:''), customerTin:m.tin||''});
+    await BS.update('offers', offerId, Object.assign({status:'accepted', poRef:'PO-'+po, acceptedAt:new Date().toISOString(), customerRevealed: m.company||m.name||(boq?boq.company:''), customerTin:m.tin||''}, extra||{}));
     if(!quiet) bsToast('PO-'+po+' issued. The supplier has been notified and must reconfirm price and stock.');
   }
   $('mine').addEventListener('click', async function(e){
     var b=e.target.closest('[data-accept]');
-    if(b){ if(!buyerKnown()){ pendingAccept={offerId:b.dataset.accept, boqId:b.dataset.boq, line:b.dataset.line}; openGate(); return; }
-      b.disabled=true; b.textContent='Issuing PO…'; await acceptOffer(b.dataset.accept, b.dataset.boq, b.dataset.line); return; }
+    if(b){ pendingAccept={offerId:b.dataset.accept, boqId:b.dataset.boq, line:b.dataset.line}; openGate([pendingAccept]); return; }
     var ba=e.target.closest('[data-accept-all]');
-    if(ba){ var all=bestOffersFor(ba.dataset.acceptAll); if(!all.length) return; if(!buyerKnown()){ pendingAccept={all:all}; openGate(); return; }
-      ba.disabled=true; ba.textContent='Issuing POs…'; await acceptMany(all); return; }
+    if(ba){ var all=bestOffersFor(ba.dataset.acceptAll); if(!all.length) return; pendingAccept={all:all}; openGate(all); return; }
     var r=e.target.closest('[data-reject]');
     if(r){ r.disabled=true; await BS.update('offers', r.dataset.reject, {status:'rejected', rejectedAt:new Date().toISOString()}); bsToast('Offer rejected. The supplier has been informed.'); return; }
     var c=e.target.closest('[data-counter]');
@@ -2267,14 +2320,14 @@ function bsSupport(threadId, inputId, sendId){
      answer counter-offers, reconfirm, prepare and dispatch orders. Runs only on the phone that owns the request,
      so each thing happens once. The named suppliers are played by real people and are never simulated. */
   var autoBusy={};
-  function autoSup(id){ var s=BS.SUPPLIERS.filter(function(x){return x.id===id;})[0]; return (s&&s.auto)?s:null; }
+  function autoSup(id){ var s=BS.supplierById(id); return (s&&s.auto&&s.status==='active')?s:null; }
   function secs(iso){ return (Date.now()-new Date(iso).getTime())/1000; }
   async function autoTick(){
     var me2=BS.me()||{}; if(!me2.phone || $('showAll').checked) return; var A=BS.AUTO;
     var list=myBoqs().filter(function(b){ return b.status!=='withdrawn' && new Date(b.deadlineAt)>new Date(); });
     for(var bi=0;bi<list.length;bi++){ var b=list[bi]; var age=secs(b.createdAt);
       for(var li=0;li<b.lines.length;li++){ var l=b.lines[li];
-        var sups=BS.SUPPLIERS.filter(function(s){ return s.auto && s.cats.indexOf(l.cat)>=0; });
+        var sups=BS.activeSuppliers().filter(function(s){ return s.auto && s.cats.indexOf(l.cat)>=0; });
         for(var k=0;k<sups.length;k++){ var s=sups[k]; var delay=A.replyAfter[k%A.replyAfter.length]+(l.n%3)*7; var key='q|'+b.id+'|'+l.n+'|'+s.id;
           if(age<delay || autoBusy[key] || offers.some(function(o){ return o.boqId===b.id && o.lineN===l.n && o.supplierId===s.id; })) continue;
           autoBusy[key]=1; var base=BS.baseOf(l.item)||1000; var price=Math.round(base*(0.93+Math.random()*0.15)); var brands=BS.BRANDS[l.cat]||['Other']; var brand=brands[Math.floor(Math.random()*Math.max(1,brands.length-1))];
@@ -2312,7 +2365,8 @@ function bsSupport(threadId, inputId, sendId){
   function supplierForPhone(phone){
     var digits=bsDigits(phone);
     var t=BS.TEST_ACCOUNTS.filter(function(a){ return a.phone===digits && a.supplierId; })[0];
-    if(t) return BS.SUPPLIERS.filter(function(s){ return s.id===t.supplierId; })[0] || null;
+    if(t) return BS.supplierById(t.supplierId);
+    var sd=BS.suppliersAll().filter(function(x){ return x.own && x.phone===digits; })[0]; if(sd) return sd;
     var o=ownSupplier(); if(o && (o.phone||'').replace(/\D/g,'').replace(/^251/,'')===digits) return o;
     var k=BS.known(digits); if(k){ var o2=ownSupplier(k); if(o2) return o2; }
     return null;
@@ -2320,7 +2374,8 @@ function bsSupport(threadId, inputId, sendId){
   window.BSSupplierLogin = function(phone){ var s=supplierForPhone(phone); if(s){ login(s); return true; } return false; };
   $('spGo').onclick=function(){
     var digits=bsDigits($('spPhone').value); var s=supplierForPhone(digits); $('spErr').hidden=!!s;
-    if(s){ var okPw = $('spPw').value===BS.DEMO_PASSWORD || $('spPw').value===(BS.known(digits)||{}).password; $('spPwErr').hidden=okPw; if(!okPw){ $('spPw').focus(); return; } if(bsDigits((BS.me()||{}).phone)!==digits) BS.setMe(BS.known(digits)||{}); login(s); return; }
+    if(s && s.status==='suspended'){ $('spErr').hidden=false; $('spErrTitle').textContent='This supplier account is paused'; $('spErrText').textContent='Build Smartly staff paused '+s.name+'. Write to support or call the office to reactivate it.'; $('spErrReg').hidden=true; return; }
+    if(s){ var okPw = $('spPw').value===BS.DEMO_PASSWORD || $('spPw').value===(BS.known(digits)||{}).password || (!!s.password && $('spPw').value===s.password); $('spPwErr').hidden=okPw; if(!okPw){ $('spPw').focus(); return; } if(bsDigits((BS.me()||{}).phone)!==digits) BS.setMe(BS.known(digits)||{}); login(s); return; }
     $('spPwErr').hidden=true;
     var known=BS.known(digits), isBuyer=!!(known && known.phone), okNum=/^[97]\d{8}$/.test(digits);
     $('spErrTitle').textContent = !okNum ? 'Enter your mobile number, for example 0912345678' : isBuyer ? 'This number is a buyer account' : 'No supplier account with that number';
@@ -2333,21 +2388,38 @@ function bsSupport(threadId, inputId, sendId){
   /* ----- profile and price persistence (this device) ----- */
   function loadProfile(s){
     var key='bs_demo_supprofile_'+s.id, p=null; try{ p=JSON.parse(localStorage.getItem(key)||'null'); }catch(e){}
-    if(!p){ p={ docs:{lic:'',issuer:'Addis Ababa Trade Bureau',exp:'',tin:'',vat:'Registered',submitted:!!s.cats.length,verified:!!s.cats.length}, type:'Distributor', brands:'', cats:s.cats.slice(), locs:[], zones:[], terms:'Delivered, extra charge per zone', agree:!!s.cats.length, intro:'', publish:false }; if(!s.own){ p.locs=[{type:'Main store',sub:'Bole',pin:''}]; p.zones=['Bole','Yeka','Kirkos']; } }
+    if(!p){ p={ docs:{lic:'',issuer:'Addis Ababa Trade Bureau',exp:'',tin:'',vat:'Registered',submitted:!!s.cats.length,verified:!!s.cats.length}, type:'Distributor', brands:'', cats:s.cats.slice(), locs:[], zones:[], terms:'Delivered, extra charge per zone', agree:!!s.cats.length, intro:'', publish:false }; if(!s.own){ p.locs=[{type:'Main store',sub:s.sub||'Bole',pin:''}]; p.zones=['Bole','Yeka','Kirkos']; } }
+    /* the shared supplier record (edited by the supplier or by staff) wins for categories and dispatch point */
+    var d=BS.supplierDoc(s.docId||('seed-'+s.id)); if(d){ if(d.cats&&d.cats.length) p.cats=d.cats.slice(); if(d.sub){ if(!p.locs.length) p.locs=[{type:'Main store',sub:d.sub,pin:''}]; else p.locs[0].sub=d.sub; } if(d.status==='active' && p.docs){ p.docs.verified=true; p.docs.submitted=true; } }
     return p;
   }
-  function saveProfile(){ try{ localStorage.setItem('bs_demo_supprofile_'+sup.id, JSON.stringify(profile)); }catch(e){} }
+  function saveProfile(){ try{ localStorage.setItem('bs_demo_supprofile_'+sup.id, JSON.stringify(profile)); }catch(e){} syncSupplierDoc({cats:profile.cats||[], sub:((profile.locs||[])[0]||{}).sub||sup.sub||''}); }
   function loadPrices(s){
     var key='bs_demo_prices_'+s.id, p=null; try{ p=JSON.parse(localStorage.getItem(key)||'null'); }catch(e){}
+    var d=BS.supplierDoc(s.docId||('seed-'+s.id)); if(d && Array.isArray(d.prices) && d.prices.length) return d.prices.slice();
+    if(p && p.length && d && sup===s){ syncSupplierDoc({prices:p}); } /* a list kept on this device before the shared record existed: share it so staff see it */
     if(!p){ p=[]; if(!s.own){ var seedP=[1180,1050,2350,2600,9800,9900,38,14500], seedAge=[0,1,4,0,2,5,0,3]; BS.CATALOGUE.filter(function(c){return s.cats.indexOf(c.cat)>=0;}).slice(0,8).forEach(function(c,i){ p.push({name:c.name, unit:c.unit, price:seedP[i%8], vat:'incl', min:0, stock:'In stock', valid:3, confirmedAt:new Date(Date.now()-seedAge[i%8]*86400000).toISOString()}); }); } }
     return p;
   }
-  function savePrices(){ try{ localStorage.setItem('bs_demo_prices_'+sup.id, JSON.stringify(prices)); }catch(e){} }
+  function savePrices(){ try{ localStorage.setItem('bs_demo_prices_'+sup.id, JSON.stringify(prices)); }catch(e){} syncSupplierDoc({prices:prices}); }
+  /* keep the shared supplier record in step with this device: staff see and can edit the same categories, dispatch point and prices */
+  function syncSupplierDoc(patch){
+    if(!sup) return; var id=sup.docId||('seed-'+sup.id); var d=BS.supplierDoc(id);
+    if(d) return BS.update('suppliers', id, patch);
+    var base={name:sup.name, cats:sup.cats||[], sub:sup.sub||'', status:sup.status||'active', phone:sup.phone||'', source:sup.own?'registered':'seed'}; if(!sup.own) base.seedId=sup.id;
+    return BS.set('suppliers', id, Object.assign(base, patch));
+  }
+  BS.onSuppliers(function(){ if(!sup) return; var d=BS.supplierDoc(sup.docId||('seed-'+sup.id)); if(!d) return; var changed=false;
+    if(d.status==='removed' || d.status==='suspended'){ var why=d.status==='removed'?'This supplier account was removed by Build Smartly staff.':'This supplier account is paused by Build Smartly staff.'; sup=null; BS.setMe({}); $('portal').hidden=true; $('login').hidden=false; if(window.BSAuth) BSAuth.refresh(); bsToast(why); return; }
+    if(Array.isArray(d.prices) && JSON.stringify(d.prices)!==JSON.stringify(prices)){ prices=d.prices.slice(); try{ localStorage.setItem('bs_demo_prices_'+sup.id, JSON.stringify(prices)); }catch(e){} changed=true; }
+    if(d.cats && d.cats.length && JSON.stringify(d.cats)!==JSON.stringify(profile.cats)){ profile.cats=d.cats.slice(); sup.cats=profile.cats; changed=true; }
+    if(d.status==='active' && profile.docs && !profile.docs.verified){ profile.docs.verified=true; profile.docs.submitted=true; changed=true; }
+    if(changed){ try{ localStorage.setItem('bs_demo_supprofile_'+sup.id, JSON.stringify(profile)); }catch(e){} fillProfileForm(); render(); } });
   function ageDays(iso){ return Math.floor((Date.now()-new Date(iso).getTime())/86400000); }
   function isStale(p){ return ageDays(p.confirmedAt)>=p.valid; }
 
   /* ----- login / logout ----- */
-  var remembered=(BS.me()||{}).supplierId; var pre=BS.SUPPLIERS.filter(function(s){return s.id===remembered;})[0] || (ownSupplier() && ownSupplier().id===remembered ? ownSupplier() : null); if(pre) login(pre);
+  var remembered=(BS.me()||{}).supplierId; var pre=BS.supplierById(remembered) || (ownSupplier() && ownSupplier().id===remembered ? ownSupplier() : null); if(pre) login(pre);
   function login(s){
     sup=s; profile=loadProfile(s); prices=loadPrices(s); sup.cats=profile.cats;
     BS.setMe(Object.assign({}, BS.me()||{}, {supplierId:s.id, phone:(BS.me()||{}).phone || ('+251 '+((BS.TEST_ACCOUNTS.filter(function(a){return a.supplierId===s.id;})[0]||{}).phone||'')), company:s.name, name:s.name, role:'Supply materials', type:'Organisation'}));
@@ -2426,7 +2498,7 @@ function bsSupport(threadId, inputId, sendId){
   /* tick boxes over the catalogue (the supplier's categories); a tick adds a row to fill in, an untick removes it */
   function renderPlPicks(){
     var opts=BS.CATALOGUE.filter(function(c){ return !c.hidden && (!profile.cats.length || profile.cats.indexOf(c.cat)>=0); });
-    $('plPicks').innerHTML = opts.length ? opts.map(function(c){ var on=!!priceRow(c.name); return '<label class="pick'+(on?' on':'')+'"><input type="checkbox" value="'+c.name.replace(/"/g,'&quot;')+'"'+(on?' checked':'')+'><span>'+c.name+'<small>'+c.cat+' · per '+c.unit+'</small></span></label>'; }).join('') : '<div class="empty">Choose your categories under Settings first.</div>';
+    $('plPicks').innerHTML = opts.length ? bsPickList(opts, function(c){ return !!priceRow(c.name); }) : '<div class="empty">Choose your categories under Settings first.</div>';
   }
   $('plPicks').addEventListener('change', function(e){
     var t=e.target; if(t.type!=='checkbox') return; var name=t.value, cat=BS.CATALOGUE.filter(function(c){return c.name===name;})[0];
@@ -2716,7 +2788,7 @@ window.bsPublishProfile = async function(fields){
 (function(){
   var profiles=[]; var hooksBound=false;
   function esc(t){ return String(t||'').replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
-  function seeded(){ return BS.SUPPLIERS.filter(function(s){ return s.auto; }).map(function(s,i){ return {id:'seed-'+s.id, name:s.name, kind:'supplier', cats:s.cats, intro:BS.SUPPLIER_INTRO[s.id]||'', publish:true, status:'approved', sponsored:i<2, memberSince:'2026-0'+((i%8)+1)+'-01'}; }); }
+  function seeded(){ return BS.activeSuppliers().filter(function(s){ return s.auto; }).map(function(s,i){ return {id:'seed-'+s.id, name:s.name, kind:'supplier', cats:s.cats, intro:BS.SUPPLIER_INTRO[s.id]||'', publish:true, status:'approved', sponsored:i<2, memberSince:'2026-0'+((i%8)+1)+'-01'}; }); }
   function all(){ var mine=profiles.filter(function(p){ return p.publish && p.status==='approved' && p.name; }); return seeded().concat(mine).sort(function(a,b){ return (b.sponsored?1:0)-(a.sponsored?1:0); }); }
   function card(p){ var ini=(p.name||'?').split(/\s+/).slice(0,2).map(function(w){return w.charAt(0);}).join('').toUpperCase();
     return '<div class="card mem'+(p.sponsored?' sponsored':'')+'"><div class="top"><span class="ini">'+esc(ini)+'</span><div><h3>'+esc(p.name)+'</h3><span class="small muted">'+(p.kind==='supplier'?'Supplier':'Builder or developer')+' · member since '+String(p.memberSince||'').slice(0,7)+'</span></div></div>'+
