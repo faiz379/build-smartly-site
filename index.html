@@ -44,14 +44,18 @@ img{max-width:100%}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;font-family:var(--display);font-weight:600;font-size:.95rem;padding:.8rem 1.25rem;border-radius:999px;text-decoration:none;border:1.5px solid transparent;cursor:pointer;transition:transform .15s ease;color:inherit;background:transparent}
 .btn:hover{transform:translateY(-1px)}
 .btn:focus-visible{outline:3px solid var(--ochre);outline-offset:2px}
-.btn-primary{background:var(--green);color:#F6F7F4}
+.btn-primary{background:linear-gradient(135deg,var(--green) 0%,#2A8A66 100%);color:#F6F7F4;box-shadow:0 6px 18px color-mix(in srgb,var(--green) 28%,transparent)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 24px color-mix(in srgb,var(--green) 38%,transparent)}
 .btn-ghost{border-color:var(--line)}
-.btn-ochre{background:var(--ochre);color:#14241E}
+.btn-ochre{background:linear-gradient(135deg,#F2C879 0%,var(--ochre) 100%);color:#14241E;box-shadow:0 6px 18px color-mix(in srgb,var(--ochre) 32%,transparent)}
+.btn-ochre:hover{transform:translateY(-1px);box-shadow:0 10px 24px color-mix(in srgb,var(--ochre) 45%,transparent)}
+.btn{transition:transform .2s ease,box-shadow .2s ease,background-color .2s ease}
 .btn-sm{padding:.5rem .9rem;font-size:.85rem}
 .tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--bg-2);color:var(--fg-2);padding:.25rem .55rem;border-radius:6px}
 .tag-ochre{background:color-mix(in srgb,var(--ochre) 22%,transparent);color:var(--ochre-ink)}
 .tag-green{background:color-mix(in srgb,var(--green) 16%,transparent);color:var(--green)}
-.card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:1.3rem;min-width:0}
+.card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:1.3rem;min-width:0;transition:transform .25s ease,box-shadow .25s ease}
+.trust .card:hover,.cat:hover,.mem:hover,.tile:hover,.hcard:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(13,44,33,.12)}
 .field{display:grid;gap:.35rem;min-width:0}
 .field label{font-size:.88rem;font-weight:600}
 .field input,.field select,.field textarea{font:inherit;padding:.72rem .85rem;border-radius:10px;border:1.5px solid var(--line);background:var(--white);color:var(--fg);width:100%}
@@ -127,7 +131,28 @@ footer.site .staff-link:hover{opacity:1;text-decoration:underline}
 .hslide{position:absolute;inset:0;opacity:0;transition:opacity .8s ease}
 .hslide.on{opacity:1}
 .hslide img{width:100%;height:100%;object-fit:cover;display:block}
-.hslide.msg{display:grid;grid-template-columns:1.2fr .8fr;align-items:center;gap:1rem;padding:clamp(1rem,3vw,2.6rem);color:var(--band-fg)}
+.hslide.msg{display:grid;grid-template-columns:1.2fr .8fr;align-items:center;gap:1rem;padding:clamp(1rem,3vw,2.6rem);color:var(--band-fg);background:linear-gradient(120deg,#0D2C21 0%,#1E6B4E 55%,#1F3A5F 100%);background-size:220% 220%;animation:heroShift 18s ease-in-out infinite;overflow:hidden}
+.hslide.msg::before,.hslide.msg::after{content:"";position:absolute;border-radius:50%;pointer-events:none;filter:blur(10px)}
+.hslide.msg::before{width:46%;aspect-ratio:1;right:-10%;top:-30%;background:radial-gradient(circle,rgba(227,166,58,.35),transparent 65%);animation:floatA 12s ease-in-out infinite}
+.hslide.msg::after{width:36%;aspect-ratio:1;left:-8%;bottom:-40%;background:radial-gradient(circle,rgba(246,247,244,.18),transparent 65%);animation:floatB 15s ease-in-out infinite}
+.hslide.msg>*{position:relative;z-index:1}
+@keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes floatA{0%,100%{transform:translate(0,0)}50%{transform:translate(-6%,8%)}}
+@keyframes floatB{0%,100%{transform:translate(0,0)}50%{transform:translate(8%,-10%)}}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .75s ease,transform .75s cubic-bezier(.2,.8,.2,1)}
+.reveal.in{opacity:1;transform:none}
+@keyframes viewIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.view{animation:viewIn .4s ease both}
+.stats{background:var(--green-deep);color:var(--band-fg);padding-block:1.6rem;position:relative;overflow:hidden}
+.stats::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 120% at 10% 50%,rgba(227,166,58,.18),transparent 60%),radial-gradient(50% 120% at 90% 50%,rgba(246,247,244,.10),transparent 60%);pointer-events:none}
+.statsgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;position:relative}
+.statsgrid div{display:grid;gap:.15rem;text-align:center}
+.statsgrid strong{font-family:var(--display);font-size:clamp(1.6rem,3.4vw,2.4rem);color:var(--ochre);letter-spacing:-.01em}
+.statsgrid span{color:var(--band-muted);font-size:.85rem}
+@media (max-width:700px){.statsgrid{grid-template-columns:repeat(2,1fr)}}
+.circle .pic{transition:transform .4s cubic-bezier(.2,.8,.2,1),box-shadow .4s ease!important}
+.circle:hover .pic{transform:scale(1.08) rotate(-2deg)!important;box-shadow:0 14px 36px rgba(0,0,0,.35),0 0 0 6px rgba(227,166,58,.35)!important}
+@media (prefers-reduced-motion:reduce){.hslide.msg,.hslide.msg::before,.hslide.msg::after,.view{animation:none}.reveal{opacity:1;transform:none;transition:none}.btn,.card{transition:none}}
 .hslide.msg .eyebrow{color:var(--ochre)}
 .hslide.msg h2{font-size:clamp(1.1rem,2.6vw,2rem);margin-top:.4rem}
 .hslide.msg p{color:var(--band-muted);font-size:clamp(.8rem,1.4vw,1rem);margin-top:.5rem;max-width:34rem}
@@ -141,6 +166,23 @@ footer.site .staff-link:hover{opacity:1;text-decoration:underline}
 .harrow.l{left:.6rem}.harrow.r{right:.6rem}
 @media (max-width:600px){.hero{aspect-ratio:4/3}.hslide.msg{grid-template-columns:1fr}.hslide.msg .pic{display:none}.harrow{display:none}}
 @media (prefers-reduced-motion:reduce){.hslide{transition:none}}
+.helpbtn{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:60;display:inline-flex;align-items:center;gap:.45rem;background:var(--green);color:#F6F7F4;border:0;border-radius:999px;padding:.7rem 1rem;font:inherit;font-family:var(--display);font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25);cursor:pointer;transition:transform .2s}
+.helpbtn:hover{transform:translateY(-2px)}
+.helppanel{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(68px + env(safe-area-inset-bottom,0px));width:min(380px,calc(100vw - 28px));max-height:min(560px,calc(100vh - 100px));z-index:61;background:var(--white);border:1px solid var(--line);border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.25);display:grid;grid-template-rows:auto 1fr auto;overflow:hidden}
+.helppanel[hidden]{display:none}
+.helppanel .hhead{display:flex;justify-content:space-between;align-items:center;gap:.6rem;padding:.8rem 1rem;background:var(--green-deep);color:var(--band-fg)}
+.helppanel .hhead .small{color:var(--band-muted)}
+.helppanel .hhead button{background:none;border:0;color:inherit;font-size:1.4rem;cursor:pointer;line-height:1}
+.helppanel .hbody{overflow:auto;padding:.8rem;display:grid;gap:.5rem;align-content:start;background:var(--bg)}
+.hmsg{max-width:92%;border-radius:14px;padding:.55rem .8rem;font-size:.9rem;line-height:1.45;background:var(--white);border:1px solid var(--line)}
+.hmsg.me{justify-self:end;background:color-mix(in srgb,var(--green) 12%,transparent);border-color:transparent}
+.hmsg .hlinks{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.4rem}
+.hmsg .hlinks a{font-size:.82rem;font-weight:600;text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:.2rem .6rem;background:var(--white)}
+.hchips{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.2rem}
+.hchips button{font:inherit;font-size:.8rem;border:1.5px solid var(--green);color:var(--green);background:var(--white);border-radius:999px;padding:.3rem .65rem;cursor:pointer}
+.helppanel .hin{display:grid;grid-template-columns:1fr auto;gap:.4rem;padding:.6rem;border-top:1px solid var(--line);background:var(--white)}
+.helppanel .hin input{font:inherit;padding:.55rem .7rem;border:1.5px solid var(--line);border-radius:10px;background:var(--white);color:var(--fg);min-width:0}
+.toast{bottom:calc(76px + env(safe-area-inset-bottom,0px))!important}
 .ogrid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:start}
 @media (max-width:860px){.ogrid{grid-template-columns:1fr}}
 .ocard .btns{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.3rem}
@@ -603,6 +645,15 @@ details.line-offers[open] summary::before{content:"▾"}
         <span><strong>Prefer Telegram?</strong><span>Send your BOQ as a message or photo to the Build Smartly bot. Coming with the launch.</span></span>
         <span class="arrow">→</span>
       </a>
+    </div>
+  </section>
+
+  <section class="stats" id="liveStats" aria-label="Build Smartly in numbers">
+    <div class="wrap statsgrid">
+      <div><strong data-count="0" id="stSuppliers">0</strong><span>Verified suppliers</span></div>
+      <div><strong data-count="34">0</strong><span>Materials in the catalogue</span></div>
+      <div><strong data-count="11">0</strong><span>Sub-cities of Addis Ababa covered</span></div>
+      <div><strong data-count="0" id="stOffers">0</strong><span>Offers quoted on the platform</span></div>
     </div>
   </section>
 
@@ -1385,6 +1436,12 @@ details.line-offers[open] summary::before{content:"▾"}
       <div class="su-nav"><button class="btn btn-ghost" type="button" id="gCancel">Not now</button><button class="btn btn-primary" type="button" id="gSave">Save and issue the PO</button></div>
     </div>
   </div>
+<button class="helpbtn" id="helpBtn" type="button" aria-expanded="false" aria-controls="helpPanel" aria-label="Help"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M9.5 9.5a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 3.5"/><path d="M12 17h.01"/></svg><span>Help</span></button>
+<div class="helppanel" id="helpPanel" hidden role="dialog" aria-label="Build Smartly assistant">
+  <div class="hhead"><div><strong>Build Smartly assistant</strong><br><span class="small">Answers in seconds · a person is one tap away</span></div><button type="button" id="helpClose" aria-label="Close">×</button></div>
+  <div class="hbody" id="helpBody"></div>
+  <div class="hin"><input id="helpIn" placeholder="Ask anything about requests, offers, payment…" aria-label="Your question"><button class="btn btn-primary btn-sm" type="button" id="helpSend">Send</button></div>
+</div>
 <div class="mock" aria-hidden="true">Test site · working name</div>
 
 <script src="assets/firebase-config.js" onerror="this.remove()"></script>
@@ -1573,6 +1630,27 @@ bsAdShow('nwAds', function(){ return !document.getElementById('view-advertise').
     $('nwTitle').value=''; $('nwText').value=''; $('nwSend').disabled=false; picData=''; $('nwPicPrev').hidden=true; $('nwPicLabel').textContent='＋ Banner picture (optional, shown in the slideshow; 3:1 works best)';
     $('nwMsg').textContent='Received. Staff check the text, finance sends the invoice, and it goes out in the next issue.'; bsToast('Your news is with Build Smartly for the next issue.');
   };
+})();
+
+/* ---------- Home: motion. Sections rise into view, numbers count up, live figures from the records. ---------- */
+(function(){
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var targets=Array.prototype.slice.call(document.querySelectorAll('#view-home .intro, #view-home .slide, #view-home .stats, #view-home section, #view-home .catband, #view-home .band'));
+  targets.forEach(function(el){ if(!el.closest('.reveal')) el.classList.add('reveal'); });
+  function countUp(el){ if(el.dataset.done) return; el.dataset.done='1'; var to=+el.dataset.count||0; if(reduce||!to){ el.textContent=to.toLocaleString('en-US'); return; } var t0=performance.now(), dur=1200; (function f(t){ var p=Math.min(1,(t-t0)/dur); var v=Math.round(to*(1-Math.pow(1-p,3))); el.textContent=v.toLocaleString('en-US'); if(p<1) requestAnimationFrame(f); })(t0); }
+  if('IntersectionObserver' in window && !reduce){
+    var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); e.target.querySelectorAll('[data-count]').forEach(countUp); io.unobserve(e.target); } }); }, {threshold:.12, rootMargin:'0px 0px -5% 0px'});
+    targets.forEach(function(el){ io.observe(el); });
+  } else { targets.forEach(function(el){ el.classList.add('in'); el.querySelectorAll('[data-count]').forEach(countUp); }); }
+  /* safety net: whatever happens, everything is visible after a moment (printing, odd browsers, screenshots) */
+  setTimeout(function(){ targets.forEach(function(el){ if(!el.classList.contains('in')){ el.classList.add('in'); el.querySelectorAll('[data-count]').forEach(countUp); } }); }, 2500);
+  /* live figures */
+  function setCount(id, v){ var el=document.getElementById(id); if(!el) return; el.dataset.count=String(v); if(el.dataset.done){ el.textContent=(+v).toLocaleString('en-US'); } }
+  BS.ready().then(function(){
+    BS.subscribe('verifications', function(d){ setCount('stSuppliers', BS.SUPPLIERS.length + (d||[]).filter(function(v){ return v.status==='verified'; }).length); });
+    BS.subscribe('offers', function(d){ setCount('stOffers', (d||[]).length); });
+  });
+  setCount('stSuppliers', BS.SUPPLIERS.length);
 })();
 
 /* ---------- Home: menu, hero pictures and price pulse ---------- */
@@ -2706,4 +2784,5 @@ window.bsPublishProfile = async function(fields){
 BSRoute.start();
 </script>
 <script src="assets/order.js"></script>
+<script src="assets/help.js"></script>
 <script src="assets/admin.js"></script>

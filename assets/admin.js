@@ -47,10 +47,10 @@
     var pendV=data.verifications.filter(function(v){ return v.status==='pending'; }).length;
     var waiting=threads().filter(function(t){ return t.waiting; }).length;
     var pendN=data.news.filter(function(x){ return x.status==='pending'; }).length;
-    var openI=data.issues.filter(function(x){ return x.status==='open'; }).length;
+    var openI=data.issues.filter(function(x){ return x.status!=='resolved'; }).length;
     var inProg=data.offers.filter(function(o){ return o.status==='accepted' && !o.paidAt; }).length;
     var fees=0; paid().forEach(function(o){ fees+=offerTotal(o)*BS.FEE_RATE; });
-    var tiles=[[data.boqs.filter(openBoq).length,'Open requests','requests'],[unclassified().length,'Lines to classify','requests'],[pendV,'Suppliers awaiting verification','suppliers'],[waiting,'Support threads waiting','support'],[pendN,'Newsletter items pending','news'],[openI,'Problems reported','support'],[inProg,'Orders in progress','finance'],[paid().length,'Orders paid','finance'],[BS.fmt(fees),'Fees earned ('+BS.pct(BS.FEE_RATE)+')','finance']];
+    var tiles=[[data.boqs.filter(openBoq).length,'Open requests','requests'],[unclassified().length,'Lines to classify','requests'],[pendV,'Suppliers awaiting verification','suppliers'],[waiting,'Support threads waiting','support'],[pendN,'Newsletter items pending','news'],[openI,'Problems open','support'],[inProg,'Orders in progress','finance'],[paid().length,'Orders paid','finance'],[BS.fmt(fees),'Fees earned ('+BS.pct(BS.FEE_RATE)+')','finance']];
     adTilesHtml='<div class="queue" id="adTiles">'+tiles.map(function(t){ return '<button type="button" class="q" data-go="'+t[2]+'" style="text-align:left;cursor:pointer;font:inherit"><strong style="font-size:1.4rem">'+t[0]+'</strong><span class="small muted">'+t[1]+'</span></button>'; }).join('')+'</div>';
     $('adTabs').querySelectorAll('button').forEach(function(b){ b.classList.toggle('on', b.dataset.tab===tab); });
     var r={overview:renderOverview, requests:renderRequests, suppliers:renderSuppliers, support:renderSupport, news:renderNews, members:renderMembers, finance:renderFinance, insights:renderInsights, settings:renderSettings}[tab]||renderOverview;
@@ -83,7 +83,7 @@
     var pv=data.verifications.filter(function(v){return v.status==='pending';}).length; if(pv) todo.push('<a href="#" data-tab-go="suppliers">'+pv+' supplier(s) waiting for verification</a>');
     var w=threads().filter(function(t){return t.waiting;}).length; if(w) todo.push('<a href="#" data-tab-go="support">'+w+' support thread(s) waiting for an answer</a>');
     var pn=data.news.filter(function(x){return x.status==='pending';}).length; if(pn) todo.push('<a href="#" data-tab-go="news">'+pn+' newsletter item(s) to check</a>');
-    var oi=data.issues.filter(function(x){return x.status==='open';}).length; if(oi) todo.push('<a href="#" data-tab-go="support">'+oi+' problem(s) reported on orders</a>');
+    var oi=data.issues.filter(function(x){return x.status!=='resolved';}).length; if(oi) todo.push('<a href="#" data-tab-go="support">'+oi+' problem(s) reported on orders, open or in progress</a>');
     return adTilesHtml+'<div class="grid2" style="align-items:start">'+card('To do today','', todo.length?'<ul style="margin:0;padding-left:1.1rem;display:grid;gap:.3rem">'+todo.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul>':'<div class="empty">Nothing waiting. New requests, documents and messages appear here as they come in.</div>')+
       card('Latest activity','Across all members, newest first.','<div class="docs">'+(recent.slice(0,15).map(function(r){ return '<div class="doc"><span class="small muted" style="white-space:nowrap">'+when(r[0])+'</span><span>'+r[1]+'</span><span></span></div>'; }).join('')||'<div class="empty">No activity yet.</div>')+'</div>')+'</div>';
   }
@@ -129,11 +129,28 @@
     var c=e.target.closest('[data-close]'); if(c){ c.disabled=true; await BS.update('boqs', c.dataset.close, {status:'withdrawn', withdrawnAt:new Date().toISOString(), closedBy:staffName()}); bsToast('Request closed.'); return; }
   });
 
+  /* problems reported: a small case tracker. open → in progress (taken by a staff member) → resolved, with a note timeline */
+  var issueFilter='active';
+  function ageOf(iso){ var h=(Date.now()-new Date(iso).getTime())/3600000; return h<1?Math.round(h*60)+' min':h<48?Math.round(h)+' h':Math.round(h/24)+' d'; }
   function renderIssues(){
-    var list=data.issues.slice().sort(function(a,c){ return (a.status==='open'?0:1)-(c.status==='open'?0:1) || (c.createdAt||'').localeCompare(a.createdAt||''); });
-    return card('Problems reported on orders','Damage, wrong quantity, delay, invoice. Open the order to read the messages, then resolve with a note; both parties are notified.', list.length?'<div class="docs">'+list.map(function(x){ return '<div class="doc"><span class="ico">!</span><span><strong>'+esc(x.poRef)+'</strong> · '+esc(x.who)+' ('+esc(x.role)+') · '+when(x.createdAt)+'<br>'+esc(x.text)+(x.status==='resolved'?'<br><span class="small muted">Resolved by '+esc(x.by||'staff')+(x.note?': '+esc(x.note):'')+'</span>':'')+'</span><span style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center"><a class="btn btn-ghost btn-sm" href="#order-'+x.offerId+'">Order page</a>'+(x.status==='open'?'<input placeholder="Resolution note" data-inote="'+x.id+'" style="font:inherit;font-size:.85rem;padding:.35rem .5rem;border:1.5px solid var(--line);border-radius:8px;min-width:10rem"><button class="btn btn-primary btn-sm" type="button" data-iresolve="'+x.id+'">Resolve</button>':'<span class="tag tag-green">Resolved</span>')+'</span></div>'; }).join('')+'</div>':'<div class="empty">Nothing reported.</div>');
+    var all=data.issues.slice(); var counts={open:0,progress:0,resolved:0}; all.forEach(function(x){ counts[x.status==='resolved'?'resolved':x.status==='progress'?'progress':'open']++; });
+    var list=all.filter(function(x){ return issueFilter==='all' || (issueFilter==='active' ? x.status!=='resolved' : x.status===issueFilter); }).sort(function(a,c){ var r={open:0,progress:1,resolved:2}; return (r[a.status]||0)-(r[c.status]||0) || (c.createdAt||'').localeCompare(a.createdAt||''); });
+    var filters=[['active','Open and in progress',counts.open+counts.progress],['open','Open',counts.open],['progress','In progress',counts.progress],['resolved','Resolved',counts.resolved],['all','All',all.length]];
+    var bar='<div class="subtabs">'+filters.map(function(f){ return '<button type="button" data-ifilter="'+f[0]+'" class="'+(issueFilter===f[0]?'on':'')+'">'+f[1]+' · '+f[2]+'</button>'; }).join('')+'</div>';
+    var rows=list.map(function(x){
+      var st = x.status==='resolved' ? '<span class="tag tag-green">Resolved</span>' : x.status==='progress' ? '<span class="tag tag-ochre">In progress · '+esc(x.owner||'')+'</span>' : '<span class="tag" style="background:color-mix(in srgb,var(--warn,#B3261E) 14%,transparent);color:var(--warn,#B3261E)">Open · '+ageOf(x.createdAt)+'</span>';
+      var notes=(x.notes||[]).map(function(nn){ return '<div class="small muted">· '+when(nn.at)+' '+esc(nn.by)+': '+esc(nn.text)+'</div>'; }).join('');
+      var act = x.status==='resolved' ? '' : '<div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;margin-top:.4rem">'+(x.status==='open'?'<button class="btn btn-ghost btn-sm" type="button" data-itake="'+x.id+'">Take it</button>':'')+'<input placeholder="Add a note or the resolution" data-inote="'+x.id+'" style="font:inherit;font-size:.85rem;padding:.35rem .5rem;border:1.5px solid var(--line);border-radius:8px;min-width:12rem;flex:1"><button class="btn btn-ghost btn-sm" type="button" data-inoteadd="'+x.id+'">Add note</button><button class="btn btn-primary btn-sm" type="button" data-iresolve="'+x.id+'">Resolve</button></div>';
+      return '<div class="card" style="display:grid;gap:.3rem;padding:.9rem 1rem"><div style="display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap;align-items:center"><div><strong><a href="#order-'+x.offerId+'">'+esc(x.poRef)+'</a></strong> <span class="small muted">· '+esc(x.who)+' ('+esc(x.role)+') · '+when(x.createdAt)+'</span></div>'+st+'</div><div>'+esc(x.text)+'</div>'+notes+act+'</div>';
+    }).join('');
+    return card('Problems and reports', 'Everything members report on their orders, tracked until resolved. Take a case, add notes, resolve with a note; both parties see the state on the order page.', bar+(rows?'<div style="display:grid;gap:.5rem;margin-top:.5rem">'+rows+'</div>':'<div class="empty" style="margin-top:.5rem">Nothing here.</div>'));
   }
-  $('adBody').addEventListener('click', async function(e){ var r=e.target.closest('[data-iresolve]'); if(!r) return; var note=(document.querySelector('[data-inote="'+r.dataset.iresolve+'"]')||{}).value||''; r.disabled=true; await BS.update('issues', r.dataset.iresolve, {status:'resolved', note:note, by:staffName(), resolvedAt:new Date().toISOString()}); bsToast('Resolved. Both parties are notified.'); });
+  $('adBody').addEventListener('click', async function(e){
+    var f=e.target.closest('[data-ifilter]'); if(f){ issueFilter=f.dataset.ifilter; render(); return; }
+    var tk=e.target.closest('[data-itake]'); if(tk){ tk.disabled=true; await BS.update('issues', tk.dataset.itake, {status:'progress', owner:staffName(), takenAt:new Date().toISOString()}); bsToast('Taken. The member sees it is in progress.'); return; }
+    var na=e.target.closest('[data-inoteadd]'); if(na){ var x=data.issues.filter(function(i){ return i.id===na.dataset.inoteadd; })[0]; var inp=document.querySelector('[data-inote="'+na.dataset.inoteadd+'"]'); var text=inp?inp.value.trim():''; if(!x||!text) return; await BS.update('issues', x.id, {notes:(x.notes||[]).concat([{at:new Date().toISOString(), by:staffName(), text:text}]), status:x.status==='open'?'progress':x.status, owner:x.owner||staffName()}); return; }
+    var r=e.target.closest('[data-iresolve]'); if(r){ var x2=data.issues.filter(function(i){ return i.id===r.dataset.iresolve; })[0]||{}; var note=(document.querySelector('[data-inote="'+r.dataset.iresolve+'"]')||{}).value||''; r.disabled=true; await BS.update('issues', r.dataset.iresolve, {status:'resolved', note:note, by:staffName(), owner:x2.owner||staffName(), resolvedAt:new Date().toISOString(), notes:(x2.notes||[]).concat(note?[{at:new Date().toISOString(), by:staffName(), text:'Resolved: '+note}]:[])}); bsToast('Resolved. Both parties are notified.'); return; }
+  });
   function renderSupport(){
     var ts=threads(); var issuesHtml=renderIssues(); if(!ts.length) return issuesHtml+card('Support inbox','Messages members send from their Mailbox.','<div class="empty">No messages yet.</div>');
     return issuesHtml+ts.map(function(t){
