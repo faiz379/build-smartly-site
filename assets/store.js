@@ -311,7 +311,7 @@
         }
       } catch(e){ db = null; mode = "local"; }
       try {
-        if(window.BS_FIREBASE && window.BS_FIREBASE.projectId){
+        if(window.BS_FIREBASE && window.BS_FIREBASE.projectId && !/^(localhost|127\.)/.test(location.hostname)){ /* the local test server never touches the shared database */
           if(!window.firebase){ await loadScript("https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"); await loadScript("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"); }
           if(!firebase.apps.length) firebase.initializeApp(window.BS_FIREBASE);
           db = firebase.firestore(); mode = "shared";
