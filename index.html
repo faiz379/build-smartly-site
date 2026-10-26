@@ -1124,7 +1124,7 @@ details.line-offers[open] summary::before{content:"▾"}
     </div>
 
     <div id="tab-stats">
-      <div class="card" style="display:grid;gap:.5rem;margin-bottom:1rem"><div><strong style="font-family:var(--display)">6 · Promote your brand</strong><p class="small muted">A monthly newsletter goes to every registered buyer. Announce a new brand, a new supply or an offer; or sponsor a tile on the home page. Always marked, never changes the order of offers.</p></div><div><a class="btn btn-ochre btn-sm" href="#newsletter">Newsletter and promotions</a></div></div>
+      <div class="card" style="display:grid;gap:.5rem;margin-bottom:1rem"><div><strong style="font-family:var(--display)">6 · Promote your brand</strong><p class="small muted">A monthly newsletter goes to every registered buyer. Announce a new brand, a new supply or an offer; or sponsor a tile on the home page. Always marked, never changes the order of offers.</p></div><div><a class="btn btn-ochre btn-sm" href="#advertise">Advertise with Build Smartly</a></div></div>
       <div style="margin-bottom:.6rem"><strong style="font-family:var(--display);font-size:1.05rem">7 · Your numbers</strong><p class="small muted">Your own figures only, from the same records the platform uses.</p></div>
       <div class="queue" id="statsGrid"></div>
       <div class="card" style="margin-top:.8rem"><strong style="font-family:var(--display)">Won orders by material</strong><div id="statsByCat" style="margin-top:.5rem;display:grid;gap:.3rem;font-size:.92rem"></div></div>
@@ -1294,11 +1294,12 @@ details.line-offers[open] summary::before{content:"▾"}
   <p class="small muted">A profile is published only after Build Smartly staff have reviewed it. Sponsored cards are marked. <a href="#newsletter">Newsletter and promotions</a>.</p>
 </div>
 <div id="view-advertise" data-view hidden class="wrap view">
-  <div><span class="eyebrow">Newsletter and promotions</span><h1 style="font-size:1.6rem">Tell everyone on the platform about your brand</h1><p class="muted small">Build Smartly sends a newsletter to all registered members: a link by SMS, Telegram and e-mail. Brands, suppliers and contractors can all advertise: a banner with your picture in the slideshow on the home page and in every member's workspace, and an item in the newsletter. A verified profile in the Members directory is free. Sponsored places are always marked and never change the order of offers a buyer sees. Prices are examples; the owner sets the final rates.</p></div>
+  <div><span class="eyebrow">Newsletter and promotions</span><h1 style="font-size:1.6rem">News, offers and new supplies from verified members</h1><p class="muted small">Build Smartly sends a newsletter to all registered members: a link by SMS, Telegram and e-mail. Brands, suppliers and contractors can all advertise: a banner with your picture in the slideshow on the home page and in every member's workspace, and an item in the newsletter. A verified profile in the Members directory is free. Sponsored places are always marked and never change the order of offers a buyer sees. Prices are examples; the owner sets the final rates.</p></div>
   <div class="adshow" id="nwAds" style="margin-bottom:1rem"></div>
   <div class="grid2" style="align-items:start">
     <div class="card panel" style="display:grid;gap:.7rem"><div><strong style="font-family:var(--display);font-size:1.05rem">Latest issue</strong><p class="small muted">What buyers received this month. Also in every member's Mailbox under Newsletter.</p></div><div id="newsList" style="display:grid;gap:.6rem"></div></div>
-    <div class="card panel" id="newsFormBox" style="display:grid;gap:.7rem">
+    <div class="card panel" id="adInvite" style="display:grid;gap:.7rem;align-content:start"><div><span class="tag tag-ochre">For brands, suppliers and contractors</span><strong style="display:block;font-family:var(--display);font-size:1.05rem;margin-top:.5rem">Interested in advertising?</strong><p class="small muted">A newsletter item, a banner in the slideshow, a featured-supplier card or a price-pulse tile. Staff check the text, finance sends the invoice, and it goes out in the next issue.</p></div><div><button class="btn btn-ochre" type="button" id="adInviteBtn">I want to advertise</button></div></div>
+    <div class="card panel" id="newsFormBox" style="display:none;gap:.7rem">
       <div><strong style="font-family:var(--display);font-size:1.05rem">Send your news for the next issue</strong><p class="small muted">A new brand, a new supply, a price offer or your company's progress. Staff check the text (no phone numbers or addresses), finance sends the invoice, and it goes out in the next issue.</p></div>
       <div class="su-row2"><div class="field"><label for="nwWho">You are</label><select id="nwWho"><option>Brand or manufacturer</option><option>Supplier</option><option>Contractor or developer</option><option>Other</option></select></div><div class="field"><label for="nwCompany">Company or brand</label><input id="nwCompany" placeholder="Your company or brand name"></div></div>
       <div class="field"><label for="nwKind">Placement</label><select id="nwKind"><option value="news">Newsletter item · example ETB 5,000 per issue</option><option value="feature">Featured supplier of the month · example ETB 15,000</option><option value="pulse">Price pulse tile on the home page · example ETB 5,000 per month</option><option value="banner">Banner inside every member's workspace · example ETB 4,000 per month</option><option value="directory">Highlighted card in the Members directory · example ETB 3,000 per month</option></select></div>
@@ -1626,7 +1627,9 @@ bsAdShow('nwAds', function(){ return !document.getElementById('view-advertise').
     document.querySelectorAll('.news-list').forEach(function(el){ el.innerHTML=html; });
   }
   BS.ready().then(function(){ BS.subscribe("news", function(d){ items=d||[]; render(); }); render(); });
-  BSRoute.on('news', function(){ var me=BS.me()||{}; if(!$('nwCompany').value) $('nwCompany').value=me.company||me.name||''; render(); });
+  function showAdForm(){ $('adInvite').hidden=true; $('newsFormBox').style.display='grid'; }
+  $('adInviteBtn').onclick=function(){ showAdForm(); $('newsFormBox').scrollIntoView({behavior:'smooth',block:'start'}); setTimeout(function(){ $('nwCompany').focus(); },400); };
+  BSRoute.on('news', function(){ var me=BS.me()||{}; if(!$('nwCompany').value) $('nwCompany').value=me.company||me.name||''; if(location.hash==='#advertise') showAdForm(); render(); });
   $('nwSend').onclick=async function(){
     var me=BS.me()||{}, company=$('nwCompany').value.trim(), title=$('nwTitle').value.trim(), text=$('nwText').value.trim(); var err=$('nwErr'); err.hidden=true;
     if(!company||!title||!text){ err.textContent='Company, headline and text are needed.'; err.hidden=false; return; }
@@ -1681,7 +1684,7 @@ bsAdShow('nwAds', function(){ return !document.getElementById('view-advertise').
     var items=BS.PULSE.map(function(p){ return Object.assign({}, p); }), live=0;
     (offers||[]).forEach(function(o){ if(o.unitPrice>0){ var p=items.filter(function(x){return x.item===o.itemName;})[0]; if(p){ p._q=(p._q||[]).concat([o.unitPrice]); } } });
     items.forEach(function(p){ if(p._q && p._q.length>=2){ var s=p._q.sort(function(a,b){return a-b;}); var med=s[Math.floor(s.length/2)]; p.chg=p.price? (med-p.price)/p.price*100 : 0; p.price=med; p.when=s.length+' quotes on Build Smartly'; live++; } });
-    var html=''; items.forEach(function(p,i){ html+=pulseTick(p); if(i===3) html+='<a class="tick ad" href="#newsletter" style="text-decoration:none"><span class="name">Your brand here</span><span class="unit">Newsletter and sponsored tiles for suppliers</span><span class="price">Always marked, never changes the offers</span><span class="when">See the options</span></a>'; });
+    var html=''; items.forEach(function(p,i){ html+=pulseTick(p); if(i===3) html+='<a class="tick ad" href="#advertise" style="text-decoration:none"><span class="name">Your brand here</span><span class="unit">Newsletter and sponsored tiles for suppliers</span><span class="price">Always marked, never changes the offers</span><span class="when">See the options</span></a>'; });
     html+='<div class="tick ad"><span class="name">New here?</span><span class="unit">No account needed to build your list</span><span class="price">Your mobile number is your account</span><span class="when">Company details only when you accept an offer</span></div>';
     track.innerHTML=html;
     document.getElementById('pulseTag').textContent = live ? 'Live on this link' : 'Example figures';
