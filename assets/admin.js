@@ -3,7 +3,7 @@
    Staff sign in with a staff number and the staff password; the session is kept per browser tab. */
 (function(){
   var $=function(id){ return document.getElementById(id); };
-  var data={boqs:[],offers:[],messages:[],profiles:[],news:[],verifications:[],settings:[],issues:[]}, query='';
+  var data={boqs:[],offers:[],messages:[],profiles:[],news:[],verifications:[],settings:[],issues:[],promotions:[],suppliers:[],tasks:[]}, query='';
   var tab='overview', mode='local', booted=false, adTilesHtml='';
   var CATS=BS.CATEGORIES.filter(function(c){ return c.indexOf('Other')<0; });
   function esc(t){ return String(t||'').replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
@@ -27,7 +27,7 @@
   function showPanel(){ $('adLogin').hidden=true; $('adPanel').hidden=false; $('adMeta').textContent='Signed in as '+staffName()+' · '+(mode==='shared'?'shared database: every device sees the same records':'this device only: shared database not configured yet'); render(); }
   BSRoute.on('admin', function(){ if(isAdmin()) showPanel(); else showLogin(); });
   BS.ready().then(function(m){ mode=m; if(isAdmin() && !$('adPanel').hidden) $('adMeta').textContent='Signed in as '+staffName()+' · '+(m==='shared'?'shared database':'this device only'); });
-  ['boqs','offers','messages','profiles','news','verifications','settings','issues','promotions','suppliers'].forEach(function(c){ BS.subscribe(c, function(d){ data[c]=d||[]; if(c==='settings') BS.applySettings(d||[]); if(isAdmin() && !$('adPanel').hidden) render(); }); });
+  ['boqs','offers','messages','profiles','news','verifications','settings','issues','promotions','suppliers','tasks'].forEach(function(c){ BS.subscribe(c, function(d){ data[c]=d||[]; if(c==='settings') BS.applySettings(d||[]); if(isAdmin() && !$('adPanel').hidden) render(); }); });
   $('adTabs').addEventListener('click', function(e){ var b=e.target.closest('[data-tab]'); if(!b) return; tab=b.dataset.tab; render(); $('adLayout').classList.remove('open'); $('adBurger').setAttribute('aria-expanded','false'); window.scrollTo({top:0,behavior:'smooth'}); });
   /* three-line button: on a phone it opens the menu as a drawer; on a wide screen it folds the sidebar to icons */
   $('adBurger').onclick=function(){ var L=$('adLayout'); if(window.matchMedia('(max-width:860px)').matches){ var o=!L.classList.contains('open'); L.classList.toggle('open', o); $('adBurger').setAttribute('aria-expanded', o?'true':'false'); } else { L.classList.toggle('fold'); try{ localStorage.setItem('bs_adfold', L.classList.contains('fold')?'1':''); }catch(e){} } };
@@ -59,7 +59,7 @@
     $('adTabs').querySelectorAll('button').forEach(function(b){ b.classList.toggle('on', b.dataset.tab===tab); });
     try{ var badges={support: threads().filter(function(t){ return t.waiting; }).length + data.issues.filter(function(i){ return i.status!=='resolved'; }).length, suppliers: data.verifications.filter(function(v){ return v.status==='pending'; }).length, requests: unclassified().length, news: data.news.filter(function(x){ return x.status==='pending'; }).length};
       $('adTabs').querySelectorAll('button').forEach(function(b){ var n=badges[b.dataset.tab]||0; var old=b.querySelector('.badge'); if(old) old.remove(); if(n){ var sp=document.createElement('span'); sp.className='badge'; sp.textContent=n; b.appendChild(sp); } }); }catch(e){}
-    var r={overview:renderOverview, requests:renderRequests, suppliers:renderSuppliers, support:renderSupport, news:renderNews, promos:renderPromos, members:renderMembers, finance:renderFinance, insights:renderInsights, catalogue:renderCatalogue, settings:renderSettings}[tab]||renderOverview;
+    var r={overview:renderOverview, requests:renderRequests, suppliers:renderSuppliers, support:renderSupport, news:renderNews, promos:renderPromos, brands:renderBrandsTab, members:renderMembers, finance:renderFinance, insights:renderInsights, catalogue:renderCatalogue, settings:renderSettings}[tab]||renderOverview;
     $('adBody').innerHTML=searchHtml()+r();
   }
   $('adBody').addEventListener('click', function(e){ var b=e.target.closest('[data-go]'); if(!b) return; tab=b.dataset.go; render(); });
@@ -76,11 +76,13 @@
     return card('Search · '+esc(query), rows.length+' result'+(rows.length===1?'':'s')+' across requests, orders, suppliers and problems.', rows.length?'<div class="docs">'+rows.slice(0,30).join('')+'</div>':'<div class="empty">Nothing matches.</div>');
   }
   $('adSearch').addEventListener('input', function(){ query=this.value; render(); });
-  function card(title, sub, body){ return '<section class="card" style="display:grid;gap:.7rem"><div><strong style="font-family:var(--display);font-size:1.05rem">'+title+'</strong>'+(sub?'<p class="small muted">'+sub+'</p>':'')+'</div>'+body+'</section>'; }
+  /* staff asked for less text (27 Oct 2026): a card shows only the first sentence of its explanation */
+  function short(sub){ if(!sub) return ''; var m=String(sub).match(/^.*?[.!?](\s|$)/); return m ? m[0].trim() : sub; }
+  function card(title, sub, body){ return '<section class="card" style="display:grid;gap:.7rem"><div><strong style="font-family:var(--display);font-size:1.05rem">'+title+'</strong>'+(sub?'<p class="small muted">'+short(sub)+'</p>':'')+'</div>'+body+'</section>'; }
   function renderOverview(){
     var recent=[];
     data.boqs.forEach(function(b){ recent.push([b.createdAt,'Request '+b.ref+' from '+esc(b.company)+' · '+(b.lines||[]).length+' lines · '+esc(b.subcity)]); });
-    data.offers.forEach(function(o){ var b=boqOf(o.boqId); recent.push([o.createdAt,'Offer from '+esc(o.supplierName)+' on '+(b?b.ref:'')+' line '+o.lineN+' · '+BS.fmt(offerTotal(o))]); if(o.acceptedAt) recent.push([o.acceptedAt,'PO '+esc(o.poRef)+' issued · '+esc(o.supplierName)]); if(o.paidAt) recent.push([o.paidAt,'Paid '+esc(o.poRef)+' · '+BS.fmt(offerTotal(o))+' · '+esc(o.paymentRef||'')]); });
+    data.offers.forEach(function(o){ var b=boqOf(o.boqId); recent.push([o.createdAt,'Offer from '+esc(o.supplierName)+' on '+(b?b.ref:'')+' line '+o.lineN+' · '+BS.fmt(offerTotal(o))]); if(o.acceptedAt && !recent.some(function(r){ return r[2]==='po'+o.poRef; })) recent.push([o.acceptedAt,'Order '+esc(o.poRef)+' placed · '+esc(o.supplierName),'po'+o.poRef]); if(o.paidAt && !recent.some(function(r){ return r[2]==='pay'+o.poRef; })) recent.push([o.paidAt,'Paid '+esc(o.poRef)+' · '+BS.fmt(o.paidTotal||offerTotal(o))+' · '+esc(o.paymentRef||''),'pay'+o.poRef]); });
     data.verifications.forEach(function(v){ recent.push([v.submittedAt||v.createdAt,'Documents from '+esc(v.company)+' · '+esc(v.status)]); });
     data.news.forEach(function(x){ recent.push([x.createdAt,'Newsletter item from '+esc(x.company)+' · '+esc(x.status)]); });
     recent.sort(function(a,c){ return (c[0]||'').localeCompare(a[0]||''); });
@@ -90,28 +92,57 @@
     var w=threads().filter(function(t){return t.waiting;}).length; if(w) todo.push('<a href="#" data-tab-go="support">'+w+' support thread(s) waiting for an answer</a>');
     var pn=data.news.filter(function(x){return x.status==='pending';}).length; if(pn) todo.push('<a href="#" data-tab-go="news">'+pn+' newsletter item(s) to check</a>');
     var oi=data.issues.filter(function(x){return x.status!=='resolved';}).length; if(oi) todo.push('<a href="#" data-tab-go="support">'+oi+' problem(s) reported on orders, open or in progress</a>');
-    return adTilesHtml+'<div class="grid2" style="align-items:start">'+card('To do today','', todo.length?'<ul style="margin:0;padding-left:1.1rem;display:grid;gap:.3rem">'+todo.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul>':'<div class="empty">Nothing waiting. New requests, documents and messages appear here as they come in.</div>')+
+    var pp=data.profiles.filter(function(x){ return x.status==='pending'; }).length; if(pp) todo.push('<a href="#" data-tab-go="members">'+pp+' profile(s) to approve</a>');
+    var late=lateSuppliers().length; if(late) todo.push('<a href="#" data-tab-go="requests">'+late+' supplier(s) have not quoted yet</a>');
+    var tasks=data.tasks.slice().sort(function(a,c){ return (a.done?1:0)-(c.done?1:0) || (c.createdAt||'').localeCompare(a.createdAt||''); });
+    var taskHtml='<div class="todo">'+todo.map(function(t){ return '<div class="row waiting"><i></i><span>'+t+'</span><span class="tag tag-ochre">Waiting</span></div>'; }).join('')+
+      tasks.map(function(t){ return '<div class="row'+(t.done?' done':'')+'"><input type="checkbox" data-task="'+t.id+'"'+(t.done?' checked':'')+' style="width:20px;height:20px;accent-color:var(--green)"><span'+(t.done?' style="text-decoration:line-through;color:var(--fg-2)"':'')+'>'+esc(t.text)+' <span class="small muted">· '+esc(t.by||'')+(t.done?' · done '+when(t.doneAt):'')+'</span></span><button class="btn btn-ghost btn-sm" type="button" data-taskdel="'+t.id+'" aria-label="Delete">×</button></div>'; }).join('')+
+      ((todo.length||tasks.length)?'':'<div class="empty">Nothing waiting.</div>')+'</div><div class="chat-in"><div class="field"><input id="adTaskIn" placeholder="Add a task for the team…"></div><button class="btn btn-primary btn-sm" type="button" id="adTaskAdd">Add</button></div>';
+    return adTilesHtml+'<div class="grid2" style="align-items:start">'+card('To do today','', taskHtml)+'<div hidden>'+card('x','', todo.length?'<ul style="margin:0;padding-left:1.1rem;display:grid;gap:.3rem">'+todo.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul>':'<div class="empty">Nothing waiting. New requests, documents and messages appear here as they come in.</div>')+'</div>'+
       card('Latest activity','Across all members, newest first.','<div class="docs">'+(recent.slice(0,15).map(function(r){ return '<div class="doc"><span class="small muted" style="white-space:nowrap">'+when(r[0])+'</span><span>'+r[1]+'</span><span></span></div>'; }).join('')||'<div class="empty">No activity yet.</div>')+'</div>')+'</div>';
   }
   $('adBody').addEventListener('click', function(e){ var a=e.target.closest('[data-tab-go]'); if(a){ e.preventDefault(); tab=a.dataset.tabGo; render(); } });
 
+  function supplierPhone(sp){ var t=BS.TEST_ACCOUNTS.filter(function(x){ return x.supplierId===sp.id; })[0]; return sp.phone || (t?t.phone:''); }
+  function invitedFor(b){ return BS.activeSuppliers().filter(function(sp){ return (b.lines||[]).some(function(l){ return sp.cats.indexOf(l.cat)>=0; }) && supplierPhone(sp)!==b.ownerPhone; }); }
+  /* suppliers who were sent an open request and have not quoted on any line of it yet */
+  function lateSuppliers(){ var out=[]; data.boqs.forEach(function(b){ if(!openBoq(b)) return; invitedFor(b).forEach(function(sp){ if(!data.offers.some(function(o){ return o.boqId===b.id && o.supplierId===sp.id; })) out.push({b:b, sp:sp}); }); }); return out; }
+  var reqFilter='open';
   function renderRequests(){
     var list=data.boqs.slice().sort(function(a,c){ return (c.createdAt||'').localeCompare(a.createdAt||''); });
-    if(!list.length) return card('Requests','','<div class="empty">No requests yet.</div>');
-    return list.map(function(b){
+    var f={open:function(b){ return openBoq(b) && !data.offers.some(function(o){ return o.boqId===b.id && o.status==='accepted'; }); }, orders:function(b){ return data.offers.some(function(o){ return o.boqId===b.id && o.status==='accepted'; }); }, all:function(){ return true; }};
+    var bar='<div class="subtabs">'+[['open','Waiting for offers'],['orders','With orders'],['all','All']].map(function(x){ return '<button type="button" class="'+(reqFilter===x[0]?'on':'')+'" data-reqf="'+x[0]+'">'+x[1]+' · '+list.filter(f[x[0]]).length+'</button>'; }).join('')+'</div>';
+    list=list.filter(f[reqFilter]);
+    if(!list.length) return bar+'<div class="empty">Nothing here.</div>';
+    return bar+list.map(function(b){
       var os=data.offers.filter(function(o){ return o.boqId===b.id; }); var left=BS.days(new Date(b.deadlineAt)-Date.now());
-      var state = b.status==='withdrawn' ? '<span class="tag">Withdrawn</span>' : os.some(function(o){return o.paidAt;}) ? '<span class="tag tag-green">Paid</span>' : os.some(function(o){return o.status==='accepted';}) ? '<span class="tag tag-green">PO issued</span>' : left>0 ? '<span class="tag tag-ochre">Open · '+left+' d left</span>' : '<span class="tag">Deadline passed</span>';
+      var inv=invitedFor(b), groups=BS.orderGroups(os);
+      var state = b.status==='withdrawn' ? '<span class="tag">Withdrawn</span>' : groups.length ? '<span class="tag tag-green">'+groups.length+' order'+(groups.length>1?'s':'')+'</span>' : left>0 ? '<span class="tag tag-ochre">Open · '+left+' d left</span>' : '<span class="tag">Closed</span>';
+      var who=inv.map(function(sp){ var n=os.filter(function(o){ return o.supplierId===sp.id; }).length; var nudged=data.messages.some(function(m){ return m.nudge===b.id+'|'+sp.id; });
+        return '<span class="sup-pill'+(n?' ok':'')+'">'+esc(sp.name)+' · '+(n?n+' offer'+(n>1?'s':''):'no offer yet')+(!n && openBoq(b)?' <button class="btn btn-ghost btn-sm" type="button" data-nudge="'+b.id+'" data-sup="'+sp.id+'">'+(nudged?'Nudge again':'Nudge')+'</button>':'')+'</span>'; }).join('');
       var rows=(b.lines||[]).map(function(l){
-        var lo=os.filter(function(o){ return o.lineN===l.n; }); var acc=lo.filter(function(o){ return o.status==='accepted'; })[0];
+        var lo=os.filter(function(o){ return o.lineN===l.n; }).sort(function(x,y){ return BS.offerTotal(x)-BS.offerTotal(y); });
         var other=/Other/.test(l.cat||'');
-        return '<div class="doc" style="grid-template-columns:auto 1fr auto auto"><span class="ico">'+l.n+'</span><span><strong>'+esc(l.item)+'</strong> · '+l.qty+' '+esc(l.unit)+(l.needed?' · by '+l.needed:'')+'<br><span class="small muted">'+(other?'Typed by the customer, not in the catalogue':esc(l.cat))+'</span></span>'+
-          (other ? '<select data-classify="'+b.id+'" data-line="'+l.n+'" style="font:inherit;font-size:.85rem;padding:.35rem .5rem;border:1.5px solid var(--ochre);border-radius:8px"><option value="">Choose a category…</option>'+CATS.map(function(c){ return '<option>'+c+'</option>'; }).join('')+'</select>' : '<span class="small muted">'+lo.length+' offer'+(lo.length!==1?'s':'')+'</span>')+
-          '<span>'+(acc?'<span class="tag tag-green">'+(acc.paidAt?'Paid':acc.deliveredAt?'Delivered':acc.dispatchedAt?'On the way':'PO')+' · '+esc(acc.supplierName)+'</span>':'')+'</span></div>';
+        return '<div class="doc" style="grid-template-columns:auto 1fr auto"><span class="ico">'+l.n+'</span><span><strong>'+esc(l.item)+'</strong> · '+l.qty+' '+esc(l.unit)+(l.returnBy?' · '+l.needed+' to '+l.returnBy:l.needed?' · by '+l.needed:'')+'<br>'+
+          (lo.length ? lo.map(function(o){ return '<span class="small">'+esc(o.supplierName)+' · '+esc(o.brand)+' · '+BS.fmt(o.unitPrice)+' · total '+BS.fmt(BS.offerTotal(o))+' · <em>'+(o.status==='accepted'?'in '+esc(o.poRef):o.status==='rejected'?'rejected':(o.counter&&o.counter.state==='open')?'counter '+BS.fmt(o.counter.price)+' open':(b.chosen||{})[l.n]===o.id?'chosen':'open')+'</em></span>'; }).join('<br>') : '<span class="small muted">'+(other?'Typed by the customer, not in the catalogue':'No offers yet')+'</span>')+'</span>'+
+          (other ? '<select data-classify="'+b.id+'" data-line="'+l.n+'" style="font:inherit;font-size:.85rem;padding:.35rem .5rem;border:1.5px solid var(--ochre);border-radius:8px"><option value="">Category…</option>'+CATS.map(function(c){ return '<option>'+c+'</option>'; }).join('')+'</select>' : '<span class="small muted">'+esc(l.cat)+'</span>')+'</div>';
       }).join('');
-      return card(esc(b.ref)+' · '+esc(b.company)+' · '+esc(b.customerNo||''), esc(b.subcity)+', '+esc(b.city||'')+' · '+esc(b.deliveryTerm)+' · '+esc(b.paymentTerm)+(b.insurance?' · insurance':'')+(b.pin?' · site pinned':'')+' · sent '+when(b.createdAt)+' · owner '+fmtPhone(b.ownerPhone),
-        '<div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">'+state+(b.status!=='withdrawn' && !os.some(function(o){return o.status==='accepted';}) ? '<button class="btn btn-ghost btn-sm" type="button" data-close="'+b.id+'">Close request</button>':'')+'</div><div class="docs">'+rows+'</div>');
+      var ordersHtml=groups.map(function(g){ var st=BS.orderStatus(g.first); return '<a class="order-row" href="#order-'+g.id+'"><span><strong>'+esc(g.poRef)+'</strong> · '+esc(g.supplierName)+'</span><span class="tag '+st.c+'">'+esc(st.t)+'</span><span class="btn btn-ghost btn-sm">Open</span></a>'; }).join('');
+      return card(esc(b.ref)+' · '+esc(b.company), esc(b.subcity)+' · '+esc(b.deliveryTerm)+' · '+when(b.createdAt)+' · '+fmtPhone(b.ownerPhone),
+        '<div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">'+state+(b.status!=='withdrawn' && !groups.length ? '<button class="btn btn-ghost btn-sm" type="button" data-close="'+b.id+'">Close request</button>':'')+'</div>'+
+        '<div class="small muted">Sent to:</div><div style="display:flex;gap:.4rem;flex-wrap:wrap">'+(who||'<span class="small muted">No supplier sells these categories yet.</span>')+'</div><div class="docs">'+rows+'</div>'+ordersHtml);
     }).join('');
   }
+  $('adBody').addEventListener('click', async function(e){
+    var rf=e.target.closest('[data-reqf]'); if(rf){ reqFilter=rf.dataset.reqf; render(); return; }
+    var n=e.target.closest('[data-nudge]'); if(n){ var b=boqOf(n.dataset.nudge), sp=BS.supplierById(n.dataset.sup); if(!b||!sp) return; n.disabled=true;
+      await BS.add('messages', {phone:digits(supplierPhone(sp)), who:'staff', staff:staffName(), name:sp.name, nudge:b.id+'|'+sp.id, text:'Reminder from Build Smartly: request '+b.ref+' is waiting for your offer. It closes in '+Math.max(0,BS.days(new Date(b.deadlineAt)-Date.now()))+' day(s).'});
+      bsToast('Reminder sent to '+sp.name+' (support thread and SMS).'); return; }
+    var tk=e.target.closest('[data-taskdel]'); if(tk){ await BS.remove('tasks', tk.dataset.taskdel); return; }
+    if(e.target.id==='adTaskAdd'){ var v=$('adTaskIn').value.trim(); if(!v) return; $('adTaskIn').value=''; await BS.add('tasks', {text:v, done:false, by:staffName()}); return; }
+  });
+  $('adBody').addEventListener('change', async function(e){ var t=e.target.closest('[data-task]'); if(t){ await BS.update('tasks', t.dataset.task, {done:t.checked, doneAt:t.checked?new Date().toISOString():'', doneBy:staffName()}); } });
+  $('adBody').addEventListener('keydown', function(e){ if(e.target.id==='adTaskIn' && e.key==='Enter'){ e.preventDefault(); $('adTaskAdd').click(); } });
   $('adBody').addEventListener('change', async function(e){
     var s=e.target.closest('[data-classify]'); if(!s || !s.value) return;
     var b=boqOf(s.dataset.classify); if(!b) return; var lines=(b.lines||[]).map(function(l){ return l.n===+s.dataset.line ? Object.assign({}, l, {cat:s.value}) : l; });
@@ -130,7 +161,7 @@
     var pending=list.filter(function(v){ return v.status==='pending'; }).length;
     var tabs=[['list','All suppliers'],['edit','Edit a supplier'],['add','Add a supplier'],['verify','Verification'+(pending?' · '+pending:'')]];
     var bar='<div class="subtabs" style="margin-bottom:.2rem">'+tabs.map(function(t){ return '<button type="button" class="'+(supSub===t[0]?'on':'')+'" data-supsub="'+t[0]+'">'+t[1]+'</button>'; }).join('')+'</div>';
-    return bar+(supSub==='edit' ? supplierEditCard() : supSub==='add' ? supplierAddCard() : supSub==='verify' ? card('Verification queue','Suppliers who submitted a licence and TIN. Approving unlocks quoting; the supplier is told by SMS.', rows||'<div class="empty">No documents waiting. New registrations appear here when they submit their licence.</div>') : card('All suppliers','Built-in test suppliers, suppliers who registered on the site and suppliers you added. Edit opens the supplier\'s categories, status and price list.', '<div class="docs">'+seeded+'</div>'));
+    return bar+(supSub==='edit' ? supplierEditCard() : supSub==='add' ? supplierAddCard() : supSub==='verify' ? card('Verification queue','Suppliers who submitted a licence and TIN. Approving unlocks quoting; the supplier is told by SMS.', rows||'<div class="empty">No documents waiting. New registrations appear here when they submit their licence.</div>') : card('All suppliers','', '<div class="field" style="max-width:24rem"><input id="supSearch" type="search" placeholder="Search name, category, sub-city, number" value="'+esc(supQ)+'"></div><div class="docs">'+(seeded||'<div class="empty">No supplier matches.</div>')+'</div>'));
   }
   $('adBody').addEventListener('click', async function(e){
     var v=e.target.closest('[data-verify]'); if(v){ v.disabled=true; await BS.update('verifications', v.dataset.verify, {status:'verified', verifiedAt:new Date().toISOString(), by:staffName(), reason:''}); if(BS.supplierDoc(v.dataset.verify)) await BS.update('suppliers', v.dataset.verify, {status:'active'}); bsToast('Approved. The supplier can quote now.'); return; }
@@ -166,9 +197,10 @@
   function subOptions(sel){ return BS.SUBCITIES.map(function(x){ return '<option'+(x===sel?' selected':'')+'>'+esc(x)+'</option>'; }).join(''); }
   function catTicks(prefix, chosen){ return '<div class="chips">'+CATS.map(function(c){ var on=chosen.indexOf(c)>=0; return '<label class="chip'+(on?' on':'')+'" style="cursor:pointer"><input type="checkbox" '+prefix+'="'+esc(c)+'"'+(on?' checked':'')+' style="margin:0 .3rem 0 0;accent-color:var(--green)">'+esc(c)+'</label>'; }).join('')+'</div>'; }
   function statusTag(st){ return st==='active'?'<span class="tag tag-green">Active</span>':st==='pending'?'<span class="tag tag-ochre">Pending approval</span>':st==='suspended'?'<span class="tag">Paused</span>':'<span class="tag">'+esc(st)+'</span>'; }
+  var supQ='';
   function supplierListHtml(){
-    var all=BS.suppliersAll().slice().sort(function(a,c){ return (a.status==='pending'?0:1)-(c.status==='pending'?0:1) || a.name.localeCompare(c.name); });
-    return all.map(function(x){ var kind = x.own ? (x.source==='staff'?'added by staff':'registered on the site') : x.auto ? 'built-in, answers requests automatically on the test site' : 'built-in, played by a shareholder';
+    var all=BS.suppliersAll().filter(function(x){ return !supQ || (x.name+' '+(x.cats||[]).join(' ')+' '+(x.sub||'')+' '+(x.phone||'')).toLowerCase().indexOf(supQ.toLowerCase())>=0; }).slice().sort(function(a,c){ return (a.status==='pending'?0:1)-(c.status==='pending'?0:1) || a.name.localeCompare(c.name); });
+    return all.map(function(x){ var kind = x.own ? (x.source==='staff'?'added by staff':'registered on the site') : x.auto ? 'background supplier, quotes by itself' : 'test login';
       return '<div class="doc"><span class="ico">'+(x.status==='active'?'OK':'·')+'</span><span><strong>'+esc(x.name)+'</strong><br><span class="small muted">'+esc((x.cats||[]).join(', ')||'no categories yet')+' · dispatch '+esc(x.sub||'')+(x.phone?' · '+fmtPhone(x.phone):'')+' · '+kind+(x.prices&&x.prices.length?' · '+x.prices.length+' price'+(x.prices.length===1?'':'s'):'')+'</span></span><span style="display:flex;gap:.3rem;align-items:center;flex-wrap:wrap">'+statusTag(x.status)+'<button class="btn btn-ghost btn-sm" type="button" data-esopen="'+esc(x.id)+'">Edit</button></span></div>'; }).join('');
   }
   function supplierAddCard(){
@@ -179,7 +211,7 @@
       '<div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap"><button class="btn btn-primary btn-sm" type="button" id="nsAdd">Add supplier</button><span class="small muted" id="nsMsg"></span></div>');
   }
   function supplierEditCard(){
-    var all=BS.suppliersAll(); var groups=[['Shareholders\' suppliers', all.filter(function(x){ return !x.own && !x.auto; })],['Registered or added', all.filter(function(x){ return x.own; })],['Built-in test suppliers', all.filter(function(x){ return x.auto; })]];
+    var all=BS.suppliersAll(); var groups=[['Test logins', all.filter(function(x){ return !x.own && !x.auto; })],['Registered or added', all.filter(function(x){ return x.own; })],['Background suppliers', all.filter(function(x){ return x.auto; })]];
     var sel='<div class="field" style="max-width:30rem"><label for="esSel">Choose a supplier</label><select id="esSel"><option value="">Choose…</option>'+groups.map(function(g){ return g[1].length?'<optgroup label="'+esc(g[0])+'">'+g[1].map(function(x){ return '<option value="'+esc(x.id)+'"'+(x.id===esId?' selected':'')+'>'+esc(x.name)+(x.status!=='active'?' ('+x.status+')':'')+'</option>'; }).join('')+'</optgroup>':''; }).join('')+'</select></div>';
     var sp=all.filter(function(x){ return x.id===esId; })[0]; if(!sp) return card('Edit a supplier','Categories, dispatch point, status and the price list of any supplier. Prices you save here are what the supplier sees in the portal and what requests are pre-filled from.', sel);
     if(!esDraft || esDraft.id!==sp.id){ var pm={}; (sp.prices||[]).forEach(function(r){ pm[r.name]=r; }); esDraft={id:sp.id, name:sp.name, phone:sp.phone||'', tin:sp.tin||'', sub:sp.sub||'', status:sp.status||'active', cats:(sp.cats||[]).slice(), prices:pm, password:sp.password||''}; }
@@ -206,7 +238,7 @@
       t.disabled=true; var id=sp.docId; var patch={name:d.name, cats:d.cats, sub:d.sub, status:d.status, prices:prices, setBy:staffName()}; if(sp.own){ patch.phone=d.phone; patch.password=d.password; patch.tin=d.tin; }
       if(BS.supplierDoc(id)) await BS.update('suppliers', id, patch); else await BS.set('suppliers', id, Object.assign({seedId:sp.id, source:'seed'}, patch));
       esDraft=null; bsToast('Supplier saved. The portal and the requests use the new list now.'); render(); return; }
-    if(t.id==='esRemove'){ var sp2=BS.suppliersAll().filter(function(x){ return x.id===esId; })[0]; if(!sp2) return; if(!confirm('Remove '+sp2.name+'? They stop receiving requests and cannot sign in. Orders already placed stay.')) return;
+    if(t.id==='esRemove'){ var sp2=BS.suppliersAll().filter(function(x){ return x.id===esId; })[0]; if(!sp2) return; if(!(await bsConfirm('Remove '+sp2.name+'?','They stop receiving requests and cannot sign in. Orders already placed stay.','Remove'))) return;
       if(BS.supplierDoc(sp2.docId)) await BS.update('suppliers', sp2.docId, {status:'removed', removedAt:new Date().toISOString(), by:staffName()}); else await BS.set('suppliers', sp2.docId, {seedId:sp2.id, source:'seed', name:sp2.name, cats:sp2.cats, sub:sp2.sub, status:'removed', removedAt:new Date().toISOString(), by:staffName()});
       esId=null; esDraft=null; supSub='list'; bsToast('Supplier removed.'); render(); return; }
     if(t.id==='nsAdd'){ var name=$('nsName').value.trim(), ph=digits($('nsPhone').value), cats=[].slice.call(document.querySelectorAll('[data-nscat]:checked')).map(function(i){ return i.dataset.nscat; });
@@ -215,6 +247,9 @@
       t.disabled=true; var nid=await BS.add('suppliers', {name:name, phone:ph, tin:$('nsTin').value.trim(), cats:cats, sub:$('nsSub').value, password:$('nsPw').value||BS.DEMO_PASSWORD, status:$('nsStatus').value, source:'staff', prices:[], setBy:staffName()});
       esId=nid; esDraft=null; supSub='edit'; bsToast('Supplier added. Set their prices below.'); render(); window.scrollTo({top:0,behavior:'smooth'}); return; }
   });
+  $('adBody').addEventListener('input', function(e){ if(e.target.id!=='supSearch') return; supQ=e.target.value; var pos=e.target.selectionStart; render(); var el=$('supSearch'); if(el){ el.focus(); try{ el.setSelectionRange(pos,pos); }catch(err){} } });
+  /* open a staff section from a link or the bell */
+  window.bsAdminTab=function(t){ if(!isAdmin()) return; tab=({requests:'requests',suppliers:'suppliers',support:'support',members:'members',promos:'promos',finance:'finance',news:'news',brands:'brands',overview:'overview'})[t]||'overview'; if(!$('adPanel').hidden) render(); };
   function renderSupport(){
     var ts=threads(); var issuesHtml=renderIssues(); var w=ts.filter(function(t){ return t.waiting; }).length;
     var head='<div style="display:flex;justify-content:space-between;align-items:end;gap:.6rem;flex-wrap:wrap"><div><strong style="font-family:var(--display);font-size:1.05rem">Support inbox</strong><p class="small muted" style="margin:.1rem 0 0">Every message members send from their Mailbox, the help box or the supplier portal. Reply here; the member sees it in the Mailbox and gets an SMS.</p></div>'+(w?'<span class="tag tag-ochre">'+w+' waiting for an answer</span>':'<span class="tag">Nothing waiting</span>')+'</div>';
@@ -250,7 +285,9 @@
     var news=data.news.filter(function(x){ return x.status==='published' && x.img; });
     var newsRows=news.length?news.map(function(x){ return '<div class="doc" style="grid-template-columns:9rem 1fr auto"><img src="'+esc(x.img)+'" alt="" style="width:9rem;aspect-ratio:3/1;object-fit:cover;border-radius:8px"><span><strong>'+esc(x.company)+'</strong><br><span class="small">'+esc(x.title)+'</span><br><span class="small muted">From the newsletter · shows everywhere</span></span><button class="btn btn-ghost btn-sm" type="button" data-pnewsrm="'+esc(x.id)+'">Remove from slides</button></div>'; }).join(''):'';
     var ex=BS.ADS.map(function(a){ var hid=(BS.ADS_HIDDEN||[]).indexOf(a.key)>=0; return '<div class="doc" style="grid-template-columns:9rem 1fr auto;'+(hid?'opacity:.55':'')+'"><img src="'+esc((BS.PICS&&BS.PICS[a.key])||a.img)+'" alt="" style="width:9rem;aspect-ratio:3/1;object-fit:cover;border-radius:8px"><span><strong>'+esc(a.company)+'</strong> <span class="tag">'+esc(a.who)+'</span><br><span class="small">'+esc(a.title)+'</span><br><span class="small muted">Example banner'+(hid?' · hidden':'')+'</span></span><button class="btn btn-ghost btn-sm" type="button" data-pex="'+esc(a.key)+'">'+(hid?'Show':'Hide')+'</button></div>'; }).join('');
-    return card(ed?'Edit promotion':'Add a promotion', 'A slide with the picture, the company and one headline. It appears within seconds on the home page, in every member\'s workspace and on the newsletter page. Brands, suppliers and contractors who pay for a slide are set up here.', form)+
+    var reqs=data.news.filter(function(x){ return x.status==='pending'; }).sort(function(a,c){ return (c.createdAt||'').localeCompare(a.createdAt||''); });
+    var reqHtml=reqs.length ? reqs.map(function(x){ return '<div class="card" style="display:grid;gap:.5rem;border-color:var(--ochre)"><div style="display:flex;justify-content:space-between;gap:.5rem;flex-wrap:wrap"><span><strong>'+esc(x.company||'')+'</strong> <span class="small muted">'+esc(x.who||'')+' · '+esc(x.kindLabel||x.kind||'')+' · '+fmtPhone(x.phone)+' · '+when(x.createdAt)+'</span></span><span class="tag tag-ochre">Waiting for approval</span></div>'+(x.img?'<img src="'+x.img+'" alt="" style="width:100%;max-width:36rem;aspect-ratio:3/1;object-fit:cover;border-radius:10px">':'<span class="small muted">No picture: newsletter text only.</span>')+'<strong>'+esc(x.title||'')+'</strong><p style="margin:0">'+esc(x.text||'')+'</p><div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center"><button class="btn btn-primary btn-sm" type="button" data-publish="'+x.id+'">Approve and publish</button><input placeholder="Reason, if you reject" data-nreason="'+x.id+'" style="font:inherit;font-size:.85rem;padding:.35rem .5rem;border:1.5px solid var(--line);border-radius:8px"><button class="btn btn-ghost btn-sm" type="button" data-nreject="'+x.id+'">Reject</button></div></div>'; }).join('') : '<div class="empty">No requests waiting.</div>';
+    return card('Requests to advertise · '+reqs.length, 'Sent from the Newsletter page by brands, suppliers and contractors.', reqHtml)+card(ed?'Edit promotion':'Add a promotion', 'A slide with the picture, the company and one headline. It appears within seconds on the home page, in every member\'s workspace and on the newsletter page. Brands, suppliers and contractors who pay for a slide are set up here.', form)+
       card('Current promotions', 'Edit the text, pause, or delete when the paid period ends.', rows)+
       (newsRows?card('Newsletter items with a picture', 'Published newsletter items that carry a picture are also slides.', newsRows):'')+
       card('Example banners', 'Placeholders for the test site. Hide them once real promotions are in.', ex);
@@ -266,7 +303,7 @@
     if(t.id==='prCancel'){ promoEditing=null; promoPic=''; render(); return; }
     var pe=t.closest('[data-pedit]'); if(pe){ promoEditing=pe.dataset.pedit; promoPic=''; render(); window.scrollTo({top:0,behavior:'smooth'}); return; }
     var pt=t.closest('[data-ptoggle]'); if(pt){ var x=(data.promotions||[]).filter(function(y){ return y.id===pt.dataset.ptoggle; })[0]; if(x){ await BS.update('promotions', x.id, {active: x.active===false}); } return; }
-    var pd=t.closest('[data-pdel]'); if(pd){ if(!confirm('Delete this promotion? It disappears from the slideshow on every device.')) return; await BS.remove('promotions', pd.dataset.pdel); bsToast('Deleted.'); return; }
+    var pd=t.closest('[data-pdel]'); if(pd){ if(!(await bsConfirm('Delete this promotion?','It disappears from the slideshow on every device.','Delete'))) return; await BS.remove('promotions', pd.dataset.pdel); bsToast('Deleted.'); return; }
     var pn=t.closest('[data-pnewsrm]'); if(pn){ await BS.update('news', pn.dataset.pnewsrm, {img:''}); bsToast('Removed from the slides. The newsletter text stays.'); return; }
     var px=t.closest('[data-pex]'); if(px){ var hid=(BS.ADS_HIDDEN||[]).slice(); var k=px.dataset.pex; if(hid.indexOf(k)>=0) hid=hid.filter(function(z){ return z!==k; }); else hid.push(k); await BS.set('settings','ads',{hidden:hid, setBy:staffName()}); return; }
   });
@@ -276,27 +313,46 @@
 
   var adNwPicData='';
   $('adBody').addEventListener('change', async function(e){ if(e.target.id!=='adNwPic') return; var f=e.target.files&&e.target.files[0]; if(!f) return; try{ adNwPicData=await fitPicture(f, 1200, 400); $('adNwPicMsg').textContent='Picture ready: '+f.name; }catch(err){ $('adNwPicMsg').textContent='That file could not be read.'; } });
+  var nwEdit=null, neImg='';
+  $('adBody').addEventListener('change', async function(e){ if(e.target.id!=='neImg') return; var f=e.target.files&&e.target.files[0]; if(!f) return; neImg=await fitPicture(f, 1200, 400); render(); });
+  $('adBody').addEventListener('click', async function(e){
+    var ed=e.target.closest('[data-nedit]'); if(ed){ nwEdit=ed.dataset.nedit; neImg=''; render(); return; }
+    if(e.target.closest('[data-necancel]')){ nwEdit=null; neImg=''; render(); return; }
+    var sv=e.target.closest('[data-nesave]'); if(sv){ var patch={editedBy:staffName(), editedAt:new Date().toISOString()}; document.querySelectorAll('[data-ne]').forEach(function(i){ patch[i.dataset.ne]=i.value.trim(); }); if(neImg) patch.img=neImg; await BS.update('news', sv.dataset.nesave, patch); nwEdit=null; neImg=''; bsToast('Saved. Members see the new version.'); return; }
+    var ir=e.target.closest('[data-neimgrm]'); if(ir){ await BS.update('news', ir.dataset.neimgrm, {img:''}); bsToast('Picture removed; the item is no longer in the slideshow.'); return; }
+  });
   function renderNews(){
     var pend=data.news.filter(function(x){ return x.status==='pending'; }), pub=data.news.filter(function(x){ return x.status==='published'; }).sort(function(a,c){ return (c.createdAt||'').localeCompare(a.createdAt||''); });
     var KIND={news:'Newsletter item', feature:'Featured supplier', pulse:'Price pulse tile', banner:'Member banner', directory:'Directory highlight', platform:'From Build Smartly'};
-    var item=function(x, actions){ return '<div class="doc" style="grid-template-columns:'+(x.img?'8rem ':'')+'1fr auto">'+(x.img?'<img src="'+x.img+'" alt="" style="width:8rem;aspect-ratio:3/1;object-fit:cover;border-radius:6px">':'')+'<span><span class="tag '+(x.kind==='platform'?'tag-green':'tag-ochre')+'">'+esc(KIND[x.kind]||x.kind)+'</span> <span class="small muted">'+esc(x.who||'')+(x.who?' · ':'')+esc(x.company)+' · '+fmtPhone(x.phone)+' · '+when(x.createdAt)+(x.issue?' · '+esc(x.issue):'')+'</span><br><strong>'+esc(x.title)+'</strong><br><span class="small">'+esc(x.text)+'</span></span><span style="display:flex;gap:.4rem;flex-wrap:wrap">'+actions+'</span></div>'; };
+    var item=function(x, actions){ if(nwEdit===x.id) return '<div class="doc" style="grid-template-columns:1fr;gap:.5rem"><div class="grid3"><div class="field"><label>Company</label><input data-ne="company" value="'+esc(x.company)+'"></div><div class="field"><label>Headline</label><input data-ne="title" value="'+esc(x.title)+'"></div><div class="field"><label>New picture (optional)</label><label class="btn btn-ghost btn-sm" style="cursor:pointer;justify-self:start">Choose<input type="file" accept="image/*" hidden id="neImg"></label></div></div><div class="field"><label>Text</label><textarea data-ne="text" rows="3" style="font:inherit;padding:.5rem;border:1.5px solid var(--line);border-radius:10px">'+esc(x.text)+'</textarea></div>'+((neImg||x.img)?'<img src="'+(neImg||x.img)+'" alt="" style="width:100%;max-width:30rem;aspect-ratio:3/1;object-fit:cover;border-radius:8px">':'')+'<div style="display:flex;gap:.4rem"><button class="btn btn-primary btn-sm" type="button" data-nesave="'+x.id+'">Save changes</button><button class="btn btn-ghost btn-sm" type="button" data-necancel>Cancel</button>'+(x.img?'<button class="btn btn-ghost btn-sm" type="button" data-neimgrm="'+x.id+'">Remove picture</button>':'')+'</div></div>';
+      return '<div class="doc" style="grid-template-columns:'+(x.img?'12rem ':'')+'1fr auto">'+(x.img?'<img src="'+x.img+'" alt="" style="width:12rem;aspect-ratio:3/1;object-fit:cover;border-radius:6px">':'')+'<span><span class="tag '+(x.kind==='platform'?'tag-green':'tag-ochre')+'">'+esc(KIND[x.kind]||x.kind)+'</span> <span class="small muted">'+esc(x.who||'')+(x.who?' · ':'')+esc(x.company)+' · '+fmtPhone(x.phone)+' · '+when(x.createdAt)+(x.issue?' · '+esc(x.issue):'')+'</span><br><strong>'+esc(x.title)+'</strong><br><span class="small">'+esc(x.text)+'</span></span><span style="display:flex;gap:.4rem;flex-wrap:wrap">'+actions+'</span></div>'; };
     return card('Items to check', 'Check the text (no phone numbers, addresses or prices), then publish. Finance invoices the placement.', pend.length? '<div class="docs">'+pend.map(function(x){ return item(x, '<button class="btn btn-primary btn-sm" type="button" data-publish="'+x.id+'">Publish</button><button class="btn btn-ghost btn-sm" type="button" data-unpublish="'+x.id+'">Reject</button>'); }).join('')+'</div>' : '<div class="empty">Nothing pending.</div>')+
       card('Write an item or set up a banner','Platform news, or a banner for a brand, a supplier or a contractor who asked you to set it up. With a picture it also appears in the slideshow on the home page and in every workspace.','<div class="grid3"><div class="field"><label for="adNwWho">On behalf of</label><select id="adNwWho"><option>Build Smartly</option><option>Brand or manufacturer</option><option>Supplier</option><option>Contractor or developer</option></select></div><div class="field"><label for="adNwCompany">Company or brand</label><input id="adNwCompany" placeholder="e.g. Dangote Cement Ethiopia" value="Build Smartly"></div><div class="field"><label for="adNwKind">Placement</label><select id="adNwKind"><option value="platform">Platform notice</option><option value="news">Newsletter item</option><option value="feature">Featured supplier</option></select></div></div><div class="field"><label for="adNwTitle">Headline</label><input id="adNwTitle" maxlength="90"></div><div class="field"><label for="adNwText">Text</label><textarea id="adNwText" rows="2" maxlength="300" style="font:inherit;font-size:.95rem;padding:.6rem;border:1.5px solid var(--line);border-radius:10px;background:var(--white);color:var(--fg);width:100%"></textarea></div><div class="field"><label>Banner picture (optional, 3:1 works best)</label><div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap"><label class="btn btn-ghost btn-sm" style="cursor:pointer">Choose a picture<input type="file" accept="image/*" hidden id="adNwPic"></label><span class="small muted" id="adNwPicMsg">'+(adNwPicData?'Picture ready.':'No picture yet.')+'</span></div></div><div><button class="btn btn-primary btn-sm" type="button" id="adNwSend">Publish in the '+issueLabel()+' issue</button></div>')+
-      card('Published · '+issueLabel(),'What members see under Newsletter, on top of the example issue.', pub.length? '<div class="docs">'+pub.map(function(x){ return item(x, '<button class="btn btn-ghost btn-sm" type="button" data-unpublish="'+x.id+'">Take down</button>'); }).join('')+'</div>' : '<div class="empty">Nothing published yet.</div>');
+      card('Published · '+issueLabel(),'What members see under Newsletter, on top of the example issue.', pub.length? '<div class="docs">'+pub.map(function(x){ return item(x, '<button class="btn btn-ghost btn-sm" type="button" data-nedit="'+x.id+'">Edit</button><button class="btn btn-ghost btn-sm" type="button" data-unpublish="'+x.id+'">Take down</button>'); }).join('')+'</div>' : '<div class="empty">Nothing published yet.</div>');
   }
   $('adBody').addEventListener('click', async function(e){
+    var nr=e.target.closest('[data-nreject]'); if(nr){ var why=(document.querySelector('[data-nreason="'+nr.dataset.nreject+'"]')||{}).value||'Does not follow the advertising rules'; await BS.update('news', nr.dataset.nreject, {status:'rejected', reason:why, by:staffName(), reviewedAt:new Date().toISOString()}); bsToast('Rejected. The sender is told why.'); return; }
     var p=e.target.closest('[data-publish]'); if(p){ p.disabled=true; await BS.update('news', p.dataset.publish, {status:'published', issue:issueLabel(), publishedAt:new Date().toISOString(), by:staffName()}); bsToast('Published. Members see it under Newsletter.'); return; }
-    var u=e.target.closest('[data-unpublish]'); if(u){ u.disabled=true; await BS.update('news', u.dataset.unpublish, {status:'rejected', by:staffName()}); bsToast('Taken down.'); return; }
+    var u=e.target.closest('[data-unpublish]'); if(u){ if(!(await bsConfirm('Take this item down?','It disappears from the newsletter and the slideshow.','Take it down'))) return; await BS.update('news', u.dataset.unpublish, {status:'taken down', by:staffName()}); bsToast('Taken down.'); return; }
     if(e.target.id==='adNwSend'){ var t=$('adNwTitle').value.trim(), x=$('adNwText').value.trim(), co=$('adNwCompany').value.trim()||'Build Smartly', who=$('adNwWho').value, kind=$('adNwKind').value; if(!t||!x){ bsToast('Headline and text are needed.'); return; } e.target.disabled=true; await BS.add('news', {company:co, who:who==='Build Smartly'?'Build Smartly':who, kind:kind, title:t, text:x, img:adNwPicData||'', phone:'', status:'published', issue:issueLabel(), by:staffName()}); adNwPicData=''; bsToast('Published.'+(x&&adNwPicData===''?'':'')); }
   });
 
+  /* member profiles: everything the member sent, pictures included; approve to publish, reject with a reason */
   function renderMembers(){
-    var list=data.profiles.slice().sort(function(a,c){ return (c.updatedAt||'').localeCompare(a.updatedAt||''); });
-    return card('Member profiles','Profiles members asked to publish in the directory. Hide one that breaks the rules (phone numbers, addresses, prices in the text or pictures).', list.length? '<div class="docs">'+list.map(function(p){ var hidden=p.status==='hidden'; return '<div class="doc"><span class="ico">'+esc((p.name||'?').slice(0,2).toUpperCase())+'</span><span><strong>'+esc(p.name)+'</strong> <span class="small muted">'+(p.kind==='supplier'?'Supplier':'Buyer')+' · '+fmtPhone(p.phone)+' · '+(p.publish?'wants it published':'not published')+'</span><br><span class="small">'+esc(p.intro||'(no introduction)')+'</span></span><span>'+(hidden?'<button class="btn btn-ghost btn-sm" type="button" data-show="'+p.id+'">Show again</button>':'<button class="btn btn-ghost btn-sm" type="button" data-hide="'+p.id+'">Hide</button>')+'</span></div>'; }).join('')+'</div>' : '<div class="empty">No member profiles yet. The seeded suppliers on the Members page are part of the site itself.</div>');
+    var list=data.profiles.slice().sort(function(a,c){ return (a.status==='pending'?0:1)-(c.status==='pending'?0:1) || (c.updatedAt||'').localeCompare(a.updatedAt||''); });
+    var one=function(p){ var st=p.status||'pending';
+      return '<div class="card" style="display:grid;gap:.5rem;'+(st==='pending'?'border-color:var(--ochre)':'')+'"><div style="display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap;align-items:center"><span><strong>'+esc(p.name||'?')+'</strong> <span class="small muted">'+(p.kind==='supplier'?'Supplier':'Buyer')+' · '+fmtPhone(p.phone)+' · '+when(p.updatedAt||p.createdAt)+'</span></span>'+(st==='pending'?'<span class="tag tag-ochre">Waiting for approval</span>':st==='approved'?'<span class="tag tag-green">Published</span>':st==='rejected'?'<span class="tag">Rejected</span>':'<span class="tag">Hidden</span>')+'</div>'+
+        (p.cats&&p.cats.length?'<div class="small">Supplies: '+esc(p.cats.join(', '))+'</div>':'')+'<p style="margin:0">'+esc(p.intro||'(no introduction)')+'</p>'+
+        ((p.pics||[]).length?'<div style="display:flex;gap:.4rem;flex-wrap:wrap">'+p.pics.map(function(u){ return '<img src="'+u+'" alt="" style="width:9rem;aspect-ratio:4/3;object-fit:cover;border-radius:8px">'; }).join('')+'</div>':'')+
+        (p.reason?'<div class="small muted">Reason given: '+esc(p.reason)+'</div>':'')+
+        '<div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center">'+(st!=='approved'?'<button class="btn btn-primary btn-sm" type="button" data-papprove="'+p.id+'">Approve and publish</button>':'<button class="btn btn-ghost btn-sm" type="button" data-hide="'+p.id+'">Hide</button>')+(st==='pending'?'<input placeholder="Reason, if you reject" data-preason="'+p.id+'" style="font:inherit;font-size:.85rem;padding:.35rem .5rem;border:1.5px solid var(--line);border-radius:8px"><button class="btn btn-ghost btn-sm" type="button" data-preject="'+p.id+'">Reject</button>':'')+'</div></div>'; };
+    var pend=list.filter(function(p){ return (p.status||'pending')==='pending'; }), rest=list.filter(function(p){ return (p.status||'pending')!=='pending'; });
+    return card('Profiles to approve · '+pend.length, 'Check text and pictures: no phone numbers, addresses or prices.', pend.length?pend.map(one).join(''):'<div class="empty">Nothing to approve.</div>')+card('All member profiles','', rest.length?rest.map(one).join(''):'<div class="empty">None yet.</div>');
   }
   $('adBody').addEventListener('click', async function(e){
+    var ap=e.target.closest('[data-papprove]'); if(ap){ await BS.update('profiles', ap.dataset.papprove, {status:'approved', reviewedAt:new Date().toISOString(), by:staffName(), reason:''}); bsToast('Published in the Members directory. The member is told.'); return; }
+    var rj=e.target.closest('[data-preject]'); if(rj){ var r=(document.querySelector('[data-preason="'+rj.dataset.preject+'"]')||{}).value||'Does not follow the profile rules'; await BS.update('profiles', rj.dataset.preject, {status:'rejected', reason:r, reviewedAt:new Date().toISOString(), by:staffName()}); bsToast('Rejected. The member is told why.'); return; }
     var h=e.target.closest('[data-hide]'); if(h){ await BS.update('profiles', h.dataset.hide, {status:'hidden', by:staffName()}); bsToast('Hidden from the directory.'); return; }
-    var s=e.target.closest('[data-show]'); if(s){ await BS.update('profiles', s.dataset.show, {status:'approved', by:staffName()}); bsToast('Visible again.'); return; }
   });
 
   function renderFinance(){
@@ -369,10 +425,31 @@
   var catDraft=null, catEditing=null;
   function catItems(){ if(!catDraft) catDraft=BS.CATALOGUE.map(function(c){ return Object.assign({}, c, {units:(c.units||[c.unit]).slice()}); }); return catDraft; }
   var STAGES=[['foundation','Foundation'],['structure','Structure'],['services','Electrical and plumbing'],['finishing','Finishing'],['equipment','Equipment rental']];
+  /* Brands page: one category at a time, a row per brand with its logo; add, change logo, remove, then Save */
+  var brandCat=null;
+  function renderBrandsTab(){
+    var m=brandsNow(), L=logosNow(); if(!brandCat || CATS.indexOf(brandCat)<0) brandCat=CATS[0];
+    var list=(m[brandCat]||[]);
+    var chips='<div class="subtabs">'+CATS.map(function(c){ return '<button type="button" class="'+(c===brandCat?'on':'')+'" data-bcat="'+esc(c)+'">'+esc(c)+' · '+(m[c]||[]).length+'</button>'; }).join('')+'</div>';
+    var rows=list.length ? list.map(function(b){ return '<div class="doc" style="grid-template-columns:6rem 1fr auto"><span style="width:6rem;height:3rem;border:1px solid var(--line);border-radius:8px;display:grid;place-items:center;background:#fff;overflow:hidden">'+(L[b]?'<img src="'+L[b]+'" alt="" style="max-width:100%;max-height:100%">':'<span class="small muted">no logo</span>')+'</span><strong>'+esc(b)+'</strong><span style="display:flex;gap:.3rem;flex-wrap:wrap"><label class="btn btn-ghost btn-sm" style="cursor:pointer">'+(L[b]?'Change logo':'Add logo')+'<input type="file" accept="image/*" hidden data-blogo="'+esc(b)+'"></label><button class="btn btn-ghost btn-sm" type="button" data-bdel="'+esc(b)+'">Remove</button></span></div>'; }).join('') : '<div class="empty">No brands in this category yet.</div>';
+    var add='<div class="chat-in"><div class="field"><input id="bNew" placeholder="New brand in '+esc(brandCat)+'"></div><label class="btn btn-ghost btn-sm" style="cursor:pointer">Logo<input type="file" accept="image/*" hidden id="bNewLogo"></label><button class="btn btn-primary btn-sm" type="button" id="bAdd">Add</button></div><span class="small muted" id="bNewMsg"></span>';
+    return card('Brands', 'Suppliers pick a brand when they quote; buyers see the brand and its logo, never the supplier, until the order.', chips+'<div class="docs">'+rows+'</div>'+add+'<div style="display:flex;gap:.5rem;align-items:center"><button class="btn btn-primary" type="button" id="adSaveBrands">Save brands</button><span class="small muted" id="adBrandMsg">Changes apply on every device once saved.</span></div>');
+  }
+  var bNewLogo='';
+  $('adBody').addEventListener('click', async function(e){
+    var bc=e.target.closest('[data-bcat]'); if(bc){ brandCat=bc.dataset.bcat; render(); return; }
+    var bd=e.target.closest('[data-bdel]'); if(bd){ var m=brandsNow(); m[brandCat]=m[brandCat].filter(function(x){ return x!==bd.dataset.bdel; }); render(); return; }
+    if(e.target.id==='bAdd'){ var v=$('bNew').value.trim(); if(!v){ bsToast('Type the brand name.'); return; } var m2=brandsNow(); if(m2[brandCat].indexOf(v)<0) m2[brandCat].splice(Math.max(0,m2[brandCat].length-(m2[brandCat][m2[brandCat].length-1]==='Other'?1:0)),0,v); if(bNewLogo){ logosNow()[v]=bNewLogo; bNewLogo=''; } render(); return; }
+  });
+  $('adBody').addEventListener('change', async function(e){
+    var bl=e.target.closest('[data-blogo]'); var f=e.target.files&&e.target.files[0];
+    if(bl && f){ try{ logosNow()[bl.dataset.blogo]=await fitLogo(f,240,120); brandsNow(); render(); }catch(err){ bsToast('Use a JPG or PNG.'); } return; }
+    if(e.target.id==='bNewLogo' && f){ try{ bNewLogo=await fitLogo(f,240,120); $('bNewMsg').textContent='Logo ready: '+f.name; }catch(err){ bsToast('Use a JPG or PNG.'); } }
+  });
   function brandsCard(){ return card('Brands', 'Why this matters: a supplier picks a brand from this list when quoting, and the buyer sees the brand instead of the supplier name until the purchase order. Keep one list per category so offers compare like with like. Add a logo and it shows next to the brand on every offer.', brandsHtml()+'<div><button class="btn btn-primary btn-sm" type="button" id="adSaveBrands">Save brands</button> <span class="small muted" id="adBrandMsg"></span></div>'); }
   var catSub='items';
   function renderCatalogue(){
-    var tabs=[['items','Items'],['brands','Brands'],['add','Add an item or a category']];
+    var tabs=[['items','Items'],['add','Add an item or a category']];
     var bar='<div class="subtabs" style="margin-bottom:.2rem">'+tabs.map(function(t){ return '<button type="button" class="'+(catSub===t[0]?'on':'')+'" data-catsub="'+t[0]+'">'+t[1]+'</button>'; }).join('')+'</div>';
     var parts=renderCatalogueItems();
     return bar+(catSub==='brands'?brandsCard():catSub==='add'?parts.add:parts.items);
@@ -401,11 +478,22 @@
     if(t.id==='catSave'){ t.disabled=true; await BS.set('settings','catalogue',{items:items, setBy:staffName()}); catDraft=null; catEditing=null; bsToast('Catalogue saved. Buyers see it at once.'); return; }
     if(t.id==='catReset'){ catDraft=null; catEditing=null; render(); return; }
   });
+  function isOwner(){ return /owner/i.test(staffName()); }
+  $('adBody').addEventListener('click', async function(e){
+    if(e.target.id!=='adReset' || !isOwner()) return;
+    if(!(await bsConfirm('Clear all test data?','Every request, offer, order, message, problem, newsletter item, promotion, profile, task and supplier change is deleted for everyone. This cannot be undone.','Yes, clear it'))) return;
+    if(!(await bsConfirm('Are you sure?','Last check before deleting.','Delete everything'))) return;
+    var cols=['boqs','offers','messages','issues','news','promotions','verifications','profiles','suppliers','tasks'], n=0; e.target.disabled=true;
+    for(var i=0;i<cols.length;i++){ var docs=(data[cols[i]]||[]).slice(); for(var j=0;j<docs.length;j++){ await BS.remove(cols[i], docs[j].id); n++; $('adResetMsg').textContent='Deleted '+n+'…'; } }
+    try{ Object.keys(localStorage).forEach(function(k){ if(/^bs_demo_(draft|prices_|supprofile_|locs)|^bs_bell_seen_/.test(k)) localStorage.removeItem(k); }); }catch(err){}
+    e.target.disabled=false; $('adResetMsg').textContent='Done: '+n+' records deleted.'; bsToast('Test data cleared. The site starts clean.');
+  });
   function renderSettings(){
     var T=BS.TRUCK, I=BS.INSURANCE;
     var f=function(id,label,val,step){ return '<div class="field"><label for="'+id+'">'+label+'</label><input id="'+id+'" type="number" step="'+(step||1)+'" value="'+val+'"></div>'; };
     return card('Tariffs and rules', 'Example figures until the owner sets them. Saved for every device'+(BS.tariffsSetBy?' · last set by '+esc(BS.tariffsSetBy):'')+'.',
       '<div class="grid3">'+f('tPerTrip','Truck: fixed cost per trip (ETB)',T.perTrip)+f('tPerKm','Truck: cost per km (ETB)',T.perKm)+f('tCap','Truck capacity (tonnes)',T.capacityT)+f('tMob','Equipment mobilisation per hire (ETB)',T.mobilisation)+f('tInsRate','Transit insurance rate (% of goods)',Math.round(I.rate*1000)/10,0.1)+f('tInsMin','Insurance minimum (ETB)',I.min)+f('tFee','Platform fee (% of each sale)',Math.round(BS.FEE_RATE*1000)/10,0.1)+f('tLead','Minimum needed-by lead time (days)',BS.MIN_LEAD_DAYS)+f('tValid','Days suppliers have to reply',BS.VALIDITY_DAYS)+'</div><div><button class="btn btn-primary btn-sm" type="button" id="adSaveTariffs">Save tariffs</button> <span class="small muted" id="adTariffMsg"></span></div>')+
+      (isOwner()?card('Clear test data','Owner only. Deletes every request, offer, order, message, problem, newsletter item, promotion, profile, task and supplier change, on every device. Tariffs, catalogue, brands and pictures stay.','<div><button class="btn btn-ghost" type="button" id="adReset" style="color:#9b2c2c;border-color:#9b2c2c">Clear all test data</button> <span class="small muted" id="adResetMsg"></span></div>'):'')+
       card('Site pictures','Replace the drawn placeholders with real photos. JPG or PNG from your computer or phone; the picture is resized and cropped to fit and shown on every device within seconds. Use photos you have the right to use (your own, or free-licence stock photos).',
         '<div class="docs">'+BS.PIC_SLOTS.map(function(sl){ var cur=BS.PICS[sl.key]; var def='assets/photos/'+sl.key+'.jpg'; return '<div class="doc" style="grid-template-columns:7rem 1fr auto"><img src="'+(cur||def)+'" alt="" style="width:7rem;aspect-ratio:'+sl.w+'/'+sl.h+';object-fit:cover;border-radius:'+(sl.w===sl.h?'50%':'6px')+'"><span><strong>'+esc(sl.label)+'</strong><br><span class="small muted">'+sl.w+' × '+sl.h+' px · '+(cur?'photo set by staff':'site photo')+'</span></span><span style="display:flex;gap:.4rem;flex-wrap:wrap"><label class="btn btn-primary btn-sm" style="cursor:pointer">'+(cur?'Replace':'Upload photo')+'<input type="file" accept="image/*" hidden data-pic-up="'+sl.key+'"></label>'+(cur?'<button class="btn btn-ghost btn-sm" type="button" data-pic-rm="'+sl.key+'">Remove</button>':'')+'</span></div>'; }).join('')+'</div><p class="small muted" id="adPicMsg"></p>');
   }

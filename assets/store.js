@@ -67,27 +67,20 @@
   BS.UNITS = ["pcs","bag","quintal","ton","kg","m³","truckload","m²","m","litre","bucket","roll","sheet","box","bundle","package","trip","hour","day"]; /* free-text items only; catalogue items carry their own units and an example minimum order */
   BS.CATEGORIES = ["Cement","Aggregates and fill","Reinforcement steel","Blocks, bricks and stone","Structural steel and roofing","Formwork, timber and scaffolding","Finishing: tiles and floors","Finishing: paint and plaster","Plumbing and sanitary","Electrical","Equipment rental","Other (staff will classify)"];
   BS.DESKS = {"Cement":"Structural materials desk","Aggregates and fill":"Structural materials desk","Blocks, bricks and stone":"Structural materials desk","Reinforcement steel":"Steel desk","Structural steel and roofing":"Steel desk","Formwork, timber and scaffolding":"Timber and equipment desk","Equipment rental":"Timber and equipment desk","Finishing: tiles and floors":"Finishing desk","Finishing: paint and plaster":"Finishing desk","Plumbing and sanitary":"Services desk","Electrical":"Services desk","Other (staff will classify)":"Technical supervisor"};
-  /* Suppliers on the test site. auto:true suppliers answer requests by themselves (the test site simulates them);
-     the named ones are played by the shareholders. Names are realistic distributors, not real companies. */
+  /* Suppliers on the test site (decided 27 Oct 2026): two suppliers that cover every category, so every request reaches
+     both and the buyer can compare two offers per line. Nobody answers automatically; the testers play both suppliers.
+     Staff can add more suppliers from the staff page. */
+  BS.ALL_CATS = ["Cement","Aggregates and fill","Reinforcement steel","Blocks, bricks and stone","Structural steel and roofing","Formwork, timber and scaffolding","Finishing: tiles and floors","Finishing: paint and plaster","Plumbing and sanitary","Electrical","Equipment rental"];
   BS.SUPPLIERS = [
-    {id:"derba", name:"Kality Cement Distributors PLC", branch:"Kality warehouse", sub:"Akaki Kaliti", cats:["Cement","Aggregates and fill"], auto:true},
-    {id:"mugher", name:"Kirkos Building Materials Trading", branch:"Kirkos store", sub:"Kirkos", cats:["Cement"], auto:true},
-    {id:"national", name:"Akaki Cement & Blocks Depot", branch:"Akaki Kaliti yard", sub:"Akaki Kaliti", cats:["Cement","Blocks, bricks and stone"], auto:true},
-    {id:"addissteel", name:"Addis Steel & Rebar Trading", branch:"Akaki yard", sub:"Akaki Kaliti", cats:["Reinforcement steel","Structural steel and roofing"], auto:true},
-    {id:"sheger", name:"Sheger Steel Trading", branch:"Lideta warehouse", sub:"Lideta", cats:["Reinforcement steel","Structural steel and roofing"], auto:true},
-    {id:"megablocks", name:"Mega Blocks PLC", branch:"Lemi Kura plant", sub:"Lemi Kura", cats:["Blocks, bricks and stone","Aggregates and fill","Formwork, timber and scaffolding"], auto:true},
-    {id:"gullele", name:"Gullele Aggregates", branch:"Gullele quarry", sub:"Gullele", cats:["Aggregates and fill","Equipment rental"], auto:true},
-    {id:"yerer", name:"Yerer Equipment Rental", branch:"Bole Lemi depot", sub:"Bole", cats:["Equipment rental"], auto:true},
-    {id:"habesha", name:"Habesha Finishing Supplies", branch:"Merkato shop", sub:"Addis Ketema", cats:["Finishing: tiles and floors","Finishing: paint and plaster"], auto:true},
-    {id:"electroplumb", name:"Ethio Electro-Plumb Supplies", branch:"Piassa store", sub:"Arada", cats:["Electrical","Plumbing and sanitary"], auto:true},
-    {id:"ethiobuild", name:"Ethio Build Mart", branch:"Megenagna showroom and yard", sub:"Yeka", cats:["Cement","Aggregates and fill","Reinforcement steel","Blocks, bricks and stone","Structural steel and roofing","Formwork, timber and scaffolding","Finishing: tiles and floors","Finishing: paint and plaster","Plumbing and sanitary","Electrical","Equipment rental"], auto:true},
-    {id:"addissupplies", name:"Addis Construction Supplies PLC", branch:"Kaliti main store", sub:"Akaki Kaliti", cats:["Cement","Aggregates and fill","Reinforcement steel","Blocks, bricks and stone","Structural steel and roofing","Formwork, timber and scaffolding","Finishing: tiles and floors","Finishing: paint and plaster","Plumbing and sanitary","Electrical","Equipment rental"], auto:true},
-    /* played by the shareholders */
-    {id:"abdullah-s", name:"Abdullah Cement & Aggregates PLC", branch:"Akaki Kaliti depot", sub:"Akaki Kaliti", cats:["Cement","Aggregates and fill"]},
-    {id:"fahad-s", name:"Fahad Steel Trading PLC", branch:"Kality yard", sub:"Akaki Kaliti", cats:["Reinforcement steel","Structural steel and roofing"]},
-    {id:"osama-s", name:"Osama Blocks & Building Materials", branch:"Lemi Kura plant", sub:"Lemi Kura", cats:["Blocks, bricks and stone","Aggregates and fill","Cement"]},
-    {id:"haji-s", name:"Haji Equipment Rental & Transport", branch:"Bole Lemi depot", sub:"Bole", cats:["Equipment rental","Formwork, timber and scaffolding"]},
-    {id:"faiz-s", name:"Faiz Electrical & Plumbing Supplies", branch:"Piassa store", sub:"Arada", cats:["Electrical","Plumbing and sanitary","Finishing: paint and plaster"]}
+    {id:"kality", name:"Kality Building Materials PLC", branch:"Kality main yard", sub:"Akaki Kaliti", cats:BS.ALL_CATS.slice()},
+    {id:"megenagna", name:"Megenagna Construction Supplies PLC", branch:"Megenagna store", sub:"Yeka", cats:BS.ALL_CATS.slice()},
+    /* background suppliers (no login): they quote by themselves a few minutes after a request, with their own prices and
+       brands, so every line has several offers to compare. They answer counter-offers and move their orders along. */
+    {id:"derba", name:"Kality Cement Distributors PLC", branch:"Kality warehouse", sub:"Akaki Kaliti", cats:["Cement","Aggregates and fill","Blocks, bricks and stone"], auto:true, factor:0.97},
+    {id:"addissteel", name:"Addis Steel & Rebar Trading", branch:"Akaki yard", sub:"Akaki Kaliti", cats:["Reinforcement steel","Structural steel and roofing","Formwork, timber and scaffolding"], auto:true, factor:1.02},
+    {id:"habesha", name:"Habesha Finishing Supplies", branch:"Merkato shop", sub:"Addis Ketema", cats:["Finishing: tiles and floors","Finishing: paint and plaster","Plumbing and sanitary","Electrical"], auto:true, factor:0.99},
+    {id:"yerer", name:"Yerer Equipment Rental", branch:"Bole Lemi depot", sub:"Bole", cats:["Equipment rental"], auto:true, factor:0.95},
+    {id:"ethiobuild", name:"Ethio Build Mart", branch:"Megenagna showroom and yard", sub:"Yeka", cats:BS.ALL_CATS.slice(), auto:true, factor:1.05}
   ];
   /* Brands a supplier can pick per material category (admin-editable in the real app) */
   BS.BRANDS = {
@@ -106,40 +99,15 @@
   /* One fixed SMS code and supplier password for the test site (the real site sends a different code each time). */
   BS.DEMO_CODE = "123456";
   BS.DEMO_PASSWORD = "smartly";
-  /* Test logins: mobile number -> who you are. Each shareholder has a buyer login and a supplier login. */
+  /* Test logins (27 Oct 2026): one buyer, two suppliers, two staff (see BS.STAFF). Any other Ethiopian number becomes a new buyer. */
   BS.TEST_ACCOUNTS = [
-    {phone:"911000201", buyer:"Abdullah Construction PLC", person:"Abdullah"},
-    {phone:"911000202", buyer:"Fahad Developers PLC", person:"Fahad"},
-    {phone:"911000203", buyer:"Osama Building Works", person:"Osama"},
-    {phone:"911000204", buyer:"Haji General Contractors PLC", person:"Haji"},
-    {phone:"911000205", buyer:"Faiz Engineering PLC", person:"Faiz"},
-    {phone:"911000301", supplierId:"abdullah-s", person:"Abdullah"},
-    {phone:"911000302", supplierId:"fahad-s", person:"Fahad"},
-    {phone:"911000303", supplierId:"osama-s", person:"Osama"},
-    {phone:"911000304", supplierId:"haji-s", person:"Haji"},
-    {phone:"911000305", supplierId:"faiz-s", person:"Faiz"},
-    /* extra buyers for testing persons and government offices */
-    {phone:"911000100", buyer:"Tana Construction PLC"},
-    {phone:"911000101", buyer:"Bole Heights Developers"},
-    {phone:"911000102", buyer:"Abebe Kebede (person)"},
-    {phone:"911000103", buyer:"Addis Ababa Roads Authority (government)"},
-    /* the simulated suppliers can also be opened by staff */
-    {phone:"911000001", supplierId:"derba"},
-    {phone:"911000002", supplierId:"addissteel"},
-    {phone:"911000003", supplierId:"megablocks"},
-    {phone:"911000004", supplierId:"yerer"},
-    {phone:"911000005", supplierId:"habesha"},
-    {phone:"911000006", supplierId:"electroplumb"},
-    {phone:"911000007", supplierId:"mugher"},
-    {phone:"911000008", supplierId:"national"},
-    {phone:"911000009", supplierId:"sheger"},
-    {phone:"911000010", supplierId:"gullele"},
-    {phone:"911000011", supplierId:"ethiobuild"},
-    {phone:"911000012", supplierId:"addissupplies"}
+    {phone:"911000201", buyer:"Sheba Builders PLC", label:"Buyer"},
+    {phone:"911000301", supplierId:"kality", label:"Supplier A"},
+    {phone:"911000302", supplierId:"megenagna", label:"Supplier B"}
   ];
   /* Simulated suppliers: how many seconds after a request each one answers, and how the simulated supplier
      handles counter-offers and the order steps. Test site only. */
-  BS.AUTO = { replyAfter:[240,420,600,900], counterAfter:90, confirmAfter:120, readyAfter:300, dispatchAfter:300, acceptCounterAbove:0.96 };
+  BS.AUTO = { replyAfter:[60,120,180,240,300], counterAfter:90, confirmAfter:120, readyAfter:240, dispatchAfter:240, acceptCounterAbove:0.96 };
   /* Introductions for the simulated suppliers' public profiles (test site) */
   BS.SUPPLIER_INTRO = {
     derba:"Distributor of Derba and Dangote cement to contractors in Addis Ababa since 2014. Own fleet, deliveries within 24 hours inside the city.",
@@ -446,6 +414,24 @@
     });
     return out;
   };
+  /* ---- orders: one purchase order per supplier per request. Every offer in it carries the same poRef and the same
+     order-step timestamps, so the group moves through the steps together. ---- */
+  BS.offerTotal = function(o){ return (+o.qtyOffered||0)*(+o.unitPrice||0)+(+o.deliveryCost||0); };
+  BS.orderGroup = function(offers, o){ if(!o) return []; if(!o.poRef) return [o]; return offers.filter(function(x){ return x.poRef===o.poRef && x.boqId===o.boqId && x.status==='accepted'; }).sort(function(a,b){ return a.lineN-b.lineN; }); };
+  BS.orderGroups = function(offers, filter){
+    var by={}, out=[];
+    offers.forEach(function(o){ if(o.status!=='accepted' || (filter && !filter(o))) return; var k=o.boqId+'|'+(o.poRef||o.id); if(!by[k]){ by[k]={key:k, poRef:o.poRef, boqId:o.boqId, supplierId:o.supplierId, supplierName:o.supplierName, offers:[]}; out.push(by[k]); } by[k].offers.push(o); });
+    out.forEach(function(g){ g.offers.sort(function(a,b){ return a.lineN-b.lineN; }); g.first=g.offers[0]; g.id=g.first.id; });
+    return out.sort(function(a,b){ return (b.first.acceptedAt||'').localeCompare(a.first.acceptedAt||''); });
+  };
+  /* order steps in plain words; "under delivery" was dropped (meeting 27 Oct 2026) */
+  BS.ORDER_STEPS = [['acceptedAt','Order placed'],['confirmedAt','Supplier reconfirmed'],['contractAt','Contract agreed'],['readyAt','Ready for dispatch'],['dispatchedAt','Dispatched'],['deliveredAt','Delivered'],['paidAt','Paid']];
+  BS.orderStatus = function(o){
+    return o.paidAt ? {t:'Paid · closed', c:'tag-green', who:'none'} : o.deliveredAt ? {t:'Delivered · payment due', c:'tag-ochre', who:'buyer'} : o.dispatchedAt ? {t:'Dispatched', c:'tag-ochre', who:'buyer'}
+      : o.readyAt ? {t:'Ready for dispatch', c:'tag-green', who:'supplier'} : o.contractAt ? {t:'Contract agreed · preparing', c:'tag-green', who:'supplier'}
+      : o.supplierConfirmed ? {t:'Waiting for the buyer to agree to the contract', c:'tag-ochre', who:'buyer'} : {t:'Waiting for the supplier to reconfirm', c:'tag-ochre', who:'supplier'};
+  };
+  BS.updateMany = async function(col, ids, patch){ for(var i=0;i<ids.length;i++){ await BS.update(col, ids[i], typeof patch==='function'?patch(ids[i]):patch); } };
   BS.activeSuppliers = function(){ return BS.suppliersAll().filter(function(s){ return s.status==="active"; }); };
   BS.supplierById = function(id){ return BS.suppliersAll().filter(function(s){ return s.id===id; })[0] || BS.SUPPLIERS.filter(function(s){ return s.id===id; })[0] || null; };
   BS.supplierDoc = function(docId){ return (BS.supplierDocs||[]).filter(function(d){ return d.id===docId; })[0] || null; };

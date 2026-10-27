@@ -28,7 +28,7 @@
   --shadow:0 10px 30px rgba(0,0,0,.35); color-scheme:dark;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6}
+body{overflow-x:clip;margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6}
 h1,h2,h3{font-family:var(--display);line-height:1.12;margin:0;text-wrap:balance;letter-spacing:-.01em}
 h1{font-size:clamp(2rem,5vw,3.6rem);font-weight:800}
 h2{font-size:clamp(1.5rem,3.2vw,2.2rem);font-weight:700}
@@ -80,7 +80,7 @@ img{max-width:100%}
 .tabs button.on{color:var(--fg);border-bottom-color:var(--ochre)}
 .tabs button .badge{background:var(--green);color:#F6F7F4;border-radius:999px;font-size:.7rem;padding:.1rem .45rem;margin-left:.3rem}
 /* staff page: left navigation. Wide screens: a sidebar with icons and names, the three-line button folds it to icons only. Phones: the three-line button opens it as a drawer. */
-.adlayout{display:grid;grid-template-columns:13.5rem minmax(0,1fr);gap:1rem;align-items:start;position:relative}
+.adlayout{display:grid;grid-template-columns:13.5rem minmax(0,1fr);grid-template-rows:auto 1fr;gap:1rem;align-items:start;position:relative}
 .adlayout.fold{grid-template-columns:3.6rem minmax(0,1fr)}
 .adburger{grid-column:1;width:3.6rem;height:2.6rem;border:1px solid var(--line);background:var(--white);border-radius:10px;display:grid;place-items:center;gap:0;cursor:pointer;padding:.55rem .9rem;box-sizing:border-box}
 .adburger span{display:block;width:20px;height:2px;background:var(--fg);border-radius:2px}
@@ -121,7 +121,9 @@ header.site{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;backgrou
 .brand .mark{width:36px;height:36px;flex:none}
 .brand em{font-style:normal;color:var(--green)}
 .links{display:flex;gap:1.3rem;align-items:center;list-style:none;margin:0;padding:0;font-weight:600;font-size:.92rem}
-.links a{text-decoration:none;color:var(--fg-2)}
+.links a{text-decoration:none;color:var(--fg-2);white-space:nowrap}
+.brand span{white-space:nowrap}
+@media (max-width:1240px) and (min-width:901px){.links{gap:.9rem;font-size:.88rem}.links li:first-child{display:none}}
 .links a:hover{color:var(--fg)}
 .nav-cta{display:flex;gap:.5rem;align-items:center}
 .lang{font:inherit;font-size:.85rem;font-weight:600;border:1.5px solid var(--line);border-radius:999px;padding:.4rem .7rem;background:var(--white);color:var(--fg)}
@@ -175,7 +177,7 @@ footer.site .staff-link:hover{opacity:1;text-decoration:underline}
 .reveal{opacity:0;transform:translateY(22px);transition:opacity .75s ease,transform .75s cubic-bezier(.2,.8,.2,1)}
 .reveal.in{opacity:1;transform:none}
 @keyframes viewIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.view{animation:viewIn .4s ease both}
+.view{animation:viewIn .4s ease}
 .stats{background:var(--green-deep);color:var(--band-fg);padding-block:1.6rem;position:relative;overflow:hidden}
 .stats::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 120% at 10% 50%,rgba(227,166,58,.18),transparent 60%),radial-gradient(50% 120% at 90% 50%,rgba(246,247,244,.10),transparent 60%);pointer-events:none}
 .statsgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;position:relative}
@@ -211,6 +213,7 @@ footer.site .staff-link:hover{opacity:1;text-decoration:underline}
 .hmsg{max-width:92%;border-radius:14px;padding:.55rem .8rem;font-size:.9rem;line-height:1.45;background:var(--white);border:1px solid var(--line)}
 .hmsg.me{justify-self:end;background:color-mix(in srgb,var(--green) 12%,transparent);border-color:transparent}
 .hmsg .hlinks{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.4rem}
+.hmsg .hsend{font:inherit;font-size:.8rem;cursor:pointer;border:1px dashed var(--line);border-radius:999px;padding:.2rem .6rem;background:none;color:var(--fg-2)}
 .hmsg .hlinks a{font-size:.82rem;font-weight:600;text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:.2rem .6rem;background:var(--white)}
 .hchips{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.2rem}
 .hchips button{font:inherit;font-size:.8rem;border:1.5px solid var(--green);color:var(--green);background:var(--white);border-radius:999px;padding:.3rem .65rem;cursor:pointer}
@@ -269,7 +272,7 @@ footer.site .staff-link:hover{opacity:1;text-decoration:underline}
 .slide .head{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:.7rem}
 .slide .head .ctrl{display:flex;gap:.4rem}
 .slide .head button{border:1.5px solid var(--line);background:var(--white);color:var(--fg);border-radius:999px;width:34px;height:34px;cursor:pointer;display:grid;place-items:center}
-.track{display:flex;gap:.8rem;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:.2rem}
+.track{display:flex;gap:.8rem;overflow-x:auto;min-width:0;max-width:100%;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:.2rem}
 .track::-webkit-scrollbar{display:none}
 .tick{flex:0 0 240px;scroll-snap-align:start;background:var(--white);border:1px solid var(--line);border-radius:12px;padding:.8rem .95rem;display:grid;gap:.2rem;min-width:0}
 .tick .img{display:block;width:100%;height:84px;border-radius:8px;background:var(--bg-2);margin-bottom:.4rem;overflow:hidden}
@@ -404,7 +407,40 @@ footer.site .staff-link:hover{opacity:1;text-decoration:underline}
 .line{display:grid;grid-template-columns:2.2fr 1fr .9fr 1fr auto;gap:.6rem;align-items:end;background:var(--white);border:1px solid var(--line);border-radius:12px;padding:.8rem}
 .line .cat-tag{grid-column:1/-1;font-size:.78rem;color:var(--fg-2);display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
 .line .rm{background:none;border:1.5px solid var(--line);border-radius:10px;width:38px;height:42px;cursor:pointer;color:var(--fg-2)}
+.bell{position:relative}
+.bellbtn{position:relative;background:var(--white);border:1.5px solid var(--line);border-radius:999px;width:2.5rem;height:2.5rem;display:grid;place-items:center;cursor:pointer;color:var(--fg)}
+.bellbtn em{position:absolute;top:-4px;right:-4px;background:var(--ochre);color:#14241E;font-style:normal;font-weight:700;font-size:.7rem;border-radius:999px;min-width:1.2rem;height:1.2rem;display:grid;place-items:center;padding:0 .25rem}
+.bellpanel{position:absolute;right:0;top:calc(100% + .5rem);width:min(360px,calc(100vw - 2rem));max-height:70vh;overflow:auto;background:var(--white);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 40px rgba(0,0,0,.18);z-index:60;padding:.5rem}
+.bellhead{display:flex;justify-content:space-between;align-items:center;padding:.3rem .4rem .5rem}
+.bellitem{display:grid;gap:.15rem;padding:.55rem .6rem;border-radius:10px;text-decoration:none;color:inherit;border-left:3px solid transparent}
+.bellitem:hover{background:var(--bg)}
+.bellitem.new{border-left-color:var(--ochre);background:color-mix(in srgb,var(--ochre) 8%,transparent)}
+.bellitem .k{font-size:.72rem;color:var(--fg-2);text-transform:uppercase;letter-spacing:.06em}
+html{overflow-x:clip}
+.sup-pill{display:inline-flex;gap:.4rem;align-items:center;border:1px solid var(--ochre);background:color-mix(in srgb,var(--ochre) 8%,var(--white));border-radius:999px;padding:.2rem .3rem .2rem .7rem;font-size:.82rem}
+.sup-pill.ok{border-color:var(--green);background:color-mix(in srgb,var(--green) 7%,var(--white));padding-right:.7rem}
+.todo .row.waiting{border-color:var(--ochre);background:color-mix(in srgb,var(--ochre) 7%,var(--white))}
+.todo .row.done{border-color:var(--green)}
+.lbox{border:1.5px solid var(--line);border-radius:14px;padding:.8rem;display:grid;gap:.6rem;background:var(--white)}
+.lbox.chosen{border-color:var(--green)}
+.lbox.done{border-color:color-mix(in srgb,var(--green) 45%,var(--line));background:color-mix(in srgb,var(--green) 4%,var(--white))}
+.lbox-head{display:grid;grid-template-columns:auto 1fr auto;gap:.7rem;align-items:center}
+.lbox-pic img{width:3.6rem;height:2.7rem;object-fit:cover;border-radius:8px;display:block}
+.lbox-pic:empty{display:none}
+.orders-box{display:grid;gap:.45rem;border:1.5px solid var(--green);border-radius:14px;padding:.8rem;background:color-mix(in srgb,var(--green) 5%,var(--white))}
+.order-row{display:grid;grid-template-columns:1fr auto auto;gap:.6rem;align-items:center;text-decoration:none;color:inherit;border:1px solid var(--line);border-radius:10px;padding:.55rem .75rem;background:var(--white)}
+.order-row:hover{border-color:var(--green)}
+.basket{position:sticky;bottom:.6rem;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:.8rem;flex-wrap:wrap;background:var(--green-deep);color:#F6F7F4;border-radius:14px;padding:.75rem 1rem;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.basket .muted{color:#C9DBD2}
+.basket .btn-ghost{color:#F6F7F4;border-color:rgba(246,247,244,.4)}
+.ck-group{border:1px solid var(--line);border-radius:10px;padding:.55rem .75rem;display:grid;gap:.3rem;margin-bottom:.45rem}
+.ck-row{display:flex;justify-content:space-between;gap:.8rem;font-size:.92rem}
+.ck-total{border-top:1.5px solid var(--line);margin-top:.6rem;padding-top:.5rem;display:grid;gap:.25rem}
+#poGate .card{max-height:calc(100vh - 2rem);overflow:auto}
+@media (max-width:640px){.order-row{grid-template-columns:1fr}.lbox-head{grid-template-columns:auto 1fr}.lbox-head .tag{grid-column:1/-1;justify-self:start}}
+.line.hire{grid-template-columns:2fr 1fr 1fr .9fr .7fr auto}
 @media (max-width:760px){.line{grid-template-columns:1fr 1fr}.line .f-item{grid-column:1/-1}}
+@media (max-width:760px){.line.hire{grid-template-columns:1fr 1fr}}
 .actions{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
 .boq{display:grid;gap:.9rem}
 .boq-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem 1rem;align-items:center}
@@ -482,6 +518,7 @@ details.line-offers[open] summary::before{content:"▾"}
 @media (max-width:520px){.prow6{grid-template-columns:1fr 1fr}}
 .sp-login .su-choices button{text-align:left;cursor:pointer;font:inherit;display:grid;gap:.2rem}
 .queue{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem}
+button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hover{border-color:var(--green)}
 .q{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:.9rem 1rem;display:grid;gap:.1rem}
 .q strong{font-family:var(--display);font-size:1.4rem;font-variant-numeric:tabular-nums}
 .q span{font-size:.82rem;color:var(--fg-2)}
@@ -615,11 +652,14 @@ details.line-offers[open] summary::before{content:"▾"}
       <li><a href="#supply">Materials</a></li>
       <li><a href="#suppliers">For suppliers</a></li>
       <li><a href="#newsletter">Newsletter</a></li>
+      <li><a href="#support">Support</a></li>
       <li><a href="#aboutus">About</a></li>
     </ul>
     <div class="nav-cta">
       <select id="lang" class="lang" aria-label="Language"><option value="en">English</option><option value="am">አማርኛ</option><option value="om">Afaan Oromoo</option></select>
       <span id="authOut" style="display:contents"><a class="btn btn-primary btn-sm" href="#signin">Sign in</a></span>
+      <div class="bell" id="bellBox" hidden><button type="button" class="bellbtn" id="bellBtn" aria-label="Notifications" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><em id="bellN" hidden>0</em></button>
+        <div class="bellpanel" id="bellPanel" hidden><div class="bellhead"><strong>Notifications</strong><span class="small muted">last 30 days</span></div><div id="bellList"></div></div></div>
       <details class="acct" id="authIn" hidden>
         <summary class="btn btn-primary btn-sm"><span id="authName">Account</span> <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l5 5 5-5"/></svg></summary>
         <div class="acct-menu">
@@ -627,6 +667,8 @@ details.line-offers[open] summary::before{content:"▾"}
           <a href="#workspace" id="authHome">My workspace</a>
           <a href="#supplier" id="authPortal">Supplier portal</a>
           <a href="#boq" id="authBoq">Send a request</a>
+          <a href="#statements" id="authStmt">Statements</a>
+          <a href="#support">Support</a>
           <a href="#signin" id="authSwitch">Switch account</a>
           <button type="button" id="authLogout">Log out</button>
         </div>
@@ -950,12 +992,12 @@ details.line-offers[open] summary::before{content:"▾"}
       </div>
       <input type="hidden" id="validity" value="4">
       <div class="grid2">
-        <div class="field"><label for="delivery">Delivery</label><select id="delivery"><option>Supplier delivers to site</option><option>I collect from supplier</option></select><span class="hint" id="deliveryHint"></span></div>
+        <div class="field"><label for="delivery">Delivery</label><select id="delivery"><option>Supplier delivers to site</option><option>Build Smartly delivers</option><option>I collect from supplier</option></select><span class="hint" id="deliveryHint"></span></div>
         <div class="field"><label for="payment">Preferred payment</label><select id="payment"><option>On delivery</option><option>Advance</option><option>On shipping</option><option>Credit (date to agree)</option></select></div>
       </div>
       <div class="grid2">
         <label class="check"><input type="checkbox" id="partial" checked><span>Partial delivery accepted (a line may be split between suppliers)</span></label>
-        <span class="small muted" style="align-self:center">Transport by Build Smartly and transit insurance are offered when you accept an offer, with the real figures for that order.</span>
+        <span class="small muted" style="align-self:center">Transit insurance is offered once, when you complete the order.</span>
       </div>
       <input type="checkbox" id="insurance" hidden>
       <input type="hidden" id="company">
@@ -1031,17 +1073,17 @@ details.line-offers[open] summary::before{content:"▾"}
       <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap"><span class="status" id="spStatus"><i></i><span>Connecting…</span></span><a class="btn btn-ghost btn-sm" href="#boq">Need materials? Send a request</a><button class="btn btn-ghost btn-sm" id="logout">Log out</button></div>
     </div>
     <div class="queue">
-      <div class="q hot"><strong id="qNew">0</strong><span>New requests to quote</span></div>
-      <div class="q"><strong id="qSent">0</strong><span>Offers waiting for the customer</span></div>
-      <div class="q"><strong id="qWon">0</strong><span>Orders needing your action</span></div>
-      <div class="q"><strong id="qPrices">0</strong><span>Prices to confirm</span></div>
+      <button type="button" class="q hot" data-go="requests"><strong id="qNew">0</strong><span>New requests to quote</span></button>
+      <button type="button" class="q" data-go="deals"><strong id="qWon">0</strong><span>Waiting for your action</span></button>
+      <button type="button" class="q" data-go="deals"><strong id="qSent">0</strong><span>Offers with the customer</span></button>
+      <button type="button" class="q" data-go="prices"><strong id="qPrices">0</strong><span>Prices to confirm</span></button>
     </div>
     <div class="tabs" id="spTabs">
       <button class="on" data-tab="home">Home</button>
       <button data-tab="requests">Requests <span class="badge" id="reqBadge" hidden>0</span></button>
       <button data-tab="deals">Offers and orders</button>
       <button data-tab="prices">Price list</button>
-      <button data-tab="mail">Mailbox <span class="badge" id="spMailBadge" hidden>0</span></button>
+      <button data-tab="mail">Statements and support <span class="badge" id="spMailBadge" hidden>0</span></button>
       <button data-tab="settings">Settings</button>
     </div>
 
@@ -1063,18 +1105,17 @@ details.line-offers[open] summary::before{content:"▾"}
 
     <div id="tab-requests" hidden></div>
     <div id="tab-deals" hidden style="display:grid;gap:1rem">
-      <div><strong style="font-family:var(--display);font-size:1.05rem">Offers you sent</strong><p class="small muted">Waiting for the customer, accepted, or rejected.</p></div>
-      <div id="tab-offers"></div>
-      <div><strong style="font-family:var(--display);font-size:1.05rem">Orders</strong><p class="small muted">Purchase orders, contracts, dispatch and payment.</p></div>
+      <div class="field" style="max-width:26rem"><input id="spDealSearch" type="search" placeholder="Search: order number, request, item, customer"></div>
+      <section class="card" style="display:grid;gap:.6rem;border-color:var(--ochre)"><strong style="font-family:var(--display);font-size:1.05rem">Waiting for your action</strong><div id="spAction" style="display:grid;gap:.5rem"></div></section>
+      <div><strong style="font-family:var(--display);font-size:1.05rem">Orders</strong></div>
       <div id="tab-orders"></div>
+      <div><strong style="font-family:var(--display);font-size:1.05rem">Offers you sent</strong></div>
+      <div id="tab-offers"></div>
     </div>
     <div id="tab-mail" hidden style="display:grid;gap:1rem">
-      <div class="subtabs" id="spMailTabs"><button class="on" data-m="notif">Notifications</button><button data-m="inbox">Inbox</button><button data-m="sent">Sent</button><button data-m="sms">Text messages</button><button data-m="support">Support</button><button data-m="news">Newsletter</button></div>
-      <div class="card panel" id="spm-news" hidden><div><strong style="font-family:var(--display)">Newsletter</strong><p class="small muted">What every buyer on the platform received this month. <a href="#newsletter">Send your news for the next issue</a>.</p></div><div class="news-list" style="display:grid;gap:.6rem;margin-top:.6rem"></div></div>
-      <div class="card panel" id="spm-notif"><div><strong style="font-family:var(--display)">Notifications</strong><p class="small muted">New requests, purchase orders and contracts. Also sent to your Telegram when switched on.</p></div><div class="notif" id="spNotif"></div></div>
-      <div class="card panel" id="spm-inbox" hidden><div><strong style="font-family:var(--display)">Inbox</strong><p class="small muted">Requests, purchase orders and contracts sent to you.</p></div><div class="docs" id="spInbox"></div></div>
-      <div class="card panel" id="spm-sent" hidden><div><strong style="font-family:var(--display)">Sent</strong><p class="small muted">Your offers and confirmations.</p></div><div class="docs" id="spSent"></div></div>
-      <div class="card panel" id="spm-sms" hidden><div><strong style="font-family:var(--display)">Text messages</strong><p class="small muted">The SMS we send to your mobile.</p></div><div id="spSms" style="display:grid;gap:.5rem"></div></div>
+      <div class="subtabs" id="spMailTabs"><button class="on" data-m="statements">Statements</button><button data-m="support">Support</button><button data-m="news">Newsletter</button></div>
+      <div class="card panel" id="spm-statements"><div><strong style="font-family:var(--display)">Statements</strong><p class="small muted">Every purchase order, contract and receipt, by year. View, print or save as PDF.</p></div><div id="spStatements" style="display:grid;gap:.6rem"></div></div>
+      <div class="card panel" id="spm-news" hidden><div><strong style="font-family:var(--display)">Newsletter</strong></div><div class="news-list" style="display:grid;gap:.6rem;margin-top:.6rem"></div></div>
       <div class="card panel" id="spm-support" hidden><div><strong style="font-family:var(--display)">Support</strong><p class="small muted">Write to Build Smartly support about a request, an order or your documents. Staff answer here and by SMS.</p></div><div class="chat" id="spSupportThread"></div><div class="chat-in"><div class="field"><input id="spSupportIn" placeholder="Type your message…"></div><button class="btn btn-primary btn-sm" type="button" id="spSupportSend">Send</button></div></div>
     </div>
 
@@ -1091,7 +1132,7 @@ details.line-offers[open] summary::before{content:"▾"}
         <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center"><button class="btn btn-ghost btn-sm" type="button" id="plImport">Import pasted rows</button><span class="small muted" id="plImportMsg"></span></div>
       </div>
       <div class="card" style="display:grid;gap:.6rem">
-        <div class="topbar"><div><strong style="font-family:var(--display)">2 · Your prices</strong><p class="small muted">Type the price, VAT, minimum order, stock and how long the price holds. A price older than its validity is marked stale and never shown as current. Your quotes are pre-filled from here.</p></div><div style="display:flex;gap:.4rem;flex-wrap:wrap"><button class="btn btn-ghost btn-sm" type="button" id="confirmAll">Confirm all unchanged</button><button class="btn btn-primary btn-sm" type="button" id="plSaveAll">Save all prices</button></div></div>
+        <div class="topbar"><div><strong style="font-family:var(--display)">2 · Your prices</strong><p class="small muted">Type the price, VAT, minimum order, stock and how long the price holds. A price older than its validity is marked stale and never shown as current. Your quotes are pre-filled from here.</p></div><div style="display:flex;gap:.4rem;flex-wrap:wrap"><button class="btn btn-ghost btn-sm" type="button" id="confirmAll">Confirm all unchanged</button><span class="tag tag-ochre" id="plDirty" hidden>Not saved yet</span><button class="btn btn-primary btn-sm" type="button" id="plSaveAll">Save all prices</button></div></div>
         <div class="prices" id="prices"></div>
       </div>
     </div>
@@ -1175,8 +1216,10 @@ details.line-offers[open] summary::before{content:"▾"}
 <div id="view-workspace" data-view hidden class="wrap view">
   <div class="tiles" id="tiles">
     <a class="tile" href="#boq"><strong>Send a request</strong><span>Build a list or upload your BOQ</span></a>
-    <button class="tile on" data-panel="tracking"><strong>Tracking</strong><span>Where each request and order stands</span><em class="n" id="nTrack" hidden>0</em></button>
-    <button class="tile" data-panel="mail"><strong>Mailbox</strong><span>Notifications, inbox, sent, text messages</span><em class="n" id="nNotif" hidden>0</em></button>
+    <button class="tile on" data-panel="tracking"><strong>My orders</strong><span>Requests, offers and orders, step by step</span><em class="n" id="nTrack" hidden>0</em></button>
+    <button class="tile" data-panel="statements"><strong>Statements</strong><span>Orders, contracts and receipts by year</span></button>
+    <button class="tile" data-panel="support"><strong>Support</strong><span>Write to Build Smartly staff</span><em class="n" id="nNotif" hidden>0</em></button>
+    <button class="tile" data-panel="news"><strong>Newsletter</strong><span>News and offers from members</span></button>
     <button class="tile" data-panel="settings"><strong>Settings</strong><span>Notifications, locations, public profile</span></button>
     <a class="tile" href="#supplier" id="tileSupplier" hidden><strong>Supplier portal</strong><span>Quote, price list, orders</span></a>
   </div>
@@ -1187,15 +1230,9 @@ details.line-offers[open] summary::before{content:"▾"}
   </div>
   <section class="card" id="wsDetails" hidden style="display:grid;gap:.6rem;border-color:var(--ochre)"><div><strong style="font-family:var(--display)">Complete your company details</strong><p class="small muted">Who is buying, legal name and TIN. Needed once, before your first purchase order. You can also do it later, at your first Accept.</p></div><div><button class="btn btn-primary btn-sm" type="button" id="wsDetailsBtn">Add company details</button></div></section>
   <section class="card panel" id="p-tracking"><div><strong style="font-family:var(--display);font-size:1.05rem">Tracking</strong><p class="small muted">Where each request or order stands. Restricted between you and the platform.</p></div><div id="trackBody"></div></section>
-  <section class="card panel" id="p-mail" hidden>
-    <div class="topbar"><div><strong style="font-family:var(--display);font-size:1.05rem">Mailbox</strong><p class="small muted">Everything we send you, and your line to support, in one place.</p></div><div class="subtabs" id="mailTabs"><button class="on" data-m="notif">Notifications</button><button data-m="inbox">Inbox</button><button data-m="sent">Sent</button><button data-m="sms">Text messages</button><button data-m="support">Support</button><button data-m="news">Newsletter</button></div></div>
-    <div id="m-notif"><div class="notif" id="notifBody"></div><p class="small muted" style="margin-top:.5rem">The same messages go to your Telegram if you switch it on in Settings.</p></div>
-    <div id="m-inbox" hidden><p class="small muted" style="margin-bottom:.5rem">Offers, purchase orders, contracts and payment advice sent to you. View or print.</p><div class="docs" id="inboxBody"></div></div>
-    <div id="m-sent" hidden><p class="small muted" style="margin-bottom:.5rem">Your requests, acceptances and proofs of payment.</p><div class="docs" id="outboxBody"></div></div>
-    <div id="m-sms" hidden><p class="small muted" style="margin-bottom:.5rem">The SMS we send to your mobile when something needs you.</p><div id="smsBody" style="display:grid;gap:.5rem"></div></div>
-    <div id="m-news" hidden style="display:grid;gap:.6rem"><p class="small muted">The latest Build Smartly newsletter: new brands, new supplies and offers from verified suppliers. Sponsored items are marked.</p><div class="news-list" style="display:grid;gap:.6rem"></div><p class="small"><a href="#newsletter">Suppliers: send your news for the next issue</a></p></div>
-    <div id="m-support" hidden style="display:grid;gap:.7rem"><p class="small muted">Write to Build Smartly support about a request, an offer or a delivery. Amharic, Afaan Oromoo or English. Staff answer here and by SMS; the thread is kept with your account.</p><div class="chat" id="supportThread"></div><div class="chat-in"><div class="field"><input id="supportIn" placeholder="Type your message…"></div><button class="btn btn-primary btn-sm" type="button" id="supportSend">Send</button></div></div>
-  </section>
+  <section class="card panel" id="p-statements" hidden><div><strong style="font-family:var(--display);font-size:1.05rem">Statements</strong><p class="small muted">Every purchase order, contract and receipt, by year. View, print or save as PDF for your records.</p></div><div id="wsStatements" style="display:grid;gap:.6rem"></div></section>
+  <section class="card panel" id="p-support" hidden style="display:grid;gap:.7rem"><div><strong style="font-family:var(--display);font-size:1.05rem">Support</strong></div><p class="small muted">Write to Build Smartly support about a request, an offer or a delivery. Amharic, Afaan Oromoo or English. Staff answer here and by SMS; the thread is kept with your account.</p><div class="chat" id="supportThread"></div><div class="chat-in"><div class="field"><input id="supportIn" placeholder="Type your message…"></div><button class="btn btn-primary btn-sm" type="button" id="supportSend">Send</button></div></section>
+  <section class="card panel" id="p-news" hidden style="display:grid;gap:.6rem"><div><strong style="font-family:var(--display);font-size:1.05rem">Newsletter</strong></div><p class="small muted">The latest Build Smartly newsletter: new brands, new supplies and offers from verified suppliers. Sponsored items are marked.</p><div class="news-list" style="display:grid;gap:.6rem"></div><p class="small"><a href="#newsletter">Suppliers: send your news for the next issue</a></p></section>
   <section class="card panel" id="p-settings" hidden>
     <div><strong style="font-family:var(--display);font-size:1.05rem">Settings</strong></div>
     <div><strong style="font-family:var(--display)">Notifications</strong></div>
@@ -1344,6 +1381,7 @@ details.line-offers[open] summary::before{content:"▾"}
       <div class="field"><label for="nwText">Text (up to 300 characters)</label><textarea id="nwText" rows="3" maxlength="300" style="font:inherit;font-size:.95rem;padding:.6rem;border:1.5px solid var(--line);border-radius:10px;background:var(--white);color:var(--fg);width:100%"></textarea></div>
       <label class="wpic up" style="aspect-ratio:auto;height:4.5rem;min-height:0"><input type="file" accept="image/*" hidden id="nwPic"><span id="nwPicLabel">＋ Banner picture (optional, shown in the slideshow; 3:1 works best)</span></label>
       <img id="nwPicPrev" alt="" hidden style="width:100%;aspect-ratio:3/1;object-fit:cover;border-radius:12px">
+      <label class="field" id="nwPicPosBox" hidden><span class="small">Move the picture up or down</span><input type="range" id="nwPicPos" min="0" max="100" value="50"></label>
       <span class="err small" id="nwErr" hidden></span>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center"><button class="btn btn-primary btn-sm" type="button" id="nwSend">Send to Build Smartly</button><span class="small muted" id="nwMsg"></span></div>
     </div>
@@ -1390,6 +1428,7 @@ details.line-offers[open] summary::before{content:"▾"}
         <button data-tab="members"><i>♟</i><b>Members</b></button>
         <button data-tab="finance"><i>Br</i><b>Finance</b></button>
         <button data-tab="catalogue"><i>▤</i><b>Catalogue</b></button>
+        <button data-tab="brands"><i>◆</i><b>Brands</b></button>
         <button data-tab="insights"><i>↗</i><b>Insights</b></button>
         <button data-tab="settings"><i>⚙</i><b>Settings</b></button>
       </nav>
@@ -1401,7 +1440,7 @@ details.line-offers[open] summary::before{content:"▾"}
 
 <!-- ================= START HERE (test site guide) ================= -->
 <div id="view-start" data-view hidden class="wrap view">
-  <div><span class="eyebrow">Test site</span><h1 style="font-size:1.6rem">Start here</h1><p class="muted">Build Smartly is the working name. Everything on this site works, but no SMS is sent and no money moves. Use the logins below. The same person can act as a buyer and as a supplier.</p></div>
+  <div><span class="eyebrow">Test site</span><h1 style="font-size:1.6rem">Start here</h1><p class="muted">Build Smartly is the working name. Everything works, but no SMS is sent and no money moves. One buyer, two suppliers and two staff logins.</p></div>
   <section class="card panel" style="display:grid;gap:.6rem"><div><strong style="font-family:var(--display);font-size:1.05rem">Watch how it works</strong><p class="small muted">A 4-minute walkthrough: a buyer sends a request, offers arrive, the order goes through contract, delivery and payment, then the supplier portal and the staff page.</p></div><video controls preload="metadata" playsinline style="width:100%;max-width:960px;border-radius:12px;background:#0D2C21" src="docs/how-it-works.mp4"></video></section>
   <section class="card panel">
     <div><strong style="font-family:var(--display);font-size:1.05rem">Your logins</strong><p class="small muted">SMS code for every number: <strong>123456</strong>. Supplier portal password: <strong>smartly</strong>.</p></div>
@@ -1409,30 +1448,28 @@ details.line-offers[open] summary::before{content:"▾"}
   </section>
   <div class="grid2">
     <section class="card panel">
-      <div><strong style="font-family:var(--display);font-size:1.05rem">As a buyer</strong></div>
+      <div><strong style="font-family:var(--display);font-size:1.05rem">As the buyer</strong></div>
       <ol class="small" style="margin:0;padding-left:1.1rem;display:grid;gap:.35rem">
-        <li>Tap <a href="#boq">Send a request</a>. Tick the materials, type quantities, Send.</li>
-        <li>Enter your name, your buyer number and the code 123456.</li>
-        <li>Suppliers quote over the next minutes and hours: your colleagues from their supplier logins, and the other suppliers on the site by themselves. A green bar tells you. Open <a href="#boq-mine">My requests</a>: cheapest first, best price marked. Accept, reject or propose your own price per line.</li>
-        <li>At the first Accept you give the company name and TIN once. The purchase order is issued.</li>
-        <li>Follow the order in the same place: supplier reconfirms, goods ready, on the way with a handover code, Goods received, Pay.</li>
-        <li>The <a href="#workspace">workspace</a> has Tracking, the Mailbox (notifications, inbox, sent, text messages, support) and Settings.</li>
+        <li><a href="#boq">Send a request</a>: tick the materials, type quantities, choose who delivers, Send. Sign in with 0911 000 201 and code 123456.</li>
+        <li>Both test suppliers receive it, and a few background suppliers quote by themselves within minutes, so each line gets several offers. The bell at the top right lights up.</li>
+        <li>Open <a href="#boq-mine">My requests</a>. Each line has its own box, cheapest first. Choose one offer per line, reject, or propose your own price.</li>
+        <li>Press <strong>Complete the order</strong>: delivery, insurance and your company details, once. One order per supplier.</li>
+        <li>Follow each order on its page: agree to the contract, confirm delivery with the handover code, pay. Documents are under Statements.</li>
       </ol>
     </section>
     <section class="card panel">
       <div><strong style="font-family:var(--display);font-size:1.05rem">As a supplier</strong></div>
       <ol class="small" style="margin:0;padding-left:1.1rem;display:grid;gap:.35rem">
-        <li>Open the <a href="#supplier">Supplier portal</a>, sign in with your supplier number and the password smartly.</li>
-        <li>Price list: tick what you sell and type your prices. Quotes are pre-filled from them.</li>
-        <li>Requests: every request with your materials appears here. You see a customer number and a sub-city, never the name. Send your offer per line.</li>
-        <li>Offers and orders: when the customer accepts, you see the customer's name in the PO. Reconfirm, mark goods ready, dispatch.</li>
-        <li>Mailbox: notifications, the text messages you would receive, and support.</li>
+        <li>Open the <a href="#supplier">Supplier portal</a> with 0911 000 301 or 0911 000 302 and the password smartly.</li>
+        <li>Price list: tick what you sell, type prices, Save. Quotes are pre-filled from it.</li>
+        <li>Requests: send your offer per line. The buyer sees your brand, not your name.</li>
+        <li>Offers and orders: <strong>Waiting for your action</strong> lists counter-offers to answer and orders to reconfirm, prepare and dispatch.</li>
       </ol>
-      <p class="small muted">Tip: open two browser tabs, one signed in as a buyer and one as a supplier, and watch the request and the offer travel between them. Other suppliers on the site also answer by themselves after a few minutes, so a buyer always has several offers to compare.</p>
+      <p class="small muted">Tip: use two browser windows, one as the buyer and one as a supplier.</p>
     </section>
   </div>
   <section class="card panel">
-    <div><strong style="font-family:var(--display);font-size:1.05rem">To switch between your two logins</strong><p class="small muted">Tap <strong>Switch</strong> at the top right. Accounts already used on your phone appear as one-tap buttons. Any other Ethiopian number also works as a new buyer.</p></div>
+    <div><strong style="font-family:var(--display);font-size:1.05rem">Switching login</strong><p class="small muted">Tap your name at the top right, then Switch account. Any other Ethiopian number also works as a new buyer.</p></div>
   </section>
 </div>
 
@@ -1524,6 +1561,7 @@ window.BSRoute = (function(){
     current=h||'home';
     try{ if(history && history.replaceState){ history.replaceState(null,'','#'+current); } }catch(e){}
     var homeAnchors=['home','top','about','supply','how','suppliers','partners','aboutus'];
+    if(h.indexOf('news-')===0){ show('advertise'); if(hooks.news) hooks.news(); setTimeout(function(){ var el=document.getElementById(h); if(el){ el.scrollIntoView({behavior:'smooth',block:'start'}); el.style.outline='3px solid var(--ochre)'; setTimeout(function(){ el.style.outline=''; },2500); } },150); return; }
     if(h==='newsletter'||h==='advertise'){ show('advertise'); if(hooks.news) hooks.news(); window.scrollTo(0,0); return; }
     if(h==='admin'||h==='staff'){ show('admin'); if(hooks.admin) hooks.admin(); window.scrollTo(0,0); return; }
     if(h.indexOf('order-')===0){ show('order'); if(hooks.order) hooks.order(h.slice(6)); return; }
@@ -1534,6 +1572,13 @@ window.BSRoute = (function(){
     if(h==='signup' || h==='signup-supplier'){ show('signup'); if(hooks.signup) hooks.signup(h==='signup-supplier'?'supplier':'signup'); window.scrollTo(0,0); return; }
     if(h==='boq-resume'){ show('boq'); if(hooks.boq) hooks.boq(''); if(hooks['boq-resume']) hooks['boq-resume'](); window.scrollTo(0,0); return; }
     if(h.indexOf('boq')===0){ show('boq'); if(hooks.boq) hooks.boq(h.replace('boq-','').replace('boq','')); window.scrollTo(0,0); return; }
+    if(h==='support'||h==='statements'||h==='orders'){ var me=BS.me()||{};
+      if(BS.isStaff && BS.isStaff()){ show('admin'); if(hooks.admin) hooks.admin(); if(window.bsAdminTab) bsAdminTab(h==='support'?'support':'overview'); window.scrollTo(0,0); return; }
+      if(!me.phone){ show('contact'); window.scrollTo(0,0); return; }
+      if(me.supplierId && (me.role==='Supply materials') && window.bsSupplierTab){ show('supplier'); if(hooks.supplier) hooks.supplier(); bsSupplierTab(h==='orders'?'deals':'mail', h==='support'?'support':'statements'); return; }
+      show('workspace'); if(hooks.workspace) hooks.workspace(); if(window.bsWorkspacePanel) bsWorkspacePanel(h==='orders'?'tracking':h); window.scrollTo(0,0); return; }
+    if(h.indexOf('supplier-')===0){ show('supplier'); if(hooks.supplier) hooks.supplier(); if(window.bsSupplierTab) bsSupplierTab(h.slice(9)); return; }
+    if(h.indexOf('staff-')===0){ show('admin'); if(hooks.admin) hooks.admin(); if(window.bsAdminTab) bsAdminTab(h.slice(6)); window.scrollTo(0,0); return; }
     if(h==='supplier'){ show('supplier'); if(hooks.supplier) hooks.supplier(); window.scrollTo(0,0); return; }
     if(h==='workspace'){ show('workspace'); if(hooks.workspace) hooks.workspace(); window.scrollTo(0,0); return; }
     if(h==='brand'){ show('brand'); window.scrollTo(0,0); return; }
@@ -1649,6 +1694,30 @@ function bsApplyPics(){
 /* ---------- Promotions slideshow: example banners plus published newsletter items that carry a picture ---------- */
 var bsAdItems=[], bsAdShows=[];
 /* Item tick boxes grouped by category, with the category picture beside the group name and a picture on each piece of equipment. */
+/* pop-ups live in the body: a section's fade-in would otherwise place them against the section instead of the screen */
+document.querySelectorAll('.modal').forEach(function(m){ document.body.appendChild(m); });
+/* Statements: every purchase order, contract and receipt of the viewer, grouped by year, with View that opens the printable document */
+function renderStatements(boxId, groups, boqs){
+  var box=document.getElementById(boxId); if(!box) return;
+  var rows=[];
+  groups.forEach(function(g){ var o=g.first, b=boqs.filter(function(x){ return x.id===g.boqId; })[0]||{}, tot=0; g.offers.forEach(function(x){ var l=(b.lines||[]).filter(function(y){ return y.n===x.lineN; })[0]||{}; tot+=(window.bsLineExtras?bsLineExtras(b,l,x).total:BS.offerTotal(x)); });
+    rows.push({t:o.acceptedAt, k:'po', ico:'PO', id:g.id, title:'Purchase order '+(g.poRef||''), sub:(o.supplierName||'')+' · '+(o.customerRevealed||'')+' · '+BS.fmt(tot)});
+    if(o.contractAt) rows.push({t:o.contractAt, k:'contract', ico:'CT', id:g.id, title:'Sale contract '+(g.poRef||''), sub:'Agreed by both parties'});
+    if(o.paidAt) rows.push({t:o.paidAt, k:'receipt', ico:'RC', id:g.id, title:'Receipt '+(o.paymentRef||''), sub:(g.poRef||'')+' · '+BS.fmt(o.paidTotal||tot)+' · '+(o.paymentMethod||'Yagout Pay')}); });
+  rows.sort(function(a,b){ return (b.t||'').localeCompare(a.t||''); });
+  if(!rows.length){ box.innerHTML='<div class="empty">Nothing yet. Purchase orders, contracts and receipts appear here.</div>'; return; }
+  var years={}; rows.forEach(function(r){ var y=String(r.t||'').slice(0,4)||'—'; (years[y]=years[y]||[]).push(r); });
+  box.innerHTML=Object.keys(years).sort().reverse().map(function(y){ return '<details open><summary style="font-family:var(--display);font-weight:700;cursor:pointer">'+y+' · '+years[y].length+' document'+(years[y].length!==1?'s':'')+'</summary><div class="docs" style="margin-top:.4rem">'+years[y].map(function(r){ return '<div class="doc"><span class="ico">'+r.ico+'</span><span><strong>'+r.title+'</strong><br><span class="small muted">'+new Date(r.t).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})+' · '+r.sub+'</span></span><button class="btn btn-ghost btn-sm" type="button" data-stmt="'+r.id+'" data-kind="'+r.k+'">View / print</button></div>'; }).join('')+'</div></details>'; }).join('');
+}
+document.addEventListener('click', function(e){ var b=e.target.closest('[data-stmt]'); if(b && window.bsOpenOrderDoc) bsOpenOrderDoc(b.dataset.stmt, b.dataset.kind); });
+function bsConfirm(title, text, yes){
+  return new Promise(function(res){
+    var g=document.getElementById('askGate'); if(!g){ g=document.createElement('div'); g.className='modal'; g.id='askGate'; g.hidden=true; g.innerHTML='<div class="card" style="max-width:28rem;display:grid;gap:.7rem"><h3 id="askTitle" style="margin:0"></h3><p class="small muted" id="askText" style="margin:0"></p><div class="su-nav"><button class="btn btn-ghost" type="button" id="askNo">Cancel</button><button class="btn btn-primary" type="button" id="askYes"></button></div></div>'; document.body.appendChild(g); }
+    document.getElementById('askTitle').textContent=title; document.getElementById('askText').textContent=text||''; document.getElementById('askYes').textContent=yes||'Yes';
+    g.hidden=false; function done(v){ g.hidden=true; document.getElementById('askYes').onclick=null; document.getElementById('askNo').onclick=null; res(v); }
+    document.getElementById('askYes').onclick=function(){ done(true); }; document.getElementById('askNo').onclick=function(){ done(false); };
+  });
+}
 function bsPickList(opts, isOn){
   var esc=function(t){ return String(t||'').replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
   var groups=[]; opts.forEach(function(c){ var g=groups.filter(function(x){ return x.cat===c.cat; })[0]; if(!g){ g={cat:c.cat, items:[]}; groups.push(g); } g.items.push(c); });
@@ -1674,7 +1743,7 @@ function bsAdShow(id, visibleFn, place){
 }
 var bsPromoItems=[];
 (function(){ BS.ready().then(function(){ BS.subscribe('promotions', function(d){ bsPromoItems=(d||[]).slice().sort(function(a,b){ return (a.order||0)-(b.order||0) || (b.createdAt||'').localeCompare(a.createdAt||''); }); bsAdShows.forEach(function(f){ f(); }); }); BS.onSettings && BS.onSettings(function(){ bsAdShows.forEach(function(f){ f(); }); }); }); })();
-(function(){ BS.ready().then(function(){ BS.subscribe('news', function(d){ bsAdItems=(d||[]).filter(function(x){ return x.status==='published' && x.img; }).sort(function(a,b){ return (b.createdAt||'').localeCompare(a.createdAt||''); }).map(function(x){ return {who:x.who||'Partner', company:x.company, title:x.title, img:x.img}; }); bsAdShows.forEach(function(f){ f(); }); }); }); })();
+(function(){ BS.ready().then(function(){ BS.subscribe('news', function(d){ bsAdItems=(d||[]).filter(function(x){ return x.status==='published' && x.img; }).sort(function(a,b){ return (b.createdAt||'').localeCompare(a.createdAt||''); }).map(function(x){ return {who:x.who||'Partner', company:x.company, title:x.title, img:x.img, link:'#news-'+x.id}; }); bsAdShows.forEach(function(f){ f(); }); }); }); })();
 bsAdShow('homeAds', function(){ return !document.getElementById('view-home').hidden; }, 'home');
 bsAdShow('nwAds', function(){ return !document.getElementById('view-advertise').hidden; }, 'newsletter');
 
@@ -1684,8 +1753,12 @@ bsAdShow('nwAds', function(){ return !document.getElementById('view-advertise').
   var KIND={news:'Newsletter item', feature:'Featured supplier', pulse:'Price pulse tile', banner:'Member banner', directory:'Directory highlight', platform:'From Build Smartly'};
   function esc(t){ return String(t||'').replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   var picData='';
-  $('nwPic').addEventListener('change', function(){ var f=this.files&&this.files[0]; if(!f || f.type.indexOf('image/')!==0) return; var r=new FileReader(); r.onload=function(){ var img=new Image(); img.onload=function(){ var w=Math.min(1200,img.width||1), h=Math.max(1,Math.round((img.height||1)*w/(img.width||1))); var c=document.createElement('canvas'); c.width=w; c.height=h; c.getContext('2d').drawImage(img,0,0,w,h); picData=c.toDataURL('image/jpeg',0.8); $('nwPicPrev').src=picData; $('nwPicPrev').hidden=false; $('nwPicLabel').textContent='Picture added: '+f.name; }; img.onerror=function(){ bsToast('That picture could not be read. Use a JPG or PNG.'); }; img.src=r.result; }; r.readAsDataURL(f); });
-  function card(x){ return '<div style="display:grid;gap:.25rem;border:1px solid var(--line);border-radius:12px;padding:.7rem .8rem;background:var(--white)">'+(x.img?'<img src="'+x.img+'" alt="" style="width:100%;aspect-ratio:3/1;object-fit:cover;border-radius:8px;margin-bottom:.3rem">':'')+'<span style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center"><span class="tag '+(x.status==='pending'?'':x.sponsored===false||x.kind==='platform'?'tag-green':'tag-ochre')+'">'+(x.status==='pending'?'Pending review':x.kind==='platform'?'Build Smartly':'Sponsored · '+(KIND[x.kind]||'Newsletter item'))+'</span><span class="small muted">'+esc(x.company)+(x.issue?' · '+esc(x.issue):'')+'</span></span><strong>'+esc(x.title)+'</strong><span class="small">'+esc(x.text)+'</span></div>'; }
+  /* the banner is cut to 3:1; the slider moves the cut up or down so the important part stays in view */
+  var srcImg=null;
+  function cutBanner(){ if(!srcImg) return; var W=1200,H=400,c=document.createElement('canvas'); c.width=W; c.height=H; var sc=Math.max(W/srcImg.width,H/srcImg.height), sw=W/sc, sh=H/sc, pos=(+($('nwPicPos')||{}).value||50)/100; c.getContext('2d').drawImage(srcImg,(srcImg.width-sw)/2,(srcImg.height-sh)*pos,sw,sh,0,0,W,H); picData=c.toDataURL('image/jpeg',0.82); $('nwPicPrev').src=picData; $('nwPicPrev').hidden=false; }
+  $('nwPic').addEventListener('change', function(){ var f=this.files&&this.files[0]; if(!f || f.type.indexOf('image/')!==0) return; var r=new FileReader(); r.onload=function(){ var img=new Image(); img.onload=function(){ srcImg=img; $('nwPicPosBox').hidden=false; $('nwPicPos').value=50; cutBanner(); $('nwPicLabel').textContent='Picture: '+f.name+' · tap to change'; }; img.src=r.result; }; r.readAsDataURL(f); });
+  $('nwPicPos').addEventListener('input', cutBanner);
+  function card(x){ return '<div '+(x.id?'id="news-'+x.id+'" ':'')+'style="scroll-margin-top:5rem;display:grid;gap:.25rem;border:1px solid var(--line);border-radius:12px;padding:.7rem .8rem;background:var(--white)">'+(x.img?'<img src="'+x.img+'" alt="" style="width:100%;aspect-ratio:3/1;object-fit:cover;border-radius:8px;margin-bottom:.3rem">':'')+'<span style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center"><span class="tag '+(x.status==='pending'?'':x.sponsored===false||x.kind==='platform'?'tag-green':'tag-ochre')+'">'+(x.status==='pending'?'Pending review':x.kind==='platform'?'Build Smartly':'Sponsored · '+(KIND[x.kind]||'Newsletter item'))+'</span><span class="small muted">'+esc(x.company)+(x.issue?' · '+esc(x.issue):'')+'</span></span><strong>'+esc(x.title)+'</strong><span class="small">'+esc(x.text)+'</span></div>'; }
   function render(){
     var me=BS.me()||{}, mine=(me.phone||'').replace(/\D/g,'').replace(/^251/,'');
     var list=items.filter(function(x){ return x.status==='published' || (x.status==='pending' && mine && x.phone===mine); }).sort(function(a,b){ return (b.createdAt||'').localeCompare(a.createdAt||''); }).concat(BS.NEWS);
@@ -1704,7 +1777,7 @@ bsAdShow('nwAds', function(){ return !document.getElementById('view-advertise').
     if(!me.phone){ err.textContent='Sign in first (mobile number and code), so we know who to invoice.'; err.hidden=false; return; }
     $('nwSend').disabled=true;
     await BS.add('news', {company:company, who:$('nwWho').value, kind:$('nwKind').value, title:title, text:text, img:picData, phone:(me.phone||'').replace(/\D/g,'').replace(/^251/,''), status:'pending', createdAt:new Date().toISOString()});
-    $('nwTitle').value=''; $('nwText').value=''; $('nwSend').disabled=false; picData=''; $('nwPicPrev').hidden=true; $('nwPicLabel').textContent='＋ Banner picture (optional, shown in the slideshow; 3:1 works best)';
+    $('nwTitle').value=''; $('nwText').value=''; $('nwSend').disabled=false; picData=''; srcImg=null; $('nwPic').value=''; $('nwPicPrev').hidden=true; $('nwPicPosBox').hidden=true; $('nwPicLabel').textContent='＋ Banner picture (optional, shown in the slideshow; 3:1 works best)'; $('nwKind').selectedIndex=0; $('nwErr').hidden=true;
     $('nwMsg').textContent='Received. Staff check the text, finance sends the invoice, and it goes out in the next issue.'; bsToast('Your news is with Build Smartly for the next issue.');
   };
 })();
@@ -1749,18 +1822,21 @@ bsAdShow('nwAds', function(){ return !document.getElementById('view-advertise').
   }
   function renderPulse(offers){
     var items=BS.PULSE.map(function(p){ return Object.assign({}, p); }), live=0;
-    (offers||[]).forEach(function(o){ if(o.unitPrice>0){ var p=items.filter(function(x){return x.item===o.itemName;})[0]; if(p){ p._q=(p._q||[]).concat([o.unitPrice]); } } });
-    items.forEach(function(p){ if(p._q && p._q.length>=2){ var s=p._q.sort(function(a,b){return a-b;}); var med=s[Math.floor(s.length/2)]; p.chg=p.price? (med-p.price)/p.price*100 : 0; p.price=med; p.when=s.length+' quotes on Build Smartly'; live++; } });
+    /* from the suppliers' own price lists (shareholders, 27 Oct 2026): today's median, and the change against each supplier's previous price */
+    function med(a){ a=a.slice().sort(function(x,y){ return x-y; }); return a.length ? a[Math.floor(a.length/2)] : 0; }
+    items.forEach(function(p){ var cur=[], prev=[]; (BS.supplierDocs||[]).forEach(function(d){ if(d.status==='removed') return; (d.prices||[]).forEach(function(r){ if(r.name===p.item && r.price>0){ cur.push(+r.price); prev.push(+(r.prevPrice||r.price)); } }); });
+      if(cur.length){ var m=med(cur), pm=med(prev); p.price=m; p.chg=pm?(m-pm)/pm*100:0; p.when=cur.length+' supplier price list'+(cur.length>1?'s':''); live++; } });
     var html=''; items.forEach(function(p,i){ html+=pulseTick(p); if(i===3) html+='<a class="tick ad" href="#advertise" style="text-decoration:none"><span class="name">Your brand here</span><span class="unit">Newsletter and sponsored tiles for suppliers</span><span class="price">Always marked, never changes the offers</span><span class="when">See the options</span></a>'; });
     html+='<div class="tick ad"><span class="name">New here?</span><span class="unit">No account needed to build your list</span><span class="price">Your mobile number is your account</span><span class="when">Company details only when you accept an offer</span></div>';
     track.innerHTML=html;
-    document.getElementById('pulseTag').textContent = live ? 'Live on this link' : 'Example figures';
+    document.getElementById('pulseTag').textContent = live ? 'From supplier price lists' : 'Example figures';
   }
   renderPulse([]);
   var pBoqs=[], pOffers=[];
   function rePulse(){ renderPulse(pOffers.map(function(o){ var b=pBoqs.filter(function(x){return x.id===o.boqId;})[0]; var l=b?b.lines.filter(function(x){return x.n===o.lineN;})[0]:null; return Object.assign({}, o, {itemName:l?l.item:''}); })); }
   BS.subscribe('offers', function(d){ pOffers=d; rePulse(); });
   BS.subscribe('boqs', function(d){ pBoqs=d; rePulse(); });
+  BS.onSuppliers(rePulse);
   document.getElementById('prev').addEventListener('click',function(){track.scrollBy({left:-step,behavior:'smooth'});});
   document.getElementById('next').addEventListener('click',function(){track.scrollBy({left:step,behavior:'smooth'});});
   var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches, paused=false;
@@ -1951,6 +2027,17 @@ function bsSupport(threadId, inputId, sendId){
     lines.forEach(function(l,i){
       var d=document.createElement('div'); d.className='line';
       var units=l.item==='__other'?BS.UNITS:BS.unitsOf(l.item), mn=l.item==='__other'?1:BS.minOf(l.item); if(units.indexOf(l.unit)<0) l.unit=units[0];
+      if(BS.isHire(l)){ d.className='line hire';
+        if(!l.returnBy) l.returnBy=l.needed||MIN_DATE; if(l.unit==='day'){ l.qty=hireDays(l); }
+        d.innerHTML =
+          '<div class="field f-item"><label>Equipment</label><div class="itemname">'+esc(l.item)+'</div></div>'+
+          '<div class="field"><label>From</label><input type="date" data-k="needed" data-i="'+i+'" min="'+MIN_DATE+'" value="'+(l.needed||MIN_DATE)+'"></div>'+
+          '<div class="field"><label>Return</label><input type="date" data-k="returnBy" data-i="'+i+'" min="'+(l.needed||MIN_DATE)+'" value="'+l.returnBy+'"></div>'+
+          '<div class="field"><label>Charged per</label><select data-k="unit" data-i="'+i+'">'+units.map(function(u){return '<option'+(u===l.unit?' selected':'')+'>'+u+'</option>';}).join('')+'</select></div>'+
+          '<div class="field"><label>'+(l.unit==='day'?'Days':l.unit==='hour'?'Hours':'Quantity')+'</label><input type="number" min="1" step="1" data-k="qty" data-i="'+i+'" value="'+(l.qty||'')+'"'+(l.unit==='day'?' readonly title="Worked out from the dates"':'')+'></div>'+
+          '<button class="rm" type="button" data-rm="'+i+'" aria-label="Remove line">×</button>'+
+          '<div class="cat-tag"><span class="tag">Equipment rental</span><span>'+(l.unit==='day'?hireDays(l)+' day'+(hireDays(l)>1?'s':'')+', from '+(l.needed||MIN_DATE)+' to '+l.returnBy:'Type the number of '+l.unit+'s')+'. Collection and return are arranged with the supplier.</span></div>';
+        box.appendChild(d); return; }
       d.innerHTML =
         '<div class="field f-item"><label>Item</label><div class="itemname">'+(l.item==='__other'?(l.other||'Other item'):l.item)+'</div></div>'+
         '<div class="field"><label>Quantity</label><input type="number" min="1" step="1" data-k="qty" data-i="'+i+'" value="'+(l.qty||'')+'" placeholder="'+(mn>1?'min '+mn:'0')+'"></div>'+
@@ -1964,10 +2051,13 @@ function bsSupport(threadId, inputId, sendId){
     $('lineCount').textContent = lines.length + (lines.length===1?' item':' items');
     renderPicks(); renderRouting(); saveDraft();
   }
+  function hireDays(l){ var a=new Date(l.needed||MIN_DATE), b=new Date(l.returnBy||l.needed||MIN_DATE); return Math.max(1, Math.round((b-a)/86400000)+1); }
   $('lines').addEventListener('change', function(e){
     var t=e.target, i=+t.dataset.i, k=t.dataset.k; if(isNaN(i)||!k) return; var l=lines[i];
     if(k==='needed' && t.value && t.value<MIN_DATE){ t.value=MIN_DATE; bsToast('The earliest date is '+MIN_DATE+'.'); }
-    l[k]=t.value; renderRouting(); saveDraft();
+    l[k]=t.value;
+    if(BS.isHire(l)){ if(l.returnBy && l.returnBy<(l.needed||MIN_DATE)) l.returnBy=l.needed; if(k!=='qty'){ renderLines(); return; } }
+    renderRouting(); saveDraft();
   });
   $('lines').addEventListener('input', function(e){ var t=e.target; if(t.dataset.k==='qty'){ lines[+t.dataset.i].qty=t.value; updateEstimate(); } saveDraft(); });
   ['subcity','delivery','validity','payment','partial','insurance'].forEach(function(id){ $(id).addEventListener('change', function(){ saveDraft(); }); });
@@ -2049,7 +2139,7 @@ function bsSupport(threadId, inputId, sendId){
     var goods=BS.goodsValue(good); return { goods:goods, delivery:del, insurance:BS.insuranceFor(goods), term:$('delivery').value };
   }
   function updateEstimate(){
-    var term=$('delivery').value; $('deliveryHint').textContent = term==='I collect from supplier' ? 'Ex-works prices. You send your own truck, or let Build Smartly arrange the transport when you accept an offer.' : 'Suppliers quote a delivered price that includes their transport to your site.';
+    var term=$('delivery').value; $('deliveryHint').textContent = term==='I collect from supplier' ? 'Suppliers quote ex-works. You send your own truck.' : term==='Build Smartly delivers' ? 'Suppliers quote ex-works. Build Smartly brings the goods; the transport price is shown when you complete the order.' : 'Suppliers quote a price that includes transport to your site.';
   }
   $('subcity').addEventListener('change', updateEstimate);
   BS.onSettings(function(){ bsApplyPics(); renderPicks(); MIN_DATE=isoPlus(BS.MIN_LEAD_DAYS); $('minLeadText').textContent = BS.MIN_LEAD_DAYS+' days from today ('+MIN_DATE+')'; var pr=document.getElementById('payInsRate'); if(pr) pr.textContent=BS.pct(BS.INSURANCE.rate); var pf=document.getElementById('payFeeText'); if(pf) pf.textContent=(BS.tariffsSetBy?'':'example ')+BS.pct(BS.FEE_RATE); updateEstimate(); });
@@ -2094,7 +2184,8 @@ function bsSupport(threadId, inputId, sendId){
     if(kind==='new' || !(m.company||m.name)) BS.setMe(Object.assign({}, m, {name:name, company:name}));
     if(window.BSAuth) BSAuth.refresh();
     saReset(); $('who').textContent='Signed in as '+((BS.me()||{}).company||(BS.me()||{}).name);
-    if(kind==='new') bsToast('Account created with your mobile number.');
+    if(kind==='new') bsToast('New account created for '+name+' with mobile 0'+digits+'. Sign in with this number next time.');
+    window.__bsNewAccount = kind==='new' ? '0'+digits : '';
     doSend();
   };
   async function doSend(){
@@ -2103,13 +2194,14 @@ function bsSupport(threadId, inputId, sendId){
     if(!me2.company && !me2.name) BS.setMe(Object.assign({}, me2, {company:company}));
     var days=+$('validity').value, deadline=new Date(Date.now()+days*86400000).toISOString(), ref=BS.ref('BS');
     var doc={ ref:ref, company:company, ownerPhone:(me2.phone||'').replace(/\D/g,'').replace(/^251/,''), customerNo:'C-'+(Math.abs(hash(me2.phone||company))%9000+1000), status:'open', validityDays:days, deadlineAt:deadline, subcity:$('subcity').value, city:'Addis Ababa', deliveryTerm:$('delivery').value, paymentTerm:$('payment').value, partial:$('partial').checked, insurance:$('insurance').checked, pin:pin, estimate:estimate(),
-      lines: good.map(function(l,i){ return {n:i+1, item:l.item==='__other'?(l.other||'Other item'):l.item, cat:l.cat||'Other (staff will classify)', qty:+l.qty, unit:l.unit, needed:l.needed||''}; }) };
+      lines: good.map(function(l,i){ var r={n:i+1, item:l.item==='__other'?(l.other||'Other item'):l.item, cat:l.cat||'Other (staff will classify)', qty:+l.qty, unit:l.unit, needed:l.needed||''}; if(BS.isHire(l)) r.returnBy=l.returnBy||l.needed||''; return r; }) };
     $('submit').disabled=true; $('submit').textContent='Sending…';
     await BS.add('boqs', doc);
     $('submit').disabled=false; $('submit').textContent='Send request to suppliers';
     clearDraft(); loading=true; lines=[]; loading=false; renderLines();
     var desks={}; good.forEach(function(l){ desks[l.cat||'x']=1; });
     $('sentTitle').textContent='Request '+ref+' sent'; $('sentText').textContent=good.length+' item'+(good.length>1?'s':'')+' sent to verified suppliers in '+Object.keys(desks).length+' categor'+(Object.keys(desks).length>1?'ies':'y')+'. They have '+days+' days to quote. We text you when offers are ready; you also see them under My requests.';
+    $('sentText').textContent += window.__bsNewAccount ? ' We created your account with mobile '+window.__bsNewAccount+'; that number and an SMS code is how you sign in.' : '';
     $('sentSms').textContent='Build Smartly: we received your request '+ref+' ('+good.length+' item'+(good.length>1?'s':'')+'). Suppliers have '+days+' days. We will text you when the first offer is ready.';
     $('sentBox').hidden=false; $('sentBox').scrollIntoView({behavior:'smooth',block:'center'});
   }
@@ -2122,234 +2214,224 @@ function bsSupport(threadId, inputId, sendId){
   });
   $('showAll').onchange=renderMine; $('clearLocal').onclick=function(){ BS.clearLocal(); }; window.BSRefreshMine=function(){ renderAlert(); };
   function myBoqs(){ var me2=BS.me()||{}; var ph=(me2.phone||'').replace(/\D/g,'').replace(/^251/,''); var c=($('company').value||me2.company||'').trim(); return boqs.filter(function(b){ return $('showAll').checked || (ph && b.ownerPhone===ph) || (!b.ownerPhone && b.company===c); }); }
+  /* ---------- My requests: one box per line, the buyer chooses an offer per line, then completes the order once ----------
+     Decided 27 Oct 2026: offers are chosen line by line (stored on the request as `chosen`), and one "Complete the order"
+     step asks delivery, insurance and the company details once for all chosen lines. One purchase order per supplier. */
+  var mineQuery='';
+  function totalOf(o){ return BS.offerTotal(o); }
+  function boqById(id){ return boqs.filter(function(x){ return x.id===id; })[0]; }
+  function lineOfB(b,n){ return (b.lines||[]).filter(function(x){ return x.n===+n; })[0]||{}; }
+  function offersOn(b,l){ return offers.filter(function(o){ return o.boqId===b.id && o.lineN===l.n; }).sort(function(a,c){ return totalOf(a)-totalOf(c) || (a.createdAt||'').localeCompare(c.createdAt||''); }); }
+  function validOffer(o){ return o.status==='sent' && !(o.counter && o.counter.state==='open'); }
+  function chosenOf(b,l){ var id=(b.chosen||{})[l.n]; var o=id && offers.filter(function(x){ return x.id===id; })[0]; return (o && validOffer(o)) ? o : null; }
+  function poOf(b,l){ return offers.filter(function(o){ return o.boqId===b.id && o.lineN===l.n && o.status==='accepted'; })[0]||null; }
+  function rateLabel(l){ return BS.isHire(l) ? 'Rate per '+l.unit : 'Unit price'; }
+  function lineTitle(l){ return 'Line '+l.n+' · '+esc(l.item)+' · '+l.qty+' '+esc(l.unit)+(l.returnBy?' · '+esc(l.needed)+' to '+esc(l.returnBy):l.needed?' · needed by '+esc(l.needed):''); }
   function renderMine(){
-    var list=myBoqs().sort(function(a,b){ return (b.createdAt||'').localeCompare(a.createdAt||''); });
-    var mineOffers=offers.filter(function(o){ return list.some(function(b){return b.id===o.boqId;}) && o.status!=='accepted'; }).length;
-    $('offerBadge').hidden = mineOffers===0; $('offerBadge').textContent=mineOffers;
-    renderAlert(list);
+    var all=myBoqs().sort(function(a,b){ return (b.createdAt||'').localeCompare(a.createdAt||''); });
+    var q=mineQuery.trim().toLowerCase();
+    var list=q ? all.filter(function(b){ return (b.ref+' '+(b.lines||[]).map(function(l){ return l.item; }).join(' ')+' '+b.subcity).toLowerCase().indexOf(q)>=0; }) : all;
+    var waitingN=offers.filter(function(o){ return all.some(function(b){ return b.id===o.boqId && b.status!=='withdrawn'; }) && validOffer(o) && !poOf(boqById(o.boqId), {n:o.lineN}); }).length;
+    $('offerBadge').hidden = waitingN===0; $('offerBadge').textContent=waitingN;
+    renderAlert(all);
     var box=$('mine'); box.innerHTML='';
-    if(!list.length){ box.innerHTML='<div class="empty">No requests yet. Send one from the New request tab, then open the supplier portal on another device (or another tab) to quote it.</div>'; return; }
+    if(all.length>1 || q) box.innerHTML='<div class="field" style="max-width:26rem;margin-bottom:.6rem"><input id="mineSearch" type="search" placeholder="Search your requests: reference, item, sub-city" value="'+esc(mineQuery)+'"></div>';
+    if(!list.length){ box.innerHTML+='<div class="empty">'+(q?'Nothing matches "'+esc(mineQuery)+'".':'No requests yet. Send one from the New request tab.')+'</div>'; return; }
     list.forEach(function(b){
       var card=document.createElement('div'); card.className='card boq'; var left=BS.days(new Date(b.deadlineAt)-Date.now());
-      var anyAcc=offers.some(function(o){return o.boqId===b.id && o.status==='accepted';});
-      var withdrawn=b.status==='withdrawn', open=!withdrawn && left>0;
-      var head='<div class="boq-head"><div><h3>'+b.ref+' · '+b.lines.length+' lines · '+b.subcity+'</h3><span class="small muted">'+b.deliveryTerm+' · '+b.paymentTerm+(b.partial?' · partial OK':'')+(b.extended?' · deadline extended once':'')+'</span></div><div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap">'+(withdrawn?'<span class="tag">Withdrawn</span>':'<span class="deadline">'+(left>0?'Quotes close in '+left+' day'+(left>1?'s':''):'Deadline passed')+'</span>'+(!anyAcc?'<button class="btn btn-ghost btn-sm" data-withdraw="'+b.id+'">Withdraw</button>':'')+(!b.extended&&!anyAcc?'<button class="btn btn-ghost btn-sm" data-extend="'+b.id+'" data-days="'+b.validityDays+'">Extend '+b.validityDays+' days</button>':''))+'</div></div>';
-      var summary=[];
+      var groups=BS.orderGroups(offers, function(o){ return o.boqId===b.id; });
+      var withdrawn=b.status==='withdrawn';
+      var head='<div class="boq-head"><div><h3>'+esc(b.ref)+' · '+b.lines.length+' line'+(b.lines.length>1?'s':'')+' · '+esc(b.subcity)+'</h3><span class="small muted">'+esc(b.deliveryTerm)+' · '+esc(b.paymentTerm)+(b.extended?' · deadline extended once':'')+'</span></div><div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap">'+(withdrawn?'<span class="tag">Withdrawn</span>':'<span class="deadline">'+(left>0?'Quotes close in '+left+' day'+(left>1?'s':''):'Quotes closed')+'</span>'+(!groups.length?'<button class="btn btn-ghost btn-sm" data-withdraw="'+b.id+'">Withdraw</button>':'')+(!b.extended&&!groups.length&&left>0?'<button class="btn btn-ghost btn-sm" data-extend="'+b.id+'" data-days="'+b.validityDays+'">Extend '+b.validityDays+' days</button>':''))+'</div></div>';
+      /* orders already placed on this request */
+      var ordersHtml = groups.length ? '<div class="orders-box"><strong style="font-family:var(--display)">Your orders</strong>'+groups.map(function(g){ var st=BS.orderStatus(g.first), tot=0; g.offers.forEach(function(o){ tot+=lineExtras(b, lineOfB(b,o.lineN), o).total; });
+          var act = st.who==='buyer' ? (g.first.deliveredAt?'Pay '+BS.fmt(tot):g.first.dispatchedAt?'Confirm delivery':'Agree to the contract') : 'Open';
+          return '<a class="order-row" href="#order-'+g.id+'"><span><strong>'+esc(g.poRef||'')+'</strong> · '+esc(g.supplierName)+'<br><span class="small muted">'+g.offers.map(function(o){ return esc(lineOfB(b,o.lineN).item||''); }).join(', ')+' · '+BS.fmt(tot)+'</span></span><span class="tag '+st.c+'">'+esc(st.t)+'</span><span class="btn '+(st.who==='buyer'?'btn-ochre':'btn-ghost')+' btn-sm">'+act+'</span></a>'; }).join('')+'</div>' : '';
+      var chosenN=0, chosenSum=0, openLines=0, bestMissing=0;
       var body=b.lines.map(function(l){
-        var totalOf=function(o){ return o.qtyOffered*o.unitPrice+(+o.deliveryCost||0); };
-        /* cheapest delivered total first: that is the comparison the customer came for */
-        var os=offers.filter(function(o){return o.boqId===b.id && o.lineN===l.n;}).sort(function(a,c){ return totalOf(a)-totalOf(c) || (a.createdAt||'').localeCompare(c.createdAt||''); });
-        var acc=os.filter(function(o){return o.status==='accepted';})[0];
-        var live=os.filter(function(o){ return o.status!=='rejected'; }); var best=live[0], bestTotal=best?totalOf(best):0;
+        var os=offersOn(b,l), po=poOf(b,l), ch=chosenOf(b,l), invited=BS.activeSuppliers().filter(function(s){ return s.cats.indexOf(l.cat)>=0; }).length;
+        var live=os.filter(function(o){ return o.status!=='rejected'; }), best=live.filter(validOffer)[0], bestTotal=best?totalOf(best):0;
+        if(!po){ openLines++; if(ch){ chosenN++; chosenSum+=totalOf(ch); } else if(best) bestMissing++; }
+        var state = po ? '<span class="tag tag-green">In order '+esc(po.poRef||'')+'</span>' : ch ? '<span class="tag tag-green">Chosen · '+esc(ch.brand)+'</span>' : os.length ? '<span class="tag">'+live.length+' offer'+(live.length!==1?'s':'')+'</span>' : '<span class="tag">Waiting for offers</span>';
         var rows=os.map(function(o,i){
-          var total=totalOf(o), letter=String.fromCharCode(65+i), isAcc=o.status==='accepted', isBest=!acc && best && o.id===best.id && live.length>1;
-          var cls='offer'+(isAcc?' accepted':'')+(isBest?' best':'')+((acc&&!isAcc)||o.status==='rejected'?' dim':'');
-          return '<div class="'+cls+'"><span class="letter">'+letter+'</span>'+
-            '<span><span class="k">Brand</span>'+(BS.BRAND_LOGOS[o.brand]?'<img class="blogo" src="'+BS.BRAND_LOGOS[o.brand]+'" alt="">':'')+'<b>'+(o.brand||'—')+'</b><span class="small muted"> · '+o.qtyOffered+' '+l.unit+(o.qtyOffered<l.qty?' (partial)':'')+'</span></span>'+
-            '<span><span class="k">Unit price</span>'+BS.fmt(o.unitPrice)+' <span class="small muted">'+(o.vat==='incl'?'incl. VAT':'excl. VAT')+'</span></span>'+
-            '<span><span class="k">Delivered total</span><strong>'+BS.fmt(total)+'</strong>'+(isBest?'<br><span class="best-tag">Best price</span>':(!acc && live.length>1 && o.status!=='rejected' && total>bestTotal)?'<br><span class="diff">+ '+BS.fmt(total-bestTotal)+' vs best</span>':'')+'</span>'+
-            '<span><span class="k">Delivery · lead · valid</span>'+(o.deliveryCost?BS.fmt(o.deliveryCost):'free')+' · '+o.leadDays+' d · '+o.validDays+' d</span>'+
-            (isAcc ? orderSteps(o, b, l)
-             : o.status==='rejected' ? '<span class="small muted">Rejected by you</span>'
-             : acc ? '<span class="small muted">Not selected</span>'
-             : withdrawn ? '<span class="small muted">Request withdrawn</span>'
-             : (o.counter && o.counter.state==='open') ? '<span class="tag tag-ochre" style="text-transform:none;letter-spacing:0">You proposed '+BS.fmt(o.counter.price)+' per '+l.unit+' · waiting for the supplier</span>'
-             : '<span style="display:grid;gap:.3rem">'+(o.counter&&o.counter.state==='declined'?'<span class="small muted">Supplier declined '+BS.fmt(o.counter.price)+'. Original price stands.</span>':'')+'<span style="display:flex;gap:.3rem;flex-wrap:wrap"><button class="btn btn-primary btn-sm" data-accept="'+o.id+'" data-line="'+l.n+'" data-boq="'+b.id+'">Accept</button><button class="btn btn-ghost btn-sm" data-reject="'+o.id+'">Reject</button></span>'+(o.counter&&o.counter.state==='declined'?'':'<span style="display:flex;gap:.3rem"><input type="number" min="1" step="1" placeholder="Your price per '+l.unit+'" data-cin="'+o.id+'" style="width:9rem;font:inherit;font-size:.85rem;padding:.35rem .5rem;border:1.5px solid var(--line);border-radius:8px;background:var(--white);color:var(--fg)"><button class="btn btn-ghost btn-sm" data-counter="'+o.id+'">Counter</button></span>')+'</span>')+'</div>';
+          var total=totalOf(o), isCh=ch && ch.id===o.id, isBest=!po && best && o.id===best.id && live.length>1, isPo=po && po.id===o.id;
+          var cls='offer'+(isCh||isPo?' accepted':'')+(isBest?' best':'')+((po&&!isPo)||o.status==='rejected'?' dim':'');
+          var act;
+          if(isPo) act='<span class="small" style="font-weight:600">'+esc(o.supplierName)+' · <a href="#order-'+o.id+'">order page</a></span>';
+          else if(po) act='<span class="small muted">Not chosen</span>';
+          else if(withdrawn) act='<span class="small muted">Request withdrawn</span>';
+          else if(o.status==='rejected') act='<span style="display:grid;gap:.25rem"><span class="small muted">You rejected this offer</span><button class="btn btn-ghost btn-sm" data-unreject="'+o.id+'">Undo</button></span>';
+          else if(o.counter && o.counter.state==='open') act='<span class="tag tag-ochre" style="text-transform:none;letter-spacing:0">You proposed '+BS.fmt(o.counter.price)+' · waiting for the supplier\'s answer</span>';
+          else act='<span style="display:grid;gap:.3rem">'+(o.counter&&o.counter.state==='declined'?'<span class="small muted">The supplier declined '+BS.fmt(o.counter.price)+'. The offer stands.</span>':o.counter&&o.counter.state==='accepted'?'<span class="small" style="color:var(--ok);font-weight:600">The supplier accepted your price.</span>':'')+
+            '<span style="display:flex;gap:.3rem;flex-wrap:wrap">'+(isCh?'<button class="btn btn-ghost btn-sm" data-unchoose="'+b.id+'" data-line="'+l.n+'">✓ Chosen · undo</button>':'<button class="btn btn-primary btn-sm" data-choose="'+o.id+'" data-boq="'+b.id+'" data-line="'+l.n+'">Choose</button>')+'<button class="btn btn-ghost btn-sm" data-reject="'+o.id+'">Reject</button></span>'+
+            (o.counter&&o.counter.state!=='open'?'':'<span style="display:flex;gap:.3rem"><input type="number" min="1" step="1" placeholder="Your price per '+esc(l.unit)+'" data-cin="'+o.id+'" style="width:9.5rem;font:inherit;font-size:.85rem;padding:.35rem .5rem;border:1.5px solid var(--line);border-radius:8px"><button class="btn btn-ghost btn-sm" data-counter="'+o.id+'">Propose</button></span>')+'</span>';
+          return '<div class="'+cls+'"><span class="letter">'+String.fromCharCode(65+i)+'</span>'+
+            '<span><span class="k">Brand</span>'+(BS.BRAND_LOGOS[o.brand]?'<img class="blogo" src="'+BS.BRAND_LOGOS[o.brand]+'" alt="">':'')+'<b>'+esc(o.brand||'—')+'</b><span class="small muted"> · '+o.qtyOffered+' '+esc(l.unit)+(o.qtyOffered<l.qty?' (partial)':'')+'</span></span>'+
+            '<span><span class="k">'+rateLabel(l)+'</span>'+BS.fmt(o.unitPrice)+' <span class="small muted">'+(o.vat==='incl'?'incl. VAT':'excl. VAT')+'</span></span>'+
+            '<span><span class="k">Total</span><strong>'+BS.fmt(total)+'</strong>'+(isBest?'<br><span class="best-tag">Best price</span>':(!po && live.length>1 && o.status!=='rejected' && total>bestTotal)?'<br><span class="diff">+ '+BS.fmt(total-bestTotal)+' vs best</span>':'')+'</span>'+
+            '<span><span class="k">Delivery · ready in · valid</span>'+(o.deliveryCost?BS.fmt(o.deliveryCost):(b.deliveryTerm==='Supplier delivers to site'?'included':'ex-works'))+' · '+o.leadDays+' d · '+o.validDays+' d</span>'+act+'</div>';
         }).join('');
-        var invited=BS.activeSuppliers().filter(function(s){return s.cats.indexOf(l.cat)>=0;}).length;
-        var countering=os.some(function(o){ return o.counter && o.counter.state==='open'; });
-        summary.push({l:l, best:(!acc && best)?best:null, acc:acc||null, live:live.length, total:os.length, invited:invited, bestTotal:bestTotal});
-        var openIt = !!acc || countering || b.lines.length<=2;
-        var title='Line '+l.n+' · '+l.item+' · '+l.qty+' '+l.unit+(os.length?' · '+os.length+' of '+invited+' suppliers quoted':'');
-        return '<details class="line-offers"'+(openIt?' open':'')+'><summary>'+title+(acc?' <span class="tag tag-green">Accepted</span>':os.length?' <span class="muted" style="font-weight:400">see all offers'+(live.length>1&&!acc?', cheapest first':'')+'</span>':'')+'</summary>'+(os.length? '<div class="offers" style="margin-top:.5rem">'+rows+'</div>' : '<div class="small muted" style="margin-top:.4rem">Waiting for offers from '+invited+' invited supplier'+(invited!==1?'s':'')+'…</div>')+'</details>';
+        return '<section class="lbox'+(po?' done':ch?' chosen':'')+'"><div class="lbox-head"><span class="lbox-pic">'+(BS.itemPic(l.item)||BS.catPic(l.cat)?'<img src="'+esc(BS.itemPic(l.item)||BS.catPic(l.cat))+'" alt="" onerror="this.remove()">':'')+'</span><span><strong>'+lineTitle(l)+'</strong><br><span class="small muted">'+esc(l.cat)+(os.length?' · '+os.length+' of '+invited+' supplier'+(invited!==1?'s':'')+' quoted · cheapest first':' · sent to '+invited+' supplier'+(invited!==1?'s':''))+'</span></span>'+state+'</div>'+
+          (os.length ? '<div class="offers">'+rows+'</div>' : '<div class="small muted">No offers yet. You get a notification when the first one arrives.</div>')+'</section>';
       }).join('');
-      /* one-glance summary: one row per line, best offer, one tap to accept; all lines at once */
-      var openBest=summary.filter(function(r){ return r.best; });
-      var sumHtml='';
-      if(summary.some(function(r){ return r.total; })){
-        sumHtml='<div class="cmp-head"><strong style="font-family:var(--display)">Best offer per line</strong>'+(openBest.length>1 && !withdrawn ? '<button class="btn btn-ochre btn-sm" data-accept-all="'+b.id+'">Accept the best price on all '+openBest.length+' lines · '+BS.fmt(openBest.reduce(function(t,r){return t+r.bestTotal;},0))+'</button>' : '')+'</div><div class="cmp">'+
-          summary.map(function(r){ var o=r.acc||r.best; var tot=o?(o.qtyOffered*o.unitPrice+(+o.deliveryCost||0)):0;
-            return '<div class="row'+(r.acc?' acc':'')+'"><span><span class="k">Line '+r.l.n+'</span><span class="n">'+r.l.item+'</span> · '+r.l.qty+' '+r.l.unit+'</span>'+
-              (o ? '<span><span class="k">'+(r.acc?'Accepted':'Best price')+' · brand '+(o.brand||'')+'</span><strong>'+BS.fmt(tot)+'</strong> <span class="small muted">'+BS.fmt(o.unitPrice)+' per '+r.l.unit+(o.deliveryCost?' + delivery':'')+'</span></span>' : '<span class="small muted">Waiting for offers from '+r.invited+' supplier'+(r.invited!==1?'s':'')+'</span>')+
-              '<span class="small muted">'+(r.total? r.live+' offer'+(r.live!==1?'s':'')+' open' : '')+'</span>'+
-              (r.acc ? '<span class="tag tag-green">'+(r.acc.paidAt?'Paid':r.acc.deliveredAt?'Delivered':r.acc.dispatchedAt?'On the way':r.acc.supplierConfirmed?'Contract':'PO issued')+'</span>' : r.best && !withdrawn ? '<button class="btn btn-primary btn-sm" data-accept="'+r.best.id+'" data-line="'+r.l.n+'" data-boq="'+b.id+'" data-best="1">Accept best</button>' : '<span></span>')+'</div>'; }).join('')+'</div>';
+      var bar='';
+      if(!withdrawn && openLines && (chosenN || bestMissing)){
+        bar='<div class="basket"><span><strong>'+chosenN+' of '+openLines+' line'+(openLines!==1?'s':'')+' chosen</strong>'+(chosenN?' · '+BS.fmt(chosenSum):'')+'<br><span class="small muted">'+(chosenN?'Choose the rest now, or complete the order and come back for them later.':'Choose one offer per line, then complete the order once.')+'</span></span><span style="display:flex;gap:.4rem;flex-wrap:wrap">'+(bestMissing?'<button class="btn btn-ghost btn-sm" data-choosebest="'+b.id+'">Choose the best price on '+(bestMissing===openLines-chosenN && !chosenN?'every line':'the other lines')+'</button>':'')+(chosenN?'<button class="btn btn-ochre" data-checkout="'+b.id+'">Complete the order</button>':'')+'</span></div>';
       }
-      var extra=[];
-      if(b.pin) extra.push('Site pinned on the map · shared with the chosen supplier in the PO');
-      var extraHtml = extra.length ? '<p class="small muted" style="margin:.4rem 0 0">'+extra.join(' · ')+'</p>' : '';
-      card.innerHTML=head+sumHtml+extraHtml+body; box.appendChild(card);
+      var extraHtml = b.pin ? '<p class="small muted" style="margin:0">Site pinned on the map · shared with the supplier in the purchase order.</p>' : '';
+      card.innerHTML=head+ordersHtml+extraHtml+body+bar; box.appendChild(card);
     });
   }
-  /* after acceptance the same row carries the order through to payment */
-  /* extras on top of the offer: Build Smartly transport (when the buyer chose it) and transit insurance (when ticked) */
+  /* Background suppliers (test site): quote a few minutes after a request, answer counter-offers, and move their orders
+     along. Runs on the buyer's own device so each thing happens once. They never accept or decline for anyone else. */
+  var autoBusy={};
+  function secs(iso){ return (Date.now()-new Date(iso).getTime())/1000; }
+  async function autoTick(){
+    var me2=BS.me()||{}; if(!me2.phone) return; var A=BS.AUTO;
+    var list=myBoqs().filter(function(b){ return b.status!=='withdrawn' && new Date(b.deadlineAt)>new Date(); });
+    for(var bi=0;bi<list.length;bi++){ var b=list[bi]; var age=secs(b.createdAt);
+      var sups=BS.activeSuppliers().filter(function(s){ return s.auto; });
+      for(var k=0;k<sups.length;k++){ var s=sups[k]; var delay=A.replyAfter[k%A.replyAfter.length];
+        for(var li=0;li<b.lines.length;li++){ var l=b.lines[li]; if(s.cats.indexOf(l.cat)<0) continue; var key='q|'+b.id+'|'+l.n+'|'+s.id;
+          if(age<delay+(l.n%3)*10 || autoBusy[key] || offers.some(function(o){ return o.boqId===b.id && o.lineN===l.n && o.supplierId===s.id; })) continue;
+          autoBusy[key]=1; var base=BS.baseOf(l.item)||1000; var price=Math.round(base*(s.factor||1)*(0.96+Math.random()*0.08)); var brands=(BS.BRANDS[l.cat]||['Other']).filter(function(x){ return x!=='Other'; }); var brand=brands.length?brands[(k+l.n)%brands.length]:'Other';
+          var dEst = b.deliveryTerm==='Supplier delivers to site' && !BS.isHire(l) ? BS.deliveryEstimate([l], s.sub, b.pin||b.subcity).cost : 0;
+          await BS.add('offers', { boqId:b.id, lineN:l.n, supplierId:s.id, supplierName:s.name, supplierSub:s.sub, brand:brand, qtyOffered:l.qty, unitPrice:price, vat:'incl', deliveryCost:dEst, leadDays:1+((k+l.n)%4), validDays:3+(k%2)*4, status:'sent' });
+        }
+      }
+    }
+    var mineIds=myBoqs().map(function(b){ return b.id; });
+    var mineO=offers.filter(function(o){ var sp=BS.supplierById(o.supplierId); return mineIds.indexOf(o.boqId)>=0 && sp && sp.auto; });
+    for(var oi=0;oi<mineO.length;oi++){ var o=mineO[oi];
+      if(o.status==='sent' && o.counter && o.counter.state==='open' && secs(o.counter.at)>A.counterAfter){ var ck='c|'+o.id+'|'+o.counter.at; if(autoBusy[ck]) continue; autoBusy[ck]=1;
+        var yes=o.counter.price>=o.unitPrice*A.acceptCounterAbove;
+        await BS.update('offers', o.id, Object.assign({counter:{price:o.counter.price, at:o.counter.at, state:yes?'accepted':'declined', answeredAt:new Date().toISOString()}}, yes?{unitPrice:o.counter.price}:{}));
+        bsToast('Brand '+o.brand+': the supplier '+(yes?'accepted':'declined')+' your price of '+BS.fmt(o.counter.price)+'.'); }
+    }
+    var groups=BS.orderGroups(mineO);
+    for(var gi=0;gi<groups.length;gi++){ var g=groups[gi], f=g.first, ids=g.offers.map(function(x){ return x.id; }); if(f.paidAt) continue;
+      if(!f.supplierConfirmed && secs(f.acceptedAt)>A.confirmAfter){ var k1='s1|'+g.key; if(autoBusy[k1]) continue; autoBusy[k1]=1; var now1=new Date().toISOString(); await BS.updateMany('offers', ids, Object.assign({supplierConfirmed:true, confirmedAt:now1}, f.buyerAgreedAt?{contractAt:now1}:{})); continue; }
+      if(f.contractAt && !f.readyAt && secs(f.contractAt)>A.readyAfter){ var k2='s2|'+g.key; if(autoBusy[k2]) continue; autoBusy[k2]=1; await BS.updateMany('offers', ids, {readyAt:new Date().toISOString()}); continue; }
+      if(f.readyAt && !f.dispatchedAt && secs(f.readyAt)>A.dispatchAfter){ var k3='s3|'+g.key; if(autoBusy[k3]) continue; autoBusy[k3]=1; await BS.updateMany('offers', ids, {dispatchedAt:new Date().toISOString(), handoverCode:String(Math.floor(1000+Math.random()*9000))}); continue; }
+    }
+  }
+  BS.ready().then(function(){ setInterval(function(){ autoTick().catch(function(){}); }, 5000); });
+  $('mine').addEventListener('input', function(e){ if(e.target.id!=='mineSearch') return; mineQuery=e.target.value; var pos=e.target.selectionStart; renderMine(); var s2=$('mineSearch'); if(s2){ s2.focus(); try{ s2.setSelectionRange(pos,pos); }catch(err){} } });
+  /* extras on top of the offer: Build Smartly transport and transit insurance, as chosen when the order was completed */
   function lineExtras(b, l, o){
-    var goods=o.qtyOffered*o.unitPrice+(+o.deliveryCost||0), delivery=0, insurance=0;
+    var goods=totalOf(o), delivery=0, insurance=0;
     var sub=o.supplierSub||(BS.supplierById(o.supplierId)||{}).sub||'Akaki Kaliti';
-    var platform = o.platformDelivery!==undefined ? !!o.platformDelivery : !!(b && b.deliveryTerm==='Build Smartly arranges delivery');
+    var platform = o.platformDelivery!==undefined ? !!o.platformDelivery : !!(b && /^Build Smartly/.test(b.deliveryTerm||''));
     if(platform) delivery = +o.deliveryAmt>0 ? +o.deliveryAmt : BS.deliveryEstimate([{item:l.item, qty:o.qtyOffered, unit:l.unit}], sub, (b&&(b.pin||b.subcity))||'Bole').cost;
     var insured = o.insurance!==undefined ? !!o.insurance : !!(b && b.insurance);
     if(insured) insurance = +o.insuranceAmt>0 ? +o.insuranceAmt : BS.insuranceFor(goods);
     return { goods:goods, delivery:delivery, insurance:insurance, total:goods+delivery+insurance };
   }
   window.bsLineExtras=lineExtras;
-  function orderSteps(o, b, l){
-    var ex=lineExtras(b, l, o), total=ex.total;
-    var steps=[['PO issued',true],['Supplier reconfirmed',!!o.supplierConfirmed],['Contract agreed',!!o.contractAt],['Goods ready',!!o.readyAt],['On the way',!!o.dispatchedAt],['Delivered',!!o.deliveredAt],['Paid',!!o.paidAt]];
-    var nowIdx=steps.map(function(s){return s[1];}).lastIndexOf(true)+1;
-    var action = o.paidAt ? '<span class="tag tag-green">Paid · order closed · '+(o.paymentRef||'')+'</span>'
-      : o.deliveredAt ? '<a class="btn btn-ochre btn-sm" href="#order-'+o.id+'">Pay '+BS.fmt(total)+' via Yagout Pay</a>'
-      : o.dispatchedAt ? '<span style="display:grid;gap:.3rem"><span class="small">Give the driver handover code <strong>'+o.handoverCode+'</strong></span><button class="btn btn-primary btn-sm" type="button" data-received="'+o.id+'">Goods received</button></span>'
-      : o.readyAt ? '<span class="small muted">Goods ready at the supplier · waiting for dispatch</span>'
-      : o.contractAt ? '<span class="small muted">Contract in force · supplier preparing the goods</span>'
-      : (o.supplierConfirmed && !o.buyerAgreedAt) ? '<a class="btn btn-ochre btn-sm" href="#order-'+o.id+'">Review and agree to the contract</a>'
-      : o.buyerAgreedAt ? '<span class="small muted">You agreed · waiting for the supplier to reconfirm</span>'
-      : '<span class="small muted">Waiting for the supplier to reconfirm price and stock</span>';
-    return '<span style="display:grid;gap:.35rem;grid-column:span 1"><span class="tag tag-green">Accepted · '+(o.poRef||'')+'</span><span class="small" style="font-weight:600">Supplier: '+o.supplierName+' · <a href="#order-'+o.id+'">Order page</a></span><span class="steps-mini">'+steps.map(function(s,i){ return '<span class="'+(s[1]?'done':i===nowIdx?'now':'')+'">'+s[0]+'</span>'; }).join('')+'</span>'+action+'</span>';
-  }
-  /* bar at the top of every page while something waits for the customer: offers, a delivery to confirm, a payment */
+  /* bar at the top of every page while something waits for the customer */
   function renderAlert(list){
     list = list || myBoqs();
     var live=list.filter(function(b){ return b.status!=='withdrawn'; });
     var mineO=offers.filter(function(o){ return live.some(function(b){return b.id===o.boqId;}); });
-    var waiting=mineO.filter(function(o){ return o.status==='sent' && !(o.counter&&o.counter.state==='open'); });
-    var toReceive=mineO.filter(function(o){ return o.status==='accepted' && o.dispatchedAt && !o.deliveredAt; });
-    var toPay=mineO.filter(function(o){ return o.status==='accepted' && o.deliveredAt && !o.paidAt; });
-    var toAgree=mineO.filter(function(o){ return o.status==='accepted' && o.supplierConfirmed && !o.buyerAgreedAt; });
+    var groups=BS.orderGroups(mineO);
+    var waiting=mineO.filter(function(o){ var b=boqById(o.boqId); return validOffer(o) && b && !poOf(b,{n:o.lineN}) && !chosenOf(b,{n:o.lineN}); });
+    var toAgree=groups.filter(function(g){ return g.first.supplierConfirmed && !g.first.buyerAgreedAt; });
+    var toReceive=groups.filter(function(g){ return g.first.dispatchedAt && !g.first.deliveredAt; });
+    var toPay=groups.filter(function(g){ return g.first.deliveredAt && !g.first.paidAt; });
     var parts=[];
-    if(toAgree.length) parts.push(toAgree.length+' contract'+(toAgree.length>1?'s':'')+' waiting for your agreement');
-    if(waiting.length){ var refs={}; waiting.forEach(function(o){ var b=live.filter(function(x){return x.id===o.boqId;})[0]; if(b) refs[b.ref]=1; }); parts.push(waiting.length+' offer'+(waiting.length>1?'s':'')+' to compare on '+Object.keys(refs).join(', ')); }
-    if(toReceive.length) parts.push(toReceive.length+' delivery on the way, confirm with the handover code');
+    if(toAgree.length) parts.push(toAgree.length+' contract'+(toAgree.length>1?'s':'')+' to agree');
+    if(waiting.length) parts.push(waiting.length+' offer'+(waiting.length>1?'s':'')+' to compare');
+    if(toReceive.length) parts.push(toReceive.length+' delivery on the way');
     if(toPay.length) parts.push(toPay.length+' payment due');
-    var showBar = parts.length>0 && !($('showAll').checked) && !!(BS.me()||{}).phone;
+    var showBar = parts.length>0 && !!(BS.me()||{}).phone && !(BS.isStaff&&BS.isStaff());
     $('alertBar').hidden = !showBar;
-    if(showBar){ $('alertText').textContent = parts.join(' · ')+'. You also get an SMS.'; $('alertGo').href = toAgree.length ? '#order-'+toAgree[0].id : toPay.length ? '#order-'+toPay[0].id : '#boq-mine'; $('alertGo').textContent = toAgree.length ? 'Agree to the contract' : waiting.length ? 'Compare and accept' : toReceive.length ? 'Confirm delivery' : 'Pay now'; }
+    if(showBar){ $('alertText').textContent = parts.join(' · ')+'.'; $('alertGo').href = toAgree.length ? '#order-'+toAgree[0].id : toPay.length ? '#order-'+toPay[0].id : toReceive.length ? '#order-'+toReceive[0].id : '#boq-mine'; $('alertGo').textContent = toAgree.length ? 'Agree to the contract' : toPay.length ? 'Pay now' : toReceive.length ? 'Confirm delivery' : 'Compare offers'; }
   }
-  /* buyer details (who is buying, TIN) are asked once, at the first acceptance, never at sign-up */
-  var pendingAccept=null;
+  /* ---------- Complete the order: delivery, insurance and (first time only) the company details, once ---------- */
+  var checkoutBoq=null;
   function buyerKnown(){ var m=BS.me()||{}; return !!(m.tin && (m.company||m.name)); }
-  function gateLabels(){ var t=document.querySelector('input[name=gType]:checked').value; $('gNameLabel').textContent = t==='Individual' ? 'Your full name' : t==='Government' ? 'Name of the office' : 'Legal name of the company'; $('gTinLabel').textContent = t==='Government' ? 'TIN of the office (if it has one)' : 'TIN'; $('gTinHint').textContent = t==='Individual' ? 'Your personal taxpayer number, 10 digits. If you have none, staff will ask for your Fayda ID instead.' : t==='Government' ? 'Optional. Staff will ask for the authorisation letter.' : 'Taxpayer identification number, 10 digits. Checked against the registry before the PO is confirmed.'; $('gContactField').hidden = t==='Individual'; }
+  function gateLabels(){ var t=document.querySelector('input[name=gType]:checked').value; $('gNameLabel').textContent = t==='Individual' ? 'Your full name' : t==='Government' ? 'Name of the office' : 'Legal name of the company'; $('gTinLabel').textContent = t==='Government' ? 'TIN of the office (if it has one)' : 'TIN'; $('gTinHint').textContent = t==='Individual' ? 'Your personal taxpayer number, 10 digits. If you have none, staff ask for your Fayda ID.' : t==='Government' ? 'Optional. Staff ask for the authorisation letter.' : '10 digits. Checked against the registry.'; $('gContactField').hidden = t==='Individual'; }
   document.querySelectorAll('input[name=gType]').forEach(function(r){ r.addEventListener('change', gateLabels); });
-  /* one accepted line: the offer, its request line and the figures for transport by Build Smartly and for insurance */
-  function gateItem(it){
-    var o=offers.filter(function(x){return x.id===it.offerId;})[0]; var b=boqs.filter(function(x){return x.id===it.boqId;})[0]||{}; var l=(b.lines||[]).filter(function(x){return x.n===+it.line;})[0]||{};
-    if(!o) return null; var goods=o.qtyOffered*o.unitPrice+(+o.deliveryCost||0);
-    var sub=o.supplierSub||(BS.supplierById(o.supplierId)||{}).sub||'Akaki Kaliti';
-    var est=BS.deliveryEstimate([{item:l.item, qty:o.qtyOffered, unit:l.unit}], sub, b.pin||b.subcity||'Bole');
-    return {it:it, o:o, b:b, l:l, goods:goods, est:est, insurance:BS.insuranceFor(goods), delivers:b.deliveryTerm!=='I collect from supplier', hire:BS.isHire(l)};
+  function checkoutItems(b){ return b.lines.map(function(l){ if(poOf(b,l)) return null; var o=chosenOf(b,l); if(!o) return null; var sub=o.supplierSub||(BS.supplierById(o.supplierId)||{}).sub||'Akaki Kaliti'; var est=BS.deliveryEstimate([{item:l.item, qty:o.qtyOffered, unit:l.unit}], sub, b.pin||b.subcity||'Bole'); return {o:o, l:l, goods:totalOf(o), est:est, ins:BS.insuranceFor(totalOf(o)), hire:BS.isHire(l)}; }).filter(Boolean); }
+  function checkoutGroups(items){ var by={}, out=[]; items.forEach(function(it){ var k=it.o.supplierId; if(!by[k]){ by[k]={items:[]}; out.push(by[k]); } by[k].items.push(it); }); return out; }
+  function useBsTransport(b){ var t=b.deliveryTerm||''; if(/^Build Smartly/.test(t)) return !document.getElementById('gDel-own') || !document.getElementById('gDel-own').checked; if(t==='I collect from supplier') return !!(document.getElementById('gDel-bs')||{}).checked; return false; }
+  function drawCheckout(){
+    var b=boqById(checkoutBoq); if(!b) return; var items=checkoutItems(b), groups=checkoutGroups(items), term=b.deliveryTerm||'';
+    var bs=useBsTransport(b), ins=!!(document.getElementById('gIns')||{}).checked;
+    var goods=0, trans=0, trips=0, insT=0; items.forEach(function(it){ goods+=it.goods; if(!it.hire){ trans+=it.est.cost; trips+=it.est.trips; } insT+=it.ins; });
+    var html='<h3 style="margin-top:.3rem">Complete the order · '+esc(b.ref)+'</h3><p class="small muted" style="margin:.2rem 0 .6rem">'+items.length+' line'+(items.length!==1?'s':'')+' from '+groups.length+' supplier'+(groups.length!==1?'s':'')+': '+(groups.length>1?groups.length+' purchase orders, one per supplier.':'one purchase order.')+' The supplier\'s name appears on the order.</p>'+
+      groups.map(function(g,gi){ var sum=0; g.items.forEach(function(it){ sum+=it.goods; }); return '<div class="ck-group"><div class="small muted" style="font-weight:600">Order '+(gi+1)+'</div>'+g.items.map(function(it){ return '<div class="ck-row"><span>'+esc(it.l.item)+' · '+it.o.qtyOffered+' '+esc(it.l.unit)+' · brand '+esc(it.o.brand)+'</span><strong>'+BS.fmt(it.goods)+'</strong></div>'; }).join('')+(g.items.length>1?'<div class="ck-row small muted"><span>Order '+(gi+1)+' goods</span><span>'+BS.fmt(sum)+'</span></div>':'')+'</div>'; }).join('');
+    var delivery='';
+    if(term==='Supplier delivers to site') delivery='<p class="small muted" style="margin:.2rem 0">Delivery to '+esc(b.subcity)+(b.pin?' (pinned site)':'')+' by the supplier, included in the prices above.</p>';
+    else if(trips || /^Build Smartly/.test(term) || term==='I collect from supplier') delivery='<div class="su-choices">'+
+      '<div class="choice"><input type="radio" name="gDel" id="gDel-bs" value="bs"'+(bs?' checked':'')+'><label for="gDel-bs"><strong>Build Smartly delivers · '+BS.fmt(trans)+'</strong><span>'+trips+' truck trip'+(trips!==1?'s':'')+' to '+esc(b.subcity)+(b.pin?' (pinned site)':'')+', example tariff.</span></label></div>'+
+      '<div class="choice"><input type="radio" name="gDel" id="gDel-own" value="own"'+(bs?'':' checked')+'><label for="gDel-own"><strong>I collect with my own transport</strong><span>From the supplier\'s depot, named on the purchase order.</span></label></div></div>';
+    if(items.some(function(it){ return it.hire; })) delivery+='<p class="small muted" style="margin:.2rem 0">Hired equipment: the supplier brings it and collects it on the return date; you arrange it with them.</p>';
+    var total=goods+(bs?trans:0)+(ins?insT:0);
+    html+='<div style="margin-top:.6rem"><strong>Delivery</strong>'+delivery+'</div>'+
+      '<label class="check" style="margin-top:.5rem"><input type="checkbox" id="gIns"'+(ins?' checked':'')+'><span>Add transit insurance for the whole order · <strong>'+BS.fmt(insT)+'</strong> <span class="small muted">('+BS.pct(BS.INSURANCE.rate)+' of the goods value, example rate)</span></span></label>'+
+      '<div class="ck-total"><div class="ck-row"><span>Goods</span><span>'+BS.fmt(goods)+'</span></div>'+(bs?'<div class="ck-row"><span>Build Smartly delivery</span><span>'+BS.fmt(trans)+'</span></div>':'')+(ins?'<div class="ck-row"><span>Transit insurance</span><span>'+BS.fmt(insT)+'</span></div>':'')+'<div class="ck-row" style="font-size:1.1rem"><strong>Total</strong><strong>'+BS.fmt(total)+'</strong></div></div>'+
+      '<p class="small muted" style="margin:.4rem 0 0">Nothing is charged now. You pay after delivery through Yagout Pay.</p>';
+    $('gDeliv').innerHTML=html; $('gDeliv').hidden=false;
+    $('gSave').textContent = groups.length>1 ? 'Place '+groups.length+' orders' : 'Place the order';
   }
-  function gateDelivHtml(items){
-    var gi=items.map(gateItem).filter(Boolean); if(!gi.length) return '';
-    var fmt=BS.fmt; var goods=0, ins=0, trans=0, trips=0, collect=gi.filter(function(g){ return !g.delivers && !g.hire; });
-    gi.forEach(function(g){ goods+=g.goods; ins+=g.insurance; }); collect.forEach(function(g){ trans+=g.est.cost; trips+=g.est.trips; });
-    var rows=gi.map(function(g){ return '<div style="display:flex;justify-content:space-between;gap:.6rem"><span>'+esc(g.l.item)+' · '+g.o.qtyOffered+' '+esc(g.l.unit)+'</span><strong>'+fmt(g.goods)+(g.delivers&&!g.hire?' <span class="small muted">delivered</span>':'')+'</strong></div>'; }).join('');
-    var delivery = collect.length
-      ? '<div class="su-choices" style="margin-top:.4rem"><div class="choice"><input type="radio" name="gDel" id="gDel-own" value="own" checked><label for="gDel-own"><strong>I collect with my own transport</strong><span>Ex-works: you load at the supplier\'s depot ('+esc(collect.map(function(g){ return g.o.supplierSub||''; }).filter(Boolean).join(', ')||'dispatch point in the PO')+').</span></label></div><div class="choice"><input type="radio" name="gDel" id="gDel-bs" value="bs"><label for="gDel-bs"><strong>Build Smartly arranges the transport · '+fmt(trans)+'</strong><span>'+trips+' truck trip'+(trips===1?'':'s')+' to '+esc(gi[0].b.subcity||'your site')+(gi[0].b.pin?' (pinned site)':'')+', example tariff until the owner sets it. Added to your invoice.</span></label></div></div>'
-      : '<p class="small muted" style="margin:.3rem 0 0">'+(gi.some(function(g){return g.hire;})?'Equipment is mobilised to your site by the supplier; the price above includes it.':'Delivered to '+esc(gi[0].b.subcity||'your site')+(gi[0].b.pin?' (pinned site)':'')+' by the supplier. The price above includes transport.')+'</p>';
-    return '<h3 style="margin-top:.4rem">Delivery and cover for this order</h3><div class="small" style="display:grid;gap:.25rem;margin:.4rem 0">'+rows+(gi.length>1?'<div style="display:flex;justify-content:space-between;gap:.6rem;border-top:1px solid var(--line);padding-top:.25rem"><span>Goods</span><strong>'+fmt(goods)+'</strong></div>':'')+'</div>'+delivery+
-      '<label class="check" style="margin-top:.6rem"><input type="checkbox" id="gIns"><span>Add transit insurance · <strong>'+fmt(ins)+'</strong> <span class="small muted">('+BS.pct(BS.INSURANCE.rate)+' of the goods value, example rate, through a licensed insurer; paid with the order)</span></span></label>'+
-      '<p class="small muted" style="margin:.5rem 0 0">You pay after delivery, through Yagout Pay, with the receipt as your record. Nothing is charged now.</p>';
-  }
-  function gatePatchFor(it){
-    var g=gateItem(it); if(!g) return {}; var bs=document.getElementById('gDel-bs'); var platform=!!(bs && bs.checked && !g.delivers && !g.hire); var ins=!!(document.getElementById('gIns')||{}).checked;
-    return {platformDelivery:platform, deliveryAmt:platform?g.est.cost:0, deliveryTrips:platform?g.est.trips:0, insurance:ins, insuranceAmt:ins?g.insurance:0};
-  }
-  function openGate(items){
-    var m=BS.me()||{}; if(m.company && !$('gName').value) $('gName').value=m.company; gateLabels();
-    var html=gateDelivHtml(items||[]); $('gDeliv').innerHTML=html; $('gDeliv').hidden=!html;
+  function openCheckout(boqId){
+    checkoutBoq=boqId; var m=BS.me()||{}; if(m.company && !$('gName').value) $('gName').value=m.company; gateLabels();
     var needCompany=!buyerKnown(); $('gCompany').hidden=!needCompany; $('gCompany').style.display=needCompany?'grid':'none';
-    $('gSave').textContent = items&&items.length ? (items.length>1?'Issue the purchase orders':'Issue the purchase order') : 'Save';
-    $('poGate').hidden=false; if(needCompany) $('gName').focus();
+    $('gDeliv').innerHTML=''; drawCheckout(); $('poGate').hidden=false;
   }
-  window.bsOpenGate=function(){ pendingAccept=null; openGate([]); };
-  $('gCancel').onclick=function(){ $('poGate').hidden=true; pendingAccept=null; renderMine(); };
+  $('gDeliv').addEventListener('change', function(){ drawCheckout(); });
+  function openGate(){ checkoutBoq=null; var m=BS.me()||{}; if(m.company && !$('gName').value) $('gName').value=m.company; gateLabels(); $('gDeliv').hidden=true; $('gCompany').hidden=false; $('gCompany').style.display='grid'; $('gSave').textContent='Save'; $('poGate').hidden=false; $('gName').focus(); }
+  window.bsOpenGate=function(){ openGate(); };
+  $('gCancel').onclick=function(){ $('poGate').hidden=true; checkoutBoq=null; };
   $('gSave').onclick=async function(){
-    if(!buyerKnown()){
+    if(!buyerKnown() || !checkoutBoq){
       var t=document.querySelector('input[name=gType]:checked').value, name=$('gName').value.trim(), tin=$('gTin').value.replace(/[\s-]/g,''), ok=true;
-      $('gNameErr').hidden=!!name; ok=ok&&!!name;
-      var okTin = t==='Government' ? (!tin || /^\d{10}$/.test(tin)) : /^\d{10}$/.test(tin); $('gTinErr').hidden=okTin; ok=ok&&okTin;
-      if(!ok) return;
-      var me2=BS.me()||{}; BS.setMe(Object.assign({}, me2, {type:t, name:name, company: t==='Individual' ? '' : name, tin: tin||'(office, none)', contact:$('gContact').value.trim()}));
-      if(window.BSAuth) BSAuth.refresh(); $('who').textContent='Signed in as '+name; if(window.BSWorkspaceRefresh) BSWorkspaceRefresh();
-      /* the customer name on earlier requests is updated so the PO carries the legal name */
-      for(var i=0;i<boqs.length;i++){ if(boqs[i].ownerPhone===(me2.phone||'').replace(/\D/g,'').replace(/^251/,'') && boqs[i].company!==name){ await BS.update('boqs', boqs[i].id, {company:name}); boqs[i].company=name; } }
-    }
-    var p=pendingAccept; pendingAccept=null; var list = p ? (p.all || [p]) : [];
-    var patches=list.map(function(it){ return gatePatchFor(it); });
-    $('poGate').hidden=true;
-    if(list.length>1){ for(var k=0;k<list.length;k++){ await acceptOffer(list[k].offerId, list[k].boqId, list[k].line, true, patches[k]); } bsToast(list.length+' purchase orders issued, one per line. Each supplier must reconfirm price and stock.'); }
-    else if(list.length===1){ await acceptOffer(list[0].offerId, list[0].boqId, list[0].line, false, patches[0]); }
-    else { bsToast('Company details saved.'); }
-  };
-  /* cheapest open offer on every line that has no accepted offer yet */
-  function bestOffersFor(boqId){
-    var b=boqs.filter(function(x){return x.id===boqId;})[0]; if(!b) return [];
-    return b.lines.map(function(l){ var os=offers.filter(function(o){ return o.boqId===b.id && o.lineN===l.n && o.status!=='rejected' && !(o.counter&&o.counter.state==='open'); }); if(os.some(function(o){return o.status==='accepted';})) return null; os.sort(function(a,c){ return (a.qtyOffered*a.unitPrice+(+a.deliveryCost||0))-(c.qtyOffered*c.unitPrice+(+c.deliveryCost||0)); }); return os[0] ? {offerId:os[0].id, boqId:b.id, line:l.n} : null; }).filter(Boolean);
-  }
-  async function acceptMany(list){ for(var i=0;i<list.length;i++){ await acceptOffer(list[i].offerId, list[i].boqId, list[i].line, true); } bsToast(list.length+' purchase orders issued, one per line. Each supplier must reconfirm price and stock.'); }
-  async function acceptOffer(offerId, boqId, line, quiet, extra){
-    var boq=boqs.filter(function(x){return x.id===boqId;})[0]; var po=(boq?boq.ref:'BS')+'-L'+line; var m=BS.me()||{};
-    await BS.update('offers', offerId, Object.assign({status:'accepted', poRef:'PO-'+po, acceptedAt:new Date().toISOString(), customerRevealed: m.company||m.name||(boq?boq.company:''), customerTin:m.tin||''}, extra||{}));
-    if(!quiet) bsToast('PO-'+po+' issued. The supplier has been notified and must reconfirm price and stock.');
-  }
-  $('mine').addEventListener('click', async function(e){
-    var b=e.target.closest('[data-accept]');
-    if(b){ pendingAccept={offerId:b.dataset.accept, boqId:b.dataset.boq, line:b.dataset.line}; openGate([pendingAccept]); return; }
-    var ba=e.target.closest('[data-accept-all]');
-    if(ba){ var all=bestOffersFor(ba.dataset.acceptAll); if(!all.length) return; pendingAccept={all:all}; openGate(all); return; }
-    var r=e.target.closest('[data-reject]');
-    if(r){ r.disabled=true; await BS.update('offers', r.dataset.reject, {status:'rejected', rejectedAt:new Date().toISOString()}); bsToast('Offer rejected. The supplier has been informed.'); return; }
-    var c=e.target.closest('[data-counter]');
-    if(c){ var inp=document.querySelector('[data-cin="'+c.dataset.counter+'"]'); var price=+(inp&&inp.value); if(!(price>0)){ bsToast('Enter the unit price you propose.'); return; } c.disabled=true;
-      await BS.update('offers', c.dataset.counter, {counter:{price:price, at:new Date().toISOString(), state:'open'}}); bsToast('Counter-offer sent. If the supplier accepts, the order is issued at your price.'); return; }
-    var rc=e.target.closest('[data-received]');
-    if(rc){ rc.disabled=true; await BS.update('offers', rc.dataset.received, {deliveredAt:new Date().toISOString()}); bsToast('Delivery confirmed. The supplier is notified. You can now pay.'); return; }
-    var py=e.target.closest('[data-pay]');
-    if(py){ var o=offers.filter(function(x){return x.id===py.dataset.pay;})[0]; if(!o) return; var bq2=boqs.filter(function(q){return q.id===o.boqId;})[0]||{}; var ln=(bq2.lines||[]).filter(function(x){return x.n===o.lineN;})[0]||{}; var ex=lineExtras(bq2, ln, o);
-      payFor=o.id; payTotal=ex.total; $('payRef').textContent=o.poRef||''; $('paySup').textContent=o.supplierName||''; $('payGoodsLbl').textContent = bq2.deliveryTerm==='Supplier delivers to site' ? 'Goods, delivered' : 'Goods, ex-works'; $('payAmt').textContent=BS.fmt(ex.goods);
-      $('payDelRow').hidden=!ex.delivery; $('payDel').textContent=BS.fmt(ex.delivery); $('payInsRow').hidden=!ex.insurance; $('payIns').textContent=BS.fmt(ex.insurance); $('payTotRow').hidden=!(ex.delivery||ex.insurance); $('payTot').textContent=BS.fmt(ex.total); $('payGate').hidden=false; return; }
-    var w=e.target.closest('[data-withdraw]');
-    if(w){ w.disabled=true; await BS.update('boqs', w.dataset.withdraw, {status:'withdrawn', withdrawnAt:new Date().toISOString()}); bsToast('Request withdrawn. Suppliers no longer see it.'); return; }
-    var x=e.target.closest('[data-extend]');
-    if(x){ x.disabled=true; var bq=boqs.filter(function(q){return q.id===x.dataset.extend;})[0]; var base=Math.max(Date.now(), new Date(bq.deadlineAt).getTime()); await BS.update('boqs', x.dataset.extend, {deadlineAt:new Date(base+(+x.dataset.days)*86400000).toISOString(), extended:true}); bsToast('Deadline extended by '+x.dataset.days+' days. Suppliers have been notified. This can be done once.'); return; }
-  });
-  /* payment through the gateway (test site: no money moves) */
-  var payFor=null, payTotal=0;
-  $('payCancel').onclick=function(){ $('payGate').hidden=true; payFor=null; };
-  $('payNow').onclick=async function(){ if(!payFor) return; var m=document.querySelector('input[name=payM]:checked').value; $('payNow').disabled=true; $('payNow').textContent='Paying…'; await BS.update('offers', payFor, {paidAt:new Date().toISOString(), paymentRef:'YP-'+Math.floor(100000+Math.random()*900000), paymentMethod:m}); $('payGate').hidden=true; $('payNow').disabled=false; $('payNow').textContent='Pay now'; payFor=null; bsToast('Payment completed through Yagout Pay ('+m+'). Supplier and Build Smartly finance notified. Order closed.'); };
-  /* Simulated suppliers (test site). Suppliers marked auto in the catalogue quote a while after a request arrives,
-     answer counter-offers, reconfirm, prepare and dispatch orders. Runs only on the phone that owns the request,
-     so each thing happens once. The named suppliers are played by real people and are never simulated. */
-  var autoBusy={};
-  function autoSup(id){ var s=BS.supplierById(id); return (s&&s.auto&&s.status==='active')?s:null; }
-  function secs(iso){ return (Date.now()-new Date(iso).getTime())/1000; }
-  async function autoTick(){
-    var me2=BS.me()||{}; if(!me2.phone || $('showAll').checked) return; var A=BS.AUTO;
-    var list=myBoqs().filter(function(b){ return b.status!=='withdrawn' && new Date(b.deadlineAt)>new Date(); });
-    for(var bi=0;bi<list.length;bi++){ var b=list[bi]; var age=secs(b.createdAt);
-      for(var li=0;li<b.lines.length;li++){ var l=b.lines[li];
-        var sups=BS.activeSuppliers().filter(function(s){ return s.auto && s.cats.indexOf(l.cat)>=0; });
-        for(var k=0;k<sups.length;k++){ var s=sups[k]; var delay=A.replyAfter[k%A.replyAfter.length]+(l.n%3)*7; var key='q|'+b.id+'|'+l.n+'|'+s.id;
-          if(age<delay || autoBusy[key] || offers.some(function(o){ return o.boqId===b.id && o.lineN===l.n && o.supplierId===s.id; })) continue;
-          autoBusy[key]=1; var base=BS.baseOf(l.item)||1000; var price=Math.round(base*(0.93+Math.random()*0.15)); var brands=BS.BRANDS[l.cat]||['Other']; var brand=brands[Math.floor(Math.random()*Math.max(1,brands.length-1))];
-          var dEst = b.deliveryTerm==='Supplier delivers to site' ? BS.deliveryEstimate([l], s.sub, b.pin||b.subcity).cost : 0; if(dEst && Math.random()<0.3) dEst=0; /* some suppliers fold transport into the unit price */
-          await BS.add('offers', { boqId:b.id, lineN:l.n, supplierId:s.id, supplierName:s.name, supplierSub:s.sub, brand:brand, qtyOffered:l.qty, unitPrice:dEst?price:Math.round(price*1.03), vat:'incl', deliveryCost:dEst, leadDays:1+Math.floor(Math.random()*4), validDays:3, status:'sent' });
-        }
+      if(!$('gCompany').hidden){
+        $('gNameErr').hidden=!!name; ok=ok&&!!name;
+        var okTin = t==='Government' ? (!tin || /^\d{10}$/.test(tin)) : /^\d{10}$/.test(tin); $('gTinErr').hidden=okTin; ok=ok&&okTin;
+        if(!ok) return;
+        var me2=BS.me()||{}; BS.setMe(Object.assign({}, me2, {type:t, name:name, company: t==='Individual' ? '' : name, tin: tin||'(office, none)', contact:$('gContact').value.trim()}));
+        if(window.BSAuth) BSAuth.refresh(); $('who').textContent='Signed in as '+name; if(window.BSWorkspaceRefresh) BSWorkspaceRefresh();
+        for(var i=0;i<boqs.length;i++){ if(boqs[i].ownerPhone===(me2.phone||'').replace(/\D/g,'').replace(/^251/,'') && boqs[i].company!==name){ await BS.update('boqs', boqs[i].id, {company:name}); boqs[i].company=name; } }
       }
     }
-    var mineIds=myBoqs().map(function(b){return b.id;});
-    var mineO=offers.filter(function(o){ return mineIds.indexOf(o.boqId)>=0 && autoSup(o.supplierId); });
-    for(var oi=0;oi<mineO.length;oi++){ var o=mineO[oi]; var b2=boqs.filter(function(x){return x.id===o.boqId;})[0]; var ref=b2?b2.ref:'BS';
-      if(o.status==='sent' && o.counter && o.counter.state==='open' && secs(o.counter.at)>A.counterAfter){ var ck='c|'+o.id+'|'+o.counter.at; if(autoBusy[ck]) continue; autoBusy[ck]=1;
-        if(o.counter.price>=o.unitPrice*A.acceptCounterAbove){ await BS.update('offers', o.id, {unitPrice:o.counter.price, counter:{price:o.counter.price, at:o.counter.at, state:'accepted'}, status:'accepted', poRef:'PO-'+ref+'-L'+o.lineN, acceptedAt:new Date().toISOString(), customerRevealed:(me2.company||me2.name||(b2?b2.company:'')), customerTin:me2.tin||''}); bsToast('SMS · Build Smartly: '+o.supplierName+' accepted your price on '+ref+' line '+o.lineN+'. PO issued.'); }
-        else { await BS.update('offers', o.id, {counter:{price:o.counter.price, at:o.counter.at, state:'declined'}}); bsToast('SMS · Build Smartly: the supplier declined your price on '+ref+' line '+o.lineN+'. The original offer stands.'); }
-        continue; }
-      if(o.status!=='accepted' || o.paidAt) continue;
-      if(!o.supplierConfirmed && secs(o.acceptedAt)>A.confirmAfter){ var k1='s1|'+o.id; if(autoBusy[k1]) continue; autoBusy[k1]=1; var now1=new Date().toISOString(); await BS.update('offers', o.id, Object.assign({supplierConfirmed:true, confirmedAt:now1}, o.buyerAgreedAt?{contractAt:now1}:{})); bsToast('SMS · Build Smartly: '+o.supplierName+' reconfirmed '+o.poRef+'. Contract issued to both parties.'); continue; }
-      if(o.contractAt && !o.readyAt && secs(o.contractAt)>A.readyAfter){ var k2='s2|'+o.id; if(autoBusy[k2]) continue; autoBusy[k2]=1; await BS.update('offers', o.id, {readyAt:new Date().toISOString()}); bsToast('SMS · Build Smartly: goods for '+o.poRef+' are ready at the supplier.'); continue; }
-      if(o.readyAt && !o.dispatchedAt && secs(o.readyAt)>A.dispatchAfter){ var k3='s3|'+o.id; if(autoBusy[k3]) continue; autoBusy[k3]=1; var code=String(Math.floor(1000+Math.random()*9000)); await BS.update('offers', o.id, {dispatchedAt:new Date().toISOString(), handoverCode:code}); bsToast('SMS · Build Smartly: goods for '+o.poRef+' are on the way. Handover code '+code+'.'); continue; }
-    }
-  }
-  BS.ready().then(function(){ setInterval(function(){ autoTick().catch(function(){}); }, 5000); });
+    if(!checkoutBoq){ $('poGate').hidden=true; bsToast('Company details saved.'); return; }
+    var b=boqById(checkoutBoq); if(!b) return; var items=checkoutItems(b), groups=checkoutGroups(items); if(!items.length){ $('poGate').hidden=true; return; }
+    var bs=useBsTransport(b), ins=!!(document.getElementById('gIns')||{}).checked, m=BS.me()||{}, now=new Date().toISOString();
+    $('gSave').disabled=true; $('gSave').textContent='Placing…';
+    var k=BS.orderGroups(offers, function(o){ return o.boqId===b.id; }).length, refs=[];
+    for(var gi=0; gi<groups.length; gi++){ k++; var poRef='PO-'+b.ref+'-'+k; refs.push(poRef);
+      for(var j=0;j<groups[gi].items.length;j++){ var it=groups[gi].items[j]; var pf=bs && !it.hire;
+        await BS.update('offers', it.o.id, {status:'accepted', poRef:poRef, acceptedAt:now, customerRevealed:m.company||m.name||b.company||'', customerTin:m.tin||'', platformDelivery:pf, deliveryAmt:pf?it.est.cost:0, deliveryTrips:pf?it.est.trips:0, insurance:ins, insuranceAmt:ins?it.ins:0}); } }
+    var ch=Object.assign({}, b.chosen||{}); items.forEach(function(it){ delete ch[it.l.n]; }); await BS.update('boqs', b.id, {chosen:ch});
+    $('gSave').disabled=false; $('poGate').hidden=true; checkoutBoq=null;
+    bsToast((refs.length>1?refs.length+' orders placed: ':'Order placed: ')+refs.join(', ')+'. The supplier reconfirms price and stock; you get a notification.');
+  };
+  /* cheapest valid offer on every open line that has no choice yet */
+  async function chooseBest(boqId){ var b=boqById(boqId); if(!b) return; var ch=Object.assign({}, b.chosen||{}); var n=0;
+    b.lines.forEach(function(l){ if(poOf(b,l) || chosenOf(b,l)) return; var best=offersOn(b,l).filter(validOffer)[0]; if(best){ ch[l.n]=best.id; n++; } });
+    await BS.update('boqs', b.id, {chosen:ch}); bsToast(n+' line'+(n!==1?'s':'')+' set to the best price. Check them, then press Complete the order.'); }
+  $('mine').addEventListener('click', async function(e){
+    var t=e.target;
+    var c0=t.closest('[data-choose]'); if(c0){ var b0=boqById(c0.dataset.boq); var ch0=Object.assign({}, b0.chosen||{}); ch0[c0.dataset.line]=c0.dataset.choose; await BS.update('boqs', b0.id, {chosen:ch0}); bsToast('Chosen. Choose the other lines, then Complete the order.'); return; }
+    var u0=t.closest('[data-unchoose]'); if(u0){ var b1=boqById(u0.dataset.unchoose); var ch1=Object.assign({}, b1.chosen||{}); delete ch1[u0.dataset.line]; await BS.update('boqs', b1.id, {chosen:ch1}); return; }
+    var cb=t.closest('[data-choosebest]'); if(cb){ await chooseBest(cb.dataset.choosebest); return; }
+    var co=t.closest('[data-checkout]'); if(co){ openCheckout(co.dataset.checkout); return; }
+    var r=t.closest('[data-reject]');
+    if(r){ var ro=offers.filter(function(x){ return x.id===r.dataset.reject; })[0]||{};
+      if(!(await bsConfirm('Reject this offer?', 'Brand '+(ro.brand||'')+' at '+BS.fmt(totalOf(ro))+'. The supplier is told. You can undo it while the offer is valid.', 'Yes, reject it'))) return;
+      var rb=boqById(ro.boqId); if(rb && (rb.chosen||{})[ro.lineN]===ro.id){ var ch2=Object.assign({}, rb.chosen); delete ch2[ro.lineN]; await BS.update('boqs', rb.id, {chosen:ch2}); }
+      await BS.update('offers', ro.id, {status:'rejected', rejectedAt:new Date().toISOString()}); bsToast('Offer rejected.'); return; }
+    var ur=t.closest('[data-unreject]'); if(ur){ await BS.update('offers', ur.dataset.unreject, {status:'sent', rejectedAt:''}); bsToast('Offer restored.'); return; }
+    var c=t.closest('[data-counter]');
+    if(c){ var inp=document.querySelector('[data-cin="'+c.dataset.counter+'"]'); var price=+(inp&&inp.value); if(!(price>0)){ bsToast('Type the price you propose.'); return; } c.disabled=true;
+      var co2=offers.filter(function(x){ return x.id===c.dataset.counter; })[0]; var cbq=co2&&boqById(co2.boqId); if(cbq && (cbq.chosen||{})[co2.lineN]===co2.id){ var ch3=Object.assign({}, cbq.chosen); delete ch3[co2.lineN]; await BS.update('boqs', cbq.id, {chosen:ch3}); }
+      await BS.update('offers', c.dataset.counter, {counter:{price:price, at:new Date().toISOString(), state:'open'}}); bsToast('Your price was sent to the supplier. You get a notification with the answer.'); return; }
+    var w=t.closest('[data-withdraw]');
+    if(w){ if(!(await bsConfirm('Withdraw this request?', 'Suppliers no longer see it and open offers are closed.', 'Withdraw'))) return; w.disabled=true; await BS.update('boqs', w.dataset.withdraw, {status:'withdrawn', withdrawnAt:new Date().toISOString()}); bsToast('Request withdrawn.'); return; }
+    var x=t.closest('[data-extend]');
+    if(x){ x.disabled=true; var bq=boqById(x.dataset.extend); var base=Math.max(Date.now(), new Date(bq.deadlineAt).getTime()); await BS.update('boqs', x.dataset.extend, {deadlineAt:new Date(base+(+x.dataset.days)*86400000).toISOString(), extended:true}); bsToast('Deadline extended by '+x.dataset.days+' days. Suppliers are told.'); return; }
+  });
 })();
 
 /* ---------- Supplier portal ---------- */
@@ -2398,7 +2480,7 @@ function bsSupport(threadId, inputId, sendId){
     var key='bs_demo_prices_'+s.id, p=null; try{ p=JSON.parse(localStorage.getItem(key)||'null'); }catch(e){}
     var d=BS.supplierDoc(s.docId||('seed-'+s.id)); if(d && Array.isArray(d.prices) && d.prices.length) return d.prices.slice();
     if(p && p.length && d && sup===s){ syncSupplierDoc({prices:p}); } /* a list kept on this device before the shared record existed: share it so staff see it */
-    if(!p){ p=[]; if(!s.own){ var seedP=[1180,1050,2350,2600,9800,9900,38,14500], seedAge=[0,1,4,0,2,5,0,3]; BS.CATALOGUE.filter(function(c){return s.cats.indexOf(c.cat)>=0;}).slice(0,8).forEach(function(c,i){ p.push({name:c.name, unit:c.unit, price:seedP[i%8], vat:'incl', min:0, stock:'In stock', valid:3, confirmedAt:new Date(Date.now()-seedAge[i%8]*86400000).toISOString()}); }); } }
+    if(!p){ p=[]; if(!s.own){ var k=s.id==='megenagna'?1.03:1; BS.CATALOGUE.filter(function(c){return !c.hidden && s.cats.indexOf(c.cat)>=0 && c.base>0;}).forEach(function(c){ p.push({name:c.name, unit:c.unit, price:Math.round(c.base*k), vat:'incl', min:0, stock:'In stock', valid:7, confirmedAt:new Date().toISOString()}); }); } }
     return p;
   }
   function savePrices(){ try{ localStorage.setItem('bs_demo_prices_'+sup.id, JSON.stringify(prices)); }catch(e){} syncSupplierDoc({prices:prices}); }
@@ -2411,7 +2493,7 @@ function bsSupport(threadId, inputId, sendId){
   }
   BS.onSuppliers(function(){ if(!sup) return; var d=BS.supplierDoc(sup.docId||('seed-'+sup.id)); if(!d) return; var changed=false;
     if(d.status==='removed' || d.status==='suspended'){ var why=d.status==='removed'?'This supplier account was removed by Build Smartly staff.':'This supplier account is paused by Build Smartly staff.'; sup=null; BS.setMe({}); $('portal').hidden=true; $('login').hidden=false; if(window.BSAuth) BSAuth.refresh(); bsToast(why); return; }
-    if(Array.isArray(d.prices) && JSON.stringify(d.prices)!==JSON.stringify(prices)){ prices=d.prices.slice(); try{ localStorage.setItem('bs_demo_prices_'+sup.id, JSON.stringify(prices)); }catch(e){} changed=true; }
+    if(!pricesDirty && Array.isArray(d.prices) && JSON.stringify(d.prices)!==JSON.stringify(prices)){ prices=d.prices.slice(); try{ localStorage.setItem('bs_demo_prices_'+sup.id, JSON.stringify(prices)); }catch(e){} changed=true; }
     if(d.cats && d.cats.length && JSON.stringify(d.cats)!==JSON.stringify(profile.cats)){ profile.cats=d.cats.slice(); sup.cats=profile.cats; changed=true; }
     if(d.status==='active' && profile.docs && !profile.docs.verified){ profile.docs.verified=true; profile.docs.submitted=true; changed=true; }
     if(changed){ try{ localStorage.setItem('bs_demo_supprofile_'+sup.id, JSON.stringify(profile)); }catch(e){} fillProfileForm(); render(); } });
@@ -2434,7 +2516,8 @@ function bsSupport(threadId, inputId, sendId){
   /* ----- tabs ----- */
   function showTab(t){ var sub=t; t=TABMAP[t]||t; document.querySelectorAll('#spTabs button').forEach(function(x){x.classList.toggle('on',x.dataset.tab===t);}); TABS.forEach(function(k){ $('tab-'+k).hidden = k!==t; }); if(t==='mail'){ $('spMailBadge').hidden=true; } if(sub==='profile'||sub==='stats'){ var el=$('tab-'+sub); if(el) setTimeout(function(){ el.scrollIntoView({behavior:'smooth',block:'start'}); },30); return; } window.scrollTo(0,0); }
   document.querySelectorAll('#spTabs button').forEach(function(b){ b.onclick=function(){ showTab(b.dataset.tab); }; });
-  $('spMailTabs').addEventListener('click', function(e){ var b=e.target.closest('[data-m]'); if(!b) return; $('spMailTabs').querySelectorAll('button').forEach(function(x){ x.classList.toggle('on', x===b); }); ['notif','inbox','sent','sms','support','news'].forEach(function(k){ $('spm-'+k).hidden = k!==b.dataset.m; }); });
+  window.bsSupplierTab=function(t, sub){ if(!sup) return; showTab(t); if(sub){ var mb=document.querySelector('#spMailTabs [data-m="'+sub+'"]'); if(mb) mb.click(); } };
+  $('spMailTabs').addEventListener('click', function(e){ var b=e.target.closest('[data-m]'); if(!b) return; $('spMailTabs').querySelectorAll('button').forEach(function(x){ x.classList.toggle('on', x===b); }); ['statements','support','news'].forEach(function(k){ $('spm-'+k).hidden = k!==b.dataset.m; }); });
   bsSupport('spSupportThread','spSupportIn','spSupportSend');
   document.addEventListener('click', function(e){ var b=e.target.closest('[data-go]'); if(b && !$('view-supplier').hidden){ showTab(b.dataset.go); } });
 
@@ -2489,7 +2572,8 @@ function bsSupport(threadId, inputId, sendId){
     profile.type=$('supType').value; profile.brands=$('brands').value.trim(); profile.terms=$('dTerms').value; profile.agree=$('agree').checked; profile.intro=$('spIntro').value.trim(); profile.publish=$('spPublish').checked;
     profile.docs.lic=$('dLic').value.trim(); profile.docs.issuer=$('dIssuer').value; profile.docs.exp=$('dExp').value; profile.docs.vat=$('dVat').value;
     saveProfile(); $('profMsg').textContent='Saved.'; bsToast('Profile saved.'); render();
-    if(window.bsPublishProfile) bsPublishProfile({intro:profile.intro, publish:profile.publish, cats:profile.cats.slice(), supplierId:sup.id});
+    if(window.bsPublishProfile) bsSmallPics('#view-supplier .pics .wpic').then(function(pics){ bsPublishProfile({intro:profile.intro, publish:profile.publish, cats:profile.cats.slice(), supplierId:sup.id, pics:pics}); });
+    if(profile.publish) $('profMsg').textContent='Saved. Your public profile goes to Build Smartly staff for approval.';
   };
 
   /* ----- price list ----- */
@@ -2506,10 +2590,20 @@ function bsSupport(threadId, inputId, sendId){
     else { prices=prices.filter(function(p){ return p.name!==name; }); }
     savePrices(); render();
   });
+  /* typed values live in the list straight away, so a redraw never loses them; Save writes them for every device */
+  var pricesDirty=false;
+  function readRow(r){ var p=prices[+r.dataset.row]; if(!p) return null; var v=+r.querySelector('[name=price]').value||0;
+    var nv={price:v, vat:r.querySelector('[name=vat]').value, min:+r.querySelector('[name=min]').value||0, stock:r.querySelector('[name=stock]').value, valid:+r.querySelector('[name=valid]').value||3};
+    if(p.saved===undefined) p.saved=p.price; Object.assign(p, nv); return p; }
+  $('prices').addEventListener('input', function(e){ var r=e.target.closest('[data-row]'); if(r){ readRow(r); pricesDirty=true; $('plDirty').hidden=false; } });
+  $('prices').addEventListener('change', function(e){ var r=e.target.closest('[data-row]'); if(r){ readRow(r); pricesDirty=true; $('plDirty').hidden=false; } });
+  function commitPrices(rows){ var now=new Date().toISOString(), changed=0;
+    rows.forEach(function(p){ if(p.saved!==undefined && p.saved!==p.price){ changed++; if(p.saved>0){ p.prevPrice=p.saved; p.prevAt=p.confirmedAt; } } delete p.saved; p.confirmedAt=now; });
+    return changed; }
   $('plSaveAll').onclick=function(){
-    var changed=0; document.querySelectorAll('#prices [data-row]').forEach(function(r){ var p=prices[+r.dataset.row]; if(!p) return; var v=+r.querySelector('[name=price]').value||0, vat=r.querySelector('[name=vat]').value, min=+r.querySelector('[name=min]').value||0, stock=r.querySelector('[name=stock]').value, valid=+r.querySelector('[name=valid]').value||3;
-      if(v!==p.price||vat!==p.vat||min!==p.min||stock!==p.stock||valid!==p.valid){ changed++; } Object.assign(p,{price:v, vat:vat, min:min, stock:stock, valid:valid, confirmedAt:new Date().toISOString()}); });
-    savePrices(); render(); bsToast(changed+' price'+(changed===1?'':'s')+' updated. All prices confirmed for today.');
+    document.querySelectorAll('#prices [data-row]').forEach(readRow);
+    var changed=commitPrices(prices); pricesDirty=false; $('plDirty').hidden=true; savePrices(); renderPrices();
+    bsToast(changed ? changed+' price'+(changed===1?'':'s')+' changed and saved. All prices confirmed for today.' : 'Saved. All prices confirmed for today.');
   };
   function upsertPrice(name, price, valid, extra){
     var cat=BS.CATALOGUE.filter(function(c){return c.name===name;})[0]; if(!cat) return false;
@@ -2534,6 +2628,7 @@ function bsSupport(threadId, inputId, sendId){
   };
   function renderPrices(){
     renderPlPicks();
+    if(document.activeElement && $('prices').contains(document.activeElement)) return;
     var box=$('prices'); box.innerHTML='';
     if(!prices.length){ box.innerHTML='<div class="empty">No items yet. Tick the items you sell above, or paste rows from Excel.</div>'; }
     function sel(name, opts, cur){ return '<select name="'+name+'">'+opts.map(function(o){ return '<option value="'+o[0]+'"'+(String(o[0])===String(cur)?' selected':'')+'>'+o[1]+'</option>'; }).join('')+'</select>'; }
@@ -2544,11 +2639,11 @@ function bsSupport(threadId, inputId, sendId){
         '<label class="field"><span class="small">Min. order</span><input name="min" type="number" min="0" step="1" value="'+(p.min||'')+'" placeholder="0"></label>'+
         '<label class="field"><span class="small">Stock</span>'+sel('stock',[['In stock','In stock'],['To order','To order'],['Low','Low']],p.stock)+'</label>'+
         '<label class="field"><span class="small">Valid (days)</span>'+sel('valid',[[1,'1'],[2,'2'],[3,'3'],[7,'7'],[14,'14']],p.valid)+'</label>'+
-        '<button class="btn btn-ghost btn-sm" type="button" data-p="'+i+'" title="Confirm this price for today">Confirm</button><button class="btn btn-ghost btn-sm" type="button" data-del="'+i+'" aria-label="Remove">×</button>';
+        '<button class="btn btn-ghost btn-sm" type="button" data-p="'+i+'" title="Save this row">Save</button><button class="btn btn-ghost btn-sm" type="button" data-del="'+i+'" aria-label="Remove">×</button>';
       box.appendChild(d); });
     $('qPrices').textContent=prices.filter(function(p){ return p.price>0 && isStale(p); }).length;
   }
-  $('prices').addEventListener('click', function(e){ var b=e.target.closest('[data-p]'); if(b){ prices[+b.dataset.p].confirmedAt=new Date().toISOString(); savePrices(); renderPrices(); return; } var d=e.target.closest('[data-del]'); if(d){ prices.splice(+d.dataset.del,1); savePrices(); render(); } });
+  $('prices').addEventListener('click', function(e){ var b=e.target.closest('[data-p]'); if(b){ var r=b.closest('[data-row]'); var p=readRow(r); commitPrices([p]); savePrices(); renderPrices(); bsToast(p.name+' saved at '+BS.fmt(p.price)+'.'); return; } var d=e.target.closest('[data-del]'); if(d){ prices.splice(+d.dataset.del,1); savePrices(); render(); } });
   $('confirmAll').onclick=function(){ prices.forEach(function(p){p.confirmedAt=new Date().toISOString();}); savePrices(); renderPrices(); bsToast('All prices confirmed for today.'); };
 
   /* ----- data ----- */
@@ -2578,15 +2673,30 @@ function bsSupport(threadId, inputId, sendId){
     var keys=Object.keys(byCat); $('statsByCat').innerHTML = keys.length ? keys.map(function(c){ return '<div style="display:flex;justify-content:space-between;gap:1rem"><span>'+c+'</span><strong>'+BS.fmt(byCat[c])+'</strong></div>'; }).join('') : '<span class="small muted">No orders won yet.</span>';
   }
 
+  function lineName(b,n){ var l=(b&&b.lines||[]).filter(function(x){ return x.n===n; })[0]; return l?l.item:''; }
+  /* everything that waits for this supplier, with the button that does it */
+  function actionsFor(mine, groups){
+    var out=[];
+    mine.forEach(function(o){ if(o.status==='sent' && o.counter && o.counter.state==='open'){ var b=boqs.filter(function(x){return x.id===o.boqId;})[0]||{}; var l=(b.lines||[]).filter(function(x){return x.n===o.lineN;})[0]||{};
+      out.push({ico:'€', title:'Customer proposes '+BS.fmt(o.counter.price)+' per '+(l.unit||'unit')+' · '+(b.ref||'')+' · '+(l.item||''), sub:'Your price was '+BS.fmt(o.unitPrice)+'. If you accept, your offer changes to their price.', btn:'<button class="btn btn-primary btn-sm" type="button" data-cacc="'+o.id+'">Accept '+BS.fmt(o.counter.price)+'</button><button class="btn btn-ghost btn-sm" type="button" data-cdec="'+o.id+'">Decline</button>'}); } });
+    groups.forEach(function(g){ var o=g.first, b=boqs.filter(function(x){return x.id===g.boqId;})[0]||{}, what=g.poRef+' · '+(o.customerRevealed||'')+' · '+g.offers.length+' line'+(g.offers.length>1?'s':'');
+      if(!o.supplierConfirmed) out.push({ico:'PO', title:'New order '+what, sub:'Reconfirm price and stock to agree to the contract.', btn:'<a class="btn btn-ochre btn-sm" href="#order-'+g.id+'">Read and reconfirm</a>'});
+      else if(o.contractAt && !o.readyAt) out.push({ico:'✓', title:'Prepare '+what, sub:'Contract agreed. Mark the goods ready when packed.', btn:'<button class="btn btn-primary btn-sm" type="button" data-oact="ready" data-id="'+g.id+'">Ready for dispatch</button>'});
+      else if(o.readyAt && !o.dispatchedAt) out.push({ico:'→', title:'Dispatch '+what, sub:'To '+(b.subcity||'the site')+'. The buyer gets the handover code.', btn:'<button class="btn btn-primary btn-sm" type="button" data-oact="dispatch" data-id="'+g.id+'">Dispatched</button>'});
+    });
+    return out;
+  }
   function render(){
     if(!sup) return;
     renderHome();
     var mine=offers.filter(function(o){return o.supplierId===sup.id;});
     var reqs=boqs.filter(function(b){ return open(b) && matches(b).some(function(l){ return !mine.some(function(o){return o.boqId===b.id && o.lineN===l.n;}); }); }).sort(function(a,b){return (b.createdAt||'').localeCompare(a.createdAt||'');});
     $('qNew').textContent=reqs.length; $('reqBadge').hidden=!reqs.length; $('reqBadge').textContent=reqs.length;
-    $('qSent').textContent=mine.filter(function(o){return o.status==='sent';}).length; $('qWon').textContent=mine.filter(function(o){ return o.status==='accepted' && !o.paidAt && (!o.supplierConfirmed || !o.readyAt || !o.dispatchedAt); }).length;
+    var myGroups=BS.orderGroups(mine), acts=actionsFor(mine, myGroups);
+    $('qSent').textContent=mine.filter(function(o){return o.status==='sent' && !(o.counter&&o.counter.state==='open');}).length; $('qWon').textContent=acts.length;
     var can=verified() && profile.agree;
-    var box=$('tab-requests'); box.innerHTML='';
+    var rq=(window.__spReqQ||'').trim().toLowerCase(); if(rq) reqs=reqs.filter(function(b){ return (b.ref+' '+b.subcity+' '+matches(b).map(function(l){ return l.item; }).join(' ')).toLowerCase().indexOf(rq)>=0; });
+    var box=$('tab-requests'); var typing=document.activeElement && document.activeElement.closest && document.activeElement.closest('#tab-requests form'); if(typing){ renderRest(); return; } box.innerHTML='<div class="field" style="max-width:26rem;margin-bottom:.6rem"><input id="spReqSearch" type="search" placeholder="Search requests: reference, item, sub-city" value="'+(window.__spReqQ||'').replace(/"/g,'&quot;')+'"></div>';
     if(!can){ box.innerHTML='<div class="card" style="border-color:var(--ochre);margin-bottom:.8rem"><strong style="font-family:var(--display)">Quoting is locked</strong><p class="small muted">'+(verified()?'Accept the supplier agreement under Profile and documents.':'Submit your licence and TIN and wait for verification. You can prepare your price list meanwhile.')+'</p></div>'; }
     if(!profile.cats.length){ box.innerHTML+='<div class="empty">Choose your categories under Profile and documents to start receiving requests.</div>'; }
     else if(!reqs.length){ box.innerHTML+='<div class="empty">No open requests in your categories right now. When a customer sends a BOQ with your materials, it appears here and you get a notification.</div>'; }
@@ -2599,83 +2709,51 @@ function bsSupport(threadId, inputId, sendId){
         var fromSub=(profile.locs[0]||{}).sub||sup.sub||'Akaki Kaliti', dEst=BS.deliveryEstimate([l], fromSub, b.pin||b.subcity), delivers=b.deliveryTerm==='Supplier delivers to site';
         var dHint = BS.isHire(l) ? 'Mobilisation to '+b.subcity+(b.pin?' (site pinned)':'')+': about '+dEst.km+' km from '+fromSub+'.' : 'Transport to '+b.subcity+(b.pin?' (site pinned)':'')+': about '+dEst.km+' km from '+fromSub+', '+dEst.trips+' truck trip'+(dEst.trips!==1?'s':'')+' ('+dEst.tonnes+' t) · typical cost '+BS.fmt(dEst.cost)+' at the example tariff.'+(delivers?' Pre-filled below; change it to your own figure, or put 0 and quote a delivered unit price.':' The customer '+(b.deliveryTerm==='I collect from supplier'?'collects: quote ex-works.':'uses Build Smartly transport: quote ex-works.'));
         var d=document.createElement('div'); d.className='qline';
-        d.innerHTML='<div class="what"><strong>Line '+l.n+' · '+l.item+'</strong><span class="small muted">'+l.qty+' '+l.unit+(l.needed?' · needed by '+l.needed:'')+' · <span class="tag">'+l.cat+'</span></span></div>'+
+        d.innerHTML='<div class="what"><strong>Line '+l.n+' · '+l.item+'</strong><span class="small muted">'+l.qty+' '+l.unit+(l.returnBy?' · hire from '+l.needed+' to '+l.returnBy:l.needed?' · needed by '+l.needed:'')+' · <span class="tag">'+l.cat+'</span></span></div>'+
           (done ? '<div class="sent">Offer sent: '+BS.fmt(done.unitPrice)+' per '+l.unit+', delivery '+BS.fmt(done.deliveryCost||0)+', valid '+done.validDays+' days.</div>' :
           '<form class="qform" data-boq="'+b.id+'" data-line="'+l.n+'"><div class="small muted" style="grid-column:1/-1">'+dHint+'</div>'+(pl?'<div class="small" style="grid-column:1/-1;color:var(--ok);font-weight:600">Pre-filled from your price list ('+(isStale(pl)?'stale, please check':'confirmed '+(ageDays(pl.confirmedAt)===0?'today':ageDays(pl.confirmedAt)+' d ago'))+'). One tap to send.</div>':'')+
-          '<div class="field"><label>Brand / origin</label><select name="brand" required>'+(BS.BRANDS[l.cat]||['Other']).map(function(bn){ return '<option'+(bn===(profile.brands.split(',')[0]||'').trim()?' selected':'')+'>'+bn+'</option>'; }).join('')+'</select></div><div class="field"><label>Qty offered ('+l.unit+')</label><input name="qty" type="number" min="1" value="'+l.qty+'" required></div><div class="field"><label>Unit price (ETB)</label><input name="price" type="number" min="1" step="1" placeholder="0" value="'+(pl?pl.price:'')+'" required></div><div class="field"><label>VAT</label><select name="vat"><option value="incl"'+(!pl||pl.vat==='incl'?' selected':'')+'>Included</option><option value="excl"'+(pl&&pl.vat==='excl'?' selected':'')+'>Excluded</option></select></div><div class="field"><label>Delivery cost (ETB)</label><input name="delivery" type="number" min="0" step="1" value="'+(delivers?dEst.cost:0)+'"></div><div class="field"><label>Lead time (days)</label><input name="lead" type="number" min="0" value="2"></div><div class="field"><label>Valid for (days)</label><select name="valid"><option>1</option><option>2</option><option'+(!pl||pl.valid===3?' selected':'')+'>3</option><option'+(pl&&pl.valid===7?' selected':'')+'>7</option></select></div><div class="field" style="grid-column:span 2"><label>&nbsp;</label><button class="btn btn-primary btn-sm" type="submit" style="width:100%" '+(can?'':'disabled')+'>'+(can?'Send offer':'Locked until verified')+'</button></div></form>');
+          '<div class="field"><label>Brand / origin</label><select name="brand" required>'+(BS.BRANDS[l.cat]||['Other']).map(function(bn){ return '<option'+(bn===(profile.brands.split(',')[0]||'').trim()?' selected':'')+'>'+bn+'</option>'; }).join('')+'</select></div><div class="field"><label>'+(BS.isHire(l)?(l.unit==='day'?'Days':l.unit==='hour'?'Hours':'Quantity')+(l.returnBy?' ('+l.needed+' to '+l.returnBy+')':''):'Qty offered ('+l.unit+')')+'</label><input name="qty" type="number" min="1" value="'+l.qty+'" required></div><div class="field"><label>'+(BS.isHire(l)?'Rate per '+l.unit+' (ETB)':'Unit price (ETB)')+'</label><input name="price" type="number" min="1" step="1" placeholder="0" value="'+(pl?pl.price:'')+'" required></div><div class="field"><label>VAT</label><select name="vat"><option value="incl"'+(!pl||pl.vat==='incl'?' selected':'')+'>Included</option><option value="excl"'+(pl&&pl.vat==='excl'?' selected':'')+'>Excluded</option></select></div><div class="field"><label>Delivery cost (ETB)</label><input name="delivery" type="number" min="0" step="1" value="'+(delivers?dEst.cost:0)+'"></div><div class="field"><label>Lead time (days)</label><input name="lead" type="number" min="0" value="2"></div><div class="field"><label>Valid for (days)</label><select name="valid"><option>1</option><option>2</option><option'+(!pl||pl.valid===3?' selected':'')+'>3</option><option'+(pl&&pl.valid===7?' selected':'')+'>7</option></select></div><div class="field" style="grid-column:span 2"><label>&nbsp;</label><button class="btn btn-primary btn-sm" type="submit" style="width:100%" '+(can?'':'disabled')+'>'+(can?'Send offer':'Locked until verified')+'</button></div></form>');
         card.appendChild(d);
       });
       box.appendChild(card);
     });
-    var ob=$('tab-offers'); ob.innerHTML='';
-    var sent=mine.slice().sort(function(a,b){return (b.createdAt||'').localeCompare(a.createdAt||'');});
-    if(!sent.length) ob.innerHTML='<div class="empty">No offers sent yet.</div>';
-    sent.forEach(function(o){
-      var b=boqs.filter(function(x){return x.id===o.boqId;})[0]; var l=b?b.lines.filter(function(x){return x.n===o.lineN;})[0]:null;
-      var d=document.createElement('div'); d.className='card'; d.style.marginBottom='.6rem';
-      var right = o.status==='accepted' ? '<span class="tag tag-green">Accepted · '+o.poRef+'</span>'
-        : o.status==='rejected' ? '<span class="tag">Rejected by customer · line closed</span>'
-        : (o.counter && o.counter.state==='open') ? '<div style="display:grid;gap:.3rem;text-align:right"><span class="tag tag-ochre" style="text-transform:none;letter-spacing:0">Customer proposes '+BS.fmt(o.counter.price)+' per '+(l?l.unit:'unit')+'</span><span style="display:flex;gap:.3rem;justify-content:flex-end"><button class="btn btn-primary btn-sm" data-cacc="'+o.id+'">Accept counter</button><button class="btn btn-ghost btn-sm" data-cdec="'+o.id+'">Decline</button></span></div>'
-        : (o.counter && o.counter.state==='declined') ? '<span class="tag">Counter declined · original offer stands</span>'
-        : '<span class="tag">Awaiting customer</span>';
-      d.innerHTML='<div class="req-head"><div><strong>'+(b?b.ref:'')+' · line '+o.lineN+' · '+(l?l.item:'')+'</strong><div class="small muted">'+o.brand+' · '+o.qtyOffered+' '+(l?l.unit:'')+' · '+BS.fmt(o.unitPrice)+' '+(o.vat==='incl'?'incl.':'excl.')+' VAT · delivery '+BS.fmt(o.deliveryCost||0)+' · valid '+o.validDays+' d</div></div>'+right+'</div>';
-      ob.appendChild(d);
-    });
-    var orb=$('tab-orders'); orb.innerHTML='';
-    var won=sent.filter(function(o){return o.status==='accepted';});
-    if(!won.length) orb.innerHTML='<div class="empty">No purchase orders yet. When a customer accepts your offer, the PO appears here with the customer\'s details.</div>';
-    won.forEach(function(o){
-      var b=boqs.filter(function(x){return x.id===o.boqId;})[0]; var l=b?b.lines.filter(function(x){return x.n===o.lineN;})[0]:null;
-      var d=document.createElement('div'); d.className='card'; d.style.marginBottom='.6rem';
-      var action = !o.supplierConfirmed ? '<a class="btn btn-ochre btn-sm" href="#order-'+o.id+'">Read the contract and reconfirm</a>'
-        : !o.contractAt ? '<span class="tag tag-ochre" style="text-transform:none;letter-spacing:0">Reconfirmed · waiting for the customer to agree to the contract</span>'
-        : !o.readyAt ? '<div style="display:grid;gap:.3rem;justify-items:end"><span class="tag tag-green">Contract in force</span><button class="btn btn-primary btn-sm" type="button" data-ready="'+o.id+'">Goods are ready</button></div>'
-        : !o.dispatchedAt ? '<div style="display:grid;gap:.3rem;justify-items:end"><span class="tag tag-green">Goods ready</span><button class="btn btn-primary btn-sm" type="button" data-dispatch="'+o.id+'">Dispatched to site</button></div>'
-        : !o.deliveredAt ? '<span class="tag tag-ochre" style="text-transform:none;letter-spacing:0">On the way · the customer confirms delivery with the handover code</span>'
-        : !o.paidAt ? '<span class="tag tag-ochre" style="text-transform:none;letter-spacing:0">Delivered · awaiting payment</span>'
-        : '<span class="tag tag-green">Paid · order closed</span>';
-      d.innerHTML='<div class="req-head"><div><strong><a href="#order-'+o.id+'">'+o.poRef+'</a></strong><div class="small muted">'+(l?l.item+' · '+o.qtyOffered+' '+l.unit:'')+' · '+BS.fmt(o.qtyOffered*o.unitPrice+(+o.deliveryCost||0))+' delivered · <a href="#order-'+o.id+'">order page, documents, messages</a></div><div class="small" style="margin-top:.3rem">Customer revealed in PO: <strong>'+(o.customerRevealed||'')+'</strong> · site '+(b?b.subcity:'')+' · '+(b?b.deliveryTerm:'')+'</div></div>'+action+'</div>';
-      orb.appendChild(d);
-    });
-    /* notifications */
-    var items=[];
-    boqs.filter(function(b){ return matches(b).length; }).forEach(function(b){ items.push({t:b.createdAt, m:'New request '+b.ref+': '+matches(b).length+' line(s) in your categories. Reply within '+b.validityDays+' days.'}); });
-    mine.forEach(function(o){ if(o.status==='accepted'){ items.push({t:o.acceptedAt, m:o.poRef+' issued to you. Please reconfirm price and stock.'}); } if(o.supplierConfirmed){ items.push({t:o.confirmedAt, m:'Contract for '+o.poRef+' issued to both parties.'}); } if(o.status==='rejected'){ items.push({t:o.rejectedAt, m:'Your offer on line '+o.lineN+' was rejected. The line is closed for you.'}); } if(o.counter&&o.counter.state==='open'){ items.push({t:o.counter.at, m:'The customer proposes '+BS.fmt(o.counter.price)+' on line '+o.lineN+'. Accept or decline under My offers.'}); } if(o.deliveredAt){ items.push({t:o.deliveredAt, m:'Delivery of '+o.poRef+' confirmed by the customer.'}); } if(o.paidAt){ items.push({t:o.paidAt, m:'Payment received for '+o.poRef+'. Order closed.'}); } });
-    items.sort(function(a,b){return (b.t||'').localeCompare(a.t||'');});
-    $('spNotif').innerHTML = items.length ? items.slice(0,8).map(function(i){ return '<div class="item"><div class="t">'+new Date(i.t).toLocaleString()+'</div>'+i.m+'</div>'; }).join('') : '<div class="empty">No notifications yet.</div>';
-    var fresh=items.filter(function(i){ return Date.now()-new Date(i.t).getTime() < 3600000; }).length; if(fresh && $('tab-mail').hidden){ $('spMailBadge').hidden=false; $('spMailBadge').textContent=fresh; }
-    /* mailbox: inbox, sent and the SMS we would send */
-    var inb=[], snt=[], sms=[];
-    boqs.filter(function(b){ return matches(b).length; }).forEach(function(b){ inb.push(['RFQ','Request '+b.ref+' · '+matches(b).length+' line(s) in your categories · reply within '+b.validityDays+' days', b.createdAt]); sms.push([b.createdAt,'Build Smartly: new request '+b.ref+' with '+matches(b).length+' item(s) you supply. Quote within '+b.validityDays+' days.']); });
-    mine.forEach(function(o){ var b=boqs.filter(function(x){return x.id===o.boqId;})[0]; var ref=b?b.ref:''; snt.push(['OFFER','Offer on '+ref+' line '+o.lineN+' · '+BS.fmt(o.unitPrice)+' · valid '+o.validDays+' d', o.createdAt]);
-      if(o.status==='accepted'){ inb.push(['PO',o.poRef+' · purchase order · customer '+(o.customerRevealed||''), o.acceptedAt]); sms.push([o.acceptedAt,'Build Smartly: your offer on '+ref+' was accepted. '+o.poRef+' issued. Please reconfirm price and stock in the portal.']); }
-      if(o.supplierConfirmed){ inb.push(['CTR','Contract for '+o.poRef+' · names both parties', o.confirmedAt]); snt.push(['CONF','Reconfirmation of price and stock for '+o.poRef, o.confirmedAt]); }
-      if(o.deliveredAt){ sms.push([o.deliveredAt,'Build Smartly: delivery of '+o.poRef+' confirmed by the customer with the handover code.']); }
-      if(o.paidAt){ inb.push(['PAY','Payment advice for '+o.poRef+' · '+(o.paymentRef||''), o.paidAt]); sms.push([o.paidAt,'Build Smartly: payment for '+o.poRef+' received through Yagout Pay. Order closed.']); } });
-    function docList(arr){ return arr.length ? arr.sort(function(a,b){return (b[2]||'').localeCompare(a[2]||'');}).map(function(x){ return '<div class="doc"><span class="ico">'+x[0]+'</span><span>'+x[1]+'<br><span class="small muted">'+new Date(x[2]).toLocaleString()+'</span></span><button class="btn btn-ghost btn-sm" type="button">View / print</button></div>'; }).join('') : '<div class="empty">Nothing here yet.</div>'; }
-    $('spInbox').innerHTML=docList(inb); $('spSent').innerHTML=docList(snt);
-    $('spSms').innerHTML = sms.length ? sms.sort(function(a,b){return (b[0]||'').localeCompare(a[0]||'');}).map(function(s){ return '<div class="sms"><div class="t">'+new Date(s[0]).toLocaleString()+' · to your mobile</div>'+s[1]+'</div>'; }).join('') : '<div class="empty">No text messages yet.</div>';
+    renderRest();
+    function renderRest(){
+    var dq=(($('spDealSearch')||{}).value||'').trim().toLowerCase();
+    function hit(){ if(!dq) return true; return Array.prototype.join.call(arguments,' ').toLowerCase().indexOf(dq)>=0; }
+    /* what waits for this supplier, each with its button */
+    $('spAction').innerHTML = acts.length ? acts.map(function(a){ return '<div class="doc"><span class="ico">'+a.ico+'</span><span><strong>'+a.title+'</strong><br><span class="small muted">'+a.sub+'</span></span><span style="display:flex;gap:.3rem;flex-wrap:wrap;justify-content:flex-end">'+a.btn+'</span></div>'; }).join('') : '<div class="empty">Nothing waits for you. New requests are under Requests.</div>';
+    /* orders, one per purchase order */
+    var orb=$('tab-orders'); var gs=myGroups.filter(function(g){ var b=boqs.filter(function(x){return x.id===g.boqId;})[0]||{}; return hit(g.poRef, g.first.customerRevealed, b.ref, g.offers.map(function(o){ return lineName(b,o.lineN); }).join(' ')); });
+    orb.innerHTML = gs.length ? gs.map(function(g){ var b=boqs.filter(function(x){return x.id===g.boqId;})[0]||{}, st=BS.orderStatus(g.first), tot=0; g.offers.forEach(function(o){ tot+=BS.offerTotal(o); });
+        return '<a class="order-row" href="#order-'+g.id+'"><span><strong>'+g.poRef+'</strong> · '+(g.first.customerRevealed||'')+'<br><span class="small muted">'+g.offers.map(function(o){ return lineName(b,o.lineN); }).join(', ')+' · '+BS.fmt(tot)+' · '+(b.subcity||'')+'</span></span><span class="tag '+st.c+'">'+st.t+'</span><span class="btn btn-ghost btn-sm">Open</span></a>'; }).join('')
+      : '<div class="empty">'+(dq?'No order matches.':'No orders yet. When a customer completes an order with your offers, it appears here.')+'</div>';
+    /* offers sent */
+    var ob=$('tab-offers'); var sent=mine.filter(function(o){ return o.status!=='accepted'; }).sort(function(a,b){return (b.createdAt||'').localeCompare(a.createdAt||'');}).filter(function(o){ var b=boqs.filter(function(x){return x.id===o.boqId;})[0]||{}; return hit(b.ref, lineName(b,o.lineN), o.brand); });
+    ob.innerHTML = sent.length ? sent.map(function(o){ var b=boqs.filter(function(x){return x.id===o.boqId;})[0]; var l=b?b.lines.filter(function(x){return x.n===o.lineN;})[0]:null; var other=offers.filter(function(x){ return x.boqId===o.boqId && x.lineN===o.lineN && x.status==='accepted'; })[0];
+        var st = o.status==='rejected' ? '<span class="tag">Rejected by the customer</span>' : other ? '<span class="tag">The customer chose another offer</span>' : (o.counter&&o.counter.state==='open') ? '<span class="tag tag-ochre">Customer proposes '+BS.fmt(o.counter.price)+' · your answer needed</span>' : (o.counter&&o.counter.state==='accepted') ? '<span class="tag tag-green">You accepted the customer\'s price · waiting for the customer</span>' : (o.counter&&o.counter.state==='declined') ? '<span class="tag">You declined the counter · offer stands</span>' : (b && (b.chosen||{})[o.lineN]===o.id) ? '<span class="tag tag-green">Chosen by the customer · waiting for the order</span>' : '<span class="tag">Waiting for the customer</span>';
+        return '<div class="doc"><span class="ico">'+o.lineN+'</span><span><strong>'+(b?b.ref:'')+' · '+(l?l.item:'')+'</strong><br><span class="small muted">'+o.brand+' · '+o.qtyOffered+' '+(l?l.unit:'')+' · '+BS.fmt(o.unitPrice)+' · total '+BS.fmt(BS.offerTotal(o))+' · valid '+o.validDays+' d</span></span>'+st+'</div>'; }).join('')
+      : '<div class="empty">'+(dq?'No offer matches.':'No open offers.')+'</div>';
+    /* statements: purchase orders, contracts and receipts by year */
+    renderStatements('spStatements', myGroups, boqs);
+    var fresh=acts.length; if(fresh && $('tab-mail').hidden){ $('spMailBadge').hidden=true; }
     renderPrices(); renderStats(mine);
+    }
   }
   $('tab-requests').addEventListener('submit', async function(e){
     e.preventDefault(); var f=e.target; if(!f.dataset.boq) return; var btn=f.querySelector('button[type=submit]'); btn.disabled=true; btn.textContent='Sending…';
     await BS.add('offers', { boqId:f.dataset.boq, lineN:+f.dataset.line, supplierId:sup.id, supplierName:sup.name, supplierSub:(profile.locs[0]||{}).sub||sup.sub||'', brand:f.brand.value.trim(), qtyOffered:+f.qty.value, unitPrice:+f.price.value, vat:f.vat.value, deliveryCost:+f.delivery.value||0, leadDays:+f.lead.value||0, validDays:+f.valid.value, status:'sent' });
     bsToast('Offer sent. The customer sees it as an anonymous offer.');
   });
-  $('tab-orders').addEventListener('click', async function(e){
-    var b=e.target.closest('[data-confirm]');
-    if(b){ b.disabled=true; b.textContent='Confirming…'; var oc=offers.filter(function(x){return x.id===b.dataset.confirm;})[0]||{}; var nowc=new Date().toISOString(); await BS.update('offers', b.dataset.confirm, Object.assign({supplierConfirmed:true, confirmedAt:nowc}, oc.buyerAgreedAt?{contractAt:nowc}:{})); bsToast('Confirmed. The customer is asked to agree to the contract.'); return; }
-    var r=e.target.closest('[data-ready]');
-    if(r){ r.disabled=true; await BS.update('offers', r.dataset.ready, {readyAt:new Date().toISOString()}); bsToast('Customer notified: goods are ready.'); return; }
-    var d=e.target.closest('[data-dispatch]');
-    if(d){ d.disabled=true; var code=String(Math.floor(1000+Math.random()*9000)); await BS.update('offers', d.dataset.dispatch, {dispatchedAt:new Date().toISOString(), handoverCode:code}); bsToast('Marked as dispatched. The customer received a handover code to give your driver on delivery.'); return; }
-  });
-  $('tab-offers').addEventListener('click', async function(e){
+  $('spDealSearch').addEventListener('input', function(){ render(); var el=$('spDealSearch'); el.focus(); });
+  $('tab-requests').addEventListener('input', function(e){ if(e.target.id!=='spReqSearch') return; window.__spReqQ=e.target.value; var pos=e.target.selectionStart; render(); var el=$('spReqSearch'); if(el){ el.focus(); try{ el.setSelectionRange(pos,pos); }catch(err){} } });
+  $('tab-deals').addEventListener('click', async function(e){
+    var oa=e.target.closest('[data-oact]'); if(oa){ oa.disabled=true; await bsOrderAction(oa.dataset.oact, oa.dataset.id); return; }
     var a=e.target.closest('[data-cacc]');
-    if(a){ a.disabled=true; var o=offers.filter(function(x){return x.id===a.dataset.cacc;})[0]; var b=boqs.filter(function(x){return x.id===o.boqId;})[0]; var po='PO-'+(b?b.ref:'BS')+'-L'+o.lineN;
-      await BS.update('offers', o.id, {unitPrice:o.counter.price, counter:{price:o.counter.price, at:o.counter.at, state:'accepted'}, status:'accepted', poRef:po, acceptedAt:new Date().toISOString(), customerRevealed:b?b.company:''}); bsToast('Counter accepted. '+po+' issued at the customer\'s price. Please reconfirm under Orders.'); return; }
+    if(a){ a.disabled=true; var o=offers.filter(function(x){return x.id===a.dataset.cacc;})[0];
+      await BS.update('offers', o.id, {unitPrice:o.counter.price, counter:{price:o.counter.price, at:o.counter.at, state:'accepted', answeredAt:new Date().toISOString()}}); bsToast('Accepted. Your offer is now at the customer\'s price; the customer is told.'); return; }
     var x=e.target.closest('[data-cdec]');
-    if(x){ x.disabled=true; var o2=offers.filter(function(y){return y.id===x.dataset.cdec;})[0]; await BS.update('offers', o2.id, {counter:{price:o2.counter.price, at:o2.counter.at, state:'declined'}}); bsToast('Counter declined. Your original offer stands until it expires.'); return; }
+    if(x){ x.disabled=true; var o2=offers.filter(function(y){return y.id===x.dataset.cdec;})[0]; await BS.update('offers', o2.id, {counter:{price:o2.counter.price, at:o2.counter.at, state:'declined', answeredAt:new Date().toISOString()}}); bsToast('Declined. Your offer stands; the customer is told.'); return; }
   });
   $('tab-requests').addEventListener('click', async function(e){
     var s=e.target.closest('[data-sendall]'); if(!s) return; s.disabled=true; s.textContent='Sending…';
@@ -2694,72 +2772,36 @@ function bsSupport(threadId, inputId, sendId){
   $('wsDetailsBtn').onclick=function(){ if(window.bsOpenGate) bsOpenGate(); };
   BS.SUBCITIES.forEach(function(s){ var o=document.createElement('option'); o.textContent=s; $('locSub').appendChild(o); });
   bsStatus('wsStatus','Online','On this device only');
-  document.querySelectorAll('.tile[data-panel]').forEach(function(t){ t.onclick=function(){ document.querySelectorAll('.tile').forEach(function(x){x.classList.toggle('on',x===t);}); ['tracking','mail','settings'].forEach(function(p){ $('p-'+p).hidden = p!==t.dataset.panel; }); if(t.dataset.panel==='mail'){ $('nNotif').hidden=true; } }; });
-  $('mailTabs').addEventListener('click', function(e){ var b=e.target.closest('[data-m]'); if(!b) return; $('mailTabs').querySelectorAll('button').forEach(function(x){ x.classList.toggle('on', x===b); }); ['notif','inbox','sent','sms','support','news'].forEach(function(k){ $('m-'+k).hidden = k!==b.dataset.m; }); });
+  function showPanel(p){ document.querySelectorAll('.tile[data-panel]').forEach(function(x){ x.classList.toggle('on', x.dataset.panel===p); }); ['tracking','statements','support','news','settings'].forEach(function(k){ $('p-'+k).hidden = k!==p; }); if(p==='support'){ $('nNotif').hidden=true; } }
+  document.querySelectorAll('.tile[data-panel]').forEach(function(t){ t.onclick=function(){ showPanel(t.dataset.panel); }; });
+  window.bsWorkspacePanel=showPanel;
   bsSupport('supportThread','supportIn','supportSend');
   var boqs=[], offers=[];
   BS.subscribe('boqs', function(d){ boqs=d; render(); }); BS.subscribe('offers', function(d){ offers=d; render(); });
   function mine(){ var me2=BS.me()||{}; var ph=(me2.phone||'').replace(/\D/g,'').replace(/^251/,''); return boqs.filter(function(b){ return (ph && b.ownerPhone===ph) || (!b.ownerPhone && company && b.company===company); }).sort(function(a,b){return (b.createdAt||'').localeCompare(a.createdAt||'');}); }
-  var CHAIN=['Buying inquiry received','Under categorisation','Sent to suppliers','Awaiting your offer approval','PO sent to you and the supplier','Contract sent to you','Goods are ready','Goods under delivery','Goods delivered','Payment under process','Payment done','Closed order'];
-  function stageOf(b, os){
+  var CHAIN=['Request sent','Offers arriving','Order placed','Contract agreed','Ready for dispatch','Dispatched','Delivered','Paid'];
+  function stageOf(b, os, gs){
     if(b.status==='withdrawn') return -1;
-    var acc=os.filter(function(o){return o.status==='accepted';});
-    if(acc.length && acc.every(function(o){return o.paidAt;})) return 11;
-    if(acc.some(function(o){return o.paidAt;})) return 10;
-    if(acc.some(function(o){return o.deliveredAt;})) return 8;
-    if(acc.some(function(o){return o.dispatchedAt;})) return 7;
-    if(acc.some(function(o){return o.readyAt;})) return 6;
-    if(acc.some(function(o){return o.supplierConfirmed;})) return 5;
-    if(acc.length) return 4;
-    if(os.some(function(o){return o.status!=='rejected';})) return 3;
-    return (Date.now()-new Date(b.createdAt).getTime())>60000 ? 2 : 1;
+    if(gs.length){ var f=function(k){ return gs.every(function(g){ return g.first[k]; }); };
+      return f('paidAt')?7:f('deliveredAt')?6:f('dispatchedAt')?5:f('readyAt')?4:f('contractAt')?3:2; }
+    return os.length?1:0;
   }
-  function orderActions(b, os){
-    var acc=os.filter(function(o){return o.status==='accepted';}); if(!acc.length) return '';
-    return '<div style="display:grid;gap:.4rem;margin-top:.3rem">'+acc.map(function(o){
-      var total=o.qtyOffered*o.unitPrice+(+o.deliveryCost||0); var l=b.lines.filter(function(x){return x.n===o.lineN;})[0];
-      var st = o.paidAt ? '<span class="tag tag-green">Paid · closed</span>'
-        : o.deliveredAt ? '<a class="btn btn-ochre btn-sm" href="#order-'+o.id+'">Pay '+BS.fmt(total)+'</a>'
-        : o.dispatchedAt ? '<span style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap"><span class="small">Handover code: <strong>'+o.handoverCode+'</strong></span><button class="btn btn-primary btn-sm" type="button" data-received="'+o.id+'">Goods received</button></span>'
-        : o.readyAt ? '<span class="small muted">Goods ready · waiting for dispatch</span>'
-        : o.contractAt ? '<span class="small muted">Contract in force · goods being prepared</span>'
-        : (o.supplierConfirmed && !o.buyerAgreedAt) ? '<a class="btn btn-ochre btn-sm" href="#order-'+o.id+'">Agree to the contract</a>'
-        : '<span class="small muted">Waiting for the supplier to reconfirm</span>';
-      return '<div class="doc"><span class="ico">PO</span><span><a href="#order-'+o.id+'">'+o.poRef+'</a> · '+(l?l.item:'')+' · '+o.supplierName+'</span>'+st+'</div>';
-    }).join('')+'</div>';
-  }
-  $('trackBody').addEventListener('click', async function(e){
-    var r=e.target.closest('[data-received]');
-    if(r){ r.disabled=true; await BS.update('offers', r.dataset.received, {deliveredAt:new Date().toISOString()}); bsToast('Delivery confirmed. You can now pay.'); return; }
-    var p=e.target.closest('[data-pay]');
-    if(p){ p.disabled=true; p.textContent='Paying…'; await BS.update('offers', p.dataset.pay, {paidAt:new Date().toISOString(), paymentRef:'YP-'+Math.floor(100000+Math.random()*900000)}); bsToast('Payment completed through Yagout Pay. Supplier and Build Smartly finance notified. Order closed.'); return; }
-  });
   function render(){
     var list=mine(); var tb=$('trackBody'); tb.innerHTML='';
-    if(!list.length){ tb.innerHTML='<div class="empty">No orders yet. Start with <a href="#boq">Buying inquiry</a>.</div>'; }
-    var pending=0;
+    if(!list.length){ tb.innerHTML='<div class="empty">No requests yet. Start with <a href="#boq">Send a request</a>.</div>'; }
+    var pending=0, allGroups=[];
     list.forEach(function(b){
-      var os=offers.filter(function(o){return o.boqId===b.id;}); var s=stageOf(b, os); if(s===3) pending++;
+      var os=offers.filter(function(o){return o.boqId===b.id;}); var gs=BS.orderGroups(os); allGroups=allGroups.concat(gs); var s=stageOf(b, os, gs);
+      var waiting=os.filter(function(o){ return o.status==='sent'; }).length; if(s===1 && waiting) pending++;
       var d=document.createElement('div'); d.className='order';
-      if(s<0){ d.innerHTML='<div class="order-head"><strong>'+b.ref+' · '+b.lines.length+' lines · '+b.subcity+'</strong><span class="tag">Withdrawn</span></div>'; tb.appendChild(d); tb.appendChild(document.createElement('hr')); return; }
-      var waiting=os.filter(function(o){return o.status==='sent';}).length;
-      d.innerHTML='<div class="order-head"><strong>'+b.ref+' · '+b.lines.length+' lines · '+b.subcity+'</strong><span class="tag '+(s>=4?'tag-green':'')+'">'+CHAIN[s]+'</span></div><div class="chain">'+CHAIN.map(function(c,i){ return '<div class="chainrow '+(i<s?'done':i===s?'now':'')+'"><i></i><span>'+c+(i===3&&s===3?' · '+waiting+' offer'+(waiting!==1?'s':'')+' waiting':'')+'</span></div>'; }).join('')+'</div>'+(s===3?'<a class="btn btn-primary btn-sm" href="#boq-mine" style="justify-self:start">Compare offers</a>':'')+orderActions(b, os);
-      tb.appendChild(d); tb.appendChild(document.createElement('hr'));
+      if(s<0){ d.innerHTML='<div class="order-head"><strong>'+b.ref+' · '+b.lines.length+' lines</strong><span class="tag">Withdrawn</span></div>'; tb.appendChild(d); return; }
+      var act = gs.map(function(g){ var st=BS.orderStatus(g.first); return '<a class="order-row" href="#order-'+g.id+'"><span><strong>'+g.poRef+'</strong> · '+g.supplierName+'<br><span class="small muted">'+g.offers.length+' line'+(g.offers.length>1?'s':'')+'</span></span><span class="tag '+st.c+'">'+st.t+'</span><span class="btn '+(st.who==='buyer'?'btn-ochre':'btn-ghost')+' btn-sm">'+(st.who==='buyer'?'Your turn':'Open')+'</span></a>'; }).join('');
+      d.innerHTML='<div class="order-head"><strong>'+b.ref+' · '+b.lines.length+' line'+(b.lines.length>1?'s':'')+' · '+b.subcity+'</strong><span class="tag '+(s>=2?'tag-green':'')+'">'+CHAIN[s]+'</span></div><div class="chain">'+CHAIN.map(function(c,i){ return '<div class="chainrow '+(i<s?'done':i===s?'now':'')+'"><i></i><span>'+c+(i===1&&s===1?' · '+waiting+' offer'+(waiting!==1?'s':'')+' to compare':'')+'</span></div>'; }).join('')+'</div>'+
+        (s<=1 || os.some(function(o){ return o.status==='sent'; }) ? '<a class="btn btn-primary btn-sm" href="#boq-mine" style="justify-self:start">'+(waiting?'Compare offers':'See the request')+'</a>' : '')+(act?'<div style="display:grid;gap:.4rem">'+act+'</div>':'');
+      tb.appendChild(d);
     });
     $('nTrack').hidden = pending===0; $('nTrack').textContent=pending;
-    var items=[];
-    list.forEach(function(b){ items.push({t:b.createdAt, m:'We received your buying inquiry '+b.ref+'. It is being categorised and sent to suppliers.'}); });
-    offers.filter(function(o){ return list.some(function(b){return b.id===o.boqId;}); }).forEach(function(o){ var b=list.filter(function(x){return x.id===o.boqId;})[0]; items.push({t:o.createdAt, m:'You received an offer on '+b.ref+' line '+o.lineN+'.'}); if(o.status==='accepted'){ items.push({t:o.acceptedAt, m:o.poRef+' issued to you and the supplier.'}); } if(o.supplierConfirmed){ items.push({t:o.confirmedAt, m:'Contract for '+o.poRef+' issued. Please sign in your inbox.'}); } });
-    items.sort(function(a,b){return (b.t||'').localeCompare(a.t||'');});
-    $('notifBody').innerHTML = items.length ? items.map(function(i){ return '<div class="item"><div class="t">'+new Date(i.t).toLocaleString()+'</div>'+i.m+'</div>'; }).join('') : '<div class="empty">No notifications yet.</div>';
-    var unread=items.filter(function(i){ return Date.now()-new Date(i.t).getTime() < 3600000; }).length;
-    if(unread && $('p-mail').hidden){ $('nNotif').hidden=false; $('nNotif').textContent=unread; $('nNotif').classList.add('blink'); }
-    var inb=[], outb=[], sms=[];
-    list.forEach(function(b){ outb.push(['BOQ', b.ref+' · bill of quantities · '+b.lines.length+' lines', b.createdAt]); outb.push(['RFQ', 'RFQ issued in the platform name for '+b.ref, b.createdAt]); sms.push([b.createdAt, 'Build Smartly: we received your request '+b.ref+' ('+b.lines.length+' item'+(b.lines.length>1?'s':'')+'). Suppliers have '+b.validityDays+' days. We will text you when the first offer is ready.']); });
-    offers.filter(function(o){ return list.some(function(b){return b.id===o.boqId;}); }).forEach(function(o){ var b=list.filter(function(x){return x.id===o.boqId;})[0]; inb.push(['OFFER', 'Platform quotation for '+b.ref+' line '+o.lineN+' (supplier hidden)', o.createdAt]); sms.push([o.createdAt, 'Build Smartly: an offer is ready for request '+b.ref+' (line '+o.lineN+'). Open My requests to compare and accept.']); if(o.status==='accepted'){ inb.push(['PO', o.poRef+' · purchase order', o.acceptedAt]); outb.push(['ACC', 'Acceptance of offer on '+b.ref+' line '+o.lineN, o.acceptedAt]); sms.push([o.acceptedAt, 'Build Smartly: '+o.poRef+' issued to you and '+o.supplierName+'. The supplier reconfirms price and stock next.']); } if(o.supplierConfirmed){ inb.push(['CTR', 'Contract for '+o.poRef+' · names both parties', o.confirmedAt]); } if(o.dispatchedAt){ sms.push([o.dispatchedAt, 'Build Smartly: goods for '+o.poRef+' are on the way. Give the driver handover code '+o.handoverCode+' on delivery.']); } if(o.paidAt){ outb.push(['PAY', 'Proof of payment for '+o.poRef+' · '+(o.paymentRef||''), o.paidAt]); } });
-    function docs(arr){ return arr.length ? arr.sort(function(a,b){return (b[2]||'').localeCompare(a[2]||'');}).map(function(x){ return '<div class="doc"><span class="ico">'+x[0]+'</span><span>'+x[1]+'<br><span class="small muted">'+new Date(x[2]).toLocaleString()+'</span></span><button class="btn btn-ghost btn-sm" type="button">View / print</button></div>'; }).join('') : '<div class="empty">Nothing here yet.</div>'; }
-    $('inboxBody').innerHTML=docs(inb); $('outboxBody').innerHTML=docs(outb);
-    $('smsBody').innerHTML = sms.length ? sms.sort(function(a,b){return (b[0]||'').localeCompare(a[0]||'');}).map(function(s){ return '<div class="sms"><div class="t">'+new Date(s[0]).toLocaleString()+' · to your mobile</div>'+s[1]+'</div>'; }).join('') : '<div class="empty">No text messages yet.</div>';
+    renderStatements('wsStatements', allGroups, boqs);
   }
   var locs=[]; try{ locs=JSON.parse(localStorage.getItem('bs_demo_locs')||'[]'); }catch(e){}
   function renderLocs(){ $('locList').innerHTML = locs.length ? locs.map(function(l){ return '<div class="doc"><span class="ico">LOC</span><span>'+l.type+' · '+l.sub+', Addis Ababa'+(l.pin?' · map link saved':'')+'</span><span class="tag">Private</span></div>'; }).join('') : '<div class="empty">No locations yet. Suppliers who add dispatch points receive more requests.</div>'; }
@@ -2780,10 +2822,16 @@ document.addEventListener('change', function(e){
 });
 
 /* ---------- Public profiles: published to the Members directory (collection "profiles") ---------- */
+/* pictures picked in a form, made small enough to travel with the record */
+window.bsSmallPics = function(sel){
+  var urls=[]; document.querySelectorAll(sel).forEach(function(l){ var m=(l.style.backgroundImage||'').match(/url\("?(data:image[^")]+)"?\)/); if(m) urls.push(m[1]); });
+  return Promise.all(urls.map(function(u){ return new Promise(function(res){ var im=new Image(); im.onload=function(){ var w=640, h=Math.round(im.height*w/im.width); if(im.width<w){ w=im.width; h=im.height; } var c=document.createElement('canvas'); c.width=w; c.height=h; c.getContext('2d').drawImage(im,0,0,w,h); res(c.toDataURL('image/jpeg',.75)); }; im.onerror=function(){ res(''); }; im.src=u; }); })).then(function(a){ return a.filter(Boolean); });
+};
 window.bsPublishProfile = async function(fields){
   var me=BS.me()||{}; var ph=bsDigits(me.phone); if(!ph) return;
   var isSup=!!(me.supplierId || (me.role && me.role!=='Request materials'));
-  await BS.set('profiles', 'p-'+ph, Object.assign({phone:ph, name:me.company||me.name||'', kind:isSup?'supplier':'buyer', type:me.type||'Organisation', status:'approved', memberSince:(BS.known(ph)||{}).createdAt||new Date().toISOString()}, fields));
+  /* a profile is published only after a staff check (27 Oct 2026): saving it sends it to staff for approval */
+  await BS.set('profiles', 'p-'+ph, Object.assign({phone:ph, name:me.company||me.name||'', kind:isSup?'supplier':'buyer', type:me.type||'Organisation', status:fields.publish?'pending':'draft', reviewedAt:'', memberSince:(BS.known(ph)||{}).createdAt||new Date().toISOString()}, fields));
 };
 (function(){
   var profiles=[]; var hooksBound=false;
@@ -2801,17 +2849,17 @@ window.bsPublishProfile = async function(fields){
   BS.subscribe('profiles', function(d){ profiles=d; render(); });
   BSRoute.on('members', render);
   /* workspace: save introduction and publish flag */
-  var save=document.getElementById('wsProfSave'); if(save) save.onclick=async function(){ var me=BS.me()||{}; if(!me.phone){ bsToast('Sign in first.'); return; } if(me.type==='Individual'){ bsToast('Public profiles are for companies and organisations only.'); return; } await bsPublishProfile({intro:document.getElementById('intro').value.trim(), publish:document.getElementById('wsPublish').checked}); document.getElementById('wsProfMsg').textContent = document.getElementById('wsPublish').checked ? 'Saved. Your profile is in the Members directory.' : 'Saved. Not published.'; bsToast(document.getElementById('wsPublish').checked ? 'Profile published in the Members directory.' : 'Profile saved, not published.'); };
+  var save=document.getElementById('wsProfSave'); if(save) save.onclick=async function(){ var me=BS.me()||{}; if(!me.phone){ bsToast('Sign in first.'); return; } if(me.type==='Individual'){ bsToast('Public profiles are for companies and organisations only.'); return; } await bsPublishProfile({intro:document.getElementById('intro').value.trim(), publish:document.getElementById('wsPublish').checked, pics:await bsSmallPics('#p-settings .pics .wpic')}); document.getElementById('wsProfMsg').textContent = document.getElementById('wsPublish').checked ? 'Sent to Build Smartly staff. It appears in the Members directory once approved.' : 'Saved. Not published.'; bsToast(document.getElementById('wsPublish').checked ? 'Profile published in the Members directory.' : 'Profile saved, not published.'); };
 })();
 
 /* ---------- Start here: logins from the store ---------- */
 (function(){
-  var people=['Abdullah','Fahad','Osama','Haji','Faiz']; var box=document.getElementById('startLogins'); if(!box) return;
+  var box=document.getElementById('startLogins'); if(!box) return;
   function fmt(d){ return '0'+d.slice(0,3)+' '+d.slice(3,6)+' '+d.slice(6); }
-  box.innerHTML = people.map(function(pn){ var b=BS.TEST_ACCOUNTS.filter(function(a){return a.person===pn && a.buyer;})[0]; var s=BS.TEST_ACCOUNTS.filter(function(a){return a.person===pn && a.supplierId;})[0]; var sup=s?BS.SUPPLIERS.filter(function(x){return x.id===s.supplierId;})[0]:null;
-    return '<div class="doc"><span class="ico">'+pn.slice(0,2).toUpperCase()+'</span><span><strong>'+pn+'</strong><br><span class="small">Buyer: <strong>'+fmt(b.phone)+'</strong> · '+b.buyer+'<br>Supplier: <strong>'+fmt(s.phone)+'</strong> · '+(sup?sup.name+' ('+sup.cats.join(', ')+')':'')+'</span></span><span></span></div>'; }).join('')+
-    '<div class="doc"><span class="ico">+</span><span><span class="small">More buyers: <strong>0911 000 102</strong> a person (Abebe Kebede) · <strong>0911 000 103</strong> a government office (Addis Ababa Roads Authority). Or any other Ethiopian number.</span></span><span></span></div>'+
-    '<div class="doc"><span class="ico">ST</span><span><strong>Staff page</strong><br><span class="small"><a href="#staff">Staff sign-in</a>: <strong>0911 000 900</strong> (staff) or <strong>0911 000 901</strong> (owner), password <strong>admin</strong>. Verification queue, categorisation, support, newsletter, finance, tariffs and brands.</span></span><span></span></div>';
+  var rows=BS.TEST_ACCOUNTS.map(function(a){ var sup=a.supplierId?BS.supplierById(a.supplierId):null;
+    return '<div class="doc"><span class="ico">'+(a.supplierId?(a.label||'S').slice(-1):'B')+'</span><span><strong>'+(a.person||'')+' · '+(sup?sup.name:a.buyer)+'</strong><br><span class="small">Mobile <strong>'+fmt(a.phone)+'</strong> · '+(a.supplierId?'<a href="#supplier">Supplier portal</a>, password <strong>'+BS.DEMO_PASSWORD+'</strong> · sells every category':'<a href="#signin">Sign in</a> with code <strong>'+BS.DEMO_CODE+'</strong>')+'</span></span><span></span></div>'; });
+  rows.push('<div class="doc"><span class="ico">ST</span><span><strong>Staff and owner</strong><br><span class="small"><a href="#staff">Staff sign-in</a>: <strong>0911 000 900</strong> (staff) or <strong>0911 000 901</strong> (owner), password <strong>'+BS.STAFF_PASSWORD+'</strong></span></span><span></span></div>');
+  box.innerHTML=rows.join('');
 })();
 
 /* ---------- Contact ---------- */
@@ -2912,5 +2960,6 @@ window.bsPublishProfile = async function(fields){
 BSRoute.start();
 </script>
 <script src="assets/order.js"></script>
+<script src="assets/notify.js"></script>
 <script src="assets/help.js"></script>
 <script src="assets/admin.js"></script>

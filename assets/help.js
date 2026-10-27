@@ -2,7 +2,7 @@
    knowledge base, knows where the member is in the process, and hands over to Build Smartly support when needed. */
 (function(){
   var $=function(id){ return document.getElementById(id); };
-  var open=false, history=[], boqs=[], offers=[];
+  var open=false, history=[], boqs=[], offers=[], lastQ='';
   function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function digits(p){ return String(p||'').replace(/\D/g,'').replace(/^251/,'').replace(/^0/,''); }
   function me(){ return BS.me()||{}; }
@@ -60,15 +60,15 @@
   async function handoff(q){
     var m=me(); if(!m.phone){ push('bot','To talk to a person, sign in first with your mobile number, then write here or in your Mailbox under Support. Or use the <a href="#contact">contact page</a>.'); return; }
     await BS.add('messages', {phone:digits(m.phone), who:'customer', name:m.company||m.name||'', text:(q&&q!=='HANDOFF'?q:'Request for help from the assistant')+' (sent from the help box)'});
-    push('bot','Passed to Build Smartly support with your message. A person answers in your Mailbox under Support, and by SMS, within one working hour. <a href="#workspace">Open the Mailbox</a>');
+    push('bot','Sent to Build Smartly staff. A person answers under Support (and by SMS) within one working hour. <a href="#support">Open Support</a>');
   }
   function ask(q){
     push('me', esc(q));
     var e=answer(q);
     setTimeout(function(){
-      if(!e){ push('bot','I did not get that. I can explain how to send a request, compare offers, agree to the contract, pay, arrange delivery, or register as a supplier. Or press "Talk to a person".'); return; }
+      if(!e){ if((BS.me()||{}).phone){ handoff(q); return; } push('bot','I passed nothing on because you are not signed in. Sign in and ask again, and a person from Build Smartly answers. I can also explain requests, offers, contracts, payment, delivery or registering as a supplier.'); return; }
       if(e.a==='HANDOFF'){ handoff(q); return; }
-      push('bot', esc(e.a)+(e.l&&e.l.length?'<div class="hlinks">'+e.l.map(function(x){ return '<a href="'+x[1]+'">'+esc(x[0])+' →</a>'; }).join('')+'</div>':''));
+      lastQ=q; push('bot', esc(e.a)+(e.l&&e.l.length?'<div class="hlinks">'+e.l.map(function(x){ return '<a href="'+x[1]+'">'+esc(x[0])+' →</a>'; }).join('')+'</div>':'')+'<div class="hlinks"><button type="button" class="hsend" data-hsend="1">Not what I need: send my question to a person</button></div>');
     }, 350);
   }
   function toggle(on){ open = on===undefined ? !open : on; $('helpPanel').hidden=!open; $('helpBtn').setAttribute('aria-expanded', open?'true':'false'); if(open){ if(!history.length) push('bot', greeting()); draw(); setTimeout(function(){ $('helpIn').focus(); },50); } }
@@ -76,7 +76,7 @@
   $('helpClose').onclick=function(){ toggle(false); };
   $('helpSend').onclick=function(){ var q=$('helpIn').value.trim(); if(!q) return; $('helpIn').value=''; ask(q); };
   $('helpIn').addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); $('helpSend').click(); } });
-  $('helpBody').addEventListener('click', function(e){ var c=e.target.closest('[data-hchip]'); if(!c) return; var v=c.dataset.hchip; if(v==='Q') ask(c.textContent); else if(v==='HANDOFF') { push('me','Talk to a person'); handoff(''); } else { toggle(false); BSRoute.go(v.replace('#','')); } });
+  $('helpBody').addEventListener('click', function(e){ if(e.target.closest('[data-hsend]')){ push('me','Send it to a person'); handoff(lastQ); return; } var c=e.target.closest('[data-hchip]'); if(!c) return; var v=c.dataset.hchip; if(v==='Q') ask(c.textContent); else if(v==='HANDOFF') { push('me','Talk to a person'); handoff(''); } else { toggle(false); BSRoute.go(v.replace('#','')); } });
   document.addEventListener('click', function(e){ var path=e.composedPath ? e.composedPath() : []; var inside=path.some(function(el){ return el && (el.id==='helpPanel' || el.id==='helpBtn'); }); if(open && !inside) toggle(false); });
   BS.ready().then(function(){ BS.subscribe('boqs', function(d){ boqs=d||[]; }); BS.subscribe('offers', function(d){ offers=d||[]; }); });
   window.bsHelpAsk=ask;
