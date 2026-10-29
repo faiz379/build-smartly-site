@@ -2088,7 +2088,7 @@ function bsSupport(threadId, inputId, sendId){
     $('boqFileMsg').textContent=msg; bsToast(msg); if(added) $('listBox').scrollIntoView({behavior:'smooth',block:'start'});
   }
   /* the mirror host cannot serve spreadsheets: fetch the template from the public site there */
-  try{ if(!/github\.io$|localhost|^127\./.test(location.hostname) && location.protocol!=='file:' && !/buildsmartly/.test(location.hostname)){ var tl=document.querySelector('a[href="assets/boq-template.xlsx"]'); if(tl) tl.href='https://faiz379.github.io/build-smartly-site/assets/boq-template.xlsx'; } }catch(e){}
+  try{ if(!/github\.io$|localhost|^127\./.test(location.hostname) && location.protocol!=='file:' && !/buildsmartly|onsmartly/.test(location.hostname)){ var tl=document.querySelector('a[href="assets/boq-template.xlsx"]'); if(tl) tl.href='https://faiz379.github.io/build-smartly-site/assets/boq-template.xlsx'; } }catch(e){}
   $('boqFile').addEventListener('change', function(){ var f=this.files && this.files[0]; this.value=''; if(!f) return; $('boqFileMsg').textContent='Reading '+f.name+'…';
     BS.readSheet(f).then(importRows).catch(function(e){ $('boqFileMsg').textContent='Could not read '+f.name+'. Save it as .xlsx or .csv and try again.'; bsToast('Could not read the file.'); }); });
   $('addSample').onclick=function(){
