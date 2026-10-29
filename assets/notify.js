@@ -1,6 +1,7 @@
 /* Build Smartly · notification bell (decided 27 Oct 2026). One bell at the top right for buyers, suppliers and staff.
    The list is worked out from the shared records, so it is the same on every device: what arrived or what waits for you
-   in the last 30 days, newest first, each linking to the place where you act. Read state is kept per account on the device. */
+   in the last 30 days, newest first, each linking to the place where you act. Each item stays new until it is opened
+   (or "Mark all as read"); read state is kept per account on the device. */
 (function(){
   var $=function(id){ return document.getElementById(id); };
   var data={boqs:[],offers:[],messages:[],news:[],verifications:[],profiles:[],issues:[],suppliers:[]};
@@ -57,16 +58,22 @@
     return out.sort(function(a,b){ return (b.t||'').localeCompare(a.t||''); }).slice(0,40);
   }
   function seenKey(){ var w=who(); return w ? 'bs_bell_seen_'+w.key : ''; }
-  function seen(){ try{ return localStorage.getItem(seenKey())||''; }catch(e){ return ''; } }
+  function seen(){ try{ return localStorage.getItem(seenKey())||''; }catch(e){ return ''; } } /* everything up to this time counts as read */
+  function readKey(){ var w=who(); return w ? 'bs_bell_read_'+w.key : ''; }
+  function readSet(){ try{ return JSON.parse(localStorage.getItem(readKey())||'[]'); }catch(e){ return []; } }
+  function idOf(i){ return i.kind+'|'+i.t+'|'+i.href; }
+  function isNew(i, s, r){ return i.t>s && r.indexOf(idOf(i))<0; }
+  function markRead(id){ var r=readSet(); if(r.indexOf(id)<0){ r.push(id); if(r.length>400) r=r.slice(-400); try{ localStorage.setItem(readKey(), JSON.stringify(r)); }catch(e){} } }
   function draw(){
     var w=who(); $('bellBox').hidden=!w; if(!w) return;
-    var list=items(), s=seen(), unread=list.filter(function(i){ return i.t>s; }).length;
+    var list=items(), s=seen(), r=readSet(), unread=list.filter(function(i){ return isNew(i,s,r); }).length;
     $('bellN').hidden=!unread; $('bellN').textContent=unread>9?'9+':unread;
-    $('bellList').innerHTML = list.length ? list.map(function(i){ return '<a class="bellitem'+(i.t>s?' new':'')+'" href="'+i.href+'"><span class="k">'+esc(i.kind)+' · '+ago(i.t)+'</span><span>'+esc(i.text)+'</span></a>'; }).join('') : '<div class="empty">Nothing new in the last 30 days.</div>';
+    $('bellList').innerHTML = list.length ? list.map(function(i){ return '<a class="bellitem'+(isNew(i,s,r)?' new':'')+'" href="'+i.href+'" data-bid="'+esc(idOf(i))+'"><span class="k">'+esc(i.kind)+' · '+ago(i.t)+'</span><span>'+esc(i.text)+'</span></a>'; }).join('') : '<div class="empty">Nothing new in the last 30 days.</div>';
   }
-  function setOpen(v){ open=v; $('bellPanel').hidden=!v; $('bellBtn').setAttribute('aria-expanded', v?'true':'false'); if(v){ draw(); setTimeout(function(){ try{ localStorage.setItem(seenKey(), new Date().toISOString()); }catch(e){} $('bellN').hidden=true; }, 1500); } }
+  function setOpen(v){ open=v; $('bellPanel').hidden=!v; $('bellBtn').setAttribute('aria-expanded', v?'true':'false'); if(v) draw(); }
+  $('bellAll').onclick=function(e){ e.stopPropagation(); try{ localStorage.setItem(seenKey(), new Date().toISOString()); localStorage.removeItem(readKey()); }catch(err){} draw(); };
   $('bellBtn').onclick=function(e){ e.stopPropagation(); setOpen(!open); };
-  document.addEventListener('click', function(e){ if(open && !e.target.closest('#bellBox')) setOpen(false); if(e.target.closest('.bellitem')) setOpen(false); });
+  document.addEventListener('click', function(e){ if(open && !e.target.closest('#bellBox')) setOpen(false); var it=e.target.closest('.bellitem'); if(it){ markRead(it.getAttribute('data-bid')); setOpen(false); draw(); } });
   BS.ready().then(function(){ Object.keys(data).forEach(function(c){ BS.subscribe(c, function(d){ data[c]=d||[]; draw(); }); }); });
   window.bsBellRefresh=draw; setInterval(draw, 60000);
   window.addEventListener('hashchange', draw); document.addEventListener('click', function(){ setTimeout(draw, 300); });

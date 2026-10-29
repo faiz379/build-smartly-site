@@ -181,9 +181,9 @@ footer.site .staff-link:hover{opacity:1;text-decoration:underline}
 .stats{background:var(--green-deep);color:var(--band-fg);padding-block:1.6rem;position:relative;overflow:hidden}
 .stats::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 120% at 10% 50%,rgba(227,166,58,.18),transparent 60%),radial-gradient(50% 120% at 90% 50%,rgba(246,247,244,.10),transparent 60%);pointer-events:none}
 .statsgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;position:relative}
-.statsgrid div{display:grid;gap:.15rem;text-align:center}
+.statsgrid div{display:grid;grid-template-rows:1fr auto;gap:.25rem;text-align:center}
 .statsgrid strong{font-family:var(--display);font-size:clamp(1.6rem,3.4vw,2.4rem);color:var(--ochre);letter-spacing:-.01em}
-.statsgrid span{color:var(--band-muted);font-size:.85rem}
+.statsgrid span{color:var(--band-muted);font-size:.85rem;order:-1;align-self:end} /* words on top, number below */
 @media (max-width:700px){.statsgrid{grid-template-columns:repeat(2,1fr)}}
 .circle .pic{transition:transform .4s cubic-bezier(.2,.8,.2,1),box-shadow .4s ease!important}
 .circle:hover .pic{transform:scale(1.08) rotate(-2deg)!important;box-shadow:0 14px 36px rgba(0,0,0,.35),0 0 0 6px rgba(227,166,58,.35)!important}
@@ -662,7 +662,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
       <select id="lang" class="lang" aria-label="Language"><option value="en">English</option><option value="am">አማርኛ</option><option value="om">Afaan Oromoo</option></select>
       <span id="authOut" style="display:contents"><a class="btn btn-primary btn-sm" href="#signin">Sign in</a></span>
       <div class="bell" id="bellBox" hidden><button type="button" class="bellbtn" id="bellBtn" aria-label="Notifications" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><em id="bellN" hidden>0</em></button>
-        <div class="bellpanel" id="bellPanel" hidden><div class="bellhead"><strong>Notifications</strong><span class="small muted">last 30 days</span></div><div id="bellList"></div></div></div>
+        <div class="bellpanel" id="bellPanel" hidden><div class="bellhead"><strong>Notifications</strong><span class="small muted">last 30 days · <button type="button" class="linkbtn" id="bellAll">Mark all as read</button></span></div><div id="bellList"></div></div></div>
       <details class="acct" id="authIn" hidden>
         <summary class="btn btn-primary btn-sm"><span id="authName">Account</span> <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l5 5 5-5"/></svg></summary>
         <div class="acct-menu">
@@ -757,7 +757,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     </div>
   </div>
 
-  <section class="wrap" id="partners" style="padding-block:1.6rem 0">
+  <section class="wrap" id="partners" style="padding-block:1.6rem 2.8rem">
     <div class="sec-head" style="display:flex;justify-content:space-between;align-items:end;gap:1rem;flex-wrap:wrap"><div><span class="eyebrow">Partners and promotions</span><h2 style="font-size:1.4rem">Brands, suppliers and builders on Build Smartly</h2></div><a class="small" href="#newsletter">Advertise your brand →</a></div>
     <div class="adshow" id="homeAds"></div>
   </section>
@@ -1381,6 +1381,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
       <div class="su-row2"><div class="field"><label for="nwWho">You are</label><select id="nwWho"><option>Brand or manufacturer</option><option>Supplier</option><option>Contractor or developer</option><option>Other</option></select></div><div class="field"><label for="nwCompany">Company or brand</label><input id="nwCompany" placeholder="Your company or brand name"></div></div>
       <div class="field"><label for="nwKind">Placement</label><select id="nwKind"><option value="news">Newsletter item · example ETB 5,000 per issue</option><option value="feature">Featured supplier of the month · example ETB 15,000</option><option value="pulse">Price pulse tile on the home page · example ETB 5,000 per month</option><option value="banner">Banner inside every member's workspace · example ETB 4,000 per month</option><option value="directory">Highlighted card in the Members directory · example ETB 3,000 per month</option></select></div>
       <div class="field"><label for="nwTitle">Headline</label><input id="nwTitle" maxlength="90" placeholder="e.g. New: Dangote 42.5 in stock at Kality, 48-hour delivery"></div>
+      <div class="field"><label for="nwLink">Your website or page (optional): where people go when they tap your banner</label><input id="nwLink" inputmode="url" placeholder="www.yourcompany.com"></div>
       <div class="field"><label for="nwText">Text (up to 300 characters)</label><textarea id="nwText" rows="3" maxlength="300" style="font:inherit;font-size:.95rem;padding:.6rem;border:1.5px solid var(--line);border-radius:10px;background:var(--white);color:var(--fg);width:100%"></textarea></div>
       <label class="wpic up" style="aspect-ratio:auto;height:4.5rem;min-height:0"><input type="file" accept="image/*" hidden id="nwPic"><span id="nwPicLabel">＋ Banner picture (optional, shown in the slideshow; 3:1 works best)</span></label>
       <img id="nwPicPrev" alt="" hidden style="width:100%;aspect-ratio:3/1;object-fit:cover;border-radius:12px">
@@ -1563,8 +1564,8 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 </div>
 <div class="mock" aria-hidden="true">Test site · working name</div>
 
-<script src="assets/firebase-config.js?v=20261029a" onerror="this.remove()"></script>
-<script src="assets/store.js?v=20261029a"></script>
+<script src="assets/firebase-config.js?v=20261029b" onerror="this.remove()"></script>
+<script src="assets/store.js?v=20261029b"></script>
 <script>
 /* ---------- Router: one page, views switched by hash ---------- */
 window.BSRoute = (function(){
@@ -1575,10 +1576,12 @@ window.BSRoute = (function(){
     var nav=document.getElementById('nav'); if(nav) nav.classList.remove('open');
   }
   var current='home';
-  function route(){ routeTo((location.hash||'#home').replace('#','')); }
-  function routeTo(h){
-    current=h||'home';
-    try{ if(history && history.replaceState){ history.replaceState(null,'','#'+current); } }catch(e){}
+  function route(){ routeTo((location.hash||'#home').replace('#',''), {replace:true}); }
+  /* Each page change is a new step in the browser history, so Chrome's back and forward buttons move between the
+     site's pages. Where the viewer blocks address changes this quietly does nothing. */
+  function routeTo(h, opt){
+    var prev=current; current=h||'home';
+    try{ if(history){ if(opt&&opt.replace || prev===current || location.hash==='#'+current) history.replaceState(null,'','#'+current); else history.pushState(null,'','#'+current); } }catch(e){}
     var homeAnchors=['home','top','about','supply','how','suppliers','partners','aboutus'];
     if(h.indexOf('news-')===0){ show('advertise'); if(hooks.news) hooks.news(); setTimeout(function(){ var el=document.getElementById(h); if(el){ el.scrollIntoView({behavior:'smooth',block:'start'}); el.style.outline='3px solid var(--ochre)'; setTimeout(function(){ el.style.outline=''; },2500); } },150); return; }
     if(h==='newsletter'||h==='advertise'){ show('advertise'); if(hooks.news) hooks.news(); window.scrollTo(0,0); return; }
@@ -1605,12 +1608,14 @@ window.BSRoute = (function(){
     if(h==='members'||h==='advertise'){ show(h); if(hooks[h]) hooks[h](); window.scrollTo(0,0); return; }
     show('home');
   }
-  window.addEventListener('hashchange', function(){ var h=(location.hash||'#home').replace('#',''); if(h!==current) routeTo(h); });
+  function fromAddress(){ var h=(location.hash||'#home').replace('#',''); if(h!==current) routeTo(h, {replace:true}); }
+  window.addEventListener('hashchange', fromAddress); window.addEventListener('popstate', fromAddress);
   /* Every in-page link routes through here, so it works even where the viewer blocks address changes. */
   document.addEventListener('click', function(e){
     var a=e.target.closest('a[href]'); if(!a) return;
     var href=a.getAttribute('href')||''; if(href.charAt(0)!=='#') return;
-    e.preventDefault(); routeTo(href.slice(1));
+    e.preventDefault(); if(href==='#') return; /* links used as buttons (href="#") are handled by their own page code */
+    routeTo(href.slice(1));
   });
   return { on:function(name,fn){ hooks[name]=fn; }, start:route, go:routeTo };
 })();
@@ -1745,13 +1750,15 @@ function bsPickList(opts, isOn){
       g.items.map(function(c){ var on=!!isOn(c); var ip=BS.itemPic(c.name); return '<label class="pick'+(on?' on':'')+(ip?' haspic':'')+'"><input type="checkbox" value="'+esc(c.name)+'"'+(on?' checked':'')+'>'+(ip?'<img class="pi" src="'+esc(ip)+'" alt="" loading="lazy" onerror="this.remove()">':'')+'<span>'+esc(c.name)+'<small>per '+esc(c.unit)+(c.min>1?' · min '+c.min:'')+'</small></span></label>'; }).join('');
   }).join('');
 }
+/* a banner's link: a page on this site (#…) or the advertiser's own website (www.… becomes https://www.…) */
+function bsAdLink(l){ l=String(l||'').trim(); if(!l) return ''; if(l.charAt(0)==='#' || /^https?:\/\//i.test(l)) return l; if(/^[\w.-]+\.[a-z]{2,}(\/.*)?$/i.test(l)) return 'https://'+l; return ''; }
 function bsAdShow(id, visibleFn, place){
   var box=document.getElementById(id); if(!box) return; var idx=0, timer=null, items=[];
   function esc(t){ return String(t||'').replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function draw(){
     items=bsPromoItems.filter(function(a){ return a.active!==false && (!a.placement || a.placement==='all' || !place || a.placement===place); }).concat(bsAdItems).concat(BS.ADS.filter(function(a){ return (BS.ADS_HIDDEN||[]).indexOf(a.key)<0; }).map(function(a){ return Object.assign({}, a, {img:(BS.PICS&&BS.PICS[a.key])||a.img}); })); idx=Math.min(idx, items.length-1);
     if(!items.length){ box.innerHTML='<div class="empty">No promotions at the moment.</div>'; return; }
-    box.innerHTML='<div class="atrack">'+items.map(function(a){ return '<a class="aslide" href="'+esc(a.link||'#newsletter')+'"'+(/^https?:/.test(a.link||'')?' target="_blank" rel="noopener"':'')+'><img src="'+esc(a.img)+'" alt="'+esc(a.company)+'" loading="lazy"><span class="acap"><span><span class="tag">Sponsored · '+esc(a.who||'Partner')+'</span> '+esc(a.company)+'</span><span>'+esc(a.title)+'</span></span></a>'; }).join('')+'</div>'+
+    box.innerHTML='<div class="atrack">'+items.map(function(a){ var L=bsAdLink(a.link); return '<a class="aslide" href="'+esc(L||'#newsletter')+'"'+(/^https?:/.test(L)?' target="_blank" rel="noopener"':'')+'><img src="'+esc(a.img)+'" alt="'+esc(a.company)+'" loading="lazy"><span class="acap"><span><span class="tag">Sponsored · '+esc(a.who||'Partner')+'</span> '+esc(a.company)+'</span><span>'+esc(a.title)+'</span></span></a>'; }).join('')+'</div>'+
       '<div class="aarrows"><button type="button" data-ad="-1" aria-label="Previous">‹</button><button type="button" data-ad="1" aria-label="Next">›</button></div><div class="adots">'+items.map(function(_,i){ return '<i'+(i===idx?' class="on"':'')+'></i>'; }).join('')+'</div>';
     go(idx);
   }
@@ -1762,7 +1769,7 @@ function bsAdShow(id, visibleFn, place){
 }
 var bsPromoItems=[];
 (function(){ BS.ready().then(function(){ BS.subscribe('promotions', function(d){ bsPromoItems=(d||[]).slice().sort(function(a,b){ return (a.order||0)-(b.order||0) || (b.createdAt||'').localeCompare(a.createdAt||''); }); bsAdShows.forEach(function(f){ f(); }); }); BS.onSettings && BS.onSettings(function(){ bsAdShows.forEach(function(f){ f(); }); }); }); })();
-(function(){ BS.ready().then(function(){ BS.subscribe('news', function(d){ bsAdItems=(d||[]).filter(function(x){ return x.status==='published' && x.img; }).sort(function(a,b){ return (b.createdAt||'').localeCompare(a.createdAt||''); }).map(function(x){ return {who:x.who||'Partner', company:x.company, title:x.title, img:x.img, link:'#news-'+x.id}; }); bsAdShows.forEach(function(f){ f(); }); }); }); })();
+(function(){ BS.ready().then(function(){ BS.subscribe('news', function(d){ bsAdItems=(d||[]).filter(function(x){ return x.status==='published' && x.img; }).sort(function(a,b){ return (b.createdAt||'').localeCompare(a.createdAt||''); }).map(function(x){ return {who:x.who||'Partner', company:x.company, title:x.title, img:x.img, link:x.link||('#news-'+x.id)}; }); bsAdShows.forEach(function(f){ f(); }); }); }); })();
 bsAdShow('homeAds', function(){ return !document.getElementById('view-home').hidden; }, 'home');
 bsAdShow('nwAds', function(){ return !document.getElementById('view-advertise').hidden; }, 'newsletter');
 
@@ -1795,8 +1802,8 @@ bsAdShow('nwAds', function(){ return !document.getElementById('view-advertise').
     if(/\+?\d[\d\s-]{7,}/.test(title+' '+text)){ err.textContent='No phone numbers in the text, please. Buyers contact you through the platform.'; err.hidden=false; return; }
     if(!me.phone){ err.textContent='Sign in first (mobile number and code), so we know who to invoice.'; err.hidden=false; return; }
     $('nwSend').disabled=true;
-    await BS.add('news', {company:company, who:$('nwWho').value, kind:$('nwKind').value, title:title, text:text, img:picData, phone:(me.phone||'').replace(/\D/g,'').replace(/^251/,''), status:'pending', createdAt:new Date().toISOString()});
-    $('nwTitle').value=''; $('nwText').value=''; $('nwSend').disabled=false; picData=''; srcImg=null; $('nwPic').value=''; $('nwPicPrev').hidden=true; $('nwPicPosBox').hidden=true; $('nwPicLabel').textContent='＋ Banner picture (optional, shown in the slideshow; 3:1 works best)'; $('nwKind').selectedIndex=0; $('nwErr').hidden=true;
+    await BS.add('news', {company:company, who:$('nwWho').value, kind:$('nwKind').value, title:title, text:text, link:$('nwLink').value.trim(), img:picData, phone:(me.phone||'').replace(/\D/g,'').replace(/^251/,''), status:'pending', createdAt:new Date().toISOString()});
+    $('nwTitle').value=''; $('nwText').value=''; $('nwLink').value=''; $('nwSend').disabled=false; picData=''; srcImg=null; $('nwPic').value=''; $('nwPicPrev').hidden=true; $('nwPicPosBox').hidden=true; $('nwPicLabel').textContent='＋ Banner picture (optional, shown in the slideshow; 3:1 works best)'; $('nwKind').selectedIndex=0; $('nwErr').hidden=true;
     $('nwMsg').textContent='Received. Staff check the text, finance sends the invoice, and it goes out in the next issue.'; bsToast('Your news is with Build Smartly for the next issue.');
   };
 })();
@@ -2265,7 +2272,10 @@ function bsSupport(threadId, inputId, sendId){
       /* orders already placed on this request */
       var ordersHtml = groups.length ? '<div class="orders-box"><strong style="font-family:var(--display)">Your orders</strong>'+groups.map(function(g){ var st=BS.orderStatus(g.first), tot=0; g.offers.forEach(function(o){ tot+=lineExtras(b, lineOfB(b,o.lineN), o).total; });
           var act = st.who==='buyer' ? (g.first.deliveredAt?'Pay '+BS.fmt(tot):g.first.dispatchedAt?'Confirm delivery':'Agree to the contract') : 'Open';
-          return '<a class="order-row" href="#order-'+g.id+'"><span><strong>'+esc(g.poRef||'')+'</strong> · '+esc(g.supplierName)+'<br><span class="small muted">'+g.offers.map(function(o){ return esc(lineOfB(b,o.lineN).item||''); }).join(', ')+' · '+BS.fmt(tot)+'</span></span><span class="tag '+st.c+'">'+esc(st.t)+'</span><span class="btn '+(st.who==='buyer'?'btn-ochre':'btn-ghost')+' btn-sm">'+act+'</span></a>'; }).join('')+'</div>' : '';
+          var info='<span><strong>'+esc(g.poRef||'')+'</strong> · '+esc(g.supplierName)+'<br><span class="small muted">'+g.offers.map(function(o){ return esc(lineOfB(b,o.lineN).item||''); }).join(', ')+' · '+BS.fmt(tot)+'</span></span><span class="tag '+st.c+'">'+esc(st.t)+'</span>';
+          /* the contract opens in a pop-up right here, so several orders can be agreed one after another without leaving the page */
+          if(st.who==='buyer' && g.first.supplierConfirmed && !g.first.buyerAgreedAt && !g.first.dispatchedAt) return '<div class="order-row">'+info+'<span style="display:flex;gap:.4rem;flex-wrap:wrap;justify-content:flex-end"><button class="btn btn-ochre btn-sm" type="button" data-stmt="'+g.id+'" data-kind="contract">Agree to the contract</button><a class="btn btn-ghost btn-sm" href="#order-'+g.id+'">Open</a></span></div>';
+          return '<a class="order-row" href="#order-'+g.id+'">'+info+'<span class="btn '+(st.who==='buyer'?'btn-ochre':'btn-ghost')+' btn-sm">'+act+'</span></a>'; }).join('')+'</div>' : '';
       var chosenN=0, chosenSum=0, openLines=0, bestMissing=0;
       var body=b.lines.map(function(l){
         var os=offersOn(b,l), po=poOf(b,l), ch=chosenOf(b,l), invited=BS.activeSuppliers().filter(function(s){ return s.cats.indexOf(l.cat)>=0; }).length;
@@ -2512,11 +2522,13 @@ function bsSupport(threadId, inputId, sendId){
     var base={name:sup.name, cats:sup.cats||[], sub:sup.sub||'', status:sup.status||'active', phone:sup.phone||'', source:sup.own?'registered':'seed'}; if(!sup.own) base.seedId=sup.id;
     return BS.set('suppliers', id, Object.assign(base, patch));
   }
+  var lastStatus='';
   BS.onSuppliers(function(){ if(!sup) return; var d=BS.supplierDoc(sup.docId||('seed-'+sup.id)); if(!d) return; var changed=false;
     if(d.status==='removed' || d.status==='suspended'){ var why=d.status==='removed'?'This supplier account was removed by Build Smartly staff.':'This supplier account is paused by Build Smartly staff.'; sup=null; BS.setMe({}); $('portal').hidden=true; $('login').hidden=false; if(window.BSAuth) BSAuth.refresh(); bsToast(why); return; }
     if(!pricesDirty && Array.isArray(d.prices) && JSON.stringify(d.prices)!==JSON.stringify(prices)){ prices=d.prices.slice(); try{ localStorage.setItem('bs_demo_prices_'+sup.id, JSON.stringify(prices)); }catch(e){} changed=true; }
     if(d.cats && d.cats.length && JSON.stringify(d.cats)!==JSON.stringify(profile.cats)){ profile.cats=d.cats.slice(); sup.cats=profile.cats; changed=true; }
     if(d.status==='active' && profile.docs && !profile.docs.verified){ profile.docs.verified=true; profile.docs.submitted=true; changed=true; }
+    if(d.status!==lastStatus){ if(lastStatus && d.status==='pending') bsToast('Your account is on hold for review. Quoting is locked until staff make it active again.'); if(lastStatus==='pending' && d.status==='active') bsToast('Your account is active again. You can quote.'); lastStatus=d.status; changed=true; }
     if(changed){ try{ localStorage.setItem('bs_demo_supprofile_'+sup.id, JSON.stringify(profile)); }catch(e){} fillProfileForm(); render(); } });
   function ageDays(iso){ return Math.floor((Date.now()-new Date(iso).getTime())/86400000); }
   function isStale(p){ return ageDays(p.confirmedAt)>=p.valid; }
@@ -2543,7 +2555,10 @@ function bsSupport(threadId, inputId, sendId){
   document.addEventListener('click', function(e){ var b=e.target.closest('[data-go]'); if(b && !$('view-supplier').hidden){ showTab(b.dataset.go); } });
 
   /* ----- verification and checklist ----- */
-  function verified(){ return !!(profile && profile.docs.verified); }
+  /* staff can put a supplier on hold (pending) or pause it (suspended); either way it cannot quote until made active again */
+  function supStatus(){ var d=sup && BS.supplierDoc(sup.docId||('seed-'+sup.id)); return (d && d.status) || (sup && sup.status) || 'active'; }
+  function onHold(){ return supStatus()==='pending' && !!(profile && profile.docs.verified); }
+  function verified(){ return !!(profile && profile.docs.verified) && supStatus()==='active'; }
   function renderHome(){
     var d=profile.docs; var state = d.verified ? 'Verified' : d.submitted ? 'Under review' : 'Registered';
     $('verTag').textContent=state; $('verTag').className='tag '+(d.verified?'tag-green':d.submitted?'tag-ochre':'');
@@ -2718,7 +2733,7 @@ function bsSupport(threadId, inputId, sendId){
     var can=verified() && profile.agree;
     var rq=(window.__spReqQ||'').trim().toLowerCase(); if(rq) reqs=reqs.filter(function(b){ return (b.ref+' '+b.subcity+' '+matches(b).map(function(l){ return l.item; }).join(' ')).toLowerCase().indexOf(rq)>=0; });
     var box=$('tab-requests'); var typing=document.activeElement && document.activeElement.closest && document.activeElement.closest('#tab-requests form'); if(typing){ renderRest(); return; } box.innerHTML='<div class="field" style="max-width:26rem;margin-bottom:.6rem"><input id="spReqSearch" type="search" placeholder="Search requests: reference, item, sub-city" value="'+(window.__spReqQ||'').replace(/"/g,'&quot;')+'"></div>';
-    if(!can){ box.innerHTML='<div class="card" style="border-color:var(--ochre);margin-bottom:.8rem"><strong style="font-family:var(--display)">Quoting is locked</strong><p class="small muted">'+(verified()?'Accept the supplier agreement under Profile and documents.':'Submit your licence and TIN and wait for verification. You can prepare your price list meanwhile.')+'</p></div>'; }
+    if(!can){ box.innerHTML='<div class="card" style="border-color:var(--ochre);margin-bottom:.8rem"><strong style="font-family:var(--display)">Quoting is locked</strong><p class="small muted">'+(onHold()?'Build Smartly staff have put your account on hold for review. You cannot quote until staff make it active again. Write to support if you have a question.':verified()?'Accept the supplier agreement under Profile and documents.':'Submit your licence and TIN and wait for verification. You can prepare your price list meanwhile.')+'</p></div>'; }
     if(!profile.cats.length){ box.innerHTML+='<div class="empty">Choose your categories under Profile and documents to start receiving requests.</div>'; }
     else if(!reqs.length){ box.innerHTML+='<div class="empty">No open requests in your categories right now. When a customer sends a BOQ with your materials, it appears here and you get a notification.</div>'; }
     reqs.forEach(function(b){
@@ -2762,7 +2777,7 @@ function bsSupport(threadId, inputId, sendId){
     }
   }
   $('tab-requests').addEventListener('submit', async function(e){
-    e.preventDefault(); var f=e.target; if(!f.dataset.boq) return; var btn=f.querySelector('button[type=submit]'); btn.disabled=true; btn.textContent='Sending…';
+    e.preventDefault(); var f=e.target; if(!f.dataset.boq) return; if(!verified() || !profile.agree){ bsToast(onHold()?'Your account is on hold for review. Quoting is locked.':'Quoting is locked.'); return; } var btn=f.querySelector('button[type=submit]'); btn.disabled=true; btn.textContent='Sending…';
     await BS.add('offers', { boqId:f.dataset.boq, lineN:+f.dataset.line, supplierId:sup.id, supplierName:sup.name, supplierSub:(profile.locs[0]||{}).sub||sup.sub||'', brand:f.brand.value.trim(), qtyOffered:+f.qty.value, unitPrice:+f.price.value, vat:f.vat.value, deliveryCost:+f.delivery.value||0, leadDays:+f.lead.value||0, validDays:+f.valid.value, status:'sent' });
     bsToast('Offer sent. The customer sees it as an anonymous offer.');
   });
@@ -2777,7 +2792,7 @@ function bsSupport(threadId, inputId, sendId){
     if(x){ x.disabled=true; var o2=offers.filter(function(y){return y.id===x.dataset.cdec;})[0]; await BS.update('offers', o2.id, {counter:{price:o2.counter.price, at:o2.counter.at, state:'declined', answeredAt:new Date().toISOString()}}); bsToast('Declined. Your offer stands; the customer is told.'); return; }
   });
   $('tab-requests').addEventListener('click', async function(e){
-    var s=e.target.closest('[data-sendall]'); if(!s) return; s.disabled=true; s.textContent='Sending…';
+    var s=e.target.closest('[data-sendall]'); if(!s) return; if(!verified() || !profile.agree){ bsToast(onHold()?'Your account is on hold for review. Quoting is locked.':'Quoting is locked.'); return; } s.disabled=true; s.textContent='Sending…';
     var forms=Array.prototype.slice.call(document.querySelectorAll('#tab-requests form[data-boq="'+s.dataset.sendall+'"]')).filter(function(f){ return +f.price.value>0; });
     for(var i=0;i<forms.length;i++){ var f=forms[i]; await BS.add('offers', { boqId:f.dataset.boq, lineN:+f.dataset.line, supplierId:sup.id, supplierName:sup.name, supplierSub:(profile.locs[0]||{}).sub||sup.sub||'', brand:f.brand.value.trim(), qtyOffered:+f.qty.value, unitPrice:+f.price.value, vat:f.vat.value, deliveryCost:+f.delivery.value||0, leadDays:+f.lead.value||0, validDays:+f.valid.value, status:'sent' }); }
     bsToast(forms.length+' offer'+(forms.length===1?'':'s')+' sent from your price list.');
@@ -2982,7 +2997,7 @@ window.bsPublishProfile = async function(fields){
 
 BSRoute.start();
 </script>
-<script src="assets/order.js?v=20261029a"></script>
-<script src="assets/notify.js?v=20261029a"></script>
-<script src="assets/help.js?v=20261029a"></script>
-<script src="assets/admin.js?v=20261029a"></script>
+<script src="assets/order.js?v=20261029b"></script>
+<script src="assets/notify.js?v=20261029b"></script>
+<script src="assets/help.js?v=20261029b"></script>
+<script src="assets/admin.js?v=20261029b"></script>

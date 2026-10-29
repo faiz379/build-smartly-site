@@ -179,10 +179,10 @@
   ];
   /* Promotions slideshow: brands, suppliers and contractors who advertise. Example banners for the test site; published newsletter items with a picture join them. */
   BS.ADS = [
-    {key:"ad-cement", who:"Brand", company:"Derba Cement", title:"OPC 42.5 and PPC 32.5 with 9 verified distributors", img:"assets/ad-cement.svg"},
-    {key:"ad-steel", who:"Supplier", company:"Addis Steel & Rebar Trading", title:"Grade 60 rebar with mill certificates, delivered in Addis Ababa", img:"assets/ad-steel.svg"},
-    {key:"ad-contractor", who:"Contractor", company:"Tana Construction PLC", title:"Grade 1 contractor, hiring subcontractors for Bole and Lemi Kura", img:"assets/ad-contractor.svg"},
-    {key:"ad-paint", who:"Brand", company:"Kadisco Paint", title:"New colour range for 2026 through verified finishing suppliers", img:"assets/ad-paint.svg"}
+    {key:"ad-cement", who:"Brand", company:"Derba Cement", title:"OPC 42.5 and PPC 32.5 with 9 verified distributors", img:"assets/ad-cement.svg", link:"#boq-foundation"},
+    {key:"ad-steel", who:"Supplier", company:"Addis Steel & Rebar Trading", title:"Grade 60 rebar with mill certificates, delivered in Addis Ababa", img:"assets/ad-steel.svg", link:"#boq-foundation"},
+    {key:"ad-contractor", who:"Contractor", company:"Tana Construction PLC", title:"Grade 1 contractor, hiring subcontractors for Bole and Lemi Kura", img:"assets/ad-contractor.svg", link:"#members"},
+    {key:"ad-paint", who:"Brand", company:"Kadisco Paint", title:"New colour range for 2026 through verified finishing suppliers", img:"assets/ad-paint.svg", link:"#boq-finishing"}
   ];
   BS.PULSE = [
     {item:"Cement OPC 42.5", name:"Cement OPC 42.5", brand:"Dangote", unit:"per quintal (two 50 kg bags)", price:1180, chg:1.7, when:"6 suppliers, this morning", svg:'<svg viewBox="0 0 80 80"><rect x="14" y="18" width="52" height="50" rx="6" fill="#D9D3C7"/><rect x="14" y="18" width="52" height="12" rx="6" fill="#B9AE9C"/><text x="40" y="54" text-anchor="middle" font-family="Sora,Arial" font-size="12" font-weight="700" fill="#1E6B4E">OPC</text></svg>'},
@@ -417,10 +417,20 @@
     sessionStorage.setItem("bs_demo_admin", d?"1":""); sessionStorage.setItem("bs_demo_admin_name", d?(d.name||d.email||"Staff"):"");
     sessionStorage.setItem("bs_staff_role", d?(d.role||"staff"):""); sessionStorage.setItem("bs_staff_fin", d&&(d.role==="owner"||d.finance)?"1":"");
     sessionStorage.setItem("bs_staff_email", d?(d.email||""):"");
+    sessionStorage.setItem("bs_staff_access", d && Array.isArray(d.access) ? JSON.stringify(d.access) : "");
   } catch(e){} }
+  /* staff page sections the owner can give or withhold per staff login (Overview is always shown) */
+  BS.STAFF_SECTIONS = [["requests","Requests"],["suppliers","Suppliers"],["support","Support"],["news","Newsletter"],["promos","Promotions"],["members","Members"],["finance","Finance"],["catalogue","Catalogue"],["brands","Brands"],["insights","Insights"],["settings","Settings"]];
+  BS.STAFF_DEFAULT_ACCESS = ["requests","suppliers","support","news","promos","members","catalogue","brands"];
   BS.setStaffCache = setStaffCache;
   BS.staffRole = function(){ try { return sessionStorage.getItem("bs_staff_role") || (/owner/i.test(BS.staffName())?"owner":"staff"); } catch(e){ return "staff"; } };
-  BS.staffCan = function(what){ if(BS.staffRole()==="owner") return true; if(what==="finance"){ try { return !fbAuth || sessionStorage.getItem("bs_staff_fin")==="1"; } catch(e){ return false; } } return true; };
+  BS.staffCan = function(what){
+    if(what==="overview" || !fbAuth || BS.staffRole()==="owner") return true;
+    try { var a = sessionStorage.getItem("bs_staff_access");
+      if(a) return JSON.parse(a).indexOf(what)>=0;
+      return what==="finance" ? sessionStorage.getItem("bs_staff_fin")==="1" : true; /* logins made before 30 Oct: everything except finance unless ticked */
+    } catch(e){ return false; }
+  };
   BS.staffAuth = function(){ return !!fbAuth; };
   BS.staffUid = function(){ return fbAuth && fbAuth.currentUser ? fbAuth.currentUser.uid : ""; };
   BS.onStaffChange = null;
@@ -449,6 +459,7 @@
     if(!d.exists || d.data().active!==true){ await fbAuth.signOut(); throw {code:"not-staff"}; }
     setStaffCache(Object.assign({uid:cred.user.uid}, d.data())); return d.data();
   };
+  BS.recheckStaff = function(){ if(fbAuth && fbAuth.currentUser) return checkStaff(fbAuth.currentUser); };
   BS.staffSignOut = async function(){ setStaffCache(null); if(fbAuth){ try { await fbAuth.signOut(); } catch(e){} } };
   BS.ownerExists = async function(){ await BS.ready(); if(!fbAuth) return true; try { return (await db.collection("meta").doc("owner").get()).exists; } catch(e){ return true; } };
   /* first owner: makes the login (or signs in if the email already has one), then writes meta/owner and the owner's staff doc together */
@@ -461,12 +472,12 @@
     setStaffCache(Object.assign({uid:uid}, doc)); return doc;
   };
   /* the owner adds a staff login: made through a second, separate connection so the owner stays signed in */
-  BS.createStaff = async function(name, email, pw, finance){
+  BS.createStaff = async function(name, email, pw, access){
     await BS.ready(); if(!fbAuth) throw {code:"no-auth"}; email = String(email).trim();
     var app2 = firebase.apps.filter(function(a){ return a.name==="staffMaker"; })[0] || firebase.initializeApp(window.BS_FIREBASE, "staffMaker");
     var a2 = app2.auth(); if(window.BS_FIREBASE_EMU && !a2.emulatorConfig) a2.useEmulator("http://127.0.0.1:"+window.BS_FIREBASE_EMU.auth); await a2.setPersistence(firebase.auth.Auth.Persistence.NONE);
     var cred = await a2.createUserWithEmailAndPassword(email, pw); var uid = cred.user.uid; await a2.signOut();
-    await db.collection("staff").doc(uid).set({name:name, email:email, role:"staff", finance:!!finance, active:true, createdAt:new Date().toISOString(), addedBy:BS.staffName()});
+    await db.collection("staff").doc(uid).set({name:name, email:email, role:"staff", access:access||[], finance:(access||[]).indexOf("finance")>=0, active:true, createdAt:new Date().toISOString(), addedBy:BS.staffName()});
     return uid;
   };
   BS.staffPasswordEmail = async function(email){ await BS.ready(); if(!fbAuth) throw {code:"no-auth"}; await fbAuth.sendPasswordResetEmail(String(email).trim()); };

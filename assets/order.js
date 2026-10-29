@@ -77,7 +77,7 @@
     var iss=data.issues.filter(function(x){ return gids.indexOf(x.offerId)>=0; }).sort(function(a,c){ return (c.createdAt||'').localeCompare(a.createdAt||''); });
     var issues=(iss.length?'<div class="docs">'+iss.map(function(x){ return '<div class="doc"><span class="ico">!</span><span><strong>'+esc(x.text)+'</strong><br><span class="small muted">'+esc(x.who)+' · '+when(x.createdAt)+(x.status==='resolved'?' · resolved: '+esc(x.note||''):'')+'</span></span>'+(x.status==='resolved'?'<span class="tag tag-green">Resolved</span>':x.status==='progress'?'<span class="tag tag-ochre">In progress</span>':role==='staff'?'<span style="display:flex;gap:.3rem"><input placeholder="Resolution note" data-note="'+x.id+'" style="font:inherit;font-size:.85rem;padding:.35rem .5rem;border:1.5px solid var(--line);border-radius:8px;min-width:10rem"><button class="btn btn-primary btn-sm" type="button" data-resolve="'+x.id+'">Resolve</button></span>':'<span class="tag tag-ochre">Open · staff told</span>')+'</div>'; }).join('')+'</div>':'')+
       (role!=='staff'?'<div class="chat-in"><div class="field"><input id="orderIssueIn" placeholder="Wrong quantity, damage, delay…"></div><button class="btn btn-ghost btn-sm" type="button" data-issue="'+o.id+'">Report</button></div>':'');
-    box.innerHTML=head+parties+card('What happens next', next, '', 'orderNext')+card('Items', items)+'<div class="ogrid">'+card('Progress', tl)+card('Delivery', delivery)+'</div><div class="ogrid">'+card('Documents', docs)+card('Payment', payRows+pay, '', 'orderPay')+'</div><div class="ogrid">'+card('Messages', chat)+card('Report a problem', issues||'<p class="small muted">Nothing reported.</p>', '', 'orderIssue')+'</div>';
+    box.innerHTML=head+parties+card('What happens next', next, '', 'orderNext')+card('Items', items)+'<div class="ogrid">'+card('Delivery', delivery)+card('Payment', payRows+pay, '', 'orderPay')+'</div><div class="ogrid">'+card('Progress', tl)+card('Documents', docs)+'</div><div class="ogrid">'+card('Messages', chat)+card('Report a problem', issues||'<p class="small muted">Nothing reported.</p>', '', 'orderIssue')+'</div>';
     var chatEl=$('orderChat'); if(chatEl) chatEl.scrollTop=chatEl.scrollHeight;
   }
 
@@ -115,7 +115,12 @@
 
   /* ---- actions: every step applies to the whole order ---- */
   function gids(id){ return ids(groupOf(offerOf(id))); }
-  async function agree(id){ var o=offerOf(id); if(!o) return; var now=new Date().toISOString(); var patch={buyerAgreedAt:now}; if(o.supplierConfirmed) patch.contractAt=now; await BS.updateMany('offers', gids(id), patch); $('docGate').hidden=true; bsToast(patch.contractAt?'Contract agreed. The supplier prepares the goods.':'Agreed. It applies when the supplier reconfirms.'); }
+  async function agree(id){ var o=offerOf(id); if(!o) return; var now=new Date().toISOString(); var patch={buyerAgreedAt:now}; if(o.supplierConfirmed) patch.contractAt=now; var done=gids(id); await BS.updateMany('offers', done, patch); $('docGate').hidden=true;
+    /* more contracts waiting for this buyer: offer the next one in the same pop-up, without leaving the page */
+    var b=boqOf(o.boqId)||{}, owner=digits(b.ownerPhone), next=BS.orderGroups(data.offers).filter(function(g){ var bb=boqOf(g.boqId)||{}; return done.indexOf(g.id)<0 && !g.offers.some(function(x){ return done.indexOf(x.id)>=0; }) && digits(bb.ownerPhone)===owner && g.first.supplierConfirmed && !g.first.buyerAgreedAt && !g.first.dispatchedAt; });
+    if(!next.length){ bsToast(patch.contractAt?'Contract agreed. The supplier prepares the goods.':'Agreed. It applies when the supplier reconfirms.'); return; }
+    var go=await bsConfirm('Contract agreed for '+(o.poRef||'this order'), next.length+' more contract'+(next.length>1?'s wait':' waits')+' for you: '+next.map(function(g){ return g.poRef+' ('+g.supplierName+')'; }).join(', ')+'. Read and agree to the next one now?', 'Read the next contract');
+    if(go) openDoc('contract', next[0].id); }
   async function confirmIt(id){ var o=offerOf(id); if(!o) return; var now=new Date().toISOString(); var patch={supplierConfirmed:true, confirmedAt:now}; if(o.buyerAgreedAt) patch.contractAt=now; await BS.updateMany('offers', gids(id), patch); $('docGate').hidden=true; bsToast(patch.contractAt?'Reconfirmed. The contract is agreed.':'Reconfirmed. The buyer is asked to agree to the contract.'); }
   window.bsOrderAction=async function(kind, id){
     if(kind==='confirm') return confirmIt(id);
