@@ -1,9 +1,10 @@
 /* Build Smartly · staff page (#admin). Reads the same records as buyers and suppliers:
    requests (boqs), offers, support messages, member profiles, newsletter items, supplier verifications and settings.
-   Staff sign in with a staff number and the staff password; the session is kept per browser tab. */
+   On the public site staff sign in with their own email and password (owner adds them); on the local test server and the mirror the
+   test staff numbers and the staff password still work. The session is kept per browser tab. */
 (function(){
   var $=function(id){ return document.getElementById(id); };
-  var data={boqs:[],offers:[],messages:[],profiles:[],news:[],verifications:[],settings:[],issues:[],promotions:[],suppliers:[],tasks:[]}, query='';
+  var data={boqs:[],offers:[],messages:[],profiles:[],news:[],verifications:[],settings:[],issues:[],promotions:[],suppliers:[],tasks:[],staff:[]}, query='';
   var tab='overview', mode='local', booted=false, adTilesHtml='';
   var CATS=BS.CATEGORIES.filter(function(c){ return c.indexOf('Other')<0; });
   function esc(t){ return String(t||'').replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
@@ -11,23 +12,54 @@
   function digits(p){ return String(p||'').replace(/\D/g,'').replace(/^251/,'').replace(/^0/,''); }
   function fmtPhone(d){ d=digits(d); return d ? '0'+d.slice(0,3)+' '+d.slice(3,6)+' '+d.slice(6) : ''; }
   function issueLabel(){ return new Date().toLocaleDateString('en-GB',{month:'long',year:'numeric'}); }
-  function isAdmin(){ try{ return sessionStorage.getItem('bs_demo_admin')==='1'; }catch(e){ return false; } }
-  function staffName(){ try{ return sessionStorage.getItem('bs_demo_admin_name')||'Staff'; }catch(e){ return 'Staff'; } }
-  function setAdmin(on, name){ try{ sessionStorage.setItem('bs_demo_admin', on?'1':''); sessionStorage.setItem('bs_demo_admin_name', name||''); }catch(e){} }
+  function isAdmin(){ return BS.isStaff(); }
+  function staffName(){ return BS.staffName(); }
+  function canFinance(){ return BS.staffCan('finance'); }
 
   /* ---- sign in ---- */
-  $('adGo').onclick=function(){
+  function signedIn(name){ resubStaffOnly(); BS.clearMeTab(); $('adPw').value=''; $('adPw2').value=''; showPanel(); if(window.BSAuth) BSAuth.refresh(); bsToast('Signed in as '+name+'.'); }
+  $('adGo').onclick=async function(){
+    if(BS.staffAuth()){
+      $('adErr').hidden=true; $('adGo').disabled=true;
+      try{ var st=await BS.staffSignIn($('adEmail').value, $('adPw2').value); signedIn(st.name||st.email); }
+      catch(err){ $('adErr').textContent=BS.authErr(err); $('adErr').hidden=false; $('adPw2').focus(); }
+      $('adGo').disabled=false; return;
+    }
     var d=digits($('adPhone').value), st=BS.STAFF.filter(function(a){ return a.phone===d; })[0];
-    var ok=!!st && $('adPw').value===BS.STAFF_PASSWORD; $('adErr').hidden=ok; if(!ok){ $('adPw').focus(); return; }
-    setAdmin(true, st.person); BS.clearMeTab(); $('adPw').value=''; showPanel(); if(window.BSAuth) BSAuth.refresh(); bsToast('Signed in as '+st.person+'.');
+    var ok=!!st && $('adPw').value===BS.STAFF_PASSWORD; $('adErr').textContent='No staff account with that number and password.'; $('adErr').hidden=ok; if(!ok){ $('adPw').focus(); return; }
+    BS.setStaffCache({name:st.person, role:/owner/i.test(st.person)?'owner':'staff', finance:true}); signedIn(st.person);
   };
   $('adPw').addEventListener('keydown', function(e){ if(e.key==='Enter') $('adGo').click(); });
-  $('adLogout').onclick=function(){ setAdmin(false,''); showLogin(); if(window.BSAuth) BSAuth.refresh(); bsToast('Signed out of the staff page.'); };
-  function showLogin(){ $('adLogin').hidden=false; $('adPanel').hidden=true; }
-  function showPanel(){ $('adLogin').hidden=true; $('adPanel').hidden=false; $('adMeta').textContent='Signed in as '+staffName()+' · '+(mode==='shared'?'shared database: every device sees the same records':'this device only: shared database not configured yet'); render(); }
+  $('adPw2').addEventListener('keydown', function(e){ if(e.key==='Enter') $('adGo').click(); });
+  $('adForgot').onclick=async function(){
+    var em=$('adEmail').value.trim(); if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){ $('adErr').textContent='Type your email above first, then press "Forgot your password?".'; $('adErr').hidden=false; $('adEmail').focus(); return; }
+    try{ await BS.staffPasswordEmail(em); }catch(err){} /* the same answer either way, so the page does not reveal which emails have a login */
+    $('adErr').hidden=true; bsToast('If '+em+' has a staff login, an email to set a new password is on its way.');
+  };
+  $('osGo').onclick=async function(){
+    var n=$('osName').value.trim(), em=$('osEmail').value.trim(), p1=$('osPw').value, p2=$('osPw2').value, bad='';
+    if(!n) bad='Please type your name.'; else if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) bad='Please type a valid email.'; else if(p1.length<8) bad='The password needs at least 8 characters.'; else if(p1!==p2) bad='The two passwords are not the same.';
+    $('osErr').textContent=bad; $('osErr').hidden=!bad; if(bad) return;
+    $('osGo').disabled=true;
+    try{ if(await BS.ownerExists()){ bsToast('The owner login already exists. Sign in instead.'); showLogin(); } else { await BS.setupOwner(n, em, p1); $('osPw').value=''; $('osPw2').value=''; signedIn(n); } }
+    catch(err){ $('osErr').textContent=BS.authErr(err); $('osErr').hidden=false; }
+    $('osGo').disabled=false;
+  };
+  $('adLogout').onclick=async function(){ await BS.staffSignOut(); showLogin(); if(window.BSAuth) BSAuth.refresh(); bsToast('Signed out of the staff page.'); };
+  async function showLogin(){
+    $('adPanel').hidden=true; var fb=BS.staffAuth(); $('adOld').hidden=fb; $('adNew').hidden=!fb; $('adSetup').hidden=true; $('adLogin').hidden=false;
+    if(fb && !(await BS.ownerExists()) && $('adPanel').hidden){ $('adLogin').hidden=true; $('adSetup').hidden=false; }
+  }
+  /* the sign-in listener settles after a reload; follow it */
+  BS.onStaffChange=function(on){ if(window.BSAuth) BSAuth.refresh(); if(document.getElementById('view-admin').hidden) return; if(on) resubStaffOnly(); if(on && $('adPanel').hidden) showPanel(); else if(!on && !$('adPanel').hidden) showLogin(); };
+  function showPanel(){ $('adLogin').hidden=true; $('adSetup').hidden=true; $('adPanel').hidden=false; $('adMeta').textContent='Signed in as '+staffName()+' · '+(mode==='shared'?'shared database: every device sees the same records':'this device only: shared database not configured yet'); render(); }
   BSRoute.on('admin', function(){ if(isAdmin()) showPanel(); else showLogin(); });
-  BS.ready().then(function(m){ mode=m; if(isAdmin() && !$('adPanel').hidden) $('adMeta').textContent='Signed in as '+staffName()+' · '+(m==='shared'?'shared database':'this device only'); });
-  ['boqs','offers','messages','profiles','news','verifications','settings','issues','promotions','suppliers','tasks'].forEach(function(c){ BS.subscribe(c, function(d){ data[c]=d||[]; if(c==='settings') BS.applySettings(d||[]); if(isAdmin() && !$('adPanel').hidden) render(); }); });
+  BS.ready().then(function(m){ mode=m; if(!isAdmin() && !document.getElementById('view-admin').hidden) showLogin(); if(isAdmin() && !$('adPanel').hidden) $('adMeta').textContent='Signed in as '+staffName()+' · '+(m==='shared'?'shared database':'this device only'); });
+  var subs={};
+  function sub(c){ if(subs[c]) subs[c](); subs[c]=BS.subscribe(c, function(d){ data[c]=d||[]; if(c==='settings') BS.applySettings(d||[]); if(isAdmin() && !$('adPanel').hidden) render(); }); }
+  ['boqs','offers','messages','profiles','news','verifications','settings','issues','promotions','suppliers','tasks','staff'].forEach(sub);
+  /* staff-only lists are refused before sign-in; ask again once signed in */
+  function resubStaffOnly(){ sub('tasks'); sub('staff'); }
   $('adTabs').addEventListener('click', function(e){ var b=e.target.closest('[data-tab]'); if(!b) return; tab=b.dataset.tab; render(); $('adLayout').classList.remove('open'); $('adBurger').setAttribute('aria-expanded','false'); window.scrollTo({top:0,behavior:'smooth'}); });
   /* three-line button: on a phone it opens the menu as a drawer; on a wide screen it folds the sidebar to icons */
   $('adBurger').onclick=function(){ var L=$('adLayout'); if(window.matchMedia('(max-width:860px)').matches){ var o=!L.classList.contains('open'); L.classList.toggle('open', o); $('adBurger').setAttribute('aria-expanded', o?'true':'false'); } else { L.classList.toggle('fold'); try{ localStorage.setItem('bs_adfold', L.classList.contains('fold')?'1':''); }catch(e){} } };
@@ -55,10 +87,13 @@
     var inProg=data.offers.filter(function(o){ return o.status==='accepted' && !o.paidAt; }).length;
     var fees=0; paid().forEach(function(o){ fees+=offerTotal(o)*BS.FEE_RATE; });
     var tiles=[[data.boqs.filter(openBoq).length,'Open requests','requests'],[unclassified().length,'Lines to classify','requests'],[pendV,'Suppliers awaiting verification','suppliers'],[waiting,'Support threads waiting','support'],[pendN,'Newsletter items pending','news'],[openI,'Problems open','support'],[inProg,'Orders in progress','finance'],[paid().length,'Orders paid','finance'],[BS.fmt(fees),'Fees earned ('+BS.pct(BS.FEE_RATE)+')','finance']];
+    if(!canFinance()) tiles=tiles.filter(function(t){ return t[2]!=='finance'; });
     adTilesHtml='<div class="queue" id="adTiles">'+tiles.map(function(t){ return '<button type="button" class="q" data-go="'+t[2]+'" style="text-align:left;cursor:pointer;font:inherit"><strong style="font-size:1.4rem">'+t[0]+'</strong><span class="small muted">'+t[1]+'</span></button>'; }).join('')+'</div>';
     $('adTabs').querySelectorAll('button').forEach(function(b){ b.classList.toggle('on', b.dataset.tab===tab); });
     try{ var badges={support: threads().filter(function(t){ return t.waiting; }).length + data.issues.filter(function(i){ return i.status!=='resolved'; }).length, suppliers: data.verifications.filter(function(v){ return v.status==='pending'; }).length, requests: unclassified().length, news: data.news.filter(function(x){ return x.status==='pending'; }).length};
       $('adTabs').querySelectorAll('button').forEach(function(b){ var n=badges[b.dataset.tab]||0; var old=b.querySelector('.badge'); if(old) old.remove(); if(n){ var sp=document.createElement('span'); sp.className='badge'; sp.textContent=n; b.appendChild(sp); } }); }catch(e){}
+    if(!canFinance() && tab==='finance') tab='overview';
+    $('adTabs').querySelectorAll('[data-tab="finance"]').forEach(function(b){ b.hidden=!canFinance(); });
     var r={overview:renderOverview, requests:renderRequests, suppliers:renderSuppliers, support:renderSupport, news:renderNews, promos:renderPromos, brands:renderBrandsTab, members:renderMembers, finance:renderFinance, insights:renderInsights, catalogue:renderCatalogue, settings:renderSettings}[tab]||renderOverview;
     $('adBody').innerHTML=searchHtml()+r();
   }
@@ -214,12 +249,12 @@
     var all=BS.suppliersAll(); var groups=[['Test logins', all.filter(function(x){ return !x.own && !x.auto; })],['Registered or added', all.filter(function(x){ return x.own; })],['Background suppliers', all.filter(function(x){ return x.auto; })]];
     var sel='<div class="field" style="max-width:30rem"><label for="esSel">Choose a supplier</label><select id="esSel"><option value="">Choose…</option>'+groups.map(function(g){ return g[1].length?'<optgroup label="'+esc(g[0])+'">'+g[1].map(function(x){ return '<option value="'+esc(x.id)+'"'+(x.id===esId?' selected':'')+'>'+esc(x.name)+(x.status!=='active'?' ('+x.status+')':'')+'</option>'; }).join('')+'</optgroup>':''; }).join('')+'</select></div>';
     var sp=all.filter(function(x){ return x.id===esId; })[0]; if(!sp) return card('Edit a supplier','Categories, dispatch point, status and the price list of any supplier. Prices you save here are what the supplier sees in the portal and what requests are pre-filled from.', sel);
-    if(!esDraft || esDraft.id!==sp.id){ var pm={}; (sp.prices||[]).forEach(function(r){ pm[r.name]=r; }); esDraft={id:sp.id, name:sp.name, phone:sp.phone||'', tin:sp.tin||'', sub:sp.sub||'', status:sp.status||'active', cats:(sp.cats||[]).slice(), prices:pm, password:sp.password||''}; }
+    if(!esDraft || esDraft.id!==sp.id){ var pm={}; (sp.prices||[]).forEach(function(r){ pm[r.name]=r; }); esDraft={id:sp.id, name:sp.name, phone:sp.phone||'', tin:sp.tin||'', sub:sp.sub||'', status:sp.status||'active', cats:(sp.cats||[]).slice(), prices:pm, password:''}; }
     var d=esDraft; var items=BS.CATALOGUE.filter(function(c){ return !c.hidden && d.cats.indexOf(c.cat)>=0; });
     var byCat={}; items.forEach(function(c){ (byCat[c.cat]=byCat[c.cat]||[]).push(c); });
     var priceRows=Object.keys(byCat).map(function(c){ return '<div class="small muted" style="margin-top:.4rem;font-weight:600">'+esc(c)+'</div><table class="doctable" style="width:100%"><thead><tr><th>Item</th><th>Unit</th><th>Price (ETB)</th><th>Valid (days)</th><th>Stock</th></tr></thead><tbody>'+byCat[c].map(function(it){ var r=d.prices[it.name]||{}; return '<tr><td>'+esc(it.name)+'</td><td>'+esc(it.unit)+'</td><td><input data-esp="price" data-item="'+esc(it.name)+'" type="number" min="0" value="'+(r.price||'')+'" placeholder="'+(it.base||'')+'" style="width:7rem"></td><td><input data-esp="valid" data-item="'+esc(it.name)+'" type="number" min="1" value="'+(r.valid||3)+'" style="width:4.5rem"></td><td><select data-esp="stock" data-item="'+esc(it.name)+'">'+['In stock','Low stock','Out of stock'].map(function(o){ return '<option'+((r.stock||'In stock')===o?' selected':'')+'>'+o+'</option>'; }).join('')+'</select></td></tr>'; }).join('')+'</tbody></table>'; }).join('');
     var form='<div class="grid3"><div class="field"><label for="esName">Company name</label><input id="esName" value="'+esc(d.name)+'"></div><div class="field"><label for="esPhone">Mobile (sign-in)</label><input id="esPhone" value="'+esc(d.phone)+'"'+(sp.own?'':' disabled placeholder="test login, see Start here"')+'></div><div class="field"><label for="esSub">Dispatch point (sub-city)</label><select id="esSub">'+subOptions(d.sub)+'</select></div></div>'+
-      '<div class="grid3"><div class="field"><label for="esStatus">Status</label><select id="esStatus"><option value="active"'+(d.status==='active'?' selected':'')+'>Active: receives requests</option><option value="pending"'+(d.status==='pending'?' selected':'')+'>Pending: documents to approve</option><option value="suspended"'+(d.status==='suspended'?' selected':'')+'>Paused: no requests, cannot sign in</option></select></div>'+(sp.own?'<div class="field"><label for="esPw">Portal password</label><input id="esPw" value="'+esc(d.password)+'"></div><div class="field"><label for="esTin">TIN</label><input id="esTin" value="'+esc(d.tin)+'"></div>':'')+'</div>'+
+      '<div class="grid3"><div class="field"><label for="esStatus">Status</label><select id="esStatus"><option value="active"'+(d.status==='active'?' selected':'')+'>Active: receives requests</option><option value="pending"'+(d.status==='pending'?' selected':'')+'>Pending: documents to approve</option><option value="suspended"'+(d.status==='suspended'?' selected':'')+'>Paused: no requests, cannot sign in</option></select></div>'+(sp.own?'<div class="field"><label for="esPw">New portal password</label><input id="esPw" value="'+esc(d.password)+'" placeholder="Leave empty to keep the current one" autocomplete="off"></div><div class="field"><label for="esTin">TIN</label><input id="esTin" value="'+esc(d.tin)+'"></div>':'')+'</div>'+
       '<div class="field"><label>What they supply (tick to add a category; its items appear in the price list below)</label>'+catTicks('data-escat', d.cats)+'</div>'+
       '<div><strong style="font-family:var(--display)">Price list</strong><p class="small muted" style="margin:.1rem 0 .3rem">Leave a price empty for items they do not stock. Saving confirms every price for today; the supplier sees the same list in the portal.</p>'+(priceRows||'<div class="empty">Tick at least one category.</div>')+'</div>'+
       '<div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap"><button class="btn btn-primary btn-sm" type="button" id="esSave">Save supplier</button><button class="btn btn-ghost btn-sm" type="button" id="esCancel">Cancel</button><span style="flex:1"></span><button class="btn btn-ghost btn-sm" type="button" id="esRemove" style="color:#9b2c2c">Remove supplier</button><span class="small muted" id="esMsg"></span></div>';
@@ -235,16 +270,16 @@
     if(t.id==='esCancel'){ esId=null; esDraft=null; supSub='list'; render(); return; }
     if(t.id==='esSave'){ esRead(); var d=esDraft; var sp=BS.suppliersAll().filter(function(x){ return x.id===d.id; })[0]; if(!sp) return; if(!d.name){ $('esMsg').textContent='The company needs a name.'; return; }
       var now=new Date().toISOString(); var prices=[]; BS.CATALOGUE.forEach(function(it){ if(d.cats.indexOf(it.cat)<0) return; var r=d.prices[it.name]; if(r && r.price>0) prices.push({name:it.name, unit:it.unit, price:+r.price, vat:'incl', min:0, stock:r.stock||'In stock', valid:+r.valid||3, confirmedAt:now}); });
-      t.disabled=true; var id=sp.docId; var patch={name:d.name, cats:d.cats, sub:d.sub, status:d.status, prices:prices, setBy:staffName()}; if(sp.own){ patch.phone=d.phone; patch.password=d.password; patch.tin=d.tin; }
+      t.disabled=true; var id=sp.docId; var patch={name:d.name, cats:d.cats, sub:d.sub, status:d.status, prices:prices, setBy:staffName()}; if(sp.own){ if(d.phone!==(sp.phone||'') && !d.password){ t.disabled=false; bsToast('A new mobile number needs a new portal password too.'); return; } patch.phone=d.phone; patch.tin=d.tin; if(d.password){ patch.pwHash=await BS.hashPw(d.phone, d.password); patch.password=''; } }
       if(BS.supplierDoc(id)) await BS.update('suppliers', id, patch); else await BS.set('suppliers', id, Object.assign({seedId:sp.id, source:'seed'}, patch));
       esDraft=null; bsToast('Supplier saved. The portal and the requests use the new list now.'); render(); return; }
     if(t.id==='esRemove'){ var sp2=BS.suppliersAll().filter(function(x){ return x.id===esId; })[0]; if(!sp2) return; if(!(await bsConfirm('Remove '+sp2.name+'?','They stop receiving requests and cannot sign in. Orders already placed stay.','Remove'))) return;
       if(BS.supplierDoc(sp2.docId)) await BS.update('suppliers', sp2.docId, {status:'removed', removedAt:new Date().toISOString(), by:staffName()}); else await BS.set('suppliers', sp2.docId, {seedId:sp2.id, source:'seed', name:sp2.name, cats:sp2.cats, sub:sp2.sub, status:'removed', removedAt:new Date().toISOString(), by:staffName()});
       esId=null; esDraft=null; supSub='list'; bsToast('Supplier removed.'); render(); return; }
     if(t.id==='nsAdd'){ var name=$('nsName').value.trim(), ph=digits($('nsPhone').value), cats=[].slice.call(document.querySelectorAll('[data-nscat]:checked')).map(function(i){ return i.dataset.nscat; });
-      if(!name){ $('nsMsg').textContent='The company needs a name.'; return; } if(!/^[97]\d{8}$/.test(ph)){ $('nsMsg').textContent='Enter their mobile number, for example 0912345678.'; return; } if(!cats.length){ $('nsMsg').textContent='Tick at least one category.'; return; }
+      if(!name){ $('nsMsg').textContent='The company needs a name.'; return; } if(!/^[97]\d{8}$/.test(ph)){ $('nsMsg').textContent='Enter their mobile number, for example 0912345678.'; return; } if(!cats.length){ $('nsMsg').textContent='Tick at least one category.'; return; } if($('nsPw').value.length<6){ $('nsMsg').textContent='Give them a portal password of at least 6 characters.'; return; }
       if(BS.suppliersAll().some(function(x){ return x.phone===ph; })){ $('nsMsg').textContent='A supplier with that number exists already; edit it above.'; return; }
-      t.disabled=true; var nid=await BS.add('suppliers', {name:name, phone:ph, tin:$('nsTin').value.trim(), cats:cats, sub:$('nsSub').value, password:$('nsPw').value||BS.DEMO_PASSWORD, status:$('nsStatus').value, source:'staff', prices:[], setBy:staffName()});
+      t.disabled=true; var nid=await BS.add('suppliers', {name:name, phone:ph, tin:$('nsTin').value.trim(), cats:cats, sub:$('nsSub').value, pwHash:await BS.hashPw(ph, $('nsPw').value), status:$('nsStatus').value, source:'staff', prices:[], setBy:staffName()});
       esId=nid; esDraft=null; supSub='edit'; bsToast('Supplier added. Set their prices below.'); render(); window.scrollTo({top:0,behavior:'smooth'}); return; }
   });
   $('adBody').addEventListener('input', function(e){ if(e.target.id!=='supSearch') return; supQ=e.target.value; var pos=e.target.selectionStart; render(); var el=$('supSearch'); if(el){ el.focus(); try{ el.setSelectionRange(pos,pos); }catch(err){} } });
@@ -478,7 +513,7 @@
     if(t.id==='catSave'){ t.disabled=true; await BS.set('settings','catalogue',{items:items, setBy:staffName()}); catDraft=null; catEditing=null; bsToast('Catalogue saved. Buyers see it at once.'); return; }
     if(t.id==='catReset'){ catDraft=null; catEditing=null; render(); return; }
   });
-  function isOwner(){ return /owner/i.test(staffName()); }
+  function isOwner(){ return BS.staffRole()==='owner'; }
   $('adBody').addEventListener('click', async function(e){
     if(e.target.id!=='adReset' || !isOwner()) return;
     if(!(await bsConfirm('Clear all test data?','Every request, offer, order, message, problem, newsletter item, promotion, profile, task and supplier change is deleted for everyone. This cannot be undone.','Yes, clear it'))) return;
@@ -488,11 +523,47 @@
     try{ Object.keys(localStorage).forEach(function(k){ if(/^bs_demo_(draft|prices_|supprofile_|locs)|^bs_bell_seen_/.test(k)) localStorage.removeItem(k); }); }catch(err){}
     e.target.disabled=false; $('adResetMsg').textContent='Done: '+n+' records deleted.'; bsToast('Test data cleared. The site starts clean.');
   });
+  /* ---- staff logins (owner only, public site) ---- */
+  function staffCard(){
+    var me=BS.staffUid(), list=data.staff.slice().sort(function(a,b){ return (a.role==='owner'?0:1)-(b.role==='owner'?0:1) || (a.name||'').localeCompare(b.name||''); });
+    var rows=list.map(function(x){
+      var self=x.id===me, owner=x.role==='owner';
+      return '<div class="staffrow"><span><strong>'+esc(x.name||'')+'</strong> · '+esc(x.email||'')+'<br><span class="small muted">'+(owner?'Owner · sees everything':'Staff · '+(x.finance?'sees finance':'finance hidden'))+(x.active?'':' · <strong style="color:#9b2c2c">switched off</strong>')+'</span></span>'+
+        '<span style="display:flex;gap:.4rem;flex-wrap:wrap;justify-content:flex-end">'+
+        (owner?'':'<button class="btn btn-ghost btn-sm" type="button" data-sfin="'+x.id+'">'+(x.finance?'Hide finance':'Show finance')+'</button><button class="btn btn-ghost btn-sm" type="button" data-sact="'+x.id+'">'+(x.active?'Switch off':'Switch on')+'</button>')+
+        '<button class="btn btn-ghost btn-sm" type="button" data-sreset="'+esc(x.email||'')+'">'+(self?'Change my password':'Send password email')+'</button></span></div>';
+    }).join('');
+    return card('Staff logins','Owner only. Each staff member signs in with their own email and password. Switch a login off when someone leaves; hide finance from staff who do not need it.',
+      '<div>'+(rows||'<p class="small muted">No staff logins yet.</p>')+'</div>'+
+      '<details><summary class="btn btn-ochre btn-sm" style="display:inline-block;cursor:pointer">Add a staff login</summary><div style="display:grid;gap:.6rem;margin-top:.7rem;max-width:28rem">'+
+      '<div class="field"><label for="snName">Name</label><input id="snName"></div>'+
+      '<div class="field"><label for="snEmail">Email</label><input id="snEmail" type="email" autocomplete="off"></div>'+
+      '<div class="field"><label for="snPw">First password (at least 8 characters; tell them, they can change it)</label><input id="snPw" type="text" autocomplete="off"></div>'+
+      '<label class="small" style="display:flex;gap:.5rem;align-items:center"><input type="checkbox" id="snFin"> Can see finance</label>'+
+      '<span class="err small" id="snErr" hidden></span><div><button class="btn btn-primary btn-sm" type="button" id="snGo">Add the login</button></div></div></details>');
+  }
+  $('adBody').addEventListener('click', async function(e){
+    var t=e.target; if(!isOwner()) return;
+    if(t.id==='snGo'){
+      var n=$('snName').value.trim(), em=$('snEmail').value.trim(), pw=$('snPw').value, bad='';
+      if(!n) bad='Please type a name.'; else if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) bad='Please type a valid email.'; else if(pw.length<8) bad='The password needs at least 8 characters.';
+      $('snErr').textContent=bad; $('snErr').hidden=!bad; if(bad) return;
+      t.disabled=true;
+      try{ await BS.createStaff(n, em, pw, $('snFin').checked); bsToast('Login added for '+n+'. Give them the email and first password.'); }
+      catch(err){ $('snErr').textContent=BS.authErr(err)+(err&&err.code==='auth/email-already-in-use'?' If this person had a login before, switch it on in the list instead.':''); $('snErr').hidden=false; }
+      t.disabled=false; return;
+    }
+    var id=t.dataset.sfin||t.dataset.sact, x=id&&data.staff.filter(function(s){ return s.id===id; })[0];
+    if(x && t.dataset.sfin){ await BS.update('staff', x.id, {finance:!x.finance}); bsToast(x.name+(x.finance?' no longer sees finance.':' can now see finance.')); return; }
+    if(x && t.dataset.sact){ if(x.active && !(await bsConfirm('Switch off '+x.name+'?','They can no longer sign in to the staff page. You can switch the login on again later.','Switch off'))) return; await BS.update('staff', x.id, {active:!x.active}); bsToast(x.name+(x.active?' is switched off.':' can sign in again.')); return; }
+    if(t.dataset.sreset){ try{ await BS.staffPasswordEmail(t.dataset.sreset); bsToast('Email to set a new password sent to '+t.dataset.sreset+'.'); }catch(err){ bsToast(BS.authErr(err)); } }
+  });
   function renderSettings(){
     var T=BS.TRUCK, I=BS.INSURANCE;
     var f=function(id,label,val,step){ return '<div class="field"><label for="'+id+'">'+label+'</label><input id="'+id+'" type="number" step="'+(step||1)+'" value="'+val+'"></div>'; };
     return card('Tariffs and rules', 'Example figures until the owner sets them. Saved for every device'+(BS.tariffsSetBy?' · last set by '+esc(BS.tariffsSetBy):'')+'.',
       '<div class="grid3">'+f('tPerTrip','Truck: fixed cost per trip (ETB)',T.perTrip)+f('tPerKm','Truck: cost per km (ETB)',T.perKm)+f('tCap','Truck capacity (tonnes)',T.capacityT)+f('tMob','Equipment mobilisation per hire (ETB)',T.mobilisation)+f('tInsRate','Transit insurance rate (% of goods)',Math.round(I.rate*1000)/10,0.1)+f('tInsMin','Insurance minimum (ETB)',I.min)+f('tFee','Platform fee (% of each sale)',Math.round(BS.FEE_RATE*1000)/10,0.1)+f('tLead','Minimum needed-by lead time (days)',BS.MIN_LEAD_DAYS)+f('tValid','Days suppliers have to reply',BS.VALIDITY_DAYS)+'</div><div><button class="btn btn-primary btn-sm" type="button" id="adSaveTariffs">Save tariffs</button> <span class="small muted" id="adTariffMsg"></span></div>')+
+      (isOwner()&&BS.staffAuth()?staffCard():'')+
       (isOwner()?card('Clear test data','Owner only. Deletes every request, offer, order, message, problem, newsletter item, promotion, profile, task and supplier change, on every device. Tariffs, catalogue, brands and pictures stay.','<div><button class="btn btn-ghost" type="button" id="adReset" style="color:#9b2c2c;border-color:#9b2c2c">Clear all test data</button> <span class="small muted" id="adResetMsg"></span></div>'):'')+
       card('Site pictures','Replace the drawn placeholders with real photos. JPG or PNG from your computer or phone; the picture is resized and cropped to fit and shown on every device within seconds. Use photos you have the right to use (your own, or free-licence stock photos).',
         '<div class="docs">'+BS.PIC_SLOTS.map(function(sl){ var cur=BS.PICS[sl.key]; var def='assets/photos/'+sl.key+'.jpg'; return '<div class="doc" style="grid-template-columns:7rem 1fr auto"><img src="'+(cur||def)+'" alt="" style="width:7rem;aspect-ratio:'+sl.w+'/'+sl.h+';object-fit:cover;border-radius:'+(sl.w===sl.h?'50%':'6px')+'"><span><strong>'+esc(sl.label)+'</strong><br><span class="small muted">'+sl.w+' × '+sl.h+' px · '+(cur?'photo set by staff':'site photo')+'</span></span><span style="display:flex;gap:.4rem;flex-wrap:wrap"><label class="btn btn-primary btn-sm" style="cursor:pointer">'+(cur?'Replace':'Upload photo')+'<input type="file" accept="image/*" hidden data-pic-up="'+sl.key+'"></label>'+(cur?'<button class="btn btn-ghost btn-sm" type="button" data-pic-rm="'+sl.key+'">Remove</button>':'')+'</span></div>'; }).join('')+'</div><p class="small muted" id="adPicMsg"></p>');

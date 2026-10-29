@@ -284,7 +284,7 @@
   BS.days = function(ms){ return Math.max(0, Math.ceil(ms/86400000)); };
 
   /* ---- Store ---- */
-  var mode = "local", db = null, listeners = {};
+  var mode = "local", db = null, fbAuth = null, listeners = {};
   var LS = function(col){ return "bs_demo_" + col; };
   function lsRead(col){ try { return JSON.parse(localStorage.getItem(LS(col))||"[]"); } catch(e){ return []; } }
   function lsWrite(col, arr){ try { localStorage.setItem(LS(col), JSON.stringify(arr)); } catch(e){} notifyLocal(col); }
@@ -307,10 +307,17 @@
         }
       } catch(e){ db = null; mode = "local"; }
       try {
-        if(window.BS_FIREBASE && window.BS_FIREBASE.projectId && !/^(localhost|127\.)/.test(location.hostname)){ /* the local test server never touches the shared database */
+        var emu = window.BS_FIREBASE_EMU; /* set only by the automated tests: a local copy of the database and logins */
+        if(window.BS_FIREBASE && window.BS_FIREBASE.projectId && (emu || !/^(localhost|127\.)/.test(location.hostname))){ /* the local test server never touches the shared database */
           if(!window.firebase){ await loadScript("https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"); await loadScript("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"); }
           if(!firebase.apps.length) firebase.initializeApp(window.BS_FIREBASE);
-          db = firebase.firestore(); mode = "shared";
+          db = firebase.firestore(); if(emu) db.useEmulator("127.0.0.1", emu.firestore); mode = "shared";
+          try {
+            if(!firebase.auth) await loadScript("https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js");
+            fbAuth = firebase.auth(); if(emu) fbAuth.useEmulator("http://127.0.0.1:"+emu.auth);
+            await fbAuth.setPersistence(firebase.auth.Auth.Persistence.SESSION); /* staff stay signed in per browser tab, as before */
+            fbAuth.onAuthStateChanged(function(u){ checkStaff(u); });
+          } catch(e){ fbAuth = null; }
         }
       } catch(e){ db = null; mode = "local"; }
       return mode;
@@ -325,6 +332,9 @@
     if(typeof BS.onModeChange==="function") BS.onModeChange(mode, reason);
     Object.keys(listeners).forEach(function(col){ notifyLocal(col); });
   }
+  /* A write the database rules refuse (for example a member trying to publish or approve something) is reported and dropped.
+     It must not switch the page to this-device-only mode, which is kept for a database that cannot be reached at all. */
+  function denied(e){ if(!e || e.code!=="permission-denied") return false; if(window.bsToast) bsToast("That change needs a staff login."); return true; }
   function id(){ return "d" + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
 
   BS.add = async function(col, data){
@@ -332,7 +342,7 @@
     var body = Object.assign({}, data, {createdAt: data.createdAt || new Date().toISOString()});
     if(mode==="shared"){
       try { var ref = db.collection(col).doc(); await ref.set(body); return ref.id; }
-      catch(e){ degrade(e && e.code); }
+      catch(e){ if(denied(e)) return null; degrade(e && e.code); }
     }
     var arr = lsRead(col); var nid = id(); arr.push(Object.assign({id:nid}, body)); lsWrite(col, arr); return nid;
   };
@@ -340,7 +350,7 @@
     await BS.ready();
     if(mode==="shared"){
       try { await db.collection(col).doc(docId).update(patch); return; }
-      catch(e){ degrade(e && e.code); }
+      catch(e){ if(denied(e)) return; degrade(e && e.code); }
     }
     var arr = lsRead(col); arr = arr.map(function(x){ return x.id===docId ? Object.assign({}, x, patch) : x; }); lsWrite(col, arr);
   };
@@ -348,7 +358,7 @@
     await BS.ready();
     if(mode==="shared"){
       try { await db.collection(col).doc(docId).delete(); return; }
-      catch(e){ degrade(e && e.code); }
+      catch(e){ if(denied(e)) return; degrade(e && e.code); }
     }
     lsWrite(col, lsRead(col).filter(function(x){ return x.id!==docId; }));
   };
@@ -358,7 +368,7 @@
     var body = Object.assign({}, data, {updatedAt: new Date().toISOString(), createdAt: data.createdAt || new Date().toISOString()});
     if(mode==="shared"){
       try { await db.collection(col).doc(docId).set(body); return docId; }
-      catch(e){ degrade(e && e.code); }
+      catch(e){ if(denied(e)) return null; degrade(e && e.code); }
     }
     var arr = lsRead(col).filter(function(x){ return x.id!==docId; }); arr.push(Object.assign({id:docId}, body)); lsWrite(col, arr); return docId;
   };
@@ -370,7 +380,8 @@
         try {
           unsub = db.collection(col).onSnapshot(function(snap){
             cb(snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); }));
-          }, function(err){ degrade(err && err.code); listeners[col]=(listeners[col]||[]).concat([cb]); cb(lsRead(col)); });
+          }, function(err){ if(err && err.code==="permission-denied"){ cb([]); return; } /* staff-only lists stay empty for members */
+            degrade(err && err.code); listeners[col]=(listeners[col]||[]).concat([cb]); cb(lsRead(col)); });
           return;
         } catch(e){ degrade(e && e.code); }
       }
@@ -394,6 +405,77 @@
   BS.clearMeTab = function(){ try { sessionStorage.setItem("bs_demo_me", "{}"); } catch(e){} };
   BS.isStaff = function(){ try { return sessionStorage.getItem("bs_demo_admin")==="1"; } catch(e){ return false; } };
   BS.staffName = function(){ try { return sessionStorage.getItem("bs_demo_admin_name")||"Staff"; } catch(e){ return "Staff"; } };
+
+  /* ---- Staff logins ----
+     On the public site (Firebase) staff sign in with an email and password. A login counts as staff only when the
+     `staff` collection holds a doc under its user id with active:true; role is owner or staff, finance says whether
+     the Finance page is shown. The first owner is set up once (doc meta/owner); after that only the owner adds staff.
+     The database rules check the same docs, so a page that only looks like the staff page cannot change anything.
+     Without Firebase (local test server, mirror) the old test logins in BS.STAFF stay. The tab keeps a copy in
+     sessionStorage so pages can ask synchronously; the sign-in listener corrects it. */
+  function setStaffCache(d){ try {
+    sessionStorage.setItem("bs_demo_admin", d?"1":""); sessionStorage.setItem("bs_demo_admin_name", d?(d.name||d.email||"Staff"):"");
+    sessionStorage.setItem("bs_staff_role", d?(d.role||"staff"):""); sessionStorage.setItem("bs_staff_fin", d&&(d.role==="owner"||d.finance)?"1":"");
+    sessionStorage.setItem("bs_staff_email", d?(d.email||""):"");
+  } catch(e){} }
+  BS.setStaffCache = setStaffCache;
+  BS.staffRole = function(){ try { return sessionStorage.getItem("bs_staff_role") || (/owner/i.test(BS.staffName())?"owner":"staff"); } catch(e){ return "staff"; } };
+  BS.staffCan = function(what){ if(BS.staffRole()==="owner") return true; if(what==="finance"){ try { return !fbAuth || sessionStorage.getItem("bs_staff_fin")==="1"; } catch(e){ return false; } } return true; };
+  BS.staffAuth = function(){ return !!fbAuth; };
+  BS.staffUid = function(){ return fbAuth && fbAuth.currentUser ? fbAuth.currentUser.uid : ""; };
+  BS.onStaffChange = null;
+  async function checkStaff(u){
+    var was = BS.isStaff();
+    if(!u){ if(was) setStaffCache(null); }
+    else { try { var d = await db.collection("staff").doc(u.uid).get(); setStaffCache(d.exists && d.data().active===true ? Object.assign({uid:u.uid}, d.data()) : null); } catch(e){ setStaffCache(null); } }
+    if(typeof BS.onStaffChange==="function") BS.onStaffChange(BS.isStaff());
+  }
+  function authErr(e){
+    var c = (e && e.code) || "";
+    if(/invalid-credential|wrong-password|user-not-found|invalid-login/.test(c)) return "Wrong email or password.";
+    if(/invalid-email/.test(c)) return "That email address does not look right.";
+    if(/email-already-in-use/.test(c)) return "That email already has a login.";
+    if(/weak-password/.test(c)) return "The password needs at least 8 characters.";
+    if(/too-many-requests/.test(c)) return "Too many tries. Wait a few minutes and try again.";
+    if(/network/.test(c)) return "No connection. Check the internet and try again.";
+    if(c==="not-staff") return "This login is not a staff account, or it has been switched off.";
+    return "Could not sign in ("+(c||"unknown")+").";
+  }
+  BS.authErr = authErr;
+  BS.staffSignIn = async function(email, pw){
+    await BS.ready(); if(!fbAuth) throw {code:"no-auth"};
+    var cred = await fbAuth.signInWithEmailAndPassword(String(email).trim(), pw);
+    var d = await db.collection("staff").doc(cred.user.uid).get();
+    if(!d.exists || d.data().active!==true){ await fbAuth.signOut(); throw {code:"not-staff"}; }
+    setStaffCache(Object.assign({uid:cred.user.uid}, d.data())); return d.data();
+  };
+  BS.staffSignOut = async function(){ setStaffCache(null); if(fbAuth){ try { await fbAuth.signOut(); } catch(e){} } };
+  BS.ownerExists = async function(){ await BS.ready(); if(!fbAuth) return true; try { return (await db.collection("meta").doc("owner").get()).exists; } catch(e){ return true; } };
+  /* first owner: makes the login (or signs in if the email already has one), then writes meta/owner and the owner's staff doc together */
+  BS.setupOwner = async function(name, email, pw){
+    await BS.ready(); if(!fbAuth) throw {code:"no-auth"}; email = String(email).trim();
+    var cred; try { cred = await fbAuth.createUserWithEmailAndPassword(email, pw); }
+    catch(e){ if(e && e.code==="auth/email-already-in-use") cred = await fbAuth.signInWithEmailAndPassword(email, pw); else throw e; }
+    var uid = cred.user.uid, now = new Date().toISOString(), doc = {name:name, email:email, role:"owner", finance:true, active:true, createdAt:now};
+    var b = db.batch(); b.set(db.collection("meta").doc("owner"), {uid:uid, createdAt:now}); b.set(db.collection("staff").doc(uid), doc); await b.commit();
+    setStaffCache(Object.assign({uid:uid}, doc)); return doc;
+  };
+  /* the owner adds a staff login: made through a second, separate connection so the owner stays signed in */
+  BS.createStaff = async function(name, email, pw, finance){
+    await BS.ready(); if(!fbAuth) throw {code:"no-auth"}; email = String(email).trim();
+    var app2 = firebase.apps.filter(function(a){ return a.name==="staffMaker"; })[0] || firebase.initializeApp(window.BS_FIREBASE, "staffMaker");
+    var a2 = app2.auth(); if(window.BS_FIREBASE_EMU && !a2.emulatorConfig) a2.useEmulator("http://127.0.0.1:"+window.BS_FIREBASE_EMU.auth); await a2.setPersistence(firebase.auth.Auth.Persistence.NONE);
+    var cred = await a2.createUserWithEmailAndPassword(email, pw); var uid = cred.user.uid; await a2.signOut();
+    await db.collection("staff").doc(uid).set({name:name, email:email, role:"staff", finance:!!finance, active:true, createdAt:new Date().toISOString(), addedBy:BS.staffName()});
+    return uid;
+  };
+  BS.staffPasswordEmail = async function(email){ await BS.ready(); if(!fbAuth) throw {code:"no-auth"}; await fbAuth.sendPasswordResetEmail(String(email).trim()); };
+  /* supplier passwords are stored only as a hash (with the mobile number as salt), never as text */
+  BS.hashPw = async function(phone, pw){
+    var txt = "bs1|" + String(phone||"").replace(/\D/g,"").replace(/^251/,"").replace(/^0/,"") + "|" + pw;
+    try { var buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(txt)); return Array.prototype.map.call(new Uint8Array(buf), function(b){ return ("0"+b.toString(16)).slice(-2); }).join(""); }
+    catch(e){ return ""; }
+  };
   BS.accounts = function(){ try { var reg=JSON.parse(localStorage.getItem("bs_demo_accounts")||"{}"); return Object.keys(reg).map(function(k){ return reg[k]; }).filter(function(a){ return a && a.phone; }); } catch(e){ return []; } };
   BS.ready().then(function(){ BS.subscribe("settings", BS.applySettings); });
   /* Suppliers as one shared list: the built-in ones (BS.SUPPLIERS) plus the `suppliers` collection, which holds suppliers registered
@@ -410,7 +492,7 @@
     });
     docs.forEach(function(d){
       if(d.seedId || d.status==="removed") return;
-      out.push({id:d.id, name:d.name||"", branch:d.branch||"", sub:d.sub||"Akaki Kaliti", cats:(d.cats||[]).slice(), own:true, phone:d.phone||"", tin:d.tin||"", password:d.password||"", status:d.status||"pending", prices:Array.isArray(d.prices)?d.prices:[], docId:d.id, auto:false, source:d.source||"registered"});
+      out.push({id:d.id, name:d.name||"", branch:d.branch||"", sub:d.sub||"Akaki Kaliti", cats:(d.cats||[]).slice(), own:true, phone:d.phone||"", tin:d.tin||"", password:d.password||"", pwHash:d.pwHash||"", status:d.status||"pending", prices:Array.isArray(d.prices)?d.prices:[], docId:d.id, auto:false, source:d.source||"registered"});
     });
     return out;
   };

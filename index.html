@@ -638,6 +638,9 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 .swatch{width:92px;display:grid;gap:.3rem;font-size:.72rem;color:var(--fg-2)}
 .swatch i{display:block;height:48px;border-radius:10px;border:1px solid var(--line)}
 @media (prefers-reduced-motion:reduce){.btn{transition:none}.btn:hover{transform:none}}
+.linkbtn{background:none;border:0;padding:0;color:var(--green);text-decoration:underline;cursor:pointer;font:inherit}
+.staffrow{display:grid;grid-template-columns:1fr auto;gap:.4rem .8rem;align-items:center;padding:.6rem 0;border-top:1px solid var(--line)}
+.staffrow:first-child{border-top:0}
 </style>
 
 <header class="site">
@@ -888,7 +891,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
           <div class="su-nav"><span></span><button class="btn btn-primary" type="button" id="liGo">Send code</button></div>
           <div class="card" id="liSupplier" style="padding:.9rem;display:flex;gap:.6rem;align-items:center;justify-content:space-between;flex-wrap:wrap"><span><strong style="font-family:var(--display)">Are you a supplier?</strong><br><span class="small muted">Suppliers sign in to the supplier portal with their mobile number and password.</span></span><a class="btn btn-ochre btn-sm" href="#supplier">Supplier sign-in</a></div>
           <div class="card" id="liNew" style="display:grid;gap:.6rem;padding:1rem"><strong style="font-family:var(--display)">New to Build Smartly?</strong><p class="small muted">Buyers need only a name and a mobile number. Company details and TIN come later, before your first purchase order. Suppliers register their company, TIN and a password.</p><div style="display:flex;gap:.5rem;flex-wrap:wrap"><a class="btn btn-ghost btn-sm" href="#signup">Create a buyer account</a><a class="btn btn-ochre btn-sm" href="#signup-supplier">Register as a supplier</a></div></div>
-          <details class="small muted" style="margin-top:.4rem"><summary style="cursor:pointer">Test accounts</summary><p style="margin-top:.4rem">Buyers: <strong>0911 000 201</strong> Abdullah, <strong>202</strong> Fahad, <strong>203</strong> Osama, <strong>204</strong> Haji, <strong>205</strong> Faiz (code 123456). Suppliers: the same names on <strong>0911 000 301</strong> to <strong>305</strong>, password <strong>smartly</strong>, through <a href="#supplier">Supplier sign-in</a>. Any other Ethiopian number also works as a new buyer. Full list on <a href="#start">Start here</a>.</p></details>
+          <details class="small muted" style="margin-top:.4rem"><summary style="cursor:pointer">Test accounts</summary><p style="margin-top:.4rem">Buyer: <strong>0911 000 201</strong> (code 123456). Suppliers: <strong>0911 000 301</strong> and <strong>0911 000 302</strong>, password <strong>smartly</strong>, through <a href="#supplier">Supplier sign-in</a>. Any other Ethiopian number also works as a new buyer. Full list on <a href="#start">Start here</a>.</p></details>
         </section>
 
         <section id="wizard" class="su-step">
@@ -1409,10 +1412,26 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 <div id="view-admin" data-view hidden class="wrap view">
   <div id="adLogin" class="card" style="max-width:28rem;display:grid;gap:.8rem">
     <div><span class="eyebrow">Staff</span><h1 style="font-size:1.5rem">Build Smartly staff sign-in</h1><p class="small muted">Categorisation, supplier verification, support, newsletter, finance, tariffs and brands. Staff only.</p></div>
-    <div class="field"><label for="adPhone">Mobile</label><div class="su-phone"><span class="cc">🇪🇹 +251</span><input id="adPhone" type="tel" inputmode="numeric" placeholder="9 11 00 09 00"></div></div>
-    <div class="field"><label for="adPw">Password</label><input id="adPw" type="password" autocomplete="current-password"></div>
+    <div id="adOld" style="display:grid;gap:.8rem">
+      <div class="field"><label for="adPhone">Mobile</label><div class="su-phone"><span class="cc">🇪🇹 +251</span><input id="adPhone" type="tel" inputmode="numeric" placeholder="9 11 00 09 00"></div></div>
+      <div class="field"><label for="adPw">Password</label><input id="adPw" type="password" autocomplete="current-password"></div>
+    </div>
+    <div id="adNew" hidden style="display:grid;gap:.8rem">
+      <div class="field"><label for="adEmail">Email</label><input id="adEmail" type="email" autocomplete="username" placeholder="name@company.com"></div>
+      <div class="field"><label for="adPw2">Password</label><input id="adPw2" type="password" autocomplete="current-password"></div>
+      <button type="button" class="linkbtn small" id="adForgot" style="justify-self:start">Forgot your password?</button>
+    </div>
     <span class="err small" id="adErr" hidden>No staff account with that number and password.</span>
     <div class="su-nav"><a class="small muted" href="#home">Back to the site</a><button class="btn btn-primary" type="button" id="adGo">Sign in</button></div>
+  </div>
+  <div id="adSetup" class="card" hidden style="max-width:28rem;display:grid;gap:.8rem">
+    <div><span class="eyebrow">First time</span><h1 style="font-size:1.5rem">Set up the owner login</h1><p class="small muted">This is done once. The owner can then add a login for each staff member and choose who sees finance.</p></div>
+    <div class="field"><label for="osName">Your name</label><input id="osName" autocomplete="name"></div>
+    <div class="field"><label for="osEmail">Email</label><input id="osEmail" type="email" autocomplete="username"></div>
+    <div class="field"><label for="osPw">Password (at least 8 characters)</label><input id="osPw" type="password" autocomplete="new-password"></div>
+    <div class="field"><label for="osPw2">Password again</label><input id="osPw2" type="password" autocomplete="new-password"></div>
+    <span class="err small" id="osErr" hidden></span>
+    <div class="su-nav"><a class="small muted" href="#home">Back to the site</a><button class="btn btn-primary" type="button" id="osGo">Create the owner login</button></div>
   </div>
   <div id="adPanel" hidden style="display:grid;gap:1rem">
     <div class="topbar"><div><span class="eyebrow">Staff</span><h1 style="font-size:1.6rem">Build Smartly operations</h1><p class="small muted" id="adMeta"></p></div><div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap"><div class="field" style="min-width:16rem"><input id="adSearch" type="search" placeholder="Search a PO, request, company, number…" aria-label="Search"></div><button class="btn btn-ghost btn-sm" type="button" id="adLogout">Log out</button></div></div>
@@ -1544,8 +1563,8 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 </div>
 <div class="mock" aria-hidden="true">Test site · working name</div>
 
-<script src="assets/firebase-config.js?v=20261028a" onerror="this.remove()"></script>
-<script src="assets/store.js?v=20261028a"></script>
+<script src="assets/firebase-config.js?v=20261029a" onerror="this.remove()"></script>
+<script src="assets/store.js?v=20261029a"></script>
 <script>
 /* ---------- Router: one page, views switched by hash ---------- */
 window.BSRoute = (function(){
@@ -1857,7 +1876,7 @@ window.BSAuth = (function(){
     var wsOut=document.getElementById('wsLogout'); if(wsOut) wsOut.hidden=!signed;
     if(window.BSRefreshMine) BSRefreshMine();
   }
-  document.getElementById('authLogout').onclick=function(){ if(BS.isStaff && BS.isStaff()){ try{ sessionStorage.setItem('bs_demo_admin',''); sessionStorage.setItem('bs_demo_admin_name',''); }catch(e){} refresh(); bsToast('Signed out of the staff page.'); BSRoute.go('home'); return; } BS.setMe({}); refresh(); bsToast('Signed out.'); BSRoute.go('home'); };
+  document.getElementById('authLogout').onclick=function(){ if(BS.isStaff && BS.isStaff()){ BS.staffSignOut(); refresh(); bsToast('Signed out of the staff page.'); BSRoute.go('home'); return; } BS.setMe({}); refresh(); bsToast('Signed out.'); BSRoute.go('home'); };
   document.addEventListener('click', function(e){ var d=document.getElementById('authIn'); if(d && d.open && !e.target.closest('summary')) d.open=false; });
   var wsOut=document.getElementById('wsLogout'); if(wsOut) wsOut.onclick=function(){ document.getElementById('authLogout').click(); };
   window.addEventListener('hashchange', refresh); document.addEventListener('click', function(){ setTimeout(refresh, 50); });
@@ -1959,7 +1978,8 @@ function bsSupport(threadId, inputId, sendId){
     var name=data.legal, id=ownId(name);
     var profile={ docs:{lic:$('wLic').value.trim(), issuer:'Addis Ababa Trade Bureau', exp:$('wExp').value, tin:data.tin, vat:$('wVat').value, submitted:submitted, verified:false}, type:$('wType').value, brands:'', cats:wcats.slice(), locs:[{type:'Main store', sub:$('wSub').value, pin:''}], zones:[$('wSub').value], terms:'Delivered, extra charge per zone', agree:true, intro:'', publish:false };
     try{ localStorage.setItem('bs_demo_supprofile_'+id, JSON.stringify(profile)); }catch(e){}
-    BS.set('suppliers', id, {name:name, phone:bsDigits(data.phone), tin:data.tin, cats:wcats.slice(), sub:$('wSub').value, password:data.password||'', status:'pending', source:'registered', prices:[]});
+    var sdoc={name:name, phone:bsDigits(data.phone), tin:data.tin, cats:wcats.slice(), sub:$('wSub').value, status:'pending', source:'registered', prices:[]};
+    BS.hashPw(data.phone, data.password||'').then(function(h){ sdoc.pwHash=h; BS.set('suppliers', id, sdoc); }); /* only a hash of the password is shared */
     if(submitted){ var files=[]; ['wLicFile','wTinFile','wVatFile'].forEach(function(fid){ var f=$(fid).files&&$(fid).files[0]; if(f) files.push(f.name); }); BS.set('verifications', id, {supplierId:id, company:name, phone:bsDigits(data.phone), tin:data.tin, lic:profile.docs.lic, exp:profile.docs.exp, vat:profile.docs.vat, cats:wcats.slice(), sub:$('wSub').value, files:files, status:'pending', submittedAt:new Date().toISOString()}); }
     var rows=[['Company',name],['Entity type',$('entity').value],['TIN',data.tin],['Contact',(data.contact||'')+(data.jobtitle?' · '+data.jobtitle:'')],['Mobile',data.phone],['Email',data.email],['City',$('city').value],['Supplies',wcats.join(', ')],['Dispatch point',$('wSub').value],['Documents', submitted ? 'Submitted · staff review within 2 working days' : 'Not yet · upload them under Settings in the portal']];
     var dl=$('summary'); dl.innerHTML=''; rows.forEach(function(r){ var dt=document.createElement('dt'); dt.textContent=r[0]; var dd=document.createElement('dd'); dd.textContent=r[1]; dl.appendChild(dt); dl.appendChild(dd); });
@@ -2454,10 +2474,11 @@ function bsSupport(threadId, inputId, sendId){
     return null;
   }
   window.BSSupplierLogin = function(phone){ var s=supplierForPhone(phone); if(s){ login(s); return true; } return false; };
-  $('spGo').onclick=function(){
+  $('spGo').onclick=async function(){
     var digits=bsDigits($('spPhone').value); var s=supplierForPhone(digits); $('spErr').hidden=!!s;
     if(s && s.status==='suspended'){ $('spErr').hidden=false; $('spErrTitle').textContent='This supplier account is paused'; $('spErrText').textContent='Build Smartly staff paused '+s.name+'. Write to support or call the office to reactivate it.'; $('spErrReg').hidden=true; return; }
-    if(s){ var okPw = $('spPw').value===BS.DEMO_PASSWORD || $('spPw').value===(BS.known(digits)||{}).password || (!!s.password && $('spPw').value===s.password); $('spPwErr').hidden=okPw; if(!okPw){ $('spPw').focus(); return; } if(bsDigits((BS.me()||{}).phone)!==digits) BS.setMe(BS.known(digits)||{}); login(s); return; }
+    if(s){ var pw=$('spPw').value; /* the test password opens only the built-in test suppliers, never one registered on the site */
+      var okPw = (!s.own && pw===BS.DEMO_PASSWORD) || (!!pw && pw===(BS.known(digits)||{}).password) || (!!s.password && pw===s.password) || (!!s.pwHash && !!pw && (await BS.hashPw(digits, pw))===s.pwHash); $('spPwErr').hidden=okPw; if(!okPw){ $('spPw').focus(); return; } if(bsDigits((BS.me()||{}).phone)!==digits) BS.setMe(BS.known(digits)||{}); login(s); return; }
     $('spPwErr').hidden=true;
     var known=BS.known(digits), isBuyer=!!(known && known.phone), okNum=/^[97]\d{8}$/.test(digits);
     $('spErrTitle').textContent = !okNum ? 'Enter your mobile number, for example 0912345678' : isBuyer ? 'This number is a buyer account' : 'No supplier account with that number';
@@ -2858,8 +2879,10 @@ window.bsPublishProfile = async function(fields){
   function fmt(d){ return '0'+d.slice(0,3)+' '+d.slice(3,6)+' '+d.slice(6); }
   var rows=BS.TEST_ACCOUNTS.map(function(a){ var sup=a.supplierId?BS.supplierById(a.supplierId):null;
     return '<div class="doc"><span class="ico">'+(a.supplierId?(a.label||'S').slice(-1):'B')+'</span><span><strong>'+(a.person||'')+' · '+(sup?sup.name:a.buyer)+'</strong><br><span class="small">Mobile <strong>'+fmt(a.phone)+'</strong> · '+(a.supplierId?'<a href="#supplier">Supplier portal</a>, password <strong>'+BS.DEMO_PASSWORD+'</strong> · sells every category':'<a href="#signin">Sign in</a> with code <strong>'+BS.DEMO_CODE+'</strong>')+'</span></span><span></span></div>'; });
-  rows.push('<div class="doc"><span class="ico">ST</span><span><strong>Staff and owner</strong><br><span class="small"><a href="#staff">Staff sign-in</a>: <strong>0911 000 900</strong> (staff) or <strong>0911 000 901</strong> (owner), password <strong>'+BS.STAFF_PASSWORD+'</strong></span></span><span></span></div>');
-  box.innerHTML=rows.join('');
+  var staffOld='<div class="doc"><span class="ico">ST</span><span><strong>Staff and owner</strong><br><span class="small"><a href="#staff">Staff sign-in</a>: <strong>0911 000 900</strong> (staff) or <strong>0911 000 901</strong> (owner), password <strong>'+BS.STAFF_PASSWORD+'</strong></span></span><span></span></div>';
+  var staffNew='<div class="doc"><span class="ico">ST</span><span><strong>Staff and owner</strong><br><span class="small"><a href="#staff">Staff sign-in</a> with your own email and password. The owner gives each staff member a login.</span></span><span></span></div>';
+  box.innerHTML=rows.join('')+staffOld;
+  BS.ready().then(function(){ if(BS.staffAuth()) box.innerHTML=rows.join('')+staffNew; });
 })();
 
 /* ---------- Contact ---------- */
@@ -2959,7 +2982,7 @@ window.bsPublishProfile = async function(fields){
 
 BSRoute.start();
 </script>
-<script src="assets/order.js?v=20261028a"></script>
-<script src="assets/notify.js?v=20261028a"></script>
-<script src="assets/help.js?v=20261028a"></script>
-<script src="assets/admin.js?v=20261028a"></script>
+<script src="assets/order.js?v=20261029a"></script>
+<script src="assets/notify.js?v=20261029a"></script>
+<script src="assets/help.js?v=20261029a"></script>
+<script src="assets/admin.js?v=20261029a"></script>
