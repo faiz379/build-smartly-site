@@ -51,7 +51,7 @@
     var m=me(); var c = isSup() ? [['My requests to quote','#supplier'],['Price list','#supplier'],['Orders and contracts','#supplier'],['Talk to a person','HANDOFF']]
       : m.phone ? [['Where are my offers?','Q'],['How do I pay?','Q'],['Contract and PO','Q'],['Talk to a person','HANDOFF']]
       : [['How do I send a request?','Q'],['How do offers work?','Q'],['Register as a supplier','#signup-supplier'],['Talk to a person','HANDOFF']];
-    return '<div class="hchips">'+c.map(function(x){ return '<button type="button" data-hchip="'+esc(x[1])+'">'+esc(x[0])+'</button>'; }).join('')+'</div>';
+    return '<div class="hchips">'+c.map(function(x){ return '<button type="button" data-hchip="'+esc(x[1])+'" data-q="'+esc(x[0])+'">'+esc(x[0])+'</button>'; }).join('')+'</div>';
   }
   function push(who, html){ history.push({who:who, html:html}); draw(); }
   function draw(){
@@ -76,7 +76,7 @@
   $('helpClose').onclick=function(){ toggle(false); };
   $('helpSend').onclick=function(){ var q=$('helpIn').value.trim(); if(!q) return; $('helpIn').value=''; ask(q); };
   $('helpIn').addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); $('helpSend').click(); } });
-  $('helpBody').addEventListener('click', function(e){ if(e.target.closest('[data-hsend]')){ push('me','Send it to a person'); handoff(lastQ); return; } var c=e.target.closest('[data-hchip]'); if(!c) return; var v=c.dataset.hchip; if(v==='Q') ask(c.textContent); else if(v==='HANDOFF') { push('me','Talk to a person'); handoff(''); } else { toggle(false); BSRoute.go(v.replace('#','')); } });
+  $('helpBody').addEventListener('click', function(e){ if(e.target.closest('[data-hsend]')){ push('me','Send it to a person'); handoff(lastQ); return; } var c=e.target.closest('[data-hchip]'); if(!c) return; var v=c.dataset.hchip; if(v==='Q') ask(c.dataset.q||c.textContent); /* the English question, even when the button shows a translation */ else if(v==='HANDOFF') { push('me','Talk to a person'); handoff(''); } else { toggle(false); BSRoute.go(v.replace('#','')); } });
   document.addEventListener('click', function(e){ var path=e.composedPath ? e.composedPath() : []; var inside=path.some(function(el){ return el && (el.id==='helpPanel' || el.id==='helpBtn'); }); if(open && !inside) toggle(false); });
   BS.ready().then(function(){ BS.subscribe('boqs', function(d){ boqs=d||[]; }); BS.subscribe('offers', function(d){ offers=d||[]; }); });
   window.bsHelpAsk=ask;

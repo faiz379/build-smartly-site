@@ -1564,8 +1564,8 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 </div>
 <div class="mock" aria-hidden="true">Test site · working name</div>
 
-<script src="assets/firebase-config.js?v=20261029b" onerror="this.remove()"></script>
-<script src="assets/store.js?v=20261029b"></script>
+<script src="assets/firebase-config.js?v=20261029c" onerror="this.remove()"></script>
+<script src="assets/store.js?v=20261029c"></script>
 <script>
 /* ---------- Router: one page, views switched by hash ---------- */
 window.BSRoute = (function(){
@@ -1620,72 +1620,7 @@ window.BSRoute = (function(){
   return { on:function(name,fn){ hooks[name]=fn; }, start:route, go:routeTo };
 })();
 
-/* ---------- Language switch ---------- */
-(function(){
-  var T={
-    am:{
-      "Construction supply":"የግንባታ አቅርቦት","Materials":"ዕቃዎች","Start here":"እዚህ ይጀምሩ","Switch account":"መለያ ቀይር","Log out":"ውጣ","How it works":"እንዴት ይሰራል","For suppliers":"ለአቅራቢዎች","Partners":"አጋሮች","About":"ስለ እኛ","Sign in":"ግባ","Sign up":"ይመዝገቡ","My workspace":"የእኔ ገጽ","Supplier portal":"የአቅራቢ ገጽ","Brand":"ብራንድ",
-      "Construction materials procurement · for businesses":"የግንባታ ዕቃዎች ግዥ · ለንግድ ድርጅቶች",
-      "Send your BOQ. Get real supplier quotes. Choose line by line.":"BOQ ይላኩ። እውነተኛ የአቅራቢ ዋጋዎችን ያግኙ። በየመስመሩ ይምረጡ።",
-      "Send your list once. Verified suppliers send written quotes. You compare them side by side and choose per item. We issue the PO.":"ዝርዝርዎን አንድ ጊዜ ይላኩ። የተረጋገጡ አቅራቢዎች የጽሑፍ ዋጋ ይልካሉ። ጎን ለጎን ያወዳድሩ እና በየዕቃው ይምረጡ። እኛ የግዢ ትዕዛዝ እናወጣለን።",
-      "Current supplier quotes with price, delivery cost and validity. Not live market prices.":"ወቅታዊ የአቅራቢ ዋጋ፣ ከማድረሻ ወጪ እና ከሚያገለግልበት ቀን ጋር። የቀጥታ የገበያ ዋጋ አይደለም።",
-      "Details":"ዝርዝር","Get a quick quote":"ፈጣን ዋጋ ያግኙ","A short list, up to ten items. Suppliers reply within your deadline.":"አጭር ዝርዝር፣ እስከ አስር ዕቃዎች። አቅራቢዎች በገደቡ ውስጥ ይመልሳሉ።",
-      "Send a project BOQ":"የፕሮጀክት BOQ ይላኩ","Upload your Excel or build it line by line. Multiple sites, multiple deliveries.":"Excel ይስቀሉ ወይም በየመስመሩ ይገንቡ። ብዙ ቦታዎች፣ ብዙ አቅርቦቶች።",
-      "Free to register. Fees apply only on a completed deal, as a small percentage of the order. Rate to be announced.":"ምዝገባ ነጻ ነው። ክፍያ የሚከፈለው ስምምነት ሲጠናቀቅ ብቻ ነው፣ ከትዕዛዙ ትንሽ መቶኛ። መጠኑ ይገለጻል።",
-      "Today's indicative prices · Addis Ababa":"የዛሬ አመላካች ዋጋዎች · አዲስ አበባ","Example":"ምሳሌ",
-      "Top categories":"ዋና ምድቦች","From the ground to the keys. Tap a circle to request a quote.":"ከመሬት እስከ ቁልፍ። ዋጋ ለመጠየቅ ክብ ይንኩ።",
-      "Foundation":"መሠረት","Structure":"መዋቅር","Electrical and plumbing":"ኤሌክትሪክ እና ቧንቧ","Finishing":"ማጠናቀቂያ","Equipment rental":"የመሣሪያ ኪራይ",
-      "What each category covers":"እያንዳንዱ ምድብ የሚያካትተው","Request a quote":"ዋጋ ይጠይቁ","Register interest":"ፍላጎት ያስመዝግቡ","Pilot · quoting now":"ሙከራ · አሁን ዋጋ ይሰጣል","Next phase":"ቀጣይ ምዕራፍ",
-      "Four steps. You stay in control at every one.":"አራት ደረጃዎች። በእያንዳንዱ ላይ ውሳኔው የእርስዎ ነው።",
-      "Tell us what you need":"የሚፈልጉትን ይንገሩን","Suppliers quote":"አቅራቢዎች ዋጋ ይሰጣሉ","Compare and choose":"ያወዳድሩ እና ይምረጡ","PO and delivery":"የግዢ ትዕዛዝ እና አቅርቦት",
-      "Type the items or upload your BOQ. Set a deadline.":"ዕቃዎቹን ይጻፉ ወይም BOQ ይስቀሉ። ገደብ ያስቀምጡ።","Only suppliers of that material see your lines. Your name stays hidden.":"የዚያ ዕቃ አቅራቢዎች ብቻ መስመሮችዎን ያያሉ። ስምዎ ተደብቆ ይቆያል።","Offers A, B, C with delivered price. Accept per item.":"ቅናሽ A፣ B፣ C ከማድረሻ ዋጋ ጋር። በየዕቃው ይቀበሉ።","Supplier confirms. PO issued. Pay on the agreed terms.":"አቅራቢው ያረጋግጣል። የግዢ ትዕዛዝ ይወጣል። በተስማሙበት ውል ይክፈሉ።",
-      "Keep your price list current in one tap. Win orders near you.":"የዋጋ ዝርዝርዎን በአንድ ንክኪ ያዘምኑ። በአቅራቢያዎ ያሉ ትዕዛዞችን ያሸንፉ።","Register as a supplier":"እንደ አቅራቢ ይመዝገቡ",
-      "Why it is safe":"ለምን አስተማማኝ ነው","Built for how business is done in Ethiopia.":"በኢትዮጵያ ንግድ በሚሠራበት መንገድ የተገነባ።",
-      "Verified members":"የተረጋገጡ አባላት","Anonymous until the PO":"እስከ ግዢ ትዕዛዝ ድረስ ስም የለም","Current prices only":"ወቅታዊ ዋጋ ብቻ","Your data stays in Ethiopia":"መረጃዎ በኢትዮጵያ ይቆያል",
-      "Our partners":"አጋሮቻችን","Customers and suppliers who build with us.":"ከእኛ ጋር የሚገነቡ ደንበኞች እና አቅራቢዎች።",
-      "Ready to send your first request?":"የመጀመሪያ ጥያቄዎን ለመላክ ዝግጁ ነዎት?","Two minutes to register. Documents are asked for only before your first order.":"ለመመዝገብ ሁለት ደቂቃ። ሰነዶች የሚጠየቁት ከመጀመሪያ ትዕዛዝዎ በፊት ብቻ ነው።","Try the BOQ form":"የBOQ ቅጹን ይሞክሩ",
-      "Create account":"መለያ ይክፈቱ","Your mobile number":"የሞባይል ቁጥርዎ","Send code":"ኮድ ይላኩ","Continue":"ይቀጥሉ","Back":"ተመለስ",
-      "Send a request":"ጥያቄ ይላኩ","Register as a supplier":"እንደ አቅራቢ ይመዝገቡ","Price pulse · Addis Ababa":"የዋጋ ምልክት · አዲስ አበባ","Example figures":"የምሳሌ አኃዞች","1 · What do you need?":"1 · ምን ይፈልጋሉ?","2 · Where and how":"2 · የት እና እንዴት","3 · Your mobile number":"3 · የሞባይል ቁጥርዎ","Try with an example list":"በምሳሌ ዝርዝር ይሞክሩ","+ Add line":"+ መስመር ጨምር","Sign in":"ግባ","Register as a supplier":"እንደ አቅራቢ ይመዝገቡ","My requests":"የእኔ ጥያቄዎች",
-      "Request a quote":"ዋጋ ይጠይቁ","New request":"አዲስ ጥያቄ","Send request to suppliers":"ጥያቄውን ለአቅራቢዎች ይላኩ","Supplier login":"የአቅራቢ መግቢያ","Tracking":"ክትትል","Notification box":"የማሳወቂያ ሳጥን","Inbox":"ገቢ መልዕክት","Outbox":"ወጪ መልዕክት","Buying inquiry":"የግዢ ጥያቄ","Give an offer":"ቅናሽ ይስጡ","Settings":"ቅንብሮች"
-    },
-    om:{
-      "Construction supply":"Dhiyeessii ijaarsaa","Materials":"Meeshaalee","Start here":"Asii jalqabi","Switch account":"Herrega jijjiiri","Log out":"Ba'i","How it works":"Akkamitti hojjeta","For suppliers":"Dhiyeessitootaaf","Partners":"Michoota","About":"Waa'ee keenya","Sign in":"Seeni","Sign up":"Galmaa'i","My workspace":"Fuula koo","Supplier portal":"Fuula dhiyeessitootaa","Brand":"Mallattoo",
-      "Construction materials procurement · for businesses":"Bittaa meeshaalee ijaarsaa · dhaabbilee daldalaatiif",
-      "Send your BOQ. Get real supplier quotes. Choose line by line.":"BOQ keessan ergaa. Gatii dhugaa dhiyeessitootaa argadhaa. Sarara sararaan filadhaa.",
-      "Send your list once. Verified suppliers send written quotes. You compare them side by side and choose per item. We issue the PO.":"Tarree keessan al tokko ergaa. Dhiyeessitoonni mirkanaa'an gatii barreeffamaa ergu. Cinaa cinaan wal bira qabdanii meeshaa meeshaan filattu. Nuti ajaja bittaa baafna.",
-      "Current supplier quotes with price, delivery cost and validity. Not live market prices.":"Gatii dhiyeessitootaa yeroo ammaa, gatii, baasii geejjibaa fi yeroo hojjetu waliin. Gatii gabaa kallattii miti.",
-      "Details":"Bal'ina","Get a quick quote":"Gatii saffisaa argadhaa","A short list, up to ten items. Suppliers reply within your deadline.":"Tarree gabaabaa, hanga meeshaalee kudhanii. Dhiyeessitoonni yeroo murtaa'e keessatti deebisu.",
-      "Send a project BOQ":"BOQ pirojektii ergaa","Upload your Excel or build it line by line. Multiple sites, multiple deliveries.":"Excel keessan olkaa'aa yookiin sarara sararaan ijaaraa. Iddoo hedduu, dhiyeessii hedduu.",
-      "Free to register. Fees apply only on a completed deal, as a small percentage of the order. Rate to be announced.":"Galmeen bilisa. Kaffaltiin yeroo waliigalteen xumurame qofa, dhibbeentaa xiqqaa ajajaa. Hangi ni beeksifama.",
-      "Today's indicative prices · Addis Ababa":"Gatii agarsiistuu har'aa · Finfinnee","Example":"Fakkeenya",
-      "Top categories":"Gosoota gurguddoo","From the ground to the keys. Tap a circle to request a quote.":"Lafaa hanga furtuutti. Gatii gaafachuuf geengoo tuqaa.",
-      "Foundation":"Hundee","Structure":"Caasaa","Electrical and plumbing":"Elektirikii fi tuubboo","Finishing":"Xumura","Equipment rental":"Kiraa meeshaalee",
-      "What each category covers":"Gosti tokkoon tokkoon maal hammata","Request a quote":"Gatii gaafadhaa","Register interest":"Fedhii galmeessaa","Pilot · quoting now":"Yaalii · amma gatii kenna","Next phase":"Sadarkaa itti aanu",
-      "Four steps. You stay in control at every one.":"Tarkaanfii afur. Tokkoon tokkoon isaanii irratti to'annoon kan keessani.",
-      "Tell us what you need":"Waan barbaaddan nutti himaa","Suppliers quote":"Dhiyeessitoonni gatii kennu","Compare and choose":"Wal bira qabaa filadhaa","PO and delivery":"Ajaja bittaa fi dhiyeessii",
-      "Type the items or upload your BOQ. Set a deadline.":"Meeshaalee barreessaa yookiin BOQ olkaa'aa. Yeroo xumuraa kaa'aa.","Only suppliers of that material see your lines. Your name stays hidden.":"Dhiyeessitoonni meeshaa sanaa qofa sarara keessan argu. Maqaan keessan dhokatee tura.","Offers A, B, C with delivered price. Accept per item.":"Kennaa A, B, C gatii geejjibaa waliin. Meeshaa meeshaan fudhadhaa.","Supplier confirms. PO issued. Pay on the agreed terms.":"Dhiyeessaan mirkaneessa. Ajajni bittaa baha. Haala waliigalameen kaffalaa.",
-      "Keep your price list current in one tap. Win orders near you.":"Tarree gatii keessan tuqaa tokkoon haaromsaa. Ajajawwan naannoo keessan jiran mo'adhaa.","Register as a supplier":"Akka dhiyeessaatti galmaa'aa",
-      "Why it is safe":"Maaliif nageenya qaba","Built for how business is done in Ethiopia.":"Akkaataa daldalli Itoophiyaa keessatti raawwatamuun ijaarame.",
-      "Verified members":"Miseensota mirkanaa'an","Anonymous until the PO":"Hanga ajaja bittaatti maqaa malee","Current prices only":"Gatii yeroo ammaa qofa","Your data stays in Ethiopia":"Daataan keessan Itoophiyaa keessa tura",
-      "Our partners":"Michoota keenya","Customers and suppliers who build with us.":"Maamiltootaa fi dhiyeessitoota nu waliin ijaaran.",
-      "Ready to send your first request?":"Gaaffii keessan jalqabaa erguuf qophooftanii?","Two minutes to register. Documents are asked for only before your first order.":"Galmaa'uuf daqiiqaa lama. Sanadoonni ajaja keessan jalqabaa dura qofa gaafatamu.","Try the BOQ form":"Unka BOQ yaalaa",
-      "Create account":"Herrega banaa","Your mobile number":"Lakkoofsa mobaayilaa keessan","Send code":"Koodii ergi","Continue":"Itti fufi","Back":"Duubatti",
-      "Send a request":"Gaaffii ergi","Price pulse · Addis Ababa":"Mallattoo gatii · Finfinnee","Example figures":"Lakkoofsota fakkeenyaa","1 · What do you need?":"1 · Maal barbaaddu?","2 · Where and how":"2 · Eessa fi akkamitti","3 · Your mobile number":"3 · Lakkoofsa mobaayilaa keessan","Try with an example list":"Tarree fakkeenyaan yaalaa","+ Add line":"+ Sarara dabali","My requests":"Gaaffiiwwan koo",
-      "New request":"Gaaffii haaraa","Send request to suppliers":"Gaaffii dhiyeessitootaaf ergi","Supplier login":"Seensa dhiyeessitootaa","Tracking":"Hordoffii","Notification box":"Saanduqa beeksisaa","Inbox":"Ergaa dhufe","Outbox":"Ergaa ergame","Buying inquiry":"Gaaffii bittaa","Give an offer":"Kennaa kenni","Settings":"Qindaa'ina"
-    }
-  };
-  var sel=document.getElementById('lang'), note=document.getElementById('langNote');
-  var leaves=[]; document.querySelectorAll('header *, main *, footer *').forEach(function(el){ if(el.children.length===0 && el.textContent.trim() && !el.closest('#lang') && el.tagName!=='SCRIPT' && el.tagName!=='STYLE'){ leaves.push([el, el.textContent.trim()]); } });
-  function apply(code){
-    var d=T[code];
-    leaves.forEach(function(p){ var el=p[0], en=p[1]; var t=d && d[en]; el.textContent = t ? t : en; });
-    document.documentElement.lang = code==='am'?'am':code==='om'?'om':'en';
-    if(note) note.hidden = !d;
-    try{ localStorage.setItem('bs_lang', code); }catch(e){}
-  }
-  var saved='en'; try{ saved=localStorage.getItem('bs_lang')||'en'; }catch(e){}
-  if(sel){ sel.value=saved; sel.addEventListener('change', function(){ apply(sel.value); }); if(saved!=='en') apply(saved); }
-})();
+/* ---------- Language switch: assets/i18n.js with the dictionaries assets/lang-am.js and assets/lang-om.js ---------- */
 
 /* ---------- Shared: 6-box SMS code entry ---------- */
 function bsOtp(box, onComplete){
@@ -2228,7 +2163,7 @@ function bsSupport(threadId, inputId, sendId){
     clearDraft(); loading=true; lines=[]; loading=false; renderLines();
     var desks={}; good.forEach(function(l){ desks[l.cat||'x']=1; });
     $('sentTitle').textContent='Request '+ref+' sent'; $('sentText').textContent=good.length+' item'+(good.length>1?'s':'')+' sent to verified suppliers in '+Object.keys(desks).length+' categor'+(Object.keys(desks).length>1?'ies':'y')+'. They have '+days+' days to quote. We text you when offers are ready; you also see them under My requests.';
-    $('sentText').textContent += window.__bsNewAccount ? ' We created your account with mobile '+window.__bsNewAccount+'; that number and an SMS code is how you sign in.' : '';
+    if(window.__bsNewAccount){ var sx=document.createElement('span'); sx.textContent=' We created your account with mobile '+window.__bsNewAccount+'; that number and an SMS code is how you sign in.'; $('sentText').appendChild(sx); } /* its own piece of text, so each sentence is translated on its own */
     $('sentSms').textContent='Build Smartly: we received your request '+ref+' ('+good.length+' item'+(good.length>1?'s':'')+'). Suppliers have '+days+' days. We will text you when the first offer is ready.';
     $('sentBox').hidden=false; $('sentBox').scrollIntoView({behavior:'smooth',block:'center'});
   }
@@ -2997,7 +2932,8 @@ window.bsPublishProfile = async function(fields){
 
 BSRoute.start();
 </script>
-<script src="assets/order.js?v=20261029b"></script>
-<script src="assets/notify.js?v=20261029b"></script>
-<script src="assets/help.js?v=20261029b"></script>
-<script src="assets/admin.js?v=20261029b"></script>
+<script src="assets/order.js?v=20261029c"></script>
+<script src="assets/notify.js?v=20261029c"></script>
+<script src="assets/help.js?v=20261029c"></script>
+<script src="assets/admin.js?v=20261029c"></script>
+<script src="assets/i18n.js?v=20261029c"></script>
