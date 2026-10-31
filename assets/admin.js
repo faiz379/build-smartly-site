@@ -551,7 +551,7 @@
     return out;
   }
   function cLoad(){ if(cDoc || cLoading) return; cLoading=true;
-    fetch(location.pathname.replace(/[^/]*$/,'')+'index.html', {cache:'no-store'}).then(function(r){ return r.text(); }).then(function(h){ cDoc=new DOMParser().parseFromString(h,'text/html'); })
+    fetch((window.BS_CLEAN?'/':location.pathname.replace(/[^/]*$/,''))+'index.html', {cache:'no-store'}).then(function(r){ return r.text(); }).then(function(h){ cDoc=new DOMParser().parseFromString(h,'text/html'); })
       .catch(function(){ cDoc=document.cloneNode(true); }).then(function(){ cLoading=false; if(tab==='content') render(); }); }
   function cDict(lang){ return lang==='en' ? null : (window.BS_LANG||{})[lang]; }
   function cCurrent(en){ var m=(cSettings('content').map||{})[cLang]||{}; if(m[en]!=null) return m[en]; var d=cDict(cLang); return d && d[en]!=null ? d[en] : (cLang==='en'?en:''); }

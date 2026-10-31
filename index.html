@@ -1,4 +1,7 @@
 <meta charset="utf-8">
+<script>/* clean page addresses (build.onsmartly.com/materials instead of /#supply) on the site's own domain; elsewhere the # form stays */
+window.BS_CLEAN=/(^|\.)onsmartly\.com$/.test(location.hostname)||/[?&]clean=1/.test(location.search);try{if(localStorage.getItem('bs_clean')==='1')window.BS_CLEAN=true;}catch(e){}
+if(window.BS_CLEAN)document.write('<base href="/">');</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Build Smartly</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1578,8 +1581,8 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 </div>
 
 
-<script src="assets/firebase-config.js?v=20261031c" onerror="this.remove()"></script>
-<script src="assets/store.js?v=20261031c"></script>
+<script src="assets/firebase-config.js?v=20261031d" onerror="this.remove()"></script>
+<script src="assets/store.js?v=20261031d"></script>
 <script>
 /* ---------- Router: one page, views switched by hash ---------- */
 window.BSRoute = (function(){
@@ -1590,12 +1593,26 @@ window.BSRoute = (function(){
     var nav=document.getElementById('nav'); if(nav) nav.classList.remove('open');
   }
   var current='home';
-  function route(){ routeTo((location.hash||'#home').replace('#',''), {replace:true}); }
+  /* page names inside the site ↔ the address shown in the browser */
+  var PRETTY={home:'',top:'',about:'',supply:'materials',how:'how-it-works',suppliers:'for-suppliers',aboutus:'about',boq:'request','boq-mine':'my-requests','boq-resume':'request',signin:'sign-in',signup:'register','signup-supplier':'register-supplier',workspace:'account',admin:'staff','faq-telegram':'faq/telegram'};
+  var GROUP={'boq-':'request/','supplier-':'supplier/','staff-':'staff/','order-':'order/','news-':'newsletter/'};
+  var BACK={}; Object.keys(PRETTY).forEach(function(k){ if(PRETTY[k] && !BACK[PRETTY[k]]) BACK[PRETTY[k]]=k; }); BACK['about']='aboutus'; BACK['staff']='staff'; BACK['request']='boq';
+  function urlFor(h){ h=h||'home'; if(PRETTY[h]!=null) return '/'+PRETTY[h];
+    for(var g in GROUP){ if(h.indexOf(g)===0 && h.length>g.length && !(g==='boq-' && (h==='boq-mine'||h==='boq-resume'))) return '/'+GROUP[g]+encodeURIComponent(h.slice(g.length)); }
+    return '/'+h; }
+  function nameFrom(){ if(location.hash && location.hash.length>1) return decodeURIComponent(location.hash.slice(1));
+    if(!window.BS_CLEAN) return 'home';
+    var p=decodeURIComponent(location.pathname.replace(/^\/+|\/+$/g,'')).replace(/^index\.html$/,''); if(!p) return 'home';
+    if(BACK[p]) return BACK[p];
+    for(var g in GROUP){ var pre=GROUP[g]; if(p.indexOf(pre)===0 && p.length>pre.length) return g+p.slice(pre.length); }
+    return p; }
+  function route(){ routeTo(nameFrom(), {replace:true}); }
   /* Each page change is a new step in the browser history, so Chrome's back and forward buttons move between the
      site's pages. Where the viewer blocks address changes this quietly does nothing. */
   function routeTo(h, opt){
     var prev=current; current=h||'home';
-    try{ if(history){ if(opt&&opt.replace || prev===current || location.hash==='#'+current) history.replaceState(null,'','#'+current); else history.pushState(null,'','#'+current); } }catch(e){}
+    try{ if(history){ var addr = window.BS_CLEAN ? urlFor(current) : '#'+current, same = window.BS_CLEAN ? (location.pathname===addr && !location.hash) : location.hash==='#'+current;
+      if(opt&&opt.replace || prev===current || same) history.replaceState(null,'',addr); else history.pushState(null,'',addr); } }catch(e){}
     var homeAnchors=['home','top','about','supply','how','suppliers','partners','aboutus'];
     if(h.indexOf('news-')===0){ show('advertise'); if(hooks.news) hooks.news(); setTimeout(function(){ var el=document.getElementById(h); if(el){ el.scrollIntoView({behavior:'smooth',block:'start'}); el.style.outline='3px solid var(--ochre)'; setTimeout(function(){ el.style.outline=''; },2500); } },150); return; }
     if(h==='newsletter'||h==='advertise'){ show('advertise'); if(hooks.news) hooks.news(); window.scrollTo(0,0); return; }
@@ -1622,7 +1639,7 @@ window.BSRoute = (function(){
     if(h==='members'||h==='advertise'){ show(h); if(hooks[h]) hooks[h](); window.scrollTo(0,0); return; }
     show('home');
   }
-  function fromAddress(){ var h=(location.hash||'#home').replace('#',''); if(h!==current) routeTo(h, {replace:true}); }
+  function fromAddress(){ var h=nameFrom(); if(h!==current || (window.BS_CLEAN && location.hash)) routeTo(h, {replace:true}); }
   window.addEventListener('hashchange', fromAddress); window.addEventListener('popstate', fromAddress);
   /* Every in-page link routes through here, so it works even where the viewer blocks address changes. */
   document.addEventListener('click', function(e){
@@ -1631,7 +1648,7 @@ window.BSRoute = (function(){
     e.preventDefault(); if(href==='#') return; /* links used as buttons (href="#") are handled by their own page code */
     routeTo(href.slice(1));
   });
-  return { on:function(name,fn){ hooks[name]=fn; }, start:route, go:routeTo };
+  return { on:function(name,fn){ hooks[name]=fn; }, start:route, go:routeTo, current:function(){ return current; }, urlFor:urlFor };
 })();
 
 /* ---------- Language switch: assets/i18n.js with the dictionaries assets/lang-am.js and assets/lang-om.js ---------- */
@@ -1765,7 +1782,7 @@ bsAdShow('nwAds', function(){ return !document.getElementById('view-advertise').
   BS.ready().then(function(){ BS.subscribe("news", function(d){ items=d||[]; render(); }); render(); });
   function showAdForm(){ $('adInvite').hidden=true; $('newsFormBox').style.display='grid'; $('adPrices').hidden=false; }
   $('adInviteBtn').onclick=function(){ showAdForm(); $('newsFormBox').scrollIntoView({behavior:'smooth',block:'start'}); setTimeout(function(){ $('nwCompany').focus(); },400); };
-  BSRoute.on('news', function(){ var me=BS.me()||{}; if(!$('nwCompany').value) $('nwCompany').value=me.company||me.name||''; if(location.hash==='#advertise') showAdForm(); render(); });
+  BSRoute.on('news', function(){ var me=BS.me()||{}; if(!$('nwCompany').value) $('nwCompany').value=me.company||me.name||''; if(BSRoute.current()==='advertise') showAdForm(); render(); });
   $('nwSend').onclick=async function(){
     var me=BS.me()||{}, company=$('nwCompany').value.trim(), title=$('nwTitle').value.trim(), text=$('nwText').value.trim(); var err=$('nwErr'); err.hidden=true;
     if(!company||!title||!text){ err.textContent='Company, headline and text are needed.'; err.hidden=false; return; }
@@ -2971,8 +2988,8 @@ window.bsPublishProfile = async function(fields){
 
 BSRoute.start();
 </script>
-<script src="assets/order.js?v=20261031c"></script>
-<script src="assets/notify.js?v=20261031c"></script>
-<script src="assets/help.js?v=20261031c"></script>
-<script src="assets/admin.js?v=20261031c"></script>
-<script src="assets/i18n.js?v=20261031c"></script>
+<script src="assets/order.js?v=20261031d"></script>
+<script src="assets/notify.js?v=20261031d"></script>
+<script src="assets/help.js?v=20261031d"></script>
+<script src="assets/admin.js?v=20261031d"></script>
+<script src="assets/i18n.js?v=20261031d"></script>
