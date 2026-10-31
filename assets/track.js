@@ -72,8 +72,8 @@
       driverName:drv.name||'', driverPhone:drv.phone||'', plate:drv.plate||'', items:items, buyerName:o.customerRevealed||b.company||'', buyerPhone:b.ownerPhone||'',
       siteLabel:(b.subcity||'')+', '+(b.city||'Addis Ababa'), site:site, sitePinned:!!b.pin, from:from, fromLabel:o.supplierSub||sp.sub||'',
       codeHash:await codeHash(tok, o.handoverCode), expMs:Date.now()+HOURS*3600000, active:true, sim:!!sim, lat:null, lng:null, acc:null, at:null, startedAt:null, arrivedAt:null, deliveredAt:null};
-    await BS.set('tracks', tok, doc);
-    return tok;
+    var ok=await BS.set('tracks', tok, doc);
+    return ok ? tok : null; /* refused or failed: the order goes on without tracking */
   }
   /* end a tracker: keep the outcome, wipe the position */
   function end(tok, extra){ if(!tok) return Promise.resolve(); return BS.update('tracks', tok, Object.assign({active:false, lat:null, lng:null, acc:null, endedAt:new Date().toISOString()}, extra||{})); }
@@ -100,6 +100,7 @@
   function paint(){
     var c=current, slot=$('trackCard'); if(!c || !slot) return; var t=watched[c.tok].t, st=status(t);
     if(t===undefined){ slot.innerHTML='<p class="small muted">Loading the tracking…</p>'; return; }
+    if(t===null){ slot.innerHTML='<p class="small muted">Tracking is not available for this delivery. The buyer confirms the delivery with the handover code.</p>'; return; }
     if(!slot.querySelector('#trkMapSlot')){
       var share='';
       if(c.role==='supplier' && !c.o.deliveredAt){ var url=linkFor(c.tok), msg='Build Smartly delivery '+(c.o.poRef||'')+' to '+((c.b||{}).subcity||'the site')+'. Open this link and press "Start sharing my location": '+url;
