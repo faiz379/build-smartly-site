@@ -134,6 +134,7 @@
   BS.PICS = {};
   /* picture slots staff can fill from the staff page; each is one settings doc pic-<key> holding a resized JPEG data URL */
   BS.PIC_SLOTS = [
+    {key:"logo", label:"Logo · header, footer and browser tab (PNG with a clear background works best)", w:512, h:512, whole:true, def:"assets/logo.svg"},
     {key:"hero1", label:"Home banner · wide photo of a site in Addis Ababa", w:1600, h:520},
     {key:"hero2", label:"Home slide 2 · wide photo behind the contractors message", w:1600, h:520},
     {key:"hero3", label:"Home slide 3 · wide photo behind the suppliers message", w:1600, h:520},
@@ -161,9 +162,34 @@
       if(d.id==="brands" && d.map){ Object.keys(d.map).forEach(function(c){ if(Array.isArray(d.map[c]) && d.map[c].length) BS.BRANDS[c]=d.map[c].slice(); }); }
       if(d.id==="brandLogos" && d.map){ BS.BRAND_LOGOS=d.map; }
       if(d.id==="ads" && Array.isArray(d.hidden)){ BS.ADS_HIDDEN=d.hidden.slice(); }
+      if(d.id==="content" && d.map){ BS.CONTENT=d.map; if(window.bsSetOverrides) bsSetOverrides(d.map); }
+      if(d.id==="style"){ BS.applyStyle(d); }
+      if(d.id==="site"){ BS.SITE=d; }
     });
     (BS._settingsCbs||[]).forEach(function(cb){ try{ cb(); }catch(e){} });
   };
+  /* Look and feel set by staff (settings doc "style"): heading and body fonts, main and accent colour (light theme),
+     text size. Dark theme keeps its own colours. */
+  BS.FONTS = { display:["Sora","Poppins","Montserrat","Lora","Playfair Display","Noto Sans Ethiopic"], body:["Manrope","Inter","Open Sans","Roboto","Lato","Noto Sans"] };
+  BS.STYLE = {};
+  BS.applyStyle = function(st){
+    st = st || {}; BS.STYLE = st;
+    var fam = [st.display, st.body].filter(function(f){ return f && f!=="Sora" && f!=="Manrope"; });
+    var link = document.getElementById("bsFontLink");
+    if(fam.length){ var href = "https://fonts.googleapis.com/css2?" + fam.map(function(f){ return "family="+encodeURIComponent(f).replace(/%20/g,"+")+":wght@400;500;600;700"; }).join("&") + "&display=swap";
+      if(!link){ link=document.createElement("link"); link.id="bsFontLink"; link.rel="stylesheet"; document.head.appendChild(link); } if(link.href!==href) link.href=href; }
+    var css = ":root{";
+    if(st.display) css += "--display:\""+st.display+"\",\"Noto Sans Ethiopic\",\"Segoe UI\",Arial,sans-serif;";
+    if(st.body) css += "--body:\""+st.body+"\",\"Noto Sans Ethiopic\",\"Segoe UI\",Arial,sans-serif;";
+    if(st.green) css += "--green:"+st.green+";--green-deep:"+BS.shade(st.green,-0.35)+";";
+    if(st.ochre) css += "--ochre:"+st.ochre+";";
+    css += "}";
+    if(st.scale && +st.scale!==1) css += "html{font-size:"+Math.round(+st.scale*100)+"%}";
+    var tag = document.getElementById("bsStyleTag"); if(!tag){ tag=document.createElement("style"); tag.id="bsStyleTag"; document.head.appendChild(tag); }
+    tag.textContent = css;
+  };
+  BS.shade = function(hex, f){ var h=String(hex||"").replace("#",""); if(h.length!==6) return hex; var out="#";
+    for(var i=0;i<3;i++){ var c=parseInt(h.substr(i*2,2),16); c = f<0 ? Math.round(c*(1+f)) : Math.round(c+(255-c)*f); out += ("0"+Math.max(0,Math.min(255,c)).toString(16)).slice(-2); } return out; };
   BS.onSettings = function(cb){ (BS._settingsCbs=BS._settingsCbs||[]).push(cb); };
   BS.pct = function(r){ return (Math.round(r*1000)/10)+" %"; };
   BS.SUBCITIES = ["Addis Ketema","Akaki Kaliti","Arada","Bole","Gullele","Kirkos","Kolfe Keranio","Lemi Kura","Lideta","Nifas Silk-Lafto","Yeka"];
@@ -420,7 +446,7 @@
     sessionStorage.setItem("bs_staff_access", d && Array.isArray(d.access) ? JSON.stringify(d.access) : "");
   } catch(e){} }
   /* staff page sections the owner can give or withhold per staff login (Overview is always shown) */
-  BS.STAFF_SECTIONS = [["requests","Requests"],["suppliers","Suppliers"],["support","Support"],["news","Newsletter"],["promos","Promotions"],["members","Members"],["finance","Finance"],["catalogue","Catalogue"],["brands","Brands"],["insights","Insights"],["settings","Settings"]];
+  BS.STAFF_SECTIONS = [["content","Site content"],["requests","Requests"],["suppliers","Suppliers"],["support","Support"],["news","Newsletter"],["promos","Promotions"],["members","Members"],["finance","Finance"],["catalogue","Catalogue"],["brands","Brands"],["insights","Insights"],["settings","Settings"]];
   BS.STAFF_DEFAULT_ACCESS = ["requests","suppliers","support","news","promos","members","catalogue","brands"];
   BS.setStaffCache = setStaffCache;
   BS.staffRole = function(){ try { return sessionStorage.getItem("bs_staff_role") || (/owner/i.test(BS.staffName())?"owner":"staff"); } catch(e){ return "staff"; } };

@@ -97,7 +97,7 @@
       $('adTabs').querySelectorAll('button').forEach(function(b){ var n=badges[b.dataset.tab]||0; var old=b.querySelector('.badge'); if(old) old.remove(); if(n){ var sp=document.createElement('span'); sp.className='badge'; sp.textContent=n; b.appendChild(sp); } }); }catch(e){}
     if(tab!=='overview' && !BS.staffCan(tab)) tab='overview';
     $('adTabs').querySelectorAll('[data-tab]').forEach(function(b){ b.hidden=b.dataset.tab!=='overview' && !BS.staffCan(b.dataset.tab); });
-    var r={overview:renderOverview, requests:renderRequests, suppliers:renderSuppliers, support:renderSupport, news:renderNews, promos:renderPromos, brands:renderBrandsTab, members:renderMembers, finance:renderFinance, insights:renderInsights, catalogue:renderCatalogue, settings:renderSettings}[tab]||renderOverview;
+    var r={overview:renderOverview, requests:renderRequests, suppliers:renderSuppliers, support:renderSupport, news:renderNews, promos:renderPromos, brands:renderBrandsTab, members:renderMembers, finance:renderFinance, insights:renderInsights, catalogue:renderCatalogue, content:renderContent, settings:renderSettings}[tab]||renderOverview;
     $('adBody').innerHTML=searchHtml()+r();
   }
   $('adBody').addEventListener('click', function(e){ var b=e.target.closest('[data-go]'); if(!b) return; tab=b.dataset.go; render(); });
@@ -530,6 +530,105 @@
     try{ Object.keys(localStorage).forEach(function(k){ if(/^bs_demo_(draft|prices_|supprofile_|locs)|^bs_bell_seen_/.test(k)) localStorage.removeItem(k); }); }catch(err){}
     e.target.disabled=false; $('adResetMsg').textContent='Done: '+n+' records deleted.'; bsToast('Test data cleared. The site starts clean.');
   });
+
+  /* ---- Site content: the words on every page (per language), look and feel, pictures and logo, contact and social,
+     home page sections and announcement bar, extra FAQ questions. All saved as settings docs (content, style, site,
+     pic-*), so every device shows the change within seconds. Changed words are keyed by the original English text and
+     applied by the language engine (assets/i18n.js), so they survive redraws and work in every language. ---- */
+  var cSub='text', cPage='home', cLang='en', cQ='', cEdits={}, cDoc=null, cLoading=false;
+  var C_PAGES=[['home','Home page'],['__chrome','Header, menu and footer'],['boq','Send a request'],['signup','Sign in and register'],['supplier','Supplier portal'],['workspace','Buyer account'],['advertise','Newsletter'],['members','Members'],['contact','Contact'],['faq','Questions and answers'],['terms','Terms'],['privacy','Privacy'],['start','Start here (testers)'],['order','Order page']];
+  var C_HSEC=[['numbers','Numbers band (suppliers, materials, sub-cities, offers)'],['pulse','Price pulse strip'],['promos','Partners and promotions slideshow'],['categories','Top categories circles'],['catinfo','What each category covers'],['how','How it works'],['forsuppliers','For suppliers'],['safe','Why it is safe'],['members','Members cards'],['about','About us'],['cta','Ready to send your first request?']];
+  function cSettings(id){ return data.settings.filter(function(x){ return x.id===id; })[0]||{}; }
+  function cTexts(){
+    if(!cDoc) return null;
+    var roots = cPage==='__chrome' ? [cDoc.querySelector('header'), cDoc.querySelector('footer.site')] : [cDoc.getElementById('view-'+cPage)];
+    var out=[], seen={};
+    roots.forEach(function(root){ if(!root) return; var w=cDoc.createTreeWalker(root, NodeFilter.SHOW_TEXT), n;
+      while((n=w.nextNode())){ var p=n.parentElement; if(!p || p.closest('script,style,select,option,textarea,svg,[data-notr]')) continue;
+        var t=n.nodeValue.replace(/\s+/g,' ').trim(); if(!t || !/[A-Za-z]{2}/.test(t) || seen[t]) continue; seen[t]=1;
+        var tag=p.closest('h1,h2,h3,h4')?'Heading':p.closest('button,.btn')?'Button':p.closest('a')?'Link':p.closest('label')?'Field name':p.closest('summary')?'Question':p.closest('li')?'List item':'Text';
+        out.push({en:t, kind:tag}); } });
+    return out;
+  }
+  function cLoad(){ if(cDoc || cLoading) return; cLoading=true;
+    fetch(location.pathname.replace(/[^/]*$/,'')+'index.html', {cache:'no-store'}).then(function(r){ return r.text(); }).then(function(h){ cDoc=new DOMParser().parseFromString(h,'text/html'); })
+      .catch(function(){ cDoc=document.cloneNode(true); }).then(function(){ cLoading=false; if(tab==='content') render(); }); }
+  function cDict(lang){ return lang==='en' ? null : (window.BS_LANG||{})[lang]; }
+  function cCurrent(en){ var m=(cSettings('content').map||{})[cLang]||{}; if(m[en]!=null) return m[en]; var d=cDict(cLang); return d && d[en]!=null ? d[en] : (cLang==='en'?en:''); }
+  function renderContent(){
+    var subs=[['text','Words on the pages'],['look','Look and feel'],['pics','Pictures and logo'],['contact','Contact and social'],['home','Home page and announcement'],['faq','Extra FAQ questions']];
+    var head='<div style="display:flex;gap:.4rem;flex-wrap:wrap">'+subs.map(function(x){ return '<button type="button" class="btn btn-sm '+(cSub===x[0]?'btn-primary':'btn-ghost')+'" data-csub="'+x[0]+'">'+x[1]+'</button>'; }).join('')+'</div>';
+    var help=card('How to use Site content','Change what visitors see without touching any code. Pick a part below, change it and press Save: every phone and computer shows it within seconds. Reset brings back the original.','');
+    return help+head+({text:cTextHtml, look:cLookHtml, pics:picturesCard, contact:cContactHtml, home:cHomeHtml, faq:cFaqHtml}[cSub]||cTextHtml)();
+  }
+  function cTextHtml(){
+    cLoad(); if(cLang!=='en' && !cDict(cLang) && window.bsLoadLang) bsLoadLang(cLang).then(function(){ if(tab==='content') render(); });
+    var sel='<div class="grid3"><div class="field"><label for="cPage">Page</label><select id="cPage">'+C_PAGES.map(function(x){ return '<option value="'+x[0]+'"'+(x[0]===cPage?' selected':'')+'>'+x[1]+'</option>'; }).join('')+'</select></div>'+
+      '<div class="field"><label for="cLang">Language</label><select id="cLang"><option value="en"'+(cLang==='en'?' selected':'')+'>English</option><option value="am"'+(cLang==='am'?' selected':'')+'>Amharic</option><option value="om"'+(cLang==='om'?' selected':'')+'>Afaan Oromoo</option></select></div>'+
+      '<div class="field"><label for="cQ">Find a word</label><input id="cQ" value="'+esc(cQ)+'" placeholder="Type to filter"></div></div>';
+    var list=cTexts();
+    if(!list) return card('Words on the pages','', sel+'<p class="small muted">Loading the pages…</p>');
+    var map=(cSettings('content').map||{})[cLang]||{}, q=cQ.toLowerCase();
+    var rows=list.filter(function(x){ return !q || x.en.toLowerCase().indexOf(q)>=0 || String(cCurrent(x.en)).toLowerCase().indexOf(q)>=0; }).map(function(x,i){
+      var k=cLang+'|'+x.en, val=cEdits[k]!=null?cEdits[k]:cCurrent(x.en), changed=map[x.en]!=null;
+      return '<div class="doc" style="grid-template-columns:1fr;gap:.35rem"><span class="small muted">'+x.kind+(cLang!=='en'?' · English: '+esc(x.en):'')+(changed?' · <strong style="color:var(--ochre-ink)">changed</strong>':'')+'</span>'+
+        '<textarea data-ctext="'+esc(x.en)+'" rows="'+Math.min(6,Math.max(1,Math.ceil(val.length/90)))+'" style="font:inherit;width:100%;padding:.45rem .55rem;border:1.5px solid var(--line);border-radius:8px;background:var(--white);color:var(--fg)">'+esc(val)+'</textarea>'+
+        '<span style="display:flex;gap:.4rem"><button class="btn btn-primary btn-sm" type="button" data-csave="'+esc(x.en)+'">Save</button>'+(changed?'<button class="btn btn-ghost btn-sm" type="button" data-creset="'+esc(x.en)+'">Reset</button>':'')+'</span></div>'; }).join('');
+    return card('Words on the pages','Choose a page and a language. Each box is one piece of text as visitors see it. Change it and press Save. After changing English, also check Amharic and Afaan Oromoo.', sel+'<div class="docs" data-notr>'+(rows||'<div class="empty">No text matches.</div>')+'</div>');
+  }
+  function cLookHtml(){
+    var st=cSettings('style'), f=function(id,label,list,v,def){ return '<div class="field"><label for="'+id+'">'+label+'</label><select id="'+id+'">'+list.map(function(x){ return '<option'+((v||def)===x?' selected':'')+'>'+x+'</option>'; }).join('')+'</select></div>'; };
+    return card('Look and feel','Fonts, colours and text size for the whole site. Dark mode on phones keeps its own colours.',
+      '<div class="grid3">'+f('lkDisplay','Font for headings',BS.FONTS.display,st.display,'Sora')+f('lkBody','Font for text',BS.FONTS.body,st.body,'Manrope')+
+      '<div class="field"><label for="lkScale">Text size</label><select id="lkScale"><option value="1"'+(!st.scale||+st.scale===1?' selected':'')+'>Normal</option><option value="1.08"'+(+st.scale===1.08?' selected':'')+'>Larger</option><option value="1.16"'+(+st.scale===1.16?' selected':'')+'>Largest</option></select></div>'+
+      '<div class="field"><label for="lkGreen">Main colour (buttons, links)</label><input id="lkGreen" type="color" value="'+(st.green||'#1E6B4E')+'"></div>'+
+      '<div class="field"><label for="lkOchre">Accent colour (highlights)</label><input id="lkOchre" type="color" value="'+(st.ochre||'#E3A63A')+'"></div></div>'+
+      '<div style="display:flex;gap:.5rem;flex-wrap:wrap"><button class="btn btn-primary btn-sm" type="button" id="lkSave">Save look and feel</button><button class="btn btn-ghost btn-sm" type="button" id="lkReset">Back to the original</button></div>');
+  }
+  function cContactHtml(){
+    var c=(cSettings('site').contact)||{}, f=function(k,label,ph){ return '<div class="field"><label for="ct_'+k+'">'+label+'</label><input id="ct_'+k+'" value="'+esc(c[k]||'')+'" placeholder="'+ph+'"></div>'; };
+    return card('Contact and social','Shown on the Contact page and in the footer. Leave a box empty to hide that line.',
+      '<div class="grid3">'+f('phone','Phone','+251 11 …')+f('email','Email','info@…')+f('address','Address','Bole, Addis Ababa')+f('telegram','Telegram','@BuildSmartly')+f('whatsapp','WhatsApp number','+251 9…')+f('facebook','Facebook page','page name or link')+f('linkedin','LinkedIn page','company name or link')+'</div>'+
+      '<div><button class="btn btn-primary btn-sm" type="button" id="ctSave">Save contact details</button></div>');
+  }
+  function cHomeHtml(){
+    var st=cSettings('site'), hide=st.hide||[], an=st.announce||{};
+    return card('Announcement bar','A short message at the top of every page, for example a holiday notice or an offer.',
+        '<label class="small" style="display:flex;gap:.5rem;align-items:center"><input type="checkbox" id="anOn"'+(an.on?' checked':'')+'> Show the announcement</label>'+
+        '<div class="grid3"><div class="field"><label for="anText">Message</label><input id="anText" value="'+esc(an.text||'')+'" placeholder="e.g. Free delivery in Bole this week"></div><div class="field"><label for="anLabel">Button text (optional)</label><input id="anLabel" value="'+esc(an.label||'')+'" placeholder="e.g. Send a request"></div><div class="field"><label for="anLink">Button link (optional)</label><input id="anLink" value="'+esc(an.link||'')+'" placeholder="#boq or https://…"></div></div>'+
+        '<div><button class="btn btn-primary btn-sm" type="button" id="anSave">Save announcement</button></div>')+
+      card('Home page sections','Untick a section to hide it from the home page. Tick it again to bring it back.',
+        '<div style="display:grid;gap:.35rem">'+C_HSEC.map(function(x){ return '<label class="small" style="display:flex;gap:.5rem;align-items:center"><input type="checkbox" data-hsec-show="'+x[0]+'"'+(hide.indexOf(x[0])<0?' checked':'')+'> '+x[1]+'</label>'; }).join('')+'</div>'+
+        '<div><button class="btn btn-primary btn-sm" type="button" id="hsSave">Save sections</button></div>');
+  }
+  function cFaqHtml(){
+    var faq=(cSettings('site').faq)||[];
+    return card('Extra FAQ questions','Added below the standard questions on the Questions and answers page. The standard ones are changed under "Words on the pages".',
+      '<div class="docs">'+(faq.map(function(q,i){ return '<div class="doc" style="grid-template-columns:1fr auto"><span><strong>'+esc(q.q)+'</strong><br><span class="small muted">'+esc(q.a)+'</span></span><button class="btn btn-ghost btn-sm" type="button" data-faqrm="'+i+'">Remove</button></div>'; }).join('')||'<div class="empty">No extra questions yet.</div>')+'</div>'+
+      '<div class="field"><label for="fqQ">Question</label><input id="fqQ"></div><div class="field"><label for="fqA">Answer</label><textarea id="fqA" rows="3" style="font:inherit;width:100%;padding:.45rem .55rem;border:1.5px solid var(--line);border-radius:8px;background:var(--white);color:var(--fg)"></textarea></div>'+
+      '<div><button class="btn btn-primary btn-sm" type="button" id="fqAdd">Add the question</button></div>');
+  }
+  async function cSaveSite(patch, msg){ var cur=Object.assign({}, cSettings('site')); delete cur.id; Object.assign(cur, patch, {setBy:staffName()}); await BS.set('settings','site', cur); bsToast(msg); }
+  $('adBody').addEventListener('input', function(e){ var t=e.target;
+    if(t.dataset && t.dataset.ctext!=null) cEdits[cLang+'|'+t.dataset.ctext]=t.value;
+    if(t.id==='cQ'){ cQ=t.value; var pos=t.selectionStart; render(); var n=$('cQ'); if(n){ n.focus(); try{ n.setSelectionRange(pos,pos); }catch(err){} } } });
+  $('adBody').addEventListener('change', function(e){ var t=e.target; if(t.id==='cPage'){ cPage=t.value; render(); } if(t.id==='cLang'){ cLang=t.value; render(); } });
+  $('adBody').addEventListener('click', async function(e){
+    var t=e.target; if(tab!=='content') return;
+    if(t.dataset.csub){ cSub=t.dataset.csub; render(); return; }
+    var sv=t.closest('[data-csave]'), rs=t.closest('[data-creset]');
+    if(sv || rs){ var en=(sv||rs).getAttribute(sv?'data-csave':'data-creset'), k=cLang+'|'+en, all=JSON.parse(JSON.stringify(cSettings('content').map||{})); all[cLang]=all[cLang]||{};
+      if(sv){ var v=(cEdits[k]!=null?cEdits[k]:cCurrent(en)).trim(); if(cLang==='en' && v===en) delete all.en[en]; else all[cLang][en]=v; }
+      else delete all[cLang][en];
+      delete cEdits[k]; await BS.set('settings','content',{map:all, setBy:staffName()}); bsToast(sv?'Saved. Every device shows the new text now.':'Back to the original text.'); return; }
+    if(t.id==='lkSave'){ await BS.set('settings','style',{display:$('lkDisplay').value, body:$('lkBody').value, scale:+$('lkScale').value, green:$('lkGreen').value, ochre:$('lkOchre').value, setBy:staffName()}); bsToast('Look and feel saved for every device.'); return; }
+    if(t.id==='lkReset'){ if(!(await bsConfirm('Back to the original look?','Fonts, colours and text size go back to how the site was built.','Reset'))) return; await BS.set('settings','style',{setBy:staffName()}); bsToast('Original look restored.'); return; }
+    if(t.id==='ctSave'){ var c={}; ['phone','email','address','telegram','whatsapp','facebook','linkedin'].forEach(function(k){ c[k]=$('ct_'+k).value.trim(); }); await cSaveSite({contact:c},'Contact details saved. They show on the Contact page and in the footer.'); return; }
+    if(t.id==='anSave'){ await cSaveSite({announce:{on:$('anOn').checked, text:$('anText').value.trim(), label:$('anLabel').value.trim(), link:$('anLink').value.trim()}}, $('anOn').checked?'Announcement is showing on every page.':'Announcement saved and hidden.'); return; }
+    if(t.id==='hsSave'){ var hide=[].slice.call(document.querySelectorAll('[data-hsec-show]')).filter(function(i){ return !i.checked; }).map(function(i){ return i.getAttribute('data-hsec-show'); }); await cSaveSite({hide:hide},'Home page sections saved.'); return; }
+    if(t.id==='fqAdd'){ var q=$('fqQ').value.trim(), a=$('fqA').value.trim(); if(!q||!a){ bsToast('Type a question and an answer.'); return; } var list=((cSettings('site').faq)||[]).concat([{q:q,a:a}]); await cSaveSite({faq:list},'Question added to the FAQ page.'); return; }
+    var fr=t.closest('[data-faqrm]'); if(fr){ var l2=((cSettings('site').faq)||[]).slice(); l2.splice(+fr.dataset.faqrm,1); await cSaveSite({faq:l2},'Question removed.'); return; }
+  });
   /* ---- staff logins (owner only, public site) ----
      Each login has a tick box per staff-page section (`access`); Overview is always shown, the owner sees everything.
      Remove switches the login off and hides it from the list (removed:true); nothing the person did on the site is deleted.
@@ -591,17 +690,20 @@
       '<div class="grid3">'+f('tPerTrip','Truck: fixed cost per trip (ETB)',T.perTrip)+f('tPerKm','Truck: cost per km (ETB)',T.perKm)+f('tCap','Truck capacity (tonnes)',T.capacityT)+f('tMob','Equipment mobilisation per hire (ETB)',T.mobilisation)+f('tInsRate','Transit insurance rate (% of goods)',Math.round(I.rate*1000)/10,0.1)+f('tInsMin','Insurance minimum (ETB)',I.min)+f('tFee','Platform fee (% of each sale)',Math.round(BS.FEE_RATE*1000)/10,0.1)+f('tLead','Minimum needed-by lead time (days)',BS.MIN_LEAD_DAYS)+f('tValid','Days suppliers have to reply',BS.VALIDITY_DAYS)+'</div><div><button class="btn btn-primary btn-sm" type="button" id="adSaveTariffs">Save tariffs</button> <span class="small muted" id="adTariffMsg"></span></div>')+
       (isOwner()&&BS.staffAuth()?staffCard():'')+
       (isOwner()?card('Clear test data','Owner only. Deletes every request, offer, order, message, problem, newsletter item, promotion, profile, task and supplier change, on every device. Tariffs, catalogue, brands and pictures stay.','<div><button class="btn btn-ghost" type="button" id="adReset" style="color:#9b2c2c;border-color:#9b2c2c">Clear all test data</button> <span class="small muted" id="adResetMsg"></span></div>'):'')+
-      card('Site pictures','Replace the drawn placeholders with real photos. JPG or PNG from your computer or phone; the picture is resized and cropped to fit and shown on every device within seconds. Use photos you have the right to use (your own, or free-licence stock photos).',
-        '<div class="docs">'+BS.PIC_SLOTS.map(function(sl){ var cur=BS.PICS[sl.key]; var def='assets/photos/'+sl.key+'.jpg'; return '<div class="doc" style="grid-template-columns:7rem 1fr auto"><img src="'+(cur||def)+'" alt="" style="width:7rem;aspect-ratio:'+sl.w+'/'+sl.h+';object-fit:cover;border-radius:'+(sl.w===sl.h?'50%':'6px')+'"><span><strong>'+esc(sl.label)+'</strong><br><span class="small muted">'+sl.w+' × '+sl.h+' px · '+(cur?'photo set by staff':'site photo')+'</span></span><span style="display:flex;gap:.4rem;flex-wrap:wrap"><label class="btn btn-primary btn-sm" style="cursor:pointer">'+(cur?'Replace':'Upload photo')+'<input type="file" accept="image/*" hidden data-pic-up="'+sl.key+'"></label>'+(cur?'<button class="btn btn-ghost btn-sm" type="button" data-pic-rm="'+sl.key+'">Remove</button>':'')+'</span></div>'; }).join('')+'</div><p class="small muted" id="adPicMsg"></p>');
+      picturesCard();
   }
+  function picturesCard(){ return card('Site pictures','Replace the drawn placeholders with real photos. JPG or PNG from your computer or phone; the picture is resized and cropped to fit and shown on every device within seconds. Use photos you have the right to use (your own, or free-licence stock photos).',
+        '<div class="docs">'+BS.PIC_SLOTS.map(function(sl){ var cur=BS.PICS[sl.key]; var def=sl.def||('assets/photos/'+sl.key+'.jpg'); return '<div class="doc" style="grid-template-columns:7rem 1fr auto"><img src="'+(cur||def)+'" alt="" style="width:7rem;aspect-ratio:'+sl.w+'/'+sl.h+';object-fit:'+(sl.whole?'contain':'cover')+';border-radius:'+(sl.w===sl.h?'50%':'6px')+'"><span><strong>'+esc(sl.label)+'</strong><br><span class="small muted">'+sl.w+' × '+sl.h+' px · '+(cur?'photo set by staff':'site photo')+'</span></span><span style="display:flex;gap:.4rem;flex-wrap:wrap"><label class="btn btn-primary btn-sm" style="cursor:pointer">'+(cur?'Replace':'Upload photo')+'<input type="file" accept="image/*" hidden data-pic-up="'+sl.key+'"></label>'+(cur?'<button class="btn btn-ghost btn-sm" type="button" data-pic-rm="'+sl.key+'">Remove</button>':'')+'</span></div>'; }).join('')+'</div><p class="small muted" id="adPicMsg"></p>'); }
   /* site pictures: resize and crop in the browser, store as a JPEG data URL in settings/pic-<key> */
-  function fitPicture(file, w, h){
-    return new Promise(function(res, rej){ var r=new FileReader(); r.onload=function(){ var img=new Image(); img.onload=function(){ var c=document.createElement('canvas'); c.width=w; c.height=h; var ctx=c.getContext('2d'); var sc=Math.max(w/img.width, h/img.height), sw=w/sc, sh=h/sc, sx=(img.width-sw)/2, sy=(img.height-sh)/2; ctx.drawImage(img, sx, sy, sw, sh, 0, 0, w, h); var q=0.82, out=c.toDataURL('image/jpeg', q); while(out.length>700000 && q>0.4){ q-=0.1; out=c.toDataURL('image/jpeg', q); } res(out); }; img.onerror=function(){ rej(new Error('bad image')); }; img.src=r.result; }; r.onerror=rej; r.readAsDataURL(file); });
+  function fitPicture(file, w, h, whole){
+    return new Promise(function(res, rej){ var r=new FileReader(); r.onload=function(){ var img=new Image(); img.onload=function(){ var c=document.createElement('canvas'); c.width=w; c.height=h; var ctx=c.getContext('2d');
+      if(whole){ var k=Math.min(w/img.width, h/img.height), dw=img.width*k, dh=img.height*k; ctx.drawImage(img, (w-dw)/2, (h-dh)/2, dw, dh); res(c.toDataURL('image/png')); return; } /* a logo: whole picture, transparent background */
+      var sc=Math.max(w/img.width, h/img.height), sw=w/sc, sh=h/sc, sx=(img.width-sw)/2, sy=(img.height-sh)/2; ctx.drawImage(img, sx, sy, sw, sh, 0, 0, w, h); var q=0.82, out=c.toDataURL('image/jpeg', q); while(out.length>700000 && q>0.4){ q-=0.1; out=c.toDataURL('image/jpeg', q); } res(out); }; img.onerror=function(){ rej(new Error('bad image')); }; img.src=r.result; }; r.onerror=rej; r.readAsDataURL(file); });
   }
   $('adBody').addEventListener('change', async function(e){
     var i=e.target.closest('[data-pic-up]'); if(!i) return; var f=i.files&&i.files[0]; if(!f) return; var sl=BS.PIC_SLOTS.filter(function(x){ return x.key===i.dataset.picUp; })[0]; if(!sl) return;
     $('adPicMsg').textContent='Preparing '+f.name+'…';
-    try{ var data=await fitPicture(f, sl.w, sl.h); await BS.set('settings', 'pic-'+sl.key, {data:data, setBy:staffName(), name:f.name}); $('adPicMsg').textContent='Saved. It shows on every device now.'; bsToast('Picture saved.'); }
+    try{ var data=await fitPicture(f, sl.w, sl.h, !!sl.whole); await BS.set('settings', 'pic-'+sl.key, {data:data, setBy:staffName(), name:f.name}); $('adPicMsg').textContent='Saved. It shows on every device now.'; bsToast('Picture saved.'); }
     catch(err){ $('adPicMsg').textContent='That file could not be read. Use a JPG or PNG.'; }
   });
   $('adBody').addEventListener('change', async function(e){

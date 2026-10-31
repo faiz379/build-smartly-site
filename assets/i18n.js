@@ -8,6 +8,8 @@
 (function(){
   var sel=document.getElementById('lang'), note=document.getElementById('langNote');
   var cur='en', dict=null, busy=false, loading={};
+  /* text the staff changed under Staff → Site content: {en:{original:new}, am:{…}, om:{…}}, keyed by the original English */
+  var OVR=(window.BS && BS.CONTENT) || {};
   var SKIP=/^(SCRIPT|STYLE|NOSCRIPT|TEXTAREA|CODE|svg)$/i, SKIPEL=/^(SCRIPT|STYLE|NOSCRIPT|svg)$/i, ATTRS=['placeholder','title','aria-label']; /* text boxes keep what people type; their hints are translated */
   var NUM=/\d[\d,]*(?:\.\d+)?/g;
 
@@ -36,8 +38,10 @@
     return t.replace(/\{(\d+)\}/g, function(m,k){ return nums[k-1]!=null ? nums[k-1] : m; });
   }
   function tr(en){
-    if(!dict) return null;
-    var core=en.trim(); if(!core || !/[A-Za-z]/.test(core)) return null;
+    var core=en.trim(); if(!core) return null;
+    var o=OVR[cur] && OVR[cur][core.replace(/\s+/g,' ')]; /* staff edits are stored with single spaces */
+    if(o!=null && o!==''){ return en.match(/^\s*/)[0]+o+en.match(/\s*$/)[0]; }
+    if(!dict || !/[A-Za-z]/.test(core)) return null;
     var t=look(core);
     /* lists: a part that is itself a list ("Cement, Blocks, Electrical") is translated item by item */
     var piece=function(y){ var z=y && /[A-Za-z]/.test(y) ? look(y) : null; if(z!=null) return z; if(y.indexOf(', ')>0){ var hit=false, its=y.split(', ').map(function(w){ var v=/[A-Za-z]/.test(w)?look(w.trim()):null; if(v!=null){ hit=true; return v; } return w; }); if(hit) return its.join(', '); } return null; };
@@ -52,7 +56,7 @@
     var v=n.nodeValue, en;
     if(n.__bsT!==undefined && v===n.__bsT) en=n.__bsEn; /* still our translation: start again from the English */
     else { en=v; n.__bsEn=v; }                          /* new or changed by the page: this is English */
-    var t=dict ? tr(en) : null;
+    var t=tr(en);
     if(t!=null){ n.__bsT=t; if(v!==t) n.nodeValue=t; }
     else { n.__bsT=undefined; if(v!==en) n.nodeValue=en; }
   }
@@ -63,7 +67,7 @@
     ATTRS.forEach(function(a){
       if(!el.hasAttribute(a)) return; var v=el.getAttribute(a), s=store[a], en;
       if(s && s.t!==undefined && v===s.t) en=s.en; else { en=v; store[a]=s={en:v}; }
-      var t=dict ? tr(en) : null;
+      var t=tr(en);
       if(t!=null){ s.t=t; if(v!==t) el.setAttribute(a, t); }
       else { s.t=undefined; if(v!==en) el.setAttribute(a, en); }
     });
@@ -93,8 +97,12 @@
   window.bsLang=function(){ return cur; };
   window.bsSetLang=function(code){ if(sel) sel.value=code; apply(code); };
   window.bsTr=function(en){ return tr(en)||en; };
+  function rewalk(){ busy=true; try{ walk(document.body); mo.takeRecords(); } finally { busy=false; } }
+  window.bsSetOverrides=function(map){ OVR=map||{}; rewalk(); };
+  window.bsLoadLang=load;                                            /* the staff editor shows the current translations */
+  window.bsEnglishOf=function(n){ return n.__bsEn!==undefined ? n.__bsEn : n.nodeValue; };
   mo.observe(document.body, {subtree:true, childList:true, characterData:true, attributes:true, attributeFilter:ATTRS});
   var saved='en'; try{ saved=localStorage.getItem('bs_lang')||'en'; }catch(e){}
   if(sel){ sel.value=saved; sel.addEventListener('change', function(){ apply(sel.value); }); }
-  if(saved!=='en') apply(saved);
+  if(saved!=='en') apply(saved); else if(Object.keys(OVR).length) rewalk();
 })();

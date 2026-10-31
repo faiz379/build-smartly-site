@@ -161,6 +161,10 @@ footer.site a{text-decoration:none}
 footer.site .staff-link{flex-basis:100%;text-align:right;font-size:.78rem;color:var(--fg-2);opacity:.75;margin-top:.2rem}
 footer.site .staff-link:hover{opacity:1;text-decoration:underline}
 .lang-note{font-size:.8rem;color:var(--fg-2)}
+.annbar{background:var(--ochre);color:#14241E}
+.annbar .wrap{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.4rem 1rem;padding-block:.5rem;font-size:.92rem;font-weight:700;text-align:center}
+.annbar .btn{background:#14241E;color:#fff}
+.brand img.mark{object-fit:contain;border-radius:8px}
 .alertbar{background:var(--green-deep);color:var(--band-fg);border-bottom:2px solid var(--ochre)}
 .alertbar .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.5rem 1rem;padding-block:.6rem;font-size:.92rem;font-weight:600}
 .acct-list{display:grid;gap:.5rem}
@@ -695,6 +699,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     </div>
   </div>
 </header>
+<div class="annbar" id="annBar" hidden><div class="wrap"><span id="annText"></span><a class="btn btn-ochre btn-sm" id="annLink" hidden></a></div></div>
 <div class="alertbar" id="alertBar" hidden><div class="wrap"><span id="alertText"></span><a class="btn btn-ochre btn-sm" href="#boq-mine" id="alertGo">Compare and accept</a></div></div>
 
 <main id="top">
@@ -748,7 +753,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     </div>
   </section>
 
-  <section class="stats" id="liveStats" aria-label="Build Smartly in numbers">
+  <section data-hsec="numbers" class="stats" id="liveStats" aria-label="Build Smartly in numbers">
     <div class="wrap statsgrid">
       <div><strong data-count="0" id="stSuppliers">0</strong><span>Verified suppliers</span></div>
       <div><strong data-count="34">0</strong><span>Materials in the catalogue</span></div>
@@ -757,7 +762,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     </div>
   </section>
 
-  <div class="slide" aria-label="Market prices and announcements">
+  <div data-hsec="pulse" class="slide" aria-label="Market prices and announcements">
     <div class="wrap">
       <div class="head">
         <div><span class="eyebrow">Price pulse · Addis Ababa</span> <span class="tag" id="pulseTag" hidden></span><br><span class="small muted" id="pulseNote">Indicative prices by brand from the latest supplier quotes on Build Smartly, with the change since last week. Not live market prices.</span></div>
@@ -770,11 +775,11 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     </div>
   </div>
 
-  <section class="wrap" id="partners" style="padding-block:1.6rem 2.8rem">
+  <section data-hsec="promos" class="wrap" id="partners" style="padding-block:1.6rem 2.8rem">
     <div class="sec-head" style="display:flex;justify-content:space-between;align-items:end;gap:1rem;flex-wrap:wrap"><div><span class="eyebrow">Partners and promotions</span><h2 style="font-size:1.4rem">Brands, suppliers and builders on Build Smartly</h2></div><a class="small" href="#newsletter">Advertise your brand →</a></div>
     <div class="adshow" id="homeAds"></div>
   </section>
-  <section id="supply" class="catband">
+  <section data-hsec="categories" id="supply" class="catband">
     <div class="wrap catband-in">
       <div class="catband-title"><span class="eyebrow">Materials</span><h2>Top categories</h2><p>From the ground to the keys. Tap a circle to request a quote.</p></div>
       <div class="circles">
@@ -787,7 +792,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     </div>
   </section>
 
-  <section class="wrap hsec">
+  <section data-hsec="catinfo" class="wrap hsec">
     <details class="catsfold"><summary class="sec-head" style="cursor:pointer;list-style:none"><h2 style="font-size:1.4rem">What each category covers <span class="small muted" style="font-weight:400;font-family:var(--body)">· tap to open</span></h2><p>Each request is split by material and sent only to verified suppliers of that material.</p></summary>
     <div class="cats">
       <article class="card cat"><span class="num">Category 1</span><h3>Foundation</h3><ul><li>Cement</li><li>Gravel and sand</li><li>Steel bars</li><li>Wire mesh</li><li>Masonry stone</li><li>Formwork</li></ul><div class="foot"><span class="tag tag-green">Pilot · quoting now</span><a class="btn btn-ghost btn-sm" href="#boq-foundation">Request a quote</a></div></article>
@@ -798,7 +803,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     </div></details>
   </section>
 
-  <section id="how" class="wrap hsec" style="padding-top:0">
+  <section data-hsec="how" id="how" class="wrap hsec" style="padding-top:0">
     <div class="sec-head"><span class="eyebrow">How it works</span><h2>Four steps. You stay in control at every one.</h2></div>
     <div class="steps">
       <div class="hstep"><h3>Tell us what you need</h3><p>Type the items or upload your BOQ. Set a deadline.</p></div>
@@ -808,7 +813,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     </div>
   </section>
 
-  <section id="suppliers" class="band">
+  <section data-hsec="forsuppliers" id="suppliers" class="band">
     <div class="wrap">
       <div>
         <span class="eyebrow">For suppliers</span>
@@ -831,7 +836,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     </div>
   </section>
 
-  <section class="wrap hsec">
+  <section data-hsec="safe" class="wrap hsec">
     <div class="sec-head"><span class="eyebrow">Why it is safe</span><h2>Built for how business is done in Ethiopia.</h2></div>
     <div class="trust">
       <div class="card"><h3>Verified members</h3><p>Licence and TIN checked before a supplier can quote. Clear status on every account.</p></div>
@@ -841,13 +846,13 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     </div>
   </section>
 
-  <section id="partners" class="wrap hsec" style="padding-top:0">
+  <section data-hsec="members" id="partners" class="wrap hsec" style="padding-top:0">
     <div class="sec-head" style="text-align:center;max-width:none;justify-items:center"><span class="eyebrow">Members</span><h2>Suppliers and builders who work through Build Smartly.</h2></div>
     <div class="members" id="homeMembers"></div>
     <p style="margin-top:1rem;text-align:center"><a class="btn btn-ghost" href="#members">See all members</a> <a class="btn btn-ghost" href="#newsletter">Newsletter and promotions</a></p>
   </section>
 
-  <section id="aboutus" class="wrap hsec" style="padding-top:0">
+  <section data-hsec="about" id="aboutus" class="wrap hsec" style="padding-top:0">
     <div class="sec-head"><span class="eyebrow">About us</span><h2>A share company built by people who build.</h2></div>
     <div class="trust" style="grid-template-columns:1.2fr .8fr">
       <div class="card" style="gap:.7rem">
@@ -868,7 +873,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     </div>
   </section>
 
-  <section class="wrap hsec" style="padding-top:0">
+  <section data-hsec="cta" class="wrap hsec" style="padding-top:0">
     <div class="cta">
       <div style="display:grid;gap:.3rem;min-width:0"><h2 style="font-size:1.4rem">Ready to send your first request?</h2><p class="muted">Build your list, enter your mobile number, done. Company details and TIN are asked for only when you accept an offer.</p></div>
       <div class="btns"><a class="btn btn-primary" href="#boq">Send a request</a><a class="btn btn-ghost" href="#signup-supplier">Register as a supplier</a></div>
@@ -1325,7 +1330,8 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     </div>
     <div class="card" style="display:grid;gap:.6rem">
       <h3>Build Smartly S.C.</h3>
-      <p class="muted">Addis Ababa, Ethiopia</p>
+      <p class="muted" id="ctAddress">Addis Ababa, Ethiopia</p>
+      <div id="ctDetails" style="display:grid;gap:.4rem"></div>
       <p class="small muted">For verification questions, write "Documents" in the subject. For an offer or order, give the request number.</p>
     </div>
   </div>
@@ -1457,6 +1463,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
         <button data-tab="catalogue"><i>▤</i><b>Catalogue</b></button>
         <button data-tab="brands"><i>◆</i><b>Brands</b></button>
         <button data-tab="insights"><i>↗</i><b>Insights</b></button>
+        <button data-tab="content"><i>✎</i><b>Site content</b></button>
         <button data-tab="settings"><i>⚙</i><b>Settings</b></button>
       </nav>
       <div class="adscrim" id="adScrim"></div>
@@ -1539,7 +1546,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 
 <footer class="site">
   <div class="wrap">
-    <span>© 2026 Build Smartly S.C. · Addis Ababa, Ethiopia<br></span>
+    <span>© 2026 Build Smartly S.C. · Addis Ababa, Ethiopia<span id="ftContact"></span><br></span>
     <nav><a href="#supply">Materials</a><a href="#how">How it works</a><a href="#suppliers">For suppliers</a><a href="#members">Members</a><a href="#newsletter">Newsletter</a><a href="#aboutus">About us</a><a href="#contact">Contact</a><a href="#faq">FAQ</a><a href="#terms">Terms</a><a href="#privacy">Privacy</a></nav>
     <a href="#staff" class="staff-link">Staff sign-in</a>
   </div>
@@ -1571,8 +1578,8 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 </div>
 
 
-<script src="assets/firebase-config.js?v=20261031b" onerror="this.remove()"></script>
-<script src="assets/store.js?v=20261031b"></script>
+<script src="assets/firebase-config.js?v=20261031c" onerror="this.remove()"></script>
+<script src="assets/store.js?v=20261031c"></script>
 <script>
 /* ---------- Router: one page, views switched by hash ---------- */
 window.BSRoute = (function(){
@@ -1653,7 +1660,28 @@ function bsSignInByPhone(digits){
 }
 
 /* ---------- Site pictures set by staff (settings docs pic-*): swap the drawn placeholders for real photos ---------- */
+/* Site settings from Staff → Site content (settings doc "site"): contact and social details, hidden home sections,
+   the announcement bar and extra questions for the FAQ. */
+function bsApplySite(){
+  var st=BS.SITE||{}, c=st.contact||{}, $=function(id){ return document.getElementById(id); };
+  function esc(t){ return String(t||'').replace(/[&<>"]/g,function(x){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[x]; }); }
+  document.querySelectorAll('[data-hsec]').forEach(function(el){ el.hidden=(st.hide||[]).indexOf(el.dataset.hsec)>=0; });
+  var rows=[]; if(c.phone) rows.push(['Phone','<a href="tel:'+esc(c.phone.replace(/\s/g,''))+'">'+esc(c.phone)+'</a>']); if(c.email) rows.push(['Email','<a href="mailto:'+esc(c.email)+'">'+esc(c.email)+'</a>']);
+  var soc=[['telegram','Telegram',function(v){ return 'https://t.me/'+v.replace(/^@/,''); }],['whatsapp','WhatsApp',function(v){ return 'https://wa.me/'+v.replace(/\D/g,''); }],['facebook','Facebook',function(v){ return /^https?:/.test(v)?v:'https://facebook.com/'+v; }],['linkedin','LinkedIn',function(v){ return /^https?:/.test(v)?v:'https://www.linkedin.com/company/'+v; }]];
+  soc.forEach(function(x){ if(c[x[0]]) rows.push([x[1],'<a href="'+esc(x[2](c[x[0]]))+'" target="_blank" rel="noopener">'+esc(c[x[0]])+'</a>']); });
+  if($('ctDetails')) $('ctDetails').innerHTML=rows.map(function(r){ return '<p style="margin:0">'+r[0]+': <strong>'+r[1]+'</strong></p>'; }).join('');
+  if($('ctAddress')) $('ctAddress').textContent=c.address||'Addis Ababa, Ethiopia';
+  if($('ftContact')) $('ftContact').innerHTML=(c.phone?' · '+esc(c.phone):'')+(c.email?' · <a href="mailto:'+esc(c.email)+'">'+esc(c.email)+'</a>':'');
+  var an=st.announce||{}; if($('annBar')){ $('annBar').hidden=!(an.on && an.text); $('annText').textContent=an.text||''; var l=$('annLink'); l.hidden=!(an.link && an.label); l.textContent=an.label||''; l.href=an.link||'#'; if(/^https?:/.test(an.link||'')){ l.target='_blank'; l.rel='noopener'; } else l.removeAttribute('target'); }
+  var fl=$('faqList'); if(fl){ fl.querySelectorAll('[data-faqx]').forEach(function(x){ x.remove(); }); (st.faq||[]).forEach(function(q){ if(!q.q) return; var d=document.createElement('details'); d.className='card'; d.setAttribute('data-faqx','1'); d.innerHTML='<summary style="cursor:pointer;font-weight:600;font-family:var(--display)">'+esc(q.q)+'</summary><p class="muted" style="margin-top:.5rem">'+esc(q.a).replace(/\n/g,'<br>')+'</p>'; fl.appendChild(d); }); }
+}
+BS.onSettings && BS.onSettings(bsApplySite);
 function bsApplyPics(){
+  /* the logo: a picture set by staff replaces the drawn mark in the header, the footer and the browser tab */
+  var lg=BS.PICS&&BS.PICS.logo; document.querySelectorAll('.brand .mark').forEach(function(m){
+    if(lg){ if(m.tagName.toLowerCase()==='img'){ m.src=lg; } else { var im=document.createElement('img'); im.className='mark'; im.alt=''; im.src=lg; im.__svg=m; m.replaceWith(im); } }
+    else if(m.tagName.toLowerCase()==='img' && m.__svg){ m.replaceWith(m.__svg); } });
+  var ic=document.querySelector('link[rel=icon]'); if(lg){ if(!ic){ ic=document.createElement('link'); ic.rel='icon'; document.head.appendChild(ic); } ic.href=lg; }
   document.querySelectorAll('img[data-pic]').forEach(function(img){ var k=img.dataset.pic; if(!img.dataset.orig) img.dataset.orig=img.getAttribute('src'); var v=BS.PICS&&BS.PICS[k]; img.src = v || img.dataset.orig; if(k==='hero1'){ var slot=img.parentElement.querySelector('.photo-slot'); if(slot) slot.hidden=!!v; } });
   if(window.bsAdShows) bsAdShows.forEach(function(f){ f(); });
 }
@@ -2943,8 +2971,8 @@ window.bsPublishProfile = async function(fields){
 
 BSRoute.start();
 </script>
-<script src="assets/order.js?v=20261031b"></script>
-<script src="assets/notify.js?v=20261031b"></script>
-<script src="assets/help.js?v=20261031b"></script>
-<script src="assets/admin.js?v=20261031b"></script>
-<script src="assets/i18n.js?v=20261031b"></script>
+<script src="assets/order.js?v=20261031c"></script>
+<script src="assets/notify.js?v=20261031c"></script>
+<script src="assets/help.js?v=20261031c"></script>
+<script src="assets/admin.js?v=20261031c"></script>
+<script src="assets/i18n.js?v=20261031c"></script>
