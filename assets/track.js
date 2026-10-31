@@ -8,7 +8,7 @@
    The link ends at delivery or after 24 hours. */
 (function(){
   var $=function(id){ return document.getElementById(id); };
-  var HOURS=24, SPEED_KMH=25, STALE_MIN=5;
+  var SPEED_KMH=25, STALE_MIN=5;
   function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function digits(p){ return String(p||'').replace(/\D/g,'').replace(/^251/,'').replace(/^0/,''); }
   function hm(ms){ return new Date(ms).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}); }
@@ -53,7 +53,7 @@
   /* status of a tracker in plain words, for every viewer */
   function status(t){
     if(!t) return {c:'', t:'Tracking details are loading…'};
-    if(t.deliveredAt) return {c:'tag-green', t:'Delivered '+hm(new Date(t.deliveredAt).getTime())+(t.how==='code'?' · the driver entered the buyer\'s handover code':'')+'. Tracking has ended.'};
+    if(t.deliveredAt) return {c:'tag-green', t:'Handed over '+hm(new Date(t.deliveredAt).getTime())+(t.how==='code'?' · the driver entered the buyer\'s handover code':t.how==='note'?' · the buyer entered the delivery-note code':'')+'. Tracking has ended.'};
     if(t.active===false || Date.now()>=(+t.expMs||0)) return {c:'', t:'Tracking has ended.'};
     if(t.arrivedAt) return {c:'tag-green', t:'The driver arrived at the site at '+hm(new Date(t.arrivedAt).getTime())+'.'};
     if(t.lat==null || !t.at) return {c:'tag-ochre', t:'Waiting for the driver to start sharing their location.'};
@@ -71,7 +71,7 @@
     var doc={offerIds:group.map(function(x){ return x.id; }), offerId:o.id, poRef:o.poRef||'', boqId:o.boqId, supplierId:o.supplierId, supplierName:o.supplierName||'',
       driverName:drv.name||'', driverPhone:drv.phone||'', plate:drv.plate||'', items:items, buyerName:o.customerRevealed||b.company||'', buyerPhone:b.ownerPhone||'',
       siteLabel:(b.subcity||'')+', '+(b.city||'Addis Ababa'), site:site, sitePinned:!!b.pin, from:from, fromLabel:o.supplierSub||sp.sub||'',
-      codeHash:await codeHash(tok, o.handoverCode), expMs:Date.now()+HOURS*3600000, active:true, sim:!!sim, lat:null, lng:null, acc:null, at:null, startedAt:null, arrivedAt:null, deliveredAt:null};
+      codeHash:await codeHash(tok, o.handoverCode), expMs:Date.now()+(BS.TRACK_HOURS||24)*3600000, active:true, sim:!!sim, lat:null, lng:null, acc:null, at:null, startedAt:null, arrivedAt:null, deliveredAt:null};
     var ok=await BS.set('tracks', tok, doc);
     return ok ? tok : null; /* refused or failed: the order goes on without tracking */
   }
@@ -85,7 +85,11 @@
     var sp=BS.supplierById(o.supplierId)||{}, a=BS.pointOf(o.supplierSub||sp.sub||'Akaki Kaliti'), z=BS.pointOf(b.pin||b.subcity);
     var bend=Math.sin(p*Math.PI)*0.12, lat=a[0]+(z[0]-a[0])*p-(z[1]-a[1])*bend*0.5, lng=a[1]+(z[1]-a[1])*p+(z[0]-a[0])*bend*0.5;
     var patch={lat:+lat.toFixed(5), lng:+lng.toFixed(5), acc:15, at:new Date().toISOString()}; if(p>=1){ patch.lat=z[0]; patch.lng=z[1]; patch.arrivedAt=patch.at; }
-    var t=await getOnce(tok); if(!live(t) || t.arrivedAt) return; if(!t.startedAt) patch.startedAt=patch.at;
+    var t=await getOnce(tok); if(!live(t)) return;
+    if(t.arrivedAt){ /* the buyer gave the code; the driver types it */
+      if(now-new Date(t.arrivedAt).getTime() < (BS.AUTO.handoverAfter||45)*1000) return;
+      var at=new Date().toISOString(); await BS.updateMany('offers', t.offerIds||[t.offerId], {deliveredAt:at, deliveredHow:'code', handoverCheckedAt:at}); await end(tok, {deliveredAt:at, how:'code'}); return; }
+    if(!t.startedAt) patch.startedAt=patch.at;
     await BS.update('tracks', tok, patch);
   }
   function getOnce(tok){ return new Promise(function(res){ var stop=null, done=false; stop=BS.watch('tracks', tok, function(t){ if(done) return; done=true; res(t); setTimeout(function(){ if(stop) stop(); },0); }); }); }
@@ -105,7 +109,7 @@
       var share='';
       if(c.role==='supplier' && !c.o.deliveredAt){ var url=linkFor(c.tok), msg='Build Smartly delivery '+(c.o.poRef||'')+' to '+((c.b||{}).subcity||'the site')+'. Open this link and press "Start sharing my location": '+url;
         var ph=digits(t&&t.driverPhone);
-        share='<div class="trkshare"><p class="small"><strong>Send this link to the driver.</strong> It works only for this delivery and ends at handover or after '+HOURS+' hours.</p><div class="field"><input id="trkLink" readonly value="'+esc(url)+'" data-notr></div><div class="btns">'+
+        share='<div class="trkshare"><p class="small"><strong>Send this link to the driver.</strong> It works only for this delivery and ends at handover or after '+(BS.TRACK_HOURS||24)+' hours.</p><div class="field"><input id="trkLink" readonly value="'+esc(url)+'" data-notr></div><div class="btns">'+
           '<button class="btn btn-primary btn-sm" type="button" id="trkCopy">Copy link</button>'+
           '<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/'+(ph?'251'+ph:'')+'?text='+encodeURIComponent(msg)+'">WhatsApp</a>'+
           '<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://t.me/share/url?url='+encodeURIComponent(url)+'&text='+encodeURIComponent('Build Smartly delivery '+(c.o.poRef||''))+'">Telegram</a>'+
@@ -145,7 +149,11 @@
   /* ---- the driver's page: /drive/<link> ---- */
   var drv={tok:null, t:null, stop:null, watchId:null, lastSent:0, lastPt:null, lock:null, sharing:false};
   function lockKey(){ return 'bs_drv_tries_'+drv.tok; }
+  var langBefore=null;
+  function driverLang(){ if(!window.bsSetLang){ setTimeout(driverLang, 60); return; } /* the language tools load last */ var want=null; try{ want=localStorage.getItem('bs_drv_lang'); }catch(e){} want=want||BS.DRIVER_LANG||'am'; if(window.bsLang && bsLang()!==want){ if(langBefore===null) langBefore=bsLang(); bsSetLang(want, true); } }
+  new MutationObserver(function(){ var v=$('view-drive'); if(v && v.hidden && langBefore!==null){ var back=langBefore; langBefore=null; if(window.bsSetLang) bsSetLang(back, true); } }).observe($('view-drive')||document.body, {attributes:true, attributeFilter:['hidden']});
   BSRoute.on('drive', function(tok){
+    driverLang();
     if(drv.stop) drv.stop(); stopSharing(true); drv={tok:tok, t:undefined, stop:null, watchId:null, lastSent:0, lastPt:null, lock:null, sharing:false};
     $('driveBody').innerHTML='<div class="empty">Opening the delivery…</div>'; window.scrollTo(0,0);
     drv.stop=BS.watch('tracks', tok, function(t){ var first=drv.t===undefined; drv.t=t; driveRender(first); });
@@ -156,17 +164,23 @@
     if(!live(t)){ stopSharing(true); box.innerHTML='<div class="card" style="display:grid;gap:.5rem"><span class="eyebrow"><span>Delivery</span> <span data-notr>'+esc(t.poRef)+'</span></span><h1 style="font-size:1.4rem">'+(t.deliveredAt?'Delivered. Thank you.':'This delivery link has ended')+'</h1><p class="muted">'+(t.deliveredAt?'The handover code was correct and the order is marked delivered. Your location is no longer shared.':'Your location is no longer shared. Ask the supplier for a new link if the delivery is not finished.')+'</p></div>'; return; }
     if(first || !$('drvGo')){
       var maps='https://www.google.com/maps/dir/?api=1&destination='+(+t.site[0])+','+(+t.site[1]);
-      box.innerHTML='<section class="card" style="display:grid;gap:.6rem"><span class="eyebrow"><span>Delivery</span> <span data-notr>'+esc(t.poRef)+'</span></span><h1 style="font-size:1.4rem"><span>Hello</span>'+(t.driverName?' <span data-notr>'+esc(t.driverName)+'</span>':'')+'</h1>'+
-        '<div class="kv"><span>From</span><strong>'+esc(t.supplierName)+' · '+esc(t.fromLabel)+'</strong><span>To</span><strong>'+esc(t.siteLabel)+(t.sitePinned?' · exact site pinned':'')+'</strong><span>Buyer</span><strong>'+esc(t.buyerName)+(t.buyerPhone?' · <a href="tel:+251'+digits(t.buyerPhone)+'">Call</a>':'')+'</strong><span>Load</span><strong>'+(t.items||[]).map(esc).join('<br>')+'</strong></div>'+
-        '<div class="btns"><a class="btn btn-ghost btn-sm" id="drvNav" target="_blank" rel="noopener" href="'+maps+'">Directions in Google Maps</a></div></section>'+
-        '<section class="card" style="display:grid;gap:.6rem"><strong style="font-family:var(--display);font-size:1.05rem">1 · Share your location</strong><p class="small muted">The buyer sees the truck on a map. Keep this page open and the screen on while you drive. Only your latest position is shared, and it stops at handover.</p>'+
-        '<div class="btns"><button class="btn btn-primary" type="button" id="drvGo">Start sharing my location</button><button class="btn btn-ghost btn-sm" type="button" id="drvStop" hidden>Pause</button></div><p class="small" id="drvState" aria-live="polite"></p><div id="drvMapSlot"></div></section>'+
-        '<section class="card" style="display:grid;gap:.6rem"><strong style="font-family:var(--display);font-size:1.05rem">2 · At the site</strong><div class="btns"><button class="btn btn-ghost" type="button" id="drvArrive">I have arrived</button></div>'+
-        '<p class="small muted">When the buyer has checked the goods, ask for their 4-digit handover code and type it here. A correct code confirms the delivery.</p>'+
-        '<div class="chat-in"><div class="field"><input id="drvCode" inputmode="numeric" maxlength="4" placeholder="4-digit code" autocomplete="off"></div><button class="btn btn-ochre" type="button" id="drvConfirm">Confirm delivery</button></div><p class="small" id="drvCodeMsg" aria-live="polite"></p>'+
+      var langs=[['am','አማርኛ'],['en','English'],['om','Afaan Oromoo']], cur=window.bsLang?bsLang():'en';
+      box.innerHTML='<div class="drvlang" data-notr>'+langs.map(function(l){ return '<button type="button" data-dl="'+l[0]+'" class="'+(cur===l[0]?'on':'')+'">'+l[1]+'</button>'; }).join('')+'</div>'+
+        '<section class="card drvcard"><span class="eyebrow"><span>Delivery</span> <span data-notr>'+esc(t.poRef)+'</span></span><h1 style="font-size:1.4rem"><span>Hello</span>'+(t.driverName?' <span data-notr>'+esc(t.driverName)+'</span>':'')+'</h1>'+
+        '<div class="kv"><span>From</span><strong>'+esc(t.supplierName)+' · '+esc(t.fromLabel)+'</strong><span>To</span><strong>'+esc(t.siteLabel)+(t.sitePinned?' · exact site pinned':'')+'</strong><span>Buyer</span><strong>'+esc(t.buyerName)+'</strong><span>Load</span><strong>'+(t.items||[]).map(esc).join('<br>')+'</strong></div>'+
+        '<div class="drvduo"><a class="btn btn-ghost drvbig" id="drvNav" target="_blank" rel="noopener" href="'+maps+'"><span class="di">🧭</span><span>Directions</span></a>'+(t.buyerPhone?'<a class="btn btn-ghost drvbig" href="tel:+251'+digits(t.buyerPhone)+'"><span class="di">📞</span><span>Call the buyer</span></a>':'')+'</div></section>'+
+        '<section class="card drvcard"><strong class="drvstep"><span class="dn">1</span><span>Share your location</span></strong>'+
+        '<button class="btn btn-primary drvbig" type="button" id="drvGo"><span class="di">▶</span><span>Start sharing my location</span></button><button class="btn btn-ghost drvbig" type="button" id="drvStop" hidden><span class="di">⏸</span><span>Pause</span></button>'+
+        '<p class="drvstate" id="drvState" aria-live="polite"></p><p class="small muted">Keep this page open and the screen on while you drive.</p><div id="drvMapSlot"></div></section>'+
+        '<section class="card drvcard"><strong class="drvstep"><span class="dn">2</span><span>At the site</span></strong>'+
+        '<button class="btn btn-ghost drvbig" type="button" id="drvArrive"><span class="di">📍</span><span id="drvArriveT">I have arrived</span></button>'+
+        '<p class="small muted">The buyer checks the goods, then tells you a 4-digit code. Type it here.</p>'+
+        '<input id="drvCode" inputmode="numeric" maxlength="4" placeholder="– – – –" autocomplete="off" aria-label="4-digit code">'+
+        '<div class="keypad" data-notr>'+['1','2','3','4','5','6','7','8','9','⌫','0','✓'].map(function(k){ return '<button type="button" data-key="'+k+'" class="'+(k==='✓'?'ok':k==='⌫'?'del':'')+'">'+k+'</button>'; }).join('')+'</div>'+
+        '<button class="btn btn-ochre drvbig" type="button" id="drvConfirm"><span class="di">✓</span><span>Confirm delivery</span></button><p class="drvstate" id="drvCodeMsg" aria-live="polite"></p>'+
         '<details><summary class="small" style="cursor:pointer">Problem at handover?</summary><div class="chat-in" style="margin-top:.5rem"><div class="field"><input id="drvIssue" placeholder="The buyer is not there, refuses the goods, wrong address…"></div><button class="btn btn-ghost btn-sm" type="button" id="drvIssueGo">Tell Build Smartly</button></div></details></section>';
     }
-    $('drvArrive').disabled=!!t.arrivedAt; $('drvArrive').textContent=t.arrivedAt?'Arrived '+hm(new Date(t.arrivedAt).getTime()):'I have arrived';
+    $('drvArrive').disabled=!!t.arrivedAt; $('drvArriveT').textContent=t.arrivedAt?'Arrived '+hm(new Date(t.arrivedAt).getTime()):'I have arrived';
     driveState();
     if(t.lat!=null || drv.lastPt) mapIn($('drvMapSlot'),'drive').then(function(m){ if(!m || !drv.t) return; var me=drv.lastPt||(drv.t.lat!=null?[drv.t.lat,drv.t.lng]:null); place(m,'site',drv.t.site,'site','Delivery site'); place(m,'truck',me,'truck','You'); fit(m,[drv.t.site,me], drv.tok+(me?'+':''), me); });
   }
@@ -206,9 +220,12 @@
   }
   document.addEventListener('click', async function(e){
     if(!e.target.closest('#view-drive')) return; var id=e.target.id;
+    var dl=e.target.closest('[data-dl]'); if(dl){ try{ localStorage.setItem('bs_drv_lang', dl.dataset.dl); }catch(err){} if(langBefore===null && window.bsLang) langBefore=bsLang(); bsSetLang(dl.dataset.dl, true); document.querySelectorAll('.drvlang [data-dl]').forEach(function(b){ b.classList.toggle('on', b===dl); }); return; }
+    var ky=e.target.closest('[data-key]'); if(ky){ var inp=$('drvCode'), k=ky.dataset.key; if(k==='⌫') inp.value=inp.value.slice(0,-1); else if(k==='✓') confirmCode(); else if(inp.value.length<4) inp.value+=k; return; }
+    var bt=e.target.closest('button'); if(bt && bt.id) id=bt.id;
     if(id==='drvGo') startSharing();
     if(id==='drvStop') stopSharing();
-    if(id==='drvArrive'){ e.target.disabled=true; var p={arrivedAt:new Date().toISOString()}; if(drv.lastPt){ p.lat=drv.lastPt[0]; p.lng=drv.lastPt[1]; p.at=p.arrivedAt; } await BS.update('tracks', drv.tok, p); bsToast('The buyer is told you have arrived.'); }
+    if(id==='drvArrive'){ $('drvArrive').disabled=true; var p={arrivedAt:new Date().toISOString()}; if(drv.lastPt){ p.lat=drv.lastPt[0]; p.lng=drv.lastPt[1]; p.at=p.arrivedAt; } await BS.update('tracks', drv.tok, p); bsToast('The buyer is told you have arrived.'); }
     if(id==='drvConfirm') confirmCode().catch(function(){ $('drvConfirm').disabled=false; });
     if(id==='drvIssueGo'){ var i=$('drvIssue'), txt=(i.value||'').trim(); if(!txt) return; var t=drv.t||{}; i.value='';
       await BS.add('issues', {offerId:t.offerId, boqId:t.boqId, poRef:t.poRef, who:'Driver '+(t.driverName||'')+' ('+(t.supplierName||'')+')', role:'driver', text:txt, status:'open', where:drv.lastPt?{lat:drv.lastPt[0], lng:drv.lastPt[1]}:(t.lat!=null?{lat:t.lat,lng:t.lng}:null)});

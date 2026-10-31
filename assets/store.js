@@ -162,6 +162,8 @@
       if(d.id==="brands" && d.map){ Object.keys(d.map).forEach(function(c){ if(Array.isArray(d.map[c]) && d.map[c].length) BS.BRANDS[c]=d.map[c].slice(); }); }
       if(d.id==="brandLogos" && d.map){ BS.BRAND_LOGOS=d.map; }
       if(d.id==="ads" && Array.isArray(d.hidden)){ BS.ADS_HIDDEN=d.hidden.slice(); }
+      if(d.id==="payment"){ if(d.when==="before" || d.when==="after") BS.PAY_WHEN=d.when; if(Array.isArray(d.methods) && d.methods.length) BS.PAY_ON=d.methods.slice(); if(d.bank) BS.BANK=Object.assign({}, d.bank); }
+      if(d.id==="delivery"){ if(+d.checkHours>0) BS.CHECK_HOURS=+d.checkHours; if(+d.proofMin>0) BS.PROOF_MIN=+d.proofMin; if(d.proofOn!==undefined) BS.PROOF_ON=!!d.proofOn; if(+d.linkHours>0) BS.TRACK_HOURS=Math.min(48, +d.linkHours); if(/^(am|en|om)$/.test(d.driverLang||"")) BS.DRIVER_LANG=d.driverLang; }
       if(d.id==="content" && d.map){ BS.CONTENT=d.map; if(window.bsSetOverrides) bsSetOverrides(d.map); }
       if(d.id==="style"){ BS.applyStyle(d); }
       if(d.id==="site"){ BS.SITE=d; }
@@ -559,12 +561,67 @@
     out.forEach(function(g){ g.offers.sort(function(a,b){ return a.lineN-b.lineN; }); g.first=g.offers[0]; g.id=g.first.id; });
     return out.sort(function(a,b){ return (b.first.acceptedAt||'').localeCompare(a.first.acceptedAt||''); });
   };
-  /* order steps in plain words; "under delivery" was dropped (meeting 27 Oct 2026) */
-  BS.ORDER_STEPS = [['acceptedAt','Order placed'],['confirmedAt','Supplier reconfirmed'],['contractAt','Contract agreed'],['readyAt','Ready for dispatch'],['dispatchedAt','Dispatched'],['deliveredAt','Delivered'],['paidAt','Paid']];
+  /* When the buyer pays (Staff → Settings → Payment, settings doc "payment" {when}). "before": the full amount once the contract is
+     agreed, before the goods leave (decided 31 Oct 2026 until the shareholders settle the payment terms); "after": on delivery. */
+  BS.PAY_WHEN = "before";
+  BS.payFirst = function(){ return BS.PAY_WHEN !== "after"; };
+  /* After the handover the buyer checks every item; an item not answered within this many hours counts as received. */
+  BS.CHECK_HOURS = 48;
+  /* the delivery record is shown on the home page only from this many checked deliveries */
+  BS.PROOF_MIN = 20;
+  BS.PROOF_ON = true;
+  /* the driver's tracking link ends at handover or after this many hours (the database allows at most 48) */
+  BS.TRACK_HOURS = 24;
+  /* the driver's page opens in this language until the driver picks another */
+  BS.DRIVER_LANG = "am";
+  /* payment methods the buyer may choose (Staff → Settings → Payment), and the account shown for a bank transfer */
+  BS.PAY_METHODS = [["telebirr","Telebirr","Mobile money"],["cbebirr","CBE Birr","Commercial Bank of Ethiopia mobile"],["bank","Bank transfer","From any Ethiopian bank to the Build Smartly account"],["card","Bank card","Visa or Mastercard"]];
+  BS.PAY_ON = ["telebirr","cbebirr","bank","card"];
+  BS.BANK = {bank:"", name:"", number:"", note:""};
+  BS.orderSteps = function(){
+    var head=[['acceptedAt','Order placed'],['confirmedAt','Supplier reconfirmed'],['contractAt','Contract agreed']], go=[['readyAt','Ready for dispatch'],['dispatchedAt','Dispatched'],['deliveredAt','Handed over'],['checkedAt','Items checked']];
+    return BS.payFirst() ? head.concat([['paidAt','Paid']], go) : head.concat(go, [['paidAt','Paid']]);
+  };
+  Object.defineProperty(BS, "ORDER_STEPS", { get: function(){ return BS.orderSteps(); }, configurable: true });
+  BS.checkDue = function(o){ return o && o.deliveredAt ? new Date(o.deliveredAt).getTime() + BS.CHECK_HOURS*3600000 : 0; };
+  /* the buyer's answer for one line; after the deadline an unanswered line counts as received */
+  BS.lineCheck = function(o){ if(o.check) return o.check; if(o.deliveredAt && Date.now() > BS.checkDue(o)) return {state:"ok", auto:true, at:new Date(BS.checkDue(o)).toISOString()}; return null; };
+  BS.isChecked = function(o){ return !!(o.deliveredAt && (o.checkedAt || Date.now() > BS.checkDue(o))); };
   BS.orderStatus = function(o){
-    return o.paidAt ? {t:'Paid · closed', c:'tag-green', who:'none'} : o.deliveredAt ? {t:'Delivered · payment due', c:'tag-ochre', who:'buyer'} : o.dispatchedAt ? {t:'Dispatched', c:'tag-ochre', who:'buyer'}
-      : o.readyAt ? {t:'Ready for dispatch', c:'tag-green', who:'supplier'} : o.contractAt ? {t:'Contract agreed · preparing', c:'tag-green', who:'supplier'}
-      : o.supplierConfirmed ? {t:'Waiting for the buyer to agree to the contract', c:'tag-ochre', who:'buyer'} : {t:'Waiting for the supplier to reconfirm', c:'tag-ochre', who:'supplier'};
+    var checked = BS.isChecked(o);
+    if(BS.payFirst()){
+      if(checked) return o.problemAt ? {t:'Delivered · problem reported', c:'tag-ochre', who:'none'} : {t:'Delivered · closed', c:'tag-green', who:'none'};
+      if(o.deliveredAt) return {t:'Handed over · check the items', c:'tag-ochre', who:'buyer'};
+      if(o.dispatchedAt) return {t:'Dispatched', c:'tag-ochre', who:'buyer'};
+      if(o.readyAt) return {t:'Ready for dispatch', c:'tag-green', who:'supplier'};
+      if(o.paidAt) return {t:'Paid · preparing', c:'tag-green', who:'supplier'};
+      if(o.contractAt) return {t:'Contract agreed · payment due', c:'tag-ochre', who:'buyer'};
+    } else {
+      if(o.paidAt) return {t:'Paid · closed', c:'tag-green', who:'none'};
+      if(checked) return {t:'Delivered · payment due', c:'tag-ochre', who:'buyer'};
+      if(o.deliveredAt) return {t:'Handed over · check the items', c:'tag-ochre', who:'buyer'};
+      if(o.dispatchedAt) return {t:'Dispatched', c:'tag-ochre', who:'buyer'};
+      if(o.readyAt) return {t:'Ready for dispatch', c:'tag-green', who:'supplier'};
+      if(o.contractAt) return {t:'Contract agreed · preparing', c:'tag-green', who:'supplier'};
+    }
+    return o.supplierConfirmed ? {t:'Waiting for the buyer to agree to the contract', c:'tag-ochre', who:'buyer'} : {t:'Waiting for the supplier to reconfirm', c:'tag-ochre', who:'supplier'};
+  };
+  BS.orderClosed = function(o){ return BS.orderStatus(o).who === 'none'; };
+  /* payment is open: before dispatch once the contract is agreed, or after the items are checked */
+  BS.payOpen = function(o){ return !o.paidAt && (BS.payFirst() ? !!o.contractAt : BS.isChecked(o)); };
+  /* the goods may be prepared: the contract is agreed, and with payment first, the order is paid */
+  BS.mayPrepare = function(o){ return !!o.contractAt && (!BS.payFirst() || !!o.paidAt); };
+  /* Delivery record from the buyers' checks: items received complete, and on time (handed over by the needed-by date). */
+  BS.deliveryRecord = function(offers, boqs){
+    var rec={deliveries:0, lines:0, complete:0, onTime:0, good:0, problems:0, sups:{}};
+    BS.orderGroups(offers||[]).forEach(function(g){ var f=g.first; if(!BS.isChecked(f)) return; rec.deliveries++;
+      var b=(boqs||[]).filter(function(x){ return x.id===g.boqId; })[0]||{};
+      var S=rec.sups[g.supplierId]=rec.sups[g.supplierId]||{name:g.supplierName, deliveries:0, lines:0, complete:0, onTime:0, good:0, problems:0}; S.deliveries++;
+      g.offers.forEach(function(o){ var c=BS.lineCheck(o)||{}, l=(b.lines||[]).filter(function(y){ return y.n===o.lineN; })[0]||{};
+        var ok=c.state!=="problem", late=c.type==="late", day=String(o.deliveredAt||"").slice(0,10), onTime=!late && (!l.needed || !day || day<=l.needed);
+        [rec,S].forEach(function(r){ r.lines++; if(ok) r.complete++; else r.problems++; if(onTime) r.onTime++; if(ok && onTime) r.good++; }); }); });
+    rec.pct = rec.lines ? Math.round(rec.good/rec.lines*100) : 0;
+    return rec;
   };
   BS.updateMany = async function(col, ids, patch){ for(var i=0;i<ids.length;i++){ await BS.update(col, ids[i], typeof patch==='function'?patch(ids[i]):patch); } };
   BS.activeSuppliers = function(){ return BS.suppliersAll().filter(function(s){ return s.status==="active"; }); };

@@ -87,15 +87,15 @@
       else m.addedNodes.forEach(walk);
     }); mo.takeRecords(); } finally { busy=false; } /* drop the records our own changes just made */
   });
-  function apply(code){
-    cur=code; try{ localStorage.setItem('bs_lang', code); }catch(e){}
+  function apply(code, noSave){
+    cur=code; if(!noSave){ try{ localStorage.setItem('bs_lang', code); }catch(e){} }
     document.documentElement.lang = code==='am'?'am':code==='om'?'om':'en';
     if(note) note.hidden = code==='en';
     var go=function(d){ if(cur!==code) return; dict=code==='en'?null:d; busy=true; try{ walk(document.body); mo.takeRecords(); } finally { busy=false; } };
     if(code==='en') go(null); else load(code).then(go);
   }
   window.bsLang=function(){ return cur; };
-  window.bsSetLang=function(code){ if(sel) sel.value=code; apply(code); };
+  window.bsSetLang=function(code, noSave){ if(sel) sel.value=code; var s2=document.getElementById('lang2'); if(s2) s2.value=code; apply(code, noSave); }; /* noSave: for one page only (the driver's page) */
   window.bsTr=function(en){ return tr(en)||en; };
   function rewalk(){ busy=true; try{ walk(document.body); mo.takeRecords(); } finally { busy=false; } }
   window.bsSetOverrides=function(map){ OVR=map||{}; rewalk(); };

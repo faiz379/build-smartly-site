@@ -88,7 +88,7 @@
     var waiting=threads().filter(function(t){ return t.waiting; }).length;
     var pendN=data.news.filter(function(x){ return x.status==='pending'; }).length;
     var openI=data.issues.filter(function(x){ return x.status!=='resolved'; }).length;
-    var inProg=data.offers.filter(function(o){ return o.status==='accepted' && !o.paidAt; }).length;
+    var inProg=data.offers.filter(function(o){ return o.status==='accepted' && !BS.orderClosed(o); }).length;
     var fees=0; paid().forEach(function(o){ fees+=offerTotal(o)*BS.FEE_RATE; });
     var tiles=[[data.boqs.filter(openBoq).length,'Open requests','requests'],[unclassified().length,'Lines to classify','requests'],[pendV,'Suppliers awaiting verification','suppliers'],[waiting,'Support threads waiting','support'],[pendN,'Newsletter items pending','news'],[openI,'Problems open','support'],[inProg,'Orders in progress','finance'],[paid().length,'Orders paid','finance'],[BS.fmt(fees),'Fees earned ('+BS.pct(BS.FEE_RATE)+')','finance']];
     tiles=tiles.filter(function(t){ return BS.staffCan(t[2]); });
@@ -226,7 +226,7 @@
       var st = x.status==='resolved' ? '<span class="tag tag-green">Resolved</span>' : x.status==='progress' ? '<span class="tag tag-ochre">In progress · '+esc(x.owner||'')+'</span>' : '<span class="tag" style="background:color-mix(in srgb,var(--warn,#B3261E) 14%,transparent);color:var(--warn,#B3261E)">Open · '+ageOf(x.createdAt)+'</span>';
       var notes=(x.notes||[]).map(function(nn){ return '<div class="small muted">· '+when(nn.at)+' '+esc(nn.by)+': '+esc(nn.text)+'</div>'; }).join('');
       var act = x.status==='resolved' ? '' : '<div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;margin-top:.4rem">'+(x.status==='open'?'<button class="btn btn-ghost btn-sm" type="button" data-itake="'+x.id+'">Take it</button>':'')+'<input placeholder="Add a note or the resolution" data-inote="'+x.id+'" style="font:inherit;font-size:.85rem;padding:.35rem .5rem;border:1.5px solid var(--line);border-radius:8px;min-width:12rem;flex:1"><button class="btn btn-ghost btn-sm" type="button" data-inoteadd="'+x.id+'">Add note</button><button class="btn btn-primary btn-sm" type="button" data-iresolve="'+x.id+'">Resolve</button></div>';
-      return '<div class="card" style="display:grid;gap:.3rem;padding:.9rem 1rem"><div style="display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap;align-items:center"><div><strong><a href="#order-'+x.offerId+'">'+esc(x.poRef)+'</a></strong> <span class="small muted">· '+esc(x.who)+' ('+esc(x.role)+') · '+when(x.createdAt)+'</span></div>'+st+'</div><div>'+esc(x.text)+'</div>'+notes+act+'</div>';
+      return '<div class="card" style="display:grid;gap:.3rem;padding:.9rem 1rem"><div style="display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap;align-items:center"><div><strong><a href="#order-'+x.offerId+'">'+esc(x.poRef)+'</a></strong> <span class="small muted">· '+esc(x.who)+' ('+esc(x.role)+') · '+when(x.createdAt)+'</span></div>'+st+'</div><div>'+(x.kind==='check'?'<span class="tag tag-ochre">Item check</span> ':'')+(x.role==='driver'?'<span class="tag">Driver</span> ':'')+esc(x.text)+'</div>'+(x.photo?'<img class="chkphoto" src="'+x.photo+'" alt="">':'')+notes+act+'</div>';
     }).join('');
     return card('Problems and reports', 'Everything members report on their orders, tracked until resolved. Take a case, add notes, resolve with a note; both parties see the state on the order page.', bar+(rows?'<div style="display:grid;gap:.5rem;margin-top:.5rem">'+rows+'</div>':'<div class="empty" style="margin-top:.5rem">Nothing here.</div>'));
   }
@@ -404,7 +404,7 @@
   function renderFinance(){
     var rows=paid(), goods=0, fees=0;
     var html=rows.map(function(o){ var b=boqOf(o.boqId)||{}; var t=offerTotal(o), f=Math.round(t*BS.FEE_RATE); goods+=t; fees+=f; return '<tr><td>'+when(o.paidAt)+'</td><td><a href="#order-'+o.id+'">'+esc(o.poRef)+'</a></td><td>'+esc(b.company||o.customerRevealed||'')+'</td><td>'+esc(o.supplierName)+'</td><td style="text-align:right">'+BS.fmt(t)+'</td><td style="text-align:right">'+BS.fmt(f)+'</td><td>'+esc(o.paymentRef||'')+'</td></tr>'; }).join('');
-    var inprog=data.offers.filter(function(o){ return o.status==='accepted' && !o.paidAt; });
+    var inprog=data.offers.filter(function(o){ return o.status==='accepted' && !o.paidAt; }); /* not yet paid */
     return card('Completed sales and fees','Fee '+BS.pct(BS.FEE_RATE)+' of each paid order. Settled with the supplier when the gateway confirms.',
       (rows.length? '<div style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:.9rem"><thead><tr style="text-align:left;color:var(--fg-2)"><th>Paid</th><th>PO</th><th>Buyer</th><th>Supplier</th><th style="text-align:right">Order value</th><th style="text-align:right">Fee</th><th>Payment ref</th></tr></thead><tbody>'+html+'</tbody><tfoot><tr style="font-weight:700"><td colspan="4">Total · '+rows.length+' orders</td><td style="text-align:right">'+BS.fmt(goods)+'</td><td style="text-align:right">'+BS.fmt(fees)+'</td><td></td></tr></tfoot></table></div><div><button class="btn btn-ghost btn-sm" type="button" id="adCsv">Download as CSV</button></div>' : '<div class="empty">No paid orders yet.</div>'))+
       card('Orders in progress','Accepted, not yet paid.', inprog.length? '<div class="docs">'+inprog.map(function(o){ var b=boqOf(o.boqId)||{}; return '<div class="doc"><span class="ico">PO</span><span><strong><a href="#order-'+o.id+'">'+esc(o.poRef)+'</a></strong> · '+esc(b.company||'')+' ← '+esc(o.supplierName)+' · '+BS.fmt(offerTotal(o))+'</span><span class="tag">'+(o.deliveredAt?'Delivered, payment due':o.dispatchedAt?'On the way':o.readyAt?'Goods ready':o.contractAt?'Contract in force':o.supplierConfirmed?'Awaiting buyer agreement':'Awaiting reconfirmation')+'</span></div>'; }).join('')+'</div>' : '<div class="empty">None.</div>');
@@ -455,7 +455,17 @@
       '<div class="grid2" style="align-items:start">'+card('Where requests go','Requests → offers → acceptance → payment.', funnel)+card('Demand by sub-city','Requests per delivery area.', subRows)+'</div>'+
       card('Demand by category','Lines requested, their value at list prices, offers per line, acceptances and money paid.', tbl(['Category','Lines','Demand','','Offers per line','Accepted','Paid'], catRows))+
       card('Price index','Median quoted unit price per item, the range, the change in the last 30 days against earlier quotes, and how it compares with the list price. This is the data a brand or a supplier cannot get elsewhere.', priceRows? tbl(['Item','Unit','Qty requested','Quotes','Median price','Range','30-day change','vs list'], priceRows) : '<div class="empty">No quotes yet.</div>')+
-      card('Supplier performance','Offers sent, win rate, median response time, orders paid.', supRows? tbl(['Supplier','Offers','Win rate','Response','Paid orders','Value paid'], supRows) : '<div class="empty">No offers yet.</div>');
+      card('Supplier performance','Offers sent, win rate, median response time, orders paid.', supRows? tbl(['Supplier','Offers','Win rate','Response','Paid orders','Value paid'], supRows) : '<div class="empty">No offers yet.</div>')+
+      deliveryRecordCard(tbl);
+  }
+  /* delivery record from the buyers' item checks: a selling point ("out of N deliveries, X% complete and on time") */
+  function deliveryRecordCard(tbl){
+    var r=BS.deliveryRecord(data.offers, data.boqs), pc=function(a,b){ return b?Math.round(a/b*100)+'%':'—'; };
+    if(!r.deliveries) return card('Delivery record','Items received complete and on time, from the buyers\' checks after each handover.','<div class="empty">No checked deliveries yet. Each delivery counts once the buyer has checked the items, or '+BS.CHECK_HOURS+' hours after the handover.</div>');
+    var head='<div class="queue">'+[[pc(r.good,r.lines),'Items complete and on time'],[pc(r.complete,r.lines),'Items complete'],[pc(r.onTime,r.lines),'Items on time'],[r.deliveries,'Deliveries checked'],[r.problems,'Items with a problem']].map(function(q){ return '<div class="q"><strong style="font-size:1.4rem">'+q[0]+'</strong><span class="small muted">'+q[1]+'</span></div>'; }).join('')+'</div>';
+    var rows=Object.keys(r.sups).map(function(k){ var S=r.sups[k]; return [S.name, S.deliveries, pc(S.complete,S.lines), pc(S.onTime,S.lines), S.problems, pc(S.good,S.lines)]; }).sort(function(a,b){ return b[1]-a[1]; }).map(function(c){ return '<tr>'+c.map(function(v,i){ return '<td'+(i?' style="text-align:right"':'')+'>'+esc(v)+'</td>'; }).join('')+'</tr>'; }).join('');
+    var home = r.deliveries>=BS.PROOF_MIN ? 'The home page shows: "'+r.pct+'% of items delivered complete and on time · from '+r.deliveries+' deliveries".' : 'The home page shows the record from '+BS.PROOF_MIN+' checked deliveries ('+r.deliveries+' so far).';
+    return card('Delivery record','Items received complete and on time, from the buyers\' checks after each handover. '+home, head+tbl(['Supplier','Deliveries','Complete','On time','Problems','Complete and on time'], rows));
   }
   $('adBody').addEventListener('click', function(e){
     if(e.target.id!=='adInsightsCsv') return; var x=insights(); var L=[['Category','Lines','Demand ETB','Offers','Accepted','Paid ETB']];
@@ -692,9 +702,28 @@
     var f=function(id,label,val,step){ return '<div class="field"><label for="'+id+'">'+label+'</label><input id="'+id+'" type="number" step="'+(step||1)+'" value="'+val+'"></div>'; };
     return card('Tariffs and rules', 'Saved for every device'+(BS.tariffsSetBy?' · last set by '+esc(BS.tariffsSetBy):'')+'.',
       '<div class="grid3">'+f('tPerTrip','Truck: fixed cost per trip (ETB)',T.perTrip)+f('tPerKm','Truck: cost per km (ETB)',T.perKm)+f('tCap','Truck capacity (tonnes)',T.capacityT)+f('tMob','Equipment mobilisation per hire (ETB)',T.mobilisation)+f('tInsRate','Transit insurance rate (% of goods)',Math.round(I.rate*1000)/10,0.1)+f('tInsMin','Insurance minimum (ETB)',I.min)+f('tFee','Platform fee (% of each sale)',Math.round(BS.FEE_RATE*1000)/10,0.1)+f('tLead','Minimum needed-by lead time (days)',BS.MIN_LEAD_DAYS)+f('tValid','Days suppliers have to reply',BS.VALIDITY_DAYS)+'</div><div><button class="btn btn-primary btn-sm" type="button" id="adSaveTariffs">Save tariffs</button> <span class="small muted" id="adTariffMsg"></span></div>')+
+      deliveryPayCard()+
       (isOwner()&&BS.staffAuth()?staffCard():'')+
       (isOwner()?card('Clear test data','Owner only. Deletes every request, offer, order, message, problem, newsletter item, promotion, profile, task and supplier change, on every device. Tariffs, catalogue, brands and pictures stay.','<div><button class="btn btn-ghost" type="button" id="adReset" style="color:#9b2c2c;border-color:#9b2c2c">Clear all test data</button> <span class="small muted" id="adResetMsg"></span></div>'):'')+
       picturesCard();
+  }
+  /* Delivery and payment: everything about payment timing, methods, the bank account, the item check, the delivery record
+     and the driver's link, changed here without a new build (settings docs "payment" and "delivery") */
+  function deliveryPayCard(){
+    var bk=BS.BANK||{}, on=BS.PAY_ON||[];
+    var inp=function(id,label,val,type,extra){ return '<div class="field"><label for="'+id+'">'+label+'</label><input id="'+id+'" type="'+(type||'text')+'" value="'+esc(val==null?'':val)+'"'+(extra||'')+'></div>'; };
+    return card('Delivery and payment','How buyers pay, how deliveries are checked, and what drivers see. Saved for every device.',
+      '<div class="grid2" style="align-items:start"><div style="display:grid;gap:.6rem"><strong>Payment</strong>'+
+      '<div class="field"><label for="dpWhen">When does the buyer pay?</label><select id="dpWhen"><option value="before"'+(BS.payFirst()?' selected':'')+'>The full amount before dispatch</option><option value="after"'+(!BS.payFirst()?' selected':'')+'>After delivery and the item check</option></select><span class="hint">Deposits and credit come later, once the shareholders decide the terms.</span></div>'+
+      '<div class="field"><label>Payment methods buyers can choose</label>'+BS.PAY_METHODS.map(function(m){ return '<label class="check"><input type="checkbox" data-dpm="'+m[0]+'"'+(on.indexOf(m[0])>=0?' checked':'')+'><span>'+m[1]+'</span></label>'; }).join('')+'</div>'+
+      inp('dpBank','Bank for transfers',bk.bank)+inp('dpBankName','Account name',bk.name)+inp('dpBankNo','Account number',bk.number)+inp('dpBankNote','Note for the buyer (optional)',bk.note)+
+      '</div><div style="display:grid;gap:.6rem"><strong>Delivery</strong>'+
+      inp('dpCheckH','Hours the buyer has to check the items',BS.CHECK_HOURS,'number',' min="12" max="168"')+
+      '<label class="check"><input type="checkbox" id="dpProofOn"'+(BS.PROOF_ON!==false?' checked':'')+'><span>Show the delivery record on the home page</span></label>'+
+      inp('dpProofMin','Show it from this many checked deliveries',BS.PROOF_MIN,'number',' min="1"')+
+      inp('dpLinkH','Hours a driver\'s tracking link lasts (up to 48)',BS.TRACK_HOURS,'number',' min="2" max="48"')+
+      '<div class="field"><label for="dpDrvLang">Driver page opens in</label><select id="dpDrvLang">'+[['am','Amharic'],['en','English'],['om','Afaan Oromoo']].map(function(l){ return '<option value="'+l[0]+'"'+(BS.DRIVER_LANG===l[0]?' selected':'')+'>'+l[1]+'</option>'; }).join('')+'</select></div>'+
+      '</div></div><div><button class="btn btn-primary btn-sm" type="button" id="adSaveDelivery">Save delivery and payment</button> <span class="small muted" id="adDeliveryMsg"></span></div>');
   }
   function picturesCard(){ return card('Site pictures','Replace the drawn placeholders with real photos. JPG or PNG from your computer or phone; the picture is resized and cropped to fit and shown on every device within seconds. Use photos you have the right to use (your own, or free-licence stock photos).',
         '<div class="docs">'+BS.PIC_SLOTS.map(function(sl){ var cur=BS.PICS[sl.key]; var def=sl.def||('assets/photos/'+sl.key+'.jpg'); return '<div class="doc" style="grid-template-columns:7rem 1fr auto"><img src="'+(cur||def)+'" alt="" style="width:7rem;aspect-ratio:'+sl.w+'/'+sl.h+';object-fit:'+(sl.whole?'contain':'cover')+';border-radius:'+(sl.w===sl.h?'50%':'6px')+'"><span><strong>'+esc(sl.label)+'</strong><br><span class="small muted">'+sl.w+' × '+sl.h+' px · '+(cur?'photo set by staff':'site photo')+'</span></span><span style="display:flex;gap:.4rem;flex-wrap:wrap"><label class="btn btn-primary btn-sm" style="cursor:pointer">'+(cur?'Replace':'Upload photo')+'<input type="file" accept="image/*" hidden data-pic-up="'+sl.key+'"></label>'+(cur?'<button class="btn btn-ghost btn-sm" type="button" data-pic-rm="'+sl.key+'">Remove</button>':'')+'</span></div>'; }).join('')+'</div><p class="small muted" id="adPicMsg"></p>'); }
@@ -736,6 +765,13 @@
     var x=e.target.closest('[data-rmbrand]'); if(x){ var box=x.closest('[data-brandcat]'); var m=brandsNow(); m[box.dataset.brandcat]=m[box.dataset.brandcat].filter(function(b){ return b!==x.dataset.rmbrand; }); redrawBrands(); return; }
     var ab=e.target.closest('[data-brandadd]'); if(ab){ addBrand(ab.dataset.brandadd); return; }
     if(e.target.id==='adSaveBrands'){ e.target.disabled=true; var m=brandsNow(); await BS.set('settings','brands',{map:m, setBy:staffName()}); await BS.set('settings','brandLogos',{map:logosNow(), setBy:staffName()}); brandDraft=null; logoDraft=null; $('adBrandMsg').textContent='Saved for every device.'; bsToast('Brands saved.'); e.target.disabled=false; return; }
+    if(e.target.id==='adSaveDelivery'){ var g=function(id){ return document.getElementById(id); }; var methods=[].slice.call(document.querySelectorAll('[data-dpm]')).filter(function(c){ return c.checked; }).map(function(c){ return c.dataset.dpm; });
+      if(!methods.length){ bsToast('Keep at least one payment method.'); return; }
+      var ch=Math.max(12, Math.min(168, +g('dpCheckH').value||48)), lh=Math.max(2, Math.min(48, +g('dpLinkH').value||24)), pm=Math.max(1, +g('dpProofMin').value||20);
+      e.target.disabled=true;
+      await BS.set('settings','payment',{when:g('dpWhen').value, methods:methods, bank:{bank:g('dpBank').value.trim(), name:g('dpBankName').value.trim(), number:g('dpBankNo').value.trim(), note:g('dpBankNote').value.trim()}, setBy:staffName()});
+      await BS.set('settings','delivery',{checkHours:ch, proofOn:g('dpProofOn').checked, proofMin:pm, linkHours:lh, driverLang:g('dpDrvLang').value, setBy:staffName()});
+      $('adDeliveryMsg').textContent='Saved and applied.'; bsToast('Delivery and payment saved for every device.'); e.target.disabled=false; return; }
     if(e.target.id==='adSaveTariffs'){ e.target.disabled=true; var v=function(id){ return +document.getElementById(id).value; };
       await BS.set('settings','tariffs',{perTrip:v('tPerTrip'), perKm:v('tPerKm'), capacityT:v('tCap'), mobilisation:v('tMob'), insuranceRate:v('tInsRate')/100, insuranceMin:v('tInsMin'), feeRate:v('tFee')/100, minLeadDays:v('tLead'), validityDays:v('tValid'), setBy:staffName()});
       $('adTariffMsg').textContent='Saved and applied.'; bsToast('Tariffs saved. Estimates and fees now use them everywhere.'); e.target.disabled=false; return; }

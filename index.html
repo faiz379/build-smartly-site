@@ -241,6 +241,35 @@ footer.site .staff-link:hover{opacity:1;text-decoration:underline}
 .helppanel .hin input{font:inherit;padding:.55rem .7rem;border:1.5px solid var(--line);border-radius:10px;background:var(--white);color:var(--fg);min-width:0}
 .toast{bottom:calc(76px + env(safe-area-inset-bottom,0px))!important}
 .ogrid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:start}
+/* item check after the handover, delivery note, delivery record */
+.chklist{display:grid;gap:.5rem}
+.chkrow{display:grid;grid-template-columns:1fr auto;gap:.6rem;align-items:center;border:1px solid var(--line);border-radius:12px;padding:.7rem .8rem;background:var(--white)}
+.chkrow.done{background:color-mix(in srgb,var(--green) 5%,var(--white))}
+.chkrow.open{grid-template-columns:1fr;border-color:var(--ochre)}
+.chkrow .btns{display:flex;gap:.4rem;flex-wrap:wrap;justify-content:flex-end}
+.chkform{display:grid;gap:.6rem}
+.chkphoto{display:block;max-width:220px;max-height:160px;border-radius:10px;margin-top:.4rem;border:1px solid var(--line);object-fit:cover}
+@media (max-width:560px){.chkrow{grid-template-columns:1fr}.chkrow .btns{justify-content:flex-start}}
+.notecode{display:grid;gap:.2rem;border:2px dashed var(--ink,#14241E);border-radius:12px;padding:.8rem 1rem;margin:.8rem 0;text-align:center}
+.notecode strong{font-size:2.2rem;letter-spacing:.3em}
+.proofline{display:flex;gap:.6rem;align-items:center;justify-content:center;margin:.9rem auto 0;font-size:1rem}
+.proofline .pi{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--green);color:#fff;font-weight:700}
+/* driver page: big targets, few words, a number pad */
+.drvlang{display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap}
+.drvlang button{font:inherit;font-weight:600;padding:.6rem 1rem;border-radius:999px;border:2px solid var(--line);background:var(--white);cursor:pointer;min-height:44px}
+.drvlang button.on{border-color:var(--green);background:var(--green);color:#fff}
+.drvcard{display:grid;gap:.7rem}
+.drvstep{display:flex;gap:.6rem;align-items:center;font-family:var(--display);font-size:1.15rem}
+.drvstep .dn{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--ochre);color:#14241E;font-weight:800}
+.drvbig{display:flex!important;gap:.7rem;align-items:center;justify-content:center;width:100%;min-height:60px;font-size:1.1rem!important}
+.drvbig .di{font-size:1.4rem}
+.drvbig[hidden]{display:none!important}
+.drvduo{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.drvstate{font-weight:600;margin:0}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
+.keypad button{font:inherit;font-size:1.6rem;font-weight:700;min-height:62px;border-radius:14px;border:2px solid var(--line);background:var(--white);cursor:pointer}
+.keypad button.ok{background:var(--ochre);border-color:var(--ochre)}
+.keypad button.del{background:var(--sand,#f3efe6)}
 /* delivery tracking */
 .trkmap{height:300px;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--sand,#f3efe6)}
 #fleetSlot .trkmap{height:340px}
@@ -250,7 +279,7 @@ footer.site .staff-link:hover{opacity:1;text-decoration:underline}
 .trkshare input{font-size:.85rem}
 .drive-mode .helpbtn,.drive-mode #annBar,.drive-mode .site-footer,.drive-mode footer{display:none!important}
 #view-drive .btn-primary,#view-drive .btn-ochre{min-height:48px}
-#drvCode{font-size:1.3rem;letter-spacing:.3em;text-align:center}
+#drvCode{font-size:2rem;letter-spacing:.5em;text-align:center;font-weight:700;padding:.5rem;border:2px solid var(--line);border-radius:14px;width:100%;box-sizing:border-box}
 #view-drive .chat-in{display:grid;grid-template-columns:1fr;gap:.5rem}
 @media (max-width:860px){.ogrid{grid-template-columns:1fr}}
 .ocard .btns{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.3rem}
@@ -774,6 +803,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
       <div><strong data-count="11">0</strong><span>Sub-cities of Addis Ababa covered</span></div>
       <div><strong data-count="0" id="stOffers">0</strong><span>Offers quoted on the platform</span></div>
     </div>
+    <p class="wrap proofline" id="proofLine" hidden><span class="pi">✓</span><span><strong id="proofPct"></strong> <span>of items delivered complete and on time</span> <span class="muted" id="proofFrom"></span></span></p>
   </section>
 
   <div data-hsec="pulse" class="slide" aria-label="Market prices and announcements">
@@ -1494,7 +1524,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 <!-- ================= START HERE (test site guide) ================= -->
 <div id="view-start" data-view hidden class="wrap view">
   <div><span class="eyebrow">Test site</span><h1 style="font-size:1.6rem">Start here</h1><p class="muted">Build Smartly is the working name. Everything works, but no SMS is sent and no money moves. One buyer, two suppliers and two staff logins.</p></div>
-  <section class="card panel" style="display:grid;gap:.6rem"><div><strong style="font-family:var(--display);font-size:1.05rem">Watch how it works</strong><p class="small muted">A 7-minute walkthrough with sound (turn your volume up): a buyer sends a request, suppliers quote, the buyer chooses and completes the order, agrees to the contracts, receives the goods and pays; then the staff page and the three languages.</p></div><video controls preload="metadata" playsinline style="width:100%;max-width:960px;border-radius:12px;background:#0D2C21" src="docs/how-it-works.mp4?v=20261031b"></video></section>
+  <section class="card panel" style="display:grid;gap:.6rem"><div><strong style="font-family:var(--display);font-size:1.05rem">Watch how it works</strong><p class="small muted">A 7-minute walkthrough with sound (turn your volume up): a buyer sends a request, suppliers quote, the buyer chooses and completes the order, agrees to the contracts, receives the goods and pays; then the staff page and the three languages.</p></div><video controls preload="metadata" playsinline style="width:100%;max-width:960px;border-radius:12px;background:#0D2C21" src="docs/how-it-works.mp4?v=20261031c"></video></section>
   <section class="card panel">
     <div><strong style="font-family:var(--display);font-size:1.05rem">Your logins</strong><p class="small muted">SMS code for every number: <strong>123456</strong>. Supplier portal password: <strong>smartly</strong>.</p></div>
     <div class="docs" id="startLogins"></div>
@@ -1597,8 +1627,8 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 </div>
 
 
-<script src="assets/firebase-config.js?v=20261031f" onerror="this.remove()"></script>
-<script src="assets/store.js?v=20261031f"></script>
+<script src="assets/firebase-config.js?v=20261031g" onerror="this.remove()"></script>
+<script src="assets/store.js?v=20261031g"></script>
 <script>
 /* ---------- Router: one page, views switched by hash ---------- */
 window.BSRoute = (function(){
@@ -1831,7 +1861,12 @@ bsAdShow('nwAds', function(){ return !document.getElementById('view-advertise').
   function setCount(id, v){ var el=document.getElementById(id); if(!el) return; el.dataset.count=String(v); if(el.dataset.done){ el.textContent=(+v).toLocaleString('en-US'); } }
   BS.ready().then(function(){
     BS.onSuppliers(function(){ setCount('stSuppliers', BS.activeSuppliers().length); });
-    BS.subscribe('offers', function(d){ setCount('stOffers', (d||[]).length); });
+    /* delivery record from the buyers' item checks, shown only once there are enough deliveries (Staff → Settings → Delivery) */
+    var prOffers=[], prBoqs=[];
+    function proof(){ var el=document.getElementById('proofLine'); if(!el) return; var r=BS.deliveryRecord(prOffers, prBoqs); el.hidden=!(BS.PROOF_ON!==false && r.deliveries>=BS.PROOF_MIN && r.lines);
+      if(!el.hidden){ document.getElementById('proofPct').textContent=r.pct+'%'; document.getElementById('proofFrom').textContent='· from '+r.deliveries+' deliveries'; } }
+    BS.subscribe('offers', function(d){ prOffers=d||[]; setCount('stOffers', prOffers.length); proof(); });
+    BS.subscribe('boqs', function(d){ prBoqs=d||[]; proof(); }); if(BS.onSettings) BS.onSettings(proof);
   });
   setCount('stSuppliers', BS.activeSuppliers().length);
 })();
@@ -2282,7 +2317,7 @@ function bsSupport(threadId, inputId, sendId){
       var head='<div class="boq-head"><div><h3>'+esc(b.ref)+' · '+b.lines.length+' line'+(b.lines.length>1?'s':'')+' · '+esc(b.subcity)+'</h3><span class="small muted">'+esc(b.deliveryTerm)+' · '+esc(b.paymentTerm)+(b.extended?' · deadline extended once':'')+'</span></div><div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap">'+(withdrawn?'<span class="tag">Withdrawn</span>':'<span class="deadline">'+(left>0?'Quotes close in '+left+' day'+(left>1?'s':''):'Quotes closed')+'</span>'+(!groups.length?'<button class="btn btn-ghost btn-sm" data-withdraw="'+b.id+'">Withdraw</button>':'')+(!b.extended&&!groups.length&&left>0?'<button class="btn btn-ghost btn-sm" data-extend="'+b.id+'" data-days="'+b.validityDays+'">Extend '+b.validityDays+' days</button>':''))+'</div></div>';
       /* orders already placed on this request */
       var ordersHtml = groups.length ? '<div class="orders-box"><strong style="font-family:var(--display)">Your orders</strong>'+groups.map(function(g){ var st=BS.orderStatus(g.first), tot=0; g.offers.forEach(function(o){ tot+=lineExtras(b, lineOfB(b,o.lineN), o).total; });
-          var act = st.who==='buyer' ? (g.first.deliveredAt?'Pay '+BS.fmt(tot):g.first.dispatchedAt?'Confirm delivery':'Agree to the contract') : 'Open';
+          var act = st.who==='buyer' ? (BS.payOpen(g.first)?'Pay '+BS.fmt(tot):g.first.deliveredAt?'Check your items':g.first.dispatchedAt?'Follow the delivery':'Agree to the contract') : 'Open';
           var info='<span><strong>'+esc(g.poRef||'')+'</strong> · '+esc(g.supplierName)+'<br><span class="small muted">'+g.offers.map(function(o){ return esc(lineOfB(b,o.lineN).item||''); }).join(', ')+' · '+BS.fmt(tot)+'</span></span><span class="tag '+st.c+'">'+esc(st.t)+'</span>';
           /* the contract opens in a pop-up right here, so several orders can be agreed one after another without leaving the page */
           if(st.who==='buyer' && g.first.supplierConfirmed && !g.first.buyerAgreedAt && !g.first.dispatchedAt) return '<div class="order-row">'+info+'<span style="display:flex;gap:.4rem;flex-wrap:wrap;justify-content:flex-end"><button class="btn btn-ochre btn-sm" type="button" data-stmt="'+g.id+'" data-kind="contract">Agree to the contract</button><a class="btn btn-ghost btn-sm" href="#order-'+g.id+'">Open</a></span></div>';
@@ -2351,9 +2386,9 @@ function bsSupport(threadId, inputId, sendId){
         bsToast('Brand '+o.brand+': the supplier '+(yes?'accepted':'declined')+' your price of '+BS.fmt(o.counter.price)+'.'); }
     }
     var groups=BS.orderGroups(mineO);
-    for(var gi=0;gi<groups.length;gi++){ var g=groups[gi], f=g.first, ids=g.offers.map(function(x){ return x.id; }); if(f.paidAt) continue;
+    for(var gi=0;gi<groups.length;gi++){ var g=groups[gi], f=g.first, ids=g.offers.map(function(x){ return x.id; }); if(BS.orderClosed(f) || f.deliveredAt) continue;
       if(!f.supplierConfirmed && secs(f.acceptedAt)>A.confirmAfter){ var k1='s1|'+g.key; if(autoBusy[k1]) continue; autoBusy[k1]=1; var now1=new Date().toISOString(); await BS.updateMany('offers', ids, Object.assign({supplierConfirmed:true, confirmedAt:now1}, f.buyerAgreedAt?{contractAt:now1}:{})); continue; }
-      if(f.contractAt && !f.readyAt && secs(f.contractAt)>A.readyAfter){ var k2='s2|'+g.key; if(autoBusy[k2]) continue; autoBusy[k2]=1; await BS.updateMany('offers', ids, {readyAt:new Date().toISOString()}); continue; }
+      if(BS.mayPrepare(f) && !f.readyAt && secs(f.paidAt||f.contractAt)>A.readyAfter){ var k2='s2|'+g.key; if(autoBusy[k2]) continue; autoBusy[k2]=1; await BS.updateMany('offers', ids, {readyAt:new Date().toISOString()}); continue; }
       if(f.readyAt && !f.dispatchedAt && secs(f.readyAt)>A.dispatchAfter){ var k3='s3|'+g.key; if(autoBusy[k3]) continue; autoBusy[k3]=1; await bsOrderAction('dispatch', f.id, simDriver(g.key)); continue; }
       if(f.dispatchedAt && !f.deliveredAt && f.trackId && window.bsTrack){ var bb=boqs.filter(function(x){ return x.id===g.boqId; })[0]; if(bb) bsTrack.simStep(f, bb).catch(function(){}); }
     }
@@ -2380,15 +2415,17 @@ function bsSupport(threadId, inputId, sendId){
     var waiting=mineO.filter(function(o){ var b=boqById(o.boqId); return validOffer(o) && b && !poOf(b,{n:o.lineN}) && !chosenOf(b,{n:o.lineN}); });
     var toAgree=groups.filter(function(g){ return g.first.supplierConfirmed && !g.first.buyerAgreedAt; });
     var toReceive=groups.filter(function(g){ return g.first.dispatchedAt && !g.first.deliveredAt; });
-    var toPay=groups.filter(function(g){ return g.first.deliveredAt && !g.first.paidAt; });
+    var toPay=groups.filter(function(g){ return BS.payOpen(g.first); });
+    var toCheck=groups.filter(function(g){ return g.first.deliveredAt && !BS.isChecked(g.first); });
     var parts=[];
     if(toAgree.length) parts.push(toAgree.length+' contract'+(toAgree.length>1?'s':'')+' to agree');
     if(waiting.length) parts.push(waiting.length+' offer'+(waiting.length>1?'s':'')+' to compare');
     if(toReceive.length) parts.push(toReceive.length+(toReceive.length>1?' deliveries':' delivery')+' on the way');
     if(toPay.length) parts.push(toPay.length+' payment due');
+    if(toCheck.length) parts.push(toCheck.length+(toCheck.length>1?' deliveries':' delivery')+' to check');
     var showBar = parts.length>0 && !!(BS.me()||{}).phone && !(BS.isStaff&&BS.isStaff());
     $('alertBar').hidden = !showBar;
-    if(showBar){ $('alertText').textContent = parts.join(' · ')+'.'; $('alertGo').href = toAgree.length ? '#order-'+toAgree[0].id : toPay.length ? '#order-'+toPay[0].id : toReceive.length ? '#order-'+toReceive[0].id : '#boq-mine'; $('alertGo').textContent = toAgree.length ? 'Agree to the contract' : toPay.length ? 'Pay now' : toReceive.length ? 'Confirm delivery' : 'Compare offers'; }
+    if(showBar){ $('alertText').textContent = parts.join(' · ')+'.'; $('alertGo').href = toAgree.length ? '#order-'+toAgree[0].id : toPay.length ? '#order-'+toPay[0].id : toCheck.length ? '#order-'+toCheck[0].id : toReceive.length ? '#order-'+toReceive[0].id : '#boq-mine'; $('alertGo').textContent = toAgree.length ? 'Agree to the contract' : toPay.length ? 'Pay now' : toCheck.length ? 'Check your items' : toReceive.length ? 'Follow the delivery' : 'Compare offers'; }
   }
   /* ---------- Complete the order: delivery, insurance and (first time only) the company details, once ---------- */
   var checkoutBoq=null;
@@ -2731,7 +2768,7 @@ function bsSupport(threadId, inputId, sendId){
       out.push({ico:'€', title:'Customer proposes '+BS.fmt(o.counter.price)+' per '+(l.unit||'unit')+' · '+(b.ref||'')+' · '+(l.item||''), sub:'Your price was '+BS.fmt(o.unitPrice)+'. If you accept, your offer changes to their price.', btn:'<button class="btn btn-primary btn-sm" type="button" data-cacc="'+o.id+'">Accept '+BS.fmt(o.counter.price)+'</button><button class="btn btn-ghost btn-sm" type="button" data-cdec="'+o.id+'">Decline</button>'}); } });
     groups.forEach(function(g){ var o=g.first, b=boqs.filter(function(x){return x.id===g.boqId;})[0]||{}, what=g.poRef+' · '+(o.customerRevealed||'')+' · '+g.offers.length+' line'+(g.offers.length>1?'s':'');
       if(!o.supplierConfirmed) out.push({ico:'PO', title:'New order '+what, sub:'Reconfirm price and stock to agree to the contract.', btn:'<a class="btn btn-ochre btn-sm" href="#order-'+g.id+'">Read and reconfirm</a>'});
-      else if(o.contractAt && !o.readyAt) out.push({ico:'✓', title:'Prepare '+what, sub:'Contract agreed. Mark the goods ready when packed.', btn:'<button class="btn btn-primary btn-sm" type="button" data-oact="ready" data-id="'+g.id+'">Ready for dispatch</button>'});
+      else if(BS.mayPrepare(o) && !o.readyAt) out.push({ico:'✓', title:'Prepare '+what, sub:(BS.payFirst()?'Paid by the buyer.':'Contract agreed.')+' Mark the goods ready when packed.', btn:'<button class="btn btn-primary btn-sm" type="button" data-oact="ready" data-id="'+g.id+'">Ready for dispatch</button>'});
       else if(o.readyAt && !o.dispatchedAt) out.push({ico:'→', title:'Dispatch '+what, sub:'Add the driver and send them the tracking link · '+(b.subcity||'the site'), btn:'<a class="btn btn-primary btn-sm" href="#order-'+g.id+'">Dispatch</a>'});
     });
     return out;
@@ -2829,11 +2866,13 @@ function bsSupport(threadId, inputId, sendId){
   var boqs=[], offers=[];
   BS.subscribe('boqs', function(d){ boqs=d; render(); }); BS.subscribe('offers', function(d){ offers=d; render(); });
   function mine(){ var me2=BS.me()||{}; var ph=(me2.phone||'').replace(/\D/g,'').replace(/^251/,''); return boqs.filter(function(b){ return (ph && b.ownerPhone===ph) || (!b.ownerPhone && company && b.company===company); }).sort(function(a,b){return (b.createdAt||'').localeCompare(a.createdAt||'');}); }
-  var CHAIN=['Request sent','Offers arriving','Order placed','Contract agreed','Ready for dispatch','Dispatched','Delivered','Paid'];
+  var CHAIN_PAYFIRST=['Request sent','Offers arriving','Order placed','Contract agreed','Paid','Ready for dispatch','Dispatched','Handed over','Items checked'], CHAIN_PAYLATER=['Request sent','Offers arriving','Order placed','Contract agreed','Ready for dispatch','Dispatched','Handed over','Items checked','Paid'], CHAIN=CHAIN_PAYFIRST;
   function stageOf(b, os, gs){
     if(b.status==='withdrawn') return -1;
     if(gs.length){ var f=function(k){ return gs.every(function(g){ return g.first[k]; }); };
-      return f('paidAt')?7:f('deliveredAt')?6:f('dispatchedAt')?5:f('readyAt')?4:f('contractAt')?3:2; }
+      var ok=function(){ return gs.every(function(g){ return BS.isChecked(g.first); }); }; CHAIN=BS.payFirst()?CHAIN_PAYFIRST:CHAIN_PAYLATER;
+      if(BS.payFirst()) return ok()?8:f('deliveredAt')?7:f('dispatchedAt')?6:f('readyAt')?5:f('paidAt')?4:f('contractAt')?3:2;
+      return f('paidAt')?8:ok()?7:f('deliveredAt')?6:f('dispatchedAt')?5:f('readyAt')?4:f('contractAt')?3:2; }
     return os.length?1:0;
   }
   function render(){
@@ -3011,9 +3050,9 @@ window.bsPublishProfile = async function(fields){
 
 BSRoute.start();
 </script>
-<script src="assets/track.js?v=20261031f"></script>
-<script src="assets/order.js?v=20261031f"></script>
-<script src="assets/notify.js?v=20261031f"></script>
-<script src="assets/help.js?v=20261031f"></script>
-<script src="assets/admin.js?v=20261031f"></script>
-<script src="assets/i18n.js?v=20261031f"></script>
+<script src="assets/track.js?v=20261031g"></script>
+<script src="assets/order.js?v=20261031g"></script>
+<script src="assets/notify.js?v=20261031g"></script>
+<script src="assets/help.js?v=20261031g"></script>
+<script src="assets/admin.js?v=20261031g"></script>
+<script src="assets/i18n.js?v=20261031g"></script>

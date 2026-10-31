@@ -31,11 +31,12 @@
       data.offers.forEach(function(o){ if(o.supplierId!==w.supplierId) return; var b=boqOf(o.boqId);
         if(o.counter && o.counter.state==='open') add(o.counter.at, 'Counter-offer', 'The customer proposes '+BS.fmt(o.counter.price)+' on '+b.ref+' · '+lineName(b,o.lineN), '#supplier-deals');
         if(o.status==='rejected') add(o.rejectedAt, 'Offer rejected', b.ref+' · '+lineName(b,o.lineN), '#supplier-deals'); });
-      groups.forEach(function(g){ if(g.supplierId!==w.supplierId) return; var o=g.first, h='#order-'+g.id;
+      groups.forEach(function(g){ if(g.supplierId!==w.supplierId) return; var o=g.first, h='#order-'+g.id, b=boqOf(g.boqId)||{};
         add(o.acceptedAt, 'New order', g.poRef+' from '+(o.customerRevealed||'a buyer')+'. Reconfirm price and stock.', h);
         add(o.buyerAgreedAt, 'Contract', 'The buyer agreed to the contract for '+g.poRef+'.', h);
-        add(o.deliveredAt, 'Delivered', (o.deliveredHow==='code'?'Your driver entered the buyer\'s handover code for ':'The buyer confirmed delivery of ')+g.poRef+'.', h);
-        add(o.paidAt, 'Paid', g.poRef+' paid · '+BS.fmt(o.paidTotal||0), h); });
+        add(o.deliveredAt, 'Handed over', (o.deliveredHow==='code'?'Your driver entered the buyer\'s handover code for ':o.deliveredHow==='note'?'The buyer entered the delivery-note code for ':'The buyer confirmed delivery of ')+g.poRef+'.', h);
+        g.offers.forEach(function(x){ if(x.check && !x.check.auto) add(x.check.at, x.check.state==='ok'?'Item received':'Problem reported', g.poRef+' · '+lineName(b,x.lineN)+(x.check.state==='ok'?' · received in full':' · the buyer reported a problem'), h); });
+        add(o.paidAt, 'Paid', g.poRef+' paid · '+BS.fmt(o.paidTotal||0)+(BS.payFirst()&&!o.readyAt?'. Prepare the goods.':''), h); });
     } else {
       var mine=data.boqs.filter(function(b){ return b.ownerPhone===w.phone; }).map(function(b){ return b.id; });
       data.offers.forEach(function(o){ if(mine.indexOf(o.boqId)<0) return; var b=boqOf(o.boqId);
@@ -45,7 +46,8 @@
         add(o.confirmedAt, 'Contract to agree', g.supplierName+' reconfirmed '+g.poRef+'. Read and agree to the contract.', h);
         add(o.readyAt, 'Ready for dispatch', g.poRef+' is ready at '+g.supplierName+'.', h);
         add(o.dispatchedAt, 'Dispatched', g.poRef+' is on its way'+(o.trackId?'; follow the truck on the map':'')+'. Handover code '+(o.handoverCode||'')+'.', h);
-        add(o.deliveredAt, 'Delivered', g.poRef+' was delivered'+(o.deliveredHow==='code'?' with your handover code':'')+'. Something wrong? Report it within 24 hours.', h);
+        if(BS.payFirst()) add(o.contractAt, 'Payment due', 'Pay '+g.poRef+' so the supplier can prepare the goods.', h);
+        add(o.deliveredAt, 'Handed over', g.poRef+' was handed over'+(o.deliveredHow==='code'?' with your handover code':'')+'. Check each item within '+BS.CHECK_HOURS+' hours.', h);
         add(o.paidAt, 'Receipt', 'Payment for '+g.poRef+' received. Receipt in your Statements.', '#statements'); });
       data.news.forEach(function(n){ if(n.status==='published') add(n.publishedAt||n.createdAt, 'Newsletter', (n.company?n.company+': ':'')+(n.title||''), '#newsletter'); });
     }
