@@ -39,7 +39,10 @@
     if(!dict) return null;
     var core=en.trim(); if(!core || !/[A-Za-z]/.test(core)) return null;
     var t=look(core);
-    if(t==null && core.indexOf(' · ')>0){ var any=false, parts=core.split(' · ').map(function(x){ var y=x.trim(), z=y && /[A-Za-z]/.test(y) ? look(y) : null; if(z!=null){ any=true; return z; } return y; }); if(any) t=parts.join(' · '); }
+    /* lists: a part that is itself a list ("Cement, Blocks, Electrical") is translated item by item */
+    var piece=function(y){ var z=y && /[A-Za-z]/.test(y) ? look(y) : null; if(z!=null) return z; if(y.indexOf(', ')>0){ var hit=false, its=y.split(', ').map(function(w){ var v=/[A-Za-z]/.test(w)?look(w.trim()):null; if(v!=null){ hit=true; return v; } return w; }); if(hit) return its.join(', '); } return null; };
+    if(t==null && core.indexOf(' · ')>0){ var any=false, parts=core.split(' · ').map(function(x){ var y=x.trim(), z=piece(y); if(z!=null){ any=true; return z; } return y; }); if(any) t=parts.join(' · '); }
+    if(t==null && core.indexOf(' · ')<0 && core.indexOf(', ')>0 && !/[.?!]$/.test(core)) t=piece(core); /* a bare list, not a sentence */
     if(t==null) return null;
     var lead=en.match(/^\s*/)[0], trail=en.match(/\s*$/)[0];
     return lead+t+trail;

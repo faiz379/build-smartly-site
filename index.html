@@ -135,6 +135,19 @@ header.site{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;backgrou
 .acct-menu{position:absolute;right:0;top:calc(100% + .4rem);background:var(--white);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);display:grid;min-width:12rem;padding:.35rem;z-index:30}
 .acct-menu a,.acct-menu button{font:inherit;font-size:.9rem;font-weight:600;text-decoration:none;color:var(--fg);background:none;border:0;text-align:left;padding:.55rem .8rem;border-radius:8px;cursor:pointer}
 .acct-menu a:hover,.acct-menu button:hover{background:var(--bg-2)}
+.acct-ico,.nav-lang{display:none}
+/* phones: the header row keeps logo, account, bell and menu on screen; the language choice moves into the menu */
+@media (max-width:640px){
+  .nav-cta{gap:.4rem}
+  .nav-cta>.lang{display:none}
+  .nav-lang{display:block}
+  .acct summary #authName{display:none}
+  .acct summary .acct-ico{display:inline-block}
+  .acct summary{padding-inline:.6rem}
+  .brand{font-size:1rem;gap:.45rem}
+  .brand .mark{width:30px;height:30px}
+}
+@media (max-width:340px){ .brand span{display:none} }
 @media (max-width:900px){
   .links{display:none}
   .menu-btn{display:inline-flex}
@@ -651,12 +664,12 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     </a>
     <ul class="links">
       <li><a href="#home">Home</a></li>
-      <li><a href="#start" style="color:var(--ochre-ink)">Start here</a></li>
       <li><a href="#supply">Materials</a></li>
       <li><a href="#suppliers">For suppliers</a></li>
       <li><a href="#newsletter">Newsletter</a></li>
       <li><a href="#support">Support</a></li>
       <li><a href="#aboutus">About</a></li>
+      <li class="nav-lang"><select id="lang2" class="lang" aria-label="Language" data-notr><option value="en">English</option><option value="am">አማርኛ</option><option value="om">Afaan Oromoo</option></select></li>
     </ul>
     <div class="nav-cta">
       <select id="lang" class="lang" aria-label="Language"><option value="en">English</option><option value="am">አማርኛ</option><option value="om">Afaan Oromoo</option></select>
@@ -664,7 +677,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
       <div class="bell" id="bellBox" hidden><button type="button" class="bellbtn" id="bellBtn" aria-label="Notifications" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><em id="bellN" hidden>0</em></button>
         <div class="bellpanel" id="bellPanel" hidden><div class="bellhead"><strong>Notifications</strong><span class="small muted">last 30 days · <button type="button" class="linkbtn" id="bellAll">Mark all as read</button></span></div><div id="bellList"></div></div></div>
       <details class="acct" id="authIn" hidden>
-        <summary class="btn btn-primary btn-sm"><span id="authName">Account</span> <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l5 5 5-5"/></svg></summary>
+        <summary class="btn btn-primary btn-sm" aria-label="Account"><svg class="acct-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span id="authName">Account</span> <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l5 5 5-5"/></svg></summary>
         <div class="acct-menu">
           <a href="#staff" id="authStaff" hidden>Staff page</a>
           <a href="#workspace" id="authHome">My workspace</a>
@@ -747,7 +760,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
   <div class="slide" aria-label="Market prices and announcements">
     <div class="wrap">
       <div class="head">
-        <div><span class="eyebrow">Price pulse · Addis Ababa</span> <span class="tag" id="pulseTag">Example figures</span><br><span class="small muted" id="pulseNote">Indicative prices by brand from the latest supplier quotes on Build Smartly, with the change since last week. Not live market prices.</span></div>
+        <div><span class="eyebrow">Price pulse · Addis Ababa</span> <span class="tag" id="pulseTag" hidden></span><br><span class="small muted" id="pulseNote">Indicative prices by brand from the latest supplier quotes on Build Smartly, with the change since last week. Not live market prices.</span></div>
         <div class="ctrl">
           <button id="prev" aria-label="Scroll left"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg></button>
           <button id="next" aria-label="Scroll right"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg></button>
@@ -808,13 +821,12 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
         </ul>
         <a class="btn btn-ochre" href="#signup-supplier" style="margin-top:1.3rem">Register as a supplier</a>
       </div>
-      <div class="portal" aria-label="Example supplier work queue">
+      <div class="portal" aria-label="Supplier work queue">
         <strong style="font-family:var(--display)">Your work queue · Derba branch</strong>
         <div class="row"><span>Prices due for confirmation</span><strong>12</strong></div>
         <div class="row"><span>Expired prices</span><strong>3</strong></div>
         <div class="row"><span>New quote requests</span><strong>5 · earliest deadline in 31 h</strong></div>
         <div class="row"><span>Orders needing action</span><strong>2</strong></div>
-        <p class="fine">Example screen. Figures are placeholders for the mockup.</p>
       </div>
     </div>
   </section>
@@ -875,7 +887,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
         <li><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#E3A63A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l4 4 8-8"/></svg><span>Suppliers add their business licence and TIN before the first quote.</span></li>
         <li><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#E3A63A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l4 4 8-8"/></svg><span>Your data stays private and stays in Ethiopia.</span></li>
       </ul>
-      <p class="small">Test site: no SMS is sent. The code is 123456.</p>
+      <p class="small">Type the 6-digit code we sent you by SMS.</p>
     </aside>
     <div class="su-main">
       <div class="su-inner">
@@ -887,11 +899,10 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
           <div><h1 style="font-size:1.6rem" id="liTitle">Sign in</h1><p class="muted" id="liSub">Your mobile number and an SMS code. New number? The account is created for you.</p></div>
           <div class="field" id="liNameField" hidden><label for="liName">Your name or company</label><input id="liName" autocomplete="organization" placeholder="e.g. Tana Construction PLC"><span class="err" id="liNameErr" hidden>Please enter your name.</span></div>
           <div class="field"><label for="liPhone">Mobile</label><div class="su-phone"><span class="cc">🇪🇹 +251</span><input id="liPhone" type="tel" inputmode="numeric" placeholder="9 12 34 56 78" autocomplete="tel-national"></div><span class="err" id="liErr" hidden>Enter your mobile number, for example 0912345678.</span></div>
-          <div class="field" id="liOtpBox" hidden><label>Enter the code we sent</label><div class="su-otp"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"></div><span class="hint" id="liHint">Test site: no SMS is sent. The code is 123456.</span></div>
+          <div class="field" id="liOtpBox" hidden><label>Enter the code we sent</label><div class="su-otp"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"></div><span class="hint" id="liHint">Type the 6-digit code we sent you by SMS.</span></div>
           <div class="su-nav"><span></span><button class="btn btn-primary" type="button" id="liGo">Send code</button></div>
           <div class="card" id="liSupplier" style="padding:.9rem;display:flex;gap:.6rem;align-items:center;justify-content:space-between;flex-wrap:wrap"><span><strong style="font-family:var(--display)">Are you a supplier?</strong><br><span class="small muted">Suppliers sign in to the supplier portal with their mobile number and password.</span></span><a class="btn btn-ochre btn-sm" href="#supplier">Supplier sign-in</a></div>
           <div class="card" id="liNew" style="display:grid;gap:.6rem;padding:1rem"><strong style="font-family:var(--display)">New to Build Smartly?</strong><p class="small muted">Buyers need only a name and a mobile number. Company details and TIN come later, before your first purchase order. Suppliers register their company, TIN and a password.</p><div style="display:flex;gap:.5rem;flex-wrap:wrap"><a class="btn btn-ghost btn-sm" href="#signup">Create a buyer account</a><a class="btn btn-ochre btn-sm" href="#signup-supplier">Register as a supplier</a></div></div>
-          <details class="small muted" style="margin-top:.4rem"><summary style="cursor:pointer">Test accounts</summary><p style="margin-top:.4rem">Buyer: <strong>0911 000 201</strong> (code 123456). Suppliers: <strong>0911 000 301</strong> and <strong>0911 000 302</strong>, password <strong>smartly</strong>, through <a href="#supplier">Supplier sign-in</a>. Any other Ethiopian number also works as a new buyer. Full list on <a href="#start">Start here</a>.</p></details>
         </section>
 
         <section id="wizard" class="su-step">
@@ -899,7 +910,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
           <div class="su-step" data-step="1">
             <div><h1 style="font-size:1.6rem">Register as a supplier</h1><p class="muted">Step 1 of 4. We send a 6-digit code by SMS. Ethio Telecom or Safaricom.</p></div>
             <div class="field"><label for="phone">Mobile of the contact person</label><div class="su-phone"><span class="cc">🇪🇹 +251</span><input id="phone" type="tel" inputmode="numeric" placeholder="9 12 34 56 78" autocomplete="tel-national"></div><span class="err" id="phoneErr" hidden>Enter your mobile number, for example 0912345678.</span></div>
-            <div class="field" id="otpBox" hidden><label>Enter the code</label><div class="su-otp"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"></div><span class="hint" id="otpHint">Test site: no SMS is sent. The code is 123456.</span></div>
+            <div class="field" id="otpBox" hidden><label>Enter the code</label><div class="su-otp"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"></div><span class="hint" id="otpHint">Type the 6-digit code we sent you by SMS.</span></div>
             <div class="su-nav"><a class="small muted" href="#signin">Only buying? Sign in with your number</a><button class="btn btn-primary" type="button" id="sendCode">Send code</button></div>
           </div>
           <div class="su-step" data-step="4" hidden>
@@ -977,13 +988,12 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
       <div class="actions">
         <div class="field" style="flex:1;min-width:200px"><input id="otherItem" placeholder="Something not in the list? Type it here" aria-label="Other item"></div>
         <button class="btn btn-ghost" type="button" id="addOther">Add it</button>
-        <button class="btn btn-ghost" type="button" id="addSample">Try with an example list</button>
         <a class="btn btn-ghost" href="assets/boq-template.xlsx" download="Build-Smartly-BOQ-template.xlsx">Download the Excel template</a>
         <label class="btn btn-ghost" style="cursor:pointer">Upload your filled Excel<input type="file" id="boqFile" accept=".xlsx,.csv,.txt" hidden></label>
         <span class="small muted" id="boqFileMsg" style="flex-basis:100%">Send the template to your site engineer, get it back filled in, and upload it here. Excel (.xlsx) or CSV.</span>
       </div>
       <div id="listBox" hidden style="display:grid;gap:.6rem">
-        <div><strong style="font-family:var(--display)">Your list</strong><p class="small muted">Type the quantity for each item and when you need it. Earliest date: <span id="minLeadText"></span> (example rule, the owner sets the real minimum).</p></div>
+        <div><strong style="font-family:var(--display)">Your list</strong><p class="small muted">Type the quantity for each item and when you need it. Earliest date: <span id="minLeadText"></span>.</p></div>
         <div class="lines" id="lines"></div>
       </div>
     </div>
@@ -1013,7 +1023,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
         <div class="field"><label for="saName">Your name or company</label><input id="saName" autocomplete="name" placeholder="e.g. Tana Construction PLC"><span class="err" id="saNameErr" hidden>Please enter your name.</span></div>
         <div class="field"><label for="saPhone">Mobile</label><div class="su-phone"><span class="cc">🇪🇹 +251</span><input id="saPhone" type="tel" inputmode="numeric" placeholder="9 12 34 56 78" autocomplete="tel-national"></div><span class="err" id="saPhoneErr" hidden>Enter your mobile number, for example 0912345678.</span></div>
       </div>
-      <div class="field" id="saOtpBox" hidden><label>Enter the code we sent by SMS</label><div class="su-otp"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"></div><span class="hint" id="saHint">Test site: no SMS is sent. The code is 123456.</span></div>
+      <div class="field" id="saOtpBox" hidden><label>Enter the code we sent by SMS</label><div class="su-otp"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"></div><span class="hint" id="saHint">Type the 6-digit code we sent you by SMS.</span></div>
       <div class="actions"><button class="btn btn-primary" type="button" id="saGo">Send code</button><button class="btn btn-ghost" type="button" id="saCancel">Back to my list</button></div>
     </div>
     <div class="card sent-box" id="sentBox" hidden style="display:grid;gap:.8rem">
@@ -1039,14 +1049,14 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
   </div>
   <div class="modal" id="payGate" hidden>
     <div class="card">
-      <div><span class="eyebrow">Yagout Pay · secure payment</span><h3 style="margin-top:.4rem">Pay for <span id="payRef"></span></h3><p class="small muted">Telebirr, CBE Birr, bank card or bank transfer. The supplier is paid when the gateway confirms. On the test site no money moves.</p></div>
+      <div><span class="eyebrow">Yagout Pay · secure payment</span><h3 style="margin-top:.4rem">Pay for <span id="payRef"></span></h3><p class="small muted">Telebirr, CBE Birr, bank card or bank transfer. The supplier is paid when the gateway confirms.</p></div>
       <div class="portal" style="background:var(--bg);border-color:var(--line);color:inherit">
         <div class="row" style="border-color:var(--line)"><span class="muted">Supplier</span><strong id="paySup"></strong></div>
         <div class="row" style="border-color:var(--line)"><span class="muted" id="payGoodsLbl">Goods, delivered</span><strong id="payAmt"></strong></div>
         <div class="row" id="payDelRow" hidden style="border-color:var(--line)"><span class="muted">Build Smartly delivery</span><strong id="payDel"></strong></div>
         <div class="row" id="payInsRow" hidden style="border-color:var(--line)"><span class="muted">Transit insurance (<span id="payInsRate">0.4 %</span>)</span><strong id="payIns"></strong></div>
         <div class="row" id="payTotRow" hidden style="border-color:var(--line)"><span class="muted">Total to pay</span><strong id="payTot"></strong></div>
-        <div class="row" style="border-color:var(--line)"><span class="muted">Build Smartly fee</span><strong>Charged on completion · <span id="payFeeText">example 1.5 %</span></strong></div>
+        <div class="row" style="border-color:var(--line)"><span class="muted">Build Smartly fee</span><strong>Charged on completion · <span id="payFeeText">1.5 %</span></strong></div>
       </div>
       <div class="su-choices">
         <div class="choice"><input type="radio" name="payM" id="pm-tb" value="Telebirr" checked><label for="pm-tb"><strong>Telebirr</strong><span>Mobile money</span></label></div>
@@ -1063,9 +1073,9 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
   <section class="sp-login" id="login">
     <div class="topbar"><div><span class="eyebrow">Supplier portal</span><h1 style="font-size:1.6rem">Sign in as a supplier</h1><p class="small muted">Only registered suppliers can see requests and quote. A buyer number cannot sign in here.</p></div><a class="btn btn-ochre" href="#signup-supplier">New supplier? Register</a></div>
     <div class="card" style="display:grid;gap:.9rem">
-      <div><strong style="font-family:var(--display)">Your supplier account</strong><p class="small muted">The mobile number and password you registered with. Test logins are listed on the <a href="#start">Start here</a> page.</p></div>
+      <div><strong style="font-family:var(--display)">Your supplier account</strong><p class="small muted">The mobile number and password you registered with.</p></div>
       <div class="field"><label for="spPhone">Mobile</label><div class="su-phone"><span class="cc">🇪🇹 +251</span><input id="spPhone" type="tel" inputmode="numeric" placeholder="9 12 34 56 78"></div></div>
-      <div class="field"><label for="spPw">Password</label><input id="spPw" type="password"><span class="err" id="spPwErr" hidden>Wrong password. On the test site it is "smartly".</span></div>
+      <div class="field"><label for="spPw">Password</label><input id="spPw" type="password"><span class="err" id="spPwErr" hidden>Wrong password.</span></div>
       <div class="card" id="spErr" hidden style="border-color:var(--ochre);display:grid;gap:.5rem;padding:.9rem"><strong style="font-family:var(--display)" id="spErrTitle">No supplier account with that number</strong><p class="small muted" id="spErrText"></p><div><a class="btn btn-ochre btn-sm" href="#signup-supplier" id="spErrReg">Register this number as a supplier</a></div></div>
       <button class="btn btn-primary" type="button" id="spGo">Sign in</button>
     </div>
@@ -1315,10 +1325,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     </div>
     <div class="card" style="display:grid;gap:.6rem">
       <h3>Build Smartly S.C.</h3>
-      <p class="muted">Addis Ababa, Ethiopia (office address to be announced)</p>
-      <p>Phone: <strong style="user-select:all">+251 11 000 0000</strong> <span class="small muted">(placeholder)</span></p>
-      <p>Email: <strong style="user-select:all">hello@buildsmartly.et</strong> <span class="small muted">(placeholder)</span></p>
-      <p>Telegram: <strong>@BuildSmartly</strong> <span class="small muted">(to be registered)</span></p>
+      <p class="muted">Addis Ababa, Ethiopia</p>
       <p class="small muted">For verification questions, write "Documents" in the subject. For an offer or order, give the request number.</p>
     </div>
   </div>
@@ -1375,11 +1382,11 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
   <div class="adshow" id="nwAds" style="margin-bottom:1rem"></div>
   <div class="grid2" style="align-items:start">
     <div class="card panel" style="display:grid;gap:.7rem"><div><strong style="font-family:var(--display);font-size:1.05rem">Latest issue</strong><p class="small muted">What buyers received this month. Also in every member's Mailbox under Newsletter.</p></div><div id="newsList" style="display:grid;gap:.6rem"></div></div>
-    <div class="card panel" id="adInvite" style="display:grid;gap:.7rem;align-content:start"><div><span class="tag tag-ochre">For brands, suppliers and contractors</span><strong style="display:block;font-family:var(--display);font-size:1.05rem;margin-top:.5rem">Interested in advertising?</strong><p class="small muted">A newsletter item, a banner in the slideshow, a featured-supplier card or a price-pulse tile. Press the button to see the placements, the example prices and the form.</p></div><div><button class="btn btn-ochre" type="button" id="adInviteBtn">I want to advertise</button></div></div>
+    <div class="card panel" id="adInvite" style="display:grid;gap:.7rem;align-content:start"><div><span class="tag tag-ochre">For brands, suppliers and contractors</span><strong style="display:block;font-family:var(--display);font-size:1.05rem;margin-top:.5rem">Interested in advertising?</strong><p class="small muted">A newsletter item, a banner in the slideshow, a featured-supplier card or a price-pulse tile. Press the button to see the placements, the prices and the form.</p></div><div><button class="btn btn-ochre" type="button" id="adInviteBtn">I want to advertise</button></div></div>
     <div class="card panel" id="newsFormBox" style="display:none;gap:.7rem">
       <div><strong style="font-family:var(--display);font-size:1.05rem">Send your news for the next issue</strong><p class="small muted">A new brand, a new supply, a price offer or your company's progress. Staff check the text (no phone numbers or addresses), finance sends the invoice, and it goes out in the next issue.</p></div>
       <div class="su-row2"><div class="field"><label for="nwWho">You are</label><select id="nwWho"><option>Brand or manufacturer</option><option>Supplier</option><option>Contractor or developer</option><option>Other</option></select></div><div class="field"><label for="nwCompany">Company or brand</label><input id="nwCompany" placeholder="Your company or brand name"></div></div>
-      <div class="field"><label for="nwKind">Placement</label><select id="nwKind"><option value="news">Newsletter item · example ETB 5,000 per issue</option><option value="feature">Featured supplier of the month · example ETB 15,000</option><option value="pulse">Price pulse tile on the home page · example ETB 5,000 per month</option><option value="banner">Banner inside every member's workspace · example ETB 4,000 per month</option><option value="directory">Highlighted card in the Members directory · example ETB 3,000 per month</option></select></div>
+      <div class="field"><label for="nwKind">Placement</label><select id="nwKind"><option value="news">Newsletter item · ETB 5,000 per issue</option><option value="feature">Featured supplier of the month · ETB 15,000</option><option value="pulse">Price pulse tile on the home page · ETB 5,000 per month</option><option value="banner">Banner inside every member's workspace · ETB 4,000 per month</option><option value="directory">Highlighted card in the Members directory · ETB 3,000 per month</option></select></div>
       <div class="field"><label for="nwTitle">Headline</label><input id="nwTitle" maxlength="90" placeholder="e.g. New: Dangote 42.5 in stock at Kality, 48-hour delivery"></div>
       <div class="field"><label for="nwLink">Your website or page (optional): where people go when they tap your banner</label><input id="nwLink" inputmode="url" placeholder="www.yourcompany.com"></div>
       <div class="field"><label for="nwText">Text (up to 300 characters)</label><textarea id="nwText" rows="3" maxlength="300" style="font:inherit;font-size:.95rem;padding:.6rem;border:1.5px solid var(--line);border-radius:10px;background:var(--white);color:var(--fg);width:100%"></textarea></div>
@@ -1391,9 +1398,9 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     </div>
   </div>
   <div class="trust" id="adPrices" hidden style="margin-top:1rem">
-    <div class="card"><span class="tag tag-ochre">Sponsored</span><h3 style="margin-top:.5rem">Newsletter item and banner</h3><p>Your headline, text and picture in the monthly issue, and your banner in the slideshow on the home page and in every member's workspace.</p><p class="small"><strong>Example: ETB 5,000 per issue</strong></p></div>
-    <div class="card"><span class="tag tag-ochre">Sponsored</span><h3 style="margin-top:.5rem">Featured supplier</h3><p>Top of the newsletter, top of the members directory and a card on the home page for a month.</p><p class="small"><strong>Example: ETB 15,000 per month</strong></p></div>
-    <div class="card"><span class="tag tag-ochre">Sponsored</span><h3 style="margin-top:.5rem">Price pulse tile and member banner</h3><p>A tile in the moving price strip on the home page, or a slide in the banner inside every member's workspace.</p><p class="small"><strong>Example: ETB 4,000 to 5,000 per month</strong></p></div>
+    <div class="card"><span class="tag tag-ochre">Sponsored</span><h3 style="margin-top:.5rem">Newsletter item and banner</h3><p>Your headline, text and picture in the monthly issue, and your banner in the slideshow on the home page and in every member's workspace.</p><p class="small"><strong>ETB 5,000 per issue</strong></p></div>
+    <div class="card"><span class="tag tag-ochre">Sponsored</span><h3 style="margin-top:.5rem">Featured supplier</h3><p>Top of the newsletter, top of the members directory and a card on the home page for a month.</p><p class="small"><strong>ETB 15,000 per month</strong></p></div>
+    <div class="card"><span class="tag tag-ochre">Sponsored</span><h3 style="margin-top:.5rem">Price pulse tile and member banner</h3><p>A tile in the moving price strip on the home page, or a slide in the banner inside every member's workspace.</p><p class="small"><strong>ETB 4,000 to 5,000 per month</strong></p></div>
     <div class="card"><span class="tag tag-green">Free</span><h3 style="margin-top:.5rem">Verified profile</h3><p>Every verified company can publish a profile in the Members directory at no cost, after review.</p><p class="small"><strong>ETB 0</strong></p></div>
   </div>
 </div>
@@ -1532,8 +1539,8 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 
 <footer class="site">
   <div class="wrap">
-    <span>© 2026 Build Smartly S.C. · Addis Ababa, Ethiopia · <span style="user-select:all">hello@buildsmartly.et</span> (placeholder)<br><span class="lang-note" id="langNote" hidden>Draft translation for the mockup. A native speaker reviews every word before launch.</span></span>
-    <nav><a href="#start">Start here</a><a href="#supply">Materials</a><a href="#how">How it works</a><a href="#suppliers">For suppliers</a><a href="#members">Members</a><a href="#newsletter">Newsletter</a><a href="#aboutus">About us</a><a href="#contact">Contact</a><a href="#faq">FAQ</a><a href="#terms">Terms</a><a href="#privacy">Privacy</a><a href="#brand">Brand kit</a></nav>
+    <span>© 2026 Build Smartly S.C. · Addis Ababa, Ethiopia<br></span>
+    <nav><a href="#supply">Materials</a><a href="#how">How it works</a><a href="#suppliers">For suppliers</a><a href="#members">Members</a><a href="#newsletter">Newsletter</a><a href="#aboutus">About us</a><a href="#contact">Contact</a><a href="#faq">FAQ</a><a href="#terms">Terms</a><a href="#privacy">Privacy</a></nav>
     <a href="#staff" class="staff-link">Staff sign-in</a>
   </div>
 </footer>
@@ -1562,10 +1569,10 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
   <div class="hbody" id="helpBody"></div>
   <div class="hin"><input id="helpIn" placeholder="Ask anything about requests, offers, payment…" aria-label="Your question"><button class="btn btn-primary btn-sm" type="button" id="helpSend">Send</button></div>
 </div>
-<div class="mock" aria-hidden="true">Test site · working name</div>
 
-<script src="assets/firebase-config.js?v=20261031a" onerror="this.remove()"></script>
-<script src="assets/store.js?v=20261031a"></script>
+
+<script src="assets/firebase-config.js?v=20261031b" onerror="this.remove()"></script>
+<script src="assets/store.js?v=20261031b"></script>
 <script>
 /* ---------- Router: one page, views switched by hash ---------- */
 window.BSRoute = (function(){
@@ -1766,6 +1773,10 @@ bsAdShow('nwAds', function(){ return !document.getElementById('view-advertise').
 
 /* ---------- Home: menu, hero pictures and price pulse ---------- */
 (function(){
+  /* the phone menu carries its own language choice, kept in step with the one in the header */
+  (function(){ var a=document.getElementById('lang'), b=document.getElementById('lang2'); if(!a||!b) return; b.value=a.value;
+    b.addEventListener('change', function(){ if(window.bsSetLang) bsSetLang(b.value); else { a.value=b.value; a.dispatchEvent(new Event('change')); } });
+    a.addEventListener('change', function(){ b.value=a.value; }); setTimeout(function(){ b.value=a.value; }, 0); })();
   var nav=document.getElementById('nav'),btn=document.getElementById('menuBtn');
   btn.addEventListener('click',function(){var o=nav.classList.toggle('open');btn.setAttribute('aria-expanded',o?'true':'false');});
   /* hero pictures */
@@ -1790,7 +1801,7 @@ bsAdShow('nwAds', function(){ return !document.getElementById('view-advertise').
     var html=''; items.forEach(function(p,i){ html+=pulseTick(p); if(i===3) html+='<a class="tick ad" href="#advertise" style="text-decoration:none"><span class="name">Your brand here</span><span class="unit">Newsletter and sponsored tiles for suppliers</span><span class="price">Always marked, never changes the offers</span><span class="when">See the options</span></a>'; });
     html+='<div class="tick ad"><span class="name">New here?</span><span class="unit">No account needed to build your list</span><span class="price">Your mobile number is your account</span><span class="when">Company details only when you accept an offer</span></div>';
     track.innerHTML=html;
-    document.getElementById('pulseTag').textContent = live ? 'From supplier price lists' : 'Example figures';
+    var ptag=document.getElementById('pulseTag'); ptag.textContent='From supplier price lists'; ptag.hidden=!live;
   }
   renderPulse([]);
   var pBoqs=[], pOffers=[];
@@ -1827,7 +1838,7 @@ window.BSAuth = (function(){
 
 /* ---------- Shared status helper ---------- */
 function bsStatus(id, labelShared, labelLocal){
-  var el=document.getElementById(id); if(!el) return;
+  var el=document.getElementById(id); if(!el) return; el.hidden=true; return; /* customers do not need to see the connection state */
   function set(mode, note){ el.className='status '+(mode==='shared'?'shared':''); el.querySelector('span').textContent = mode==='shared' ? labelShared : labelLocal + (note?' ('+note+')':''); }
   var prev=BS.onModeChange; BS.onModeChange=function(m,why){ if(prev) prev(m,why); set(m, why==='invalid_argument'?'read-only link':why); };
   BS.ready().then(function(m){ set(m); });
@@ -2006,7 +2017,7 @@ function bsSupport(threadId, inputId, sendId){
         '<div class="field"><label>Unit</label><select data-k="unit" data-i="'+i+'">'+units.map(function(u){return '<option'+(u===l.unit?' selected':'')+'>'+u+'</option>';}).join('')+'</select></div>'+
         '<div class="field"><label>Needed by</label><input type="date" data-k="needed" data-i="'+i+'" min="'+MIN_DATE+'" value="'+(l.needed||MIN_DATE)+'"></div>'+
         '<button class="rm" type="button" data-rm="'+i+'" aria-label="Remove line">×</button>'+
-        '<div class="cat-tag"><span class="tag">'+(l.cat||'Category')+'</span><span>→ '+(BS.DESKS[l.cat]||'desk')+(mn>1?' · minimum order '+mn+' '+BS.unitsOf(l.item)[0]+' (example figure)':'')+'</span></div>';
+        '<div class="cat-tag"><span class="tag">'+(l.cat||'Category')+'</span><span>→ '+(BS.DESKS[l.cat]||'desk')+(mn>1?' · minimum order '+mn+' '+BS.unitsOf(l.item)[0]+'':'')+'</span></div>';
       box.appendChild(d);
     });
     $('listBox').hidden = lines.length===0;
@@ -2053,7 +2064,7 @@ function bsSupport(threadId, inputId, sendId){
   try{ if(!/github\.io$|localhost|^127\./.test(location.hostname) && location.protocol!=='file:' && !/buildsmartly|onsmartly/.test(location.hostname)){ var tl=document.querySelector('a[href="assets/boq-template.xlsx"]'); if(tl) tl.href='https://faiz379.github.io/build-smartly-site/assets/boq-template.xlsx'; } }catch(e){}
   $('boqFile').addEventListener('change', function(){ var f=this.files && this.files[0]; this.value=''; if(!f) return; $('boqFileMsg').textContent='Reading '+f.name+'…';
     BS.readSheet(f).then(importRows).catch(function(e){ $('boqFileMsg').textContent='Could not read '+f.name+'. Save it as .xlsx or .csv and try again.'; bsToast('Could not read the file.'); }); });
-  $('addSample').onclick=function(){
+  if($('addSample')) $('addSample').onclick=function(){
     var iso=isoPlus(Math.max(10, BS.MIN_LEAD_DAYS)); $('stage').value='all';
     lines=[{item:'Cement OPC 42.5',qty:400,unit:'quintal',needed:iso,cat:'Cement'},{item:'Rebar 12 mm grade 60',qty:60,unit:'quintal',needed:iso,cat:'Reinforcement steel'},{item:'HCB 20 cm',qty:3000,unit:'pcs',needed:iso,cat:'Blocks, bricks and stone'},{item:'Aggregate 02 (coarse)',qty:40,unit:'m³',needed:iso,cat:'Aggregates and fill'},{item:'Electrical cable 2.5 mm²',qty:10,unit:'roll',needed:iso,cat:'Electrical'},{item:'Excavator hire with operator',qty:3,unit:'day',needed:iso,cat:'Equipment rental'}];
     renderLines();
@@ -2104,7 +2115,7 @@ function bsSupport(threadId, inputId, sendId){
     var term=$('delivery').value; $('deliveryHint').textContent = term==='I collect from supplier' ? 'Suppliers quote ex-works. You send your own truck.' : term==='Build Smartly delivers' ? 'Suppliers quote ex-works. Build Smartly brings the goods; the transport price is shown when you complete the order.' : 'Suppliers quote a price that includes transport to your site.';
   }
   $('subcity').addEventListener('change', updateEstimate);
-  BS.onSettings(function(){ bsApplyPics(); renderPicks(); MIN_DATE=isoPlus(BS.MIN_LEAD_DAYS); $('minLeadText').textContent = BS.MIN_LEAD_DAYS+' days from today ('+MIN_DATE+')'; var pr=document.getElementById('payInsRate'); if(pr) pr.textContent=BS.pct(BS.INSURANCE.rate); var pf=document.getElementById('payFeeText'); if(pf) pf.textContent=(BS.tariffsSetBy?'':'example ')+BS.pct(BS.FEE_RATE); updateEstimate(); });
+  BS.onSettings(function(){ bsApplyPics(); renderPicks(); MIN_DATE=isoPlus(BS.MIN_LEAD_DAYS); $('minLeadText').textContent = BS.MIN_LEAD_DAYS+' days from today ('+MIN_DATE+')'; var pr=document.getElementById('payInsRate'); if(pr) pr.textContent=BS.pct(BS.INSURANCE.rate); var pf=document.getElementById('payFeeText'); if(pf) pf.textContent=BS.pct(BS.FEE_RATE); updateEstimate(); });
   $('delivery').addEventListener('change', updateEstimate); $('insurance').addEventListener('change', updateEstimate);
   function renderRouting(){
     updateEstimate();
@@ -2128,7 +2139,7 @@ function bsSupport(threadId, inputId, sendId){
     if(missing){ err.textContent='Type the quantity for '+(missing===1?'the item':'all '+missing+' items')+' in your list.'; err.hidden=false; $('lines').scrollIntoView({behavior:'smooth',block:'center'}); return; }
     if(lines.some(function(l){ return l.needed && l.needed<MIN_DATE; })){ err.textContent='A needed-by date is earlier than '+MIN_DATE+'.'; err.hidden=false; return; }
     var small=lines.filter(function(l){ return l.item!=='__other' && l.unit===BS.unitsOf(l.item)[0] && +l.qty<BS.minOf(l.item); })[0];
-    if(small){ err.textContent=small.item+': the minimum order is '+BS.minOf(small.item)+' '+small.unit+' (example figure, the owner sets the real minimums).'; err.hidden=false; $('lines').scrollIntoView({behavior:'smooth',block:'center'}); return; }
+    if(small){ err.textContent=small.item+': the minimum order is '+BS.minOf(small.item)+' '+small.unit+'.'; err.hidden=false; $('lines').scrollIntoView({behavior:'smooth',block:'center'}); return; }
     if(!me2.phone){ saveDraft(); $('sendAuth').hidden=false; $('submit').hidden=true; $('submitHint').hidden=true; $('sendAuth').scrollIntoView({behavior:'smooth',block:'center'}); $('saName').focus(); return; }
     doSend();
   };
@@ -2328,12 +2339,12 @@ function bsSupport(threadId, inputId, sendId){
     var delivery='';
     if(term==='Supplier delivers to site') delivery='<p class="small muted" style="margin:.2rem 0">Delivery to '+esc(b.subcity)+(b.pin?' (pinned site)':'')+' by the supplier, included in the prices above.</p>';
     else if(trips || /^Build Smartly/.test(term) || term==='I collect from supplier') delivery='<div class="su-choices">'+
-      '<div class="choice"><input type="radio" name="gDel" id="gDel-bs" value="bs"'+(bs?' checked':'')+'><label for="gDel-bs"><strong>Build Smartly delivers · '+BS.fmt(trans)+'</strong><span>'+trips+' truck trip'+(trips!==1?'s':'')+' to '+esc(b.subcity)+(b.pin?' (pinned site)':'')+', example tariff.</span></label></div>'+
+      '<div class="choice"><input type="radio" name="gDel" id="gDel-bs" value="bs"'+(bs?' checked':'')+'><label for="gDel-bs"><strong>Build Smartly delivers · '+BS.fmt(trans)+'</strong><span>'+trips+' truck trip'+(trips!==1?'s':'')+' to '+esc(b.subcity)+(b.pin?' (pinned site)':'')+'.</span></label></div>'+
       '<div class="choice"><input type="radio" name="gDel" id="gDel-own" value="own"'+(bs?'':' checked')+'><label for="gDel-own"><strong>I collect with my own transport</strong><span>From the supplier\'s depot, named on the purchase order.</span></label></div></div>';
     if(items.some(function(it){ return it.hire; })) delivery+='<p class="small muted" style="margin:.2rem 0">Hired equipment: the supplier brings it and collects it on the return date; you arrange it with them.</p>';
     var total=goods+(bs?trans:0)+(ins?insT:0);
     html+='<div style="margin-top:.6rem"><strong>Delivery</strong>'+delivery+'</div>'+
-      '<label class="check" style="margin-top:.5rem"><input type="checkbox" id="gIns"'+(ins?' checked':'')+'><span>Add transit insurance for the whole order · <strong>'+BS.fmt(insT)+'</strong> <span class="small muted">('+BS.pct(BS.INSURANCE.rate)+' of the goods value, example rate)</span></span></label>'+
+      '<label class="check" style="margin-top:.5rem"><input type="checkbox" id="gIns"'+(ins?' checked':'')+'><span>Add transit insurance for the whole order · <strong>'+BS.fmt(insT)+'</strong> <span class="small muted">('+BS.pct(BS.INSURANCE.rate)+' of the goods value)</span></span></label>'+
       '<div class="ck-total"><div class="ck-row"><span>Goods</span><span>'+BS.fmt(goods)+'</span></div>'+(bs?'<div class="ck-row"><span>Build Smartly delivery</span><span>'+BS.fmt(trans)+'</span></div>':'')+(ins?'<div class="ck-row"><span>Transit insurance</span><span>'+BS.fmt(insT)+'</span></div>':'')+'<div class="ck-row" style="font-size:1.1rem"><strong>Total</strong><strong>'+BS.fmt(total)+'</strong></div></div>'+
       '<p class="small muted" style="margin:.4rem 0 0">Nothing is charged now. You pay after delivery through Yagout Pay.</p>';
     $('gDeliv').innerHTML=html; $('gDeliv').hidden=false;
@@ -2427,7 +2438,7 @@ function bsSupport(threadId, inputId, sendId){
     $('spPwErr').hidden=true;
     var known=BS.known(digits), isBuyer=!!(known && known.phone), okNum=/^[97]\d{8}$/.test(digits);
     $('spErrTitle').textContent = !okNum ? 'Enter your mobile number, for example 0912345678' : isBuyer ? 'This number is a buyer account' : 'No supplier account with that number';
-    $('spErrText').textContent = !okNum ? '' : isBuyer ? ((known.company||known.name||'This account')+' can send requests but not quote. To quote, add the supplier role to the same number: company name, TIN and a password. It takes a minute.') : 'Check the number, or register as a supplier. For the demo you can also tap one of the test suppliers above.';
+    $('spErrText').textContent = !okNum ? '' : isBuyer ? ((known.company||known.name||'This account')+' can send requests but not quote. To quote, add the supplier role to the same number: company name, TIN and a password. It takes a minute.') : 'Check the number, or register as a supplier.';
     $('spErrReg').hidden=!okNum; window.__bsPrefillPhone = okNum ? digits : '';
   };
   $('spPw').addEventListener('keydown', function(e){ if(e.key==='Enter') $('spGo').click(); });
@@ -2678,7 +2689,7 @@ function bsSupport(threadId, inputId, sendId){
       matches(b).forEach(function(l){
         var done=mine.filter(function(o){return o.boqId===b.id && o.lineN===l.n;})[0]; var pl=priceFor(l.item);
         var fromSub=(profile.locs[0]||{}).sub||sup.sub||'Akaki Kaliti', dEst=BS.deliveryEstimate([l], fromSub, b.pin||b.subcity), delivers=b.deliveryTerm==='Supplier delivers to site';
-        var dHint = BS.isHire(l) ? 'Mobilisation to '+b.subcity+(b.pin?' (site pinned)':'')+': about '+dEst.km+' km from '+fromSub+'.' : 'Transport to '+b.subcity+(b.pin?' (site pinned)':'')+': about '+dEst.km+' km from '+fromSub+', '+dEst.trips+' truck trip'+(dEst.trips!==1?'s':'')+' ('+dEst.tonnes+' t) · typical cost '+BS.fmt(dEst.cost)+' at the example tariff.'+(delivers?' Pre-filled below; change it to your own figure, or put 0 and quote a delivered unit price.':' The customer '+(b.deliveryTerm==='I collect from supplier'?'collects: quote ex-works.':'uses Build Smartly transport: quote ex-works.'));
+        var dHint = BS.isHire(l) ? 'Mobilisation to '+b.subcity+(b.pin?' (site pinned)':'')+': about '+dEst.km+' km from '+fromSub+'.' : 'Transport to '+b.subcity+(b.pin?' (site pinned)':'')+': about '+dEst.km+' km from '+fromSub+', '+dEst.trips+' truck trip'+(dEst.trips!==1?'s':'')+' ('+dEst.tonnes+' t) · typical cost '+BS.fmt(dEst.cost)+'.'+(delivers?' Pre-filled below; change it to your own figure, or put 0 and quote a delivered unit price.':' The customer '+(b.deliveryTerm==='I collect from supplier'?'collects: quote ex-works.':'uses Build Smartly transport: quote ex-works.'));
         var d=document.createElement('div'); d.className='qline';
         d.innerHTML='<div class="what"><strong>Line '+l.n+' · '+l.item+'</strong><span class="small muted">'+l.qty+' '+l.unit+(l.returnBy?' · hire from '+l.needed+' to '+l.returnBy:l.needed?' · needed by '+l.needed:'')+' · <span class="tag">'+l.cat+'</span></span></div>'+
           (done ? '<div class="sent">Offer sent: '+BS.fmt(done.unitPrice)+' per '+l.unit+', delivery '+BS.fmt(done.deliveryCost||0)+', valid '+done.validDays+' days.</div>' :
@@ -2932,8 +2943,8 @@ window.bsPublishProfile = async function(fields){
 
 BSRoute.start();
 </script>
-<script src="assets/order.js?v=20261031a"></script>
-<script src="assets/notify.js?v=20261031a"></script>
-<script src="assets/help.js?v=20261031a"></script>
-<script src="assets/admin.js?v=20261031a"></script>
-<script src="assets/i18n.js?v=20261031a"></script>
+<script src="assets/order.js?v=20261031b"></script>
+<script src="assets/notify.js?v=20261031b"></script>
+<script src="assets/help.js?v=20261031b"></script>
+<script src="assets/admin.js?v=20261031b"></script>
+<script src="assets/i18n.js?v=20261031b"></script>
