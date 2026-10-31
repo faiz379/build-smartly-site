@@ -21,7 +21,10 @@
   function deliveryTerm(o,b){ return o.platformDelivery ? 'Build Smartly delivers' : (/^Build Smartly/.test(b.deliveryTerm||'') ? 'Collected by the buyer' : b.deliveryTerm); }
 
   BSRoute.on('order', function(id){ cur=id; render(); window.scrollTo(0,0); });
-  ['boqs','offers','messages','issues'].forEach(function(c){ BS.subscribe(c, function(d){ data[c]=d||[]; if(cur && !$('view-order').hidden) render(); }); });
+  /* several records often change together (the handover writes every line, then the tracker): draw once for the burst,
+     so a button is not replaced while it is being pressed */
+  var drawT=null; function later(){ if(drawT) return; drawT=setTimeout(function(){ drawT=null; if(cur && !$('view-order').hidden) render(); }, 150); }
+  ['boqs','offers','messages','issues'].forEach(function(c){ BS.subscribe(c, function(d){ data[c]=d||[]; later(); }); });
 
   function card(title, body, sub, id){ return '<section class="card ocard" '+(id?'id="'+id+'" ':'')+'style="display:grid;gap:.7rem"><div><strong style="font-family:var(--display);font-size:1.05rem">'+title+'</strong>'+(sub?'<p class="small muted">'+sub+'</p>':'')+'</div>'+body+'</section>'; }
 
