@@ -4,7 +4,7 @@
    test staff numbers and the staff password still work. The session is kept per browser tab. */
 (function(){
   var $=function(id){ return document.getElementById(id); };
-  var data={boqs:[],offers:[],messages:[],profiles:[],news:[],verifications:[],settings:[],issues:[],promotions:[],suppliers:[],tasks:[],staff:[]}, query='';
+  var data={boqs:[],offers:[],messages:[],profiles:[],news:[],verifications:[],settings:[],issues:[],promotions:[],suppliers:[],tasks:[],staff:[],tracks:[]}, query='';
   var tab='overview', mode='local', booted=false, adTilesHtml='', actN=8;
   var CATS=BS.CATEGORIES.filter(function(c){ return c.indexOf('Other')<0; });
   function esc(t){ return String(t||'').replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
@@ -57,12 +57,13 @@
   BS.ready().then(function(m){ mode=m; if(!isAdmin() && !document.getElementById('view-admin').hidden) showLogin(); if(isAdmin() && !$('adPanel').hidden) $('adMeta').textContent='Signed in as '+staffName(); });
   var subs={};
   function sub(c){ if(subs[c]) subs[c](); subs[c]=BS.subscribe(c, function(d){ data[c]=d||[];
+    if(c==='tracks'){ if(isAdmin() && !$('adPanel').hidden && window.bsTrack) bsTrack.mountFleet(data.tracks, data.offers); return; } /* positions move often: update the map only */
     if(c==='staff' && BS.staffAuth() && isAdmin()){ var mine=data.staff.filter(function(x){ return x.id===BS.staffUid(); })[0]; /* the owner's changes reach this tab at once */
       if(!data.staff.length){ BS.recheckStaff(); } /* the list was refused: this login may have been removed or switched off */
       else if(mine && mine.active===true){ BS.setStaffCache(Object.assign({uid:mine.id}, mine)); } else if(mine){ BS.staffSignOut().then(function(){ showLogin(); if(window.BSAuth) BSAuth.refresh(); bsToast('Your staff login was switched off.'); }); return; } } if(c==='settings') BS.applySettings(d||[]); if(isAdmin() && !$('adPanel').hidden) render(); }); }
-  ['boqs','offers','messages','profiles','news','verifications','settings','issues','promotions','suppliers','tasks','staff'].forEach(sub);
+  ['boqs','offers','messages','profiles','news','verifications','settings','issues','promotions','suppliers','tasks','staff','tracks'].forEach(sub);
   /* staff-only lists are refused before sign-in; ask again once signed in */
-  function resubStaffOnly(){ sub('tasks'); sub('staff'); }
+  function resubStaffOnly(){ sub('tasks'); sub('staff'); sub('tracks'); }
   $('adTabs').addEventListener('click', function(e){ var b=e.target.closest('[data-tab]'); if(!b) return; tab=b.dataset.tab; render(); $('adLayout').classList.remove('open'); $('adBurger').setAttribute('aria-expanded','false'); window.scrollTo({top:0,behavior:'smooth'}); });
   /* three-line button: on a phone it opens the menu as a drawer; on a wide screen it folds the sidebar to icons */
   $('adBurger').onclick=function(){ var L=$('adLayout'); if(window.matchMedia('(max-width:860px)').matches){ var o=!L.classList.contains('open'); L.classList.toggle('open', o); $('adBurger').setAttribute('aria-expanded', o?'true':'false'); } else { L.classList.toggle('fold'); try{ localStorage.setItem('bs_adfold', L.classList.contains('fold')?'1':''); }catch(e){} } };
@@ -99,6 +100,7 @@
     $('adTabs').querySelectorAll('[data-tab]').forEach(function(b){ b.hidden=b.dataset.tab!=='overview' && !BS.staffCan(b.dataset.tab); });
     var r={overview:renderOverview, requests:renderRequests, suppliers:renderSuppliers, support:renderSupport, news:renderNews, promos:renderPromos, brands:renderBrandsTab, members:renderMembers, finance:renderFinance, insights:renderInsights, catalogue:renderCatalogue, content:renderContent, settings:renderSettings}[tab]||renderOverview;
     $('adBody').innerHTML=searchHtml()+r();
+    if(window.bsTrack) bsTrack.mountFleet(data.tracks, data.offers);
   }
   $('adBody').addEventListener('click', function(e){ var b=e.target.closest('[data-go]'); if(!b) return; tab=b.dataset.go; render(); });
 
@@ -137,7 +139,9 @@
     var taskHtml='<div class="todo">'+todo.map(function(t){ return '<div class="row waiting"><i></i><span>'+t+'</span><span class="tag tag-ochre">Waiting</span></div>'; }).join('')+
       tasks.map(function(t){ return '<div class="row'+(t.done?' done':'')+'"><input type="checkbox" data-task="'+t.id+'"'+(t.done?' checked':'')+' style="width:20px;height:20px;accent-color:var(--green)"><span'+(t.done?' style="text-decoration:line-through;color:var(--fg-2)"':'')+'>'+esc(t.text)+' <span class="small muted">· '+esc(t.by||'')+(t.done?' · done '+when(t.doneAt):'')+'</span></span><button class="btn btn-ghost btn-sm" type="button" data-taskdel="'+t.id+'" aria-label="Delete">×</button></div>'; }).join('')+
       ((todo.length||tasks.length)?'':'<div class="empty">Nothing waiting.</div>')+'</div><div class="chat-in"><div class="field"><input id="adTaskIn" placeholder="Add a task for the team…"></div><button class="btn btn-primary btn-sm" type="button" id="adTaskAdd">Add</button></div>';
-    return adTilesHtml+'<div class="grid2" style="align-items:start">'+card('To do today','', taskHtml)+'<div hidden>'+card('x','', todo.length?'<ul style="margin:0;padding-left:1.1rem;display:grid;gap:.3rem">'+todo.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul>':'<div class="empty">Nothing waiting. New requests, documents and messages appear here as they come in.</div>')+'</div>'+
+    var onWay=BS.orderGroups(data.offers).filter(function(g){ return g.first.dispatchedAt && !g.first.deliveredAt; });
+    var fleet=onWay.length ? card('Deliveries on the way', onWay.length+' order'+(onWay.length>1?'s':'')+' dispatched, not yet delivered.', '<div id="fleetSlot" hidden></div><div class="docs" id="fleetList"></div>'+(onWay.filter(function(g){ return !g.first.trackId; }).length?'<p class="small muted">Without tracking: '+onWay.filter(function(g){ return !g.first.trackId; }).map(function(g){ return '<a href="#order-'+g.id+'">'+esc(g.poRef)+'</a>'; }).join(', ')+'</p>':'')) : '';
+    return adTilesHtml+fleet+'<div class="grid2" style="align-items:start">'+card('To do today','', taskHtml)+'<div hidden>'+card('x','', todo.length?'<ul style="margin:0;padding-left:1.1rem;display:grid;gap:.3rem">'+todo.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul>':'<div class="empty">Nothing waiting. New requests, documents and messages appear here as they come in.</div>')+'</div>'+
       card('Latest activity','Across all members, newest first.','<div class="docs">'+(recent.slice(0,actN).map(function(r){ return '<div class="doc"><span class="small muted" style="white-space:nowrap">'+when(r[0])+'</span><span>'+r[1]+'</span><span></span></div>'; }).join('')||'<div class="empty">No activity yet.</div>')+'</div>'+
         (recent.length>actN?'<div><button class="btn btn-ghost btn-sm" type="button" data-actmore>See more ('+(recent.length-actN)+' older)</button></div>':(actN>8&&recent.length>8?'<div><button class="btn btn-ghost btn-sm" type="button" data-actless>Show less</button></div>':'')))+'</div>';
   }
@@ -525,7 +529,7 @@
     if(e.target.id!=='adReset' || !isOwner()) return;
     if(!(await bsConfirm('Clear all test data?','Every request, offer, order, message, problem, newsletter item, promotion, profile, task and supplier change is deleted for everyone. This cannot be undone.','Yes, clear it'))) return;
     if(!(await bsConfirm('Are you sure?','Last check before deleting.','Delete everything'))) return;
-    var cols=['boqs','offers','messages','issues','news','promotions','verifications','profiles','suppliers','tasks'], n=0; e.target.disabled=true;
+    var cols=['boqs','offers','messages','issues','news','promotions','verifications','profiles','suppliers','tasks','tracks'], n=0; e.target.disabled=true;
     for(var i=0;i<cols.length;i++){ var docs=(data[cols[i]]||[]).slice(); for(var j=0;j<docs.length;j++){ await BS.remove(cols[i], docs[j].id); n++; $('adResetMsg').textContent='Deleted '+n+'…'; } }
     try{ Object.keys(localStorage).forEach(function(k){ if(/^bs_demo_(draft|prices_|supprofile_|locs)|^bs_bell_seen_/.test(k)) localStorage.removeItem(k); }); }catch(err){}
     e.target.disabled=false; $('adResetMsg').textContent='Done: '+n+' records deleted.'; bsToast('Test data cleared. The site starts clean.');

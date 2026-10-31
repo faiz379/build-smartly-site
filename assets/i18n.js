@@ -24,7 +24,7 @@
   /* look a text up: exactly; then with its numbers taken out; then with "1 item" read as "{1} items" (the dictionary holds
      the plural); then piece by piece where the page joins parts with " · " (so a part with a company name in it does not
      stop the other parts being translated) */
-  var PL={item:'items',line:'lines',day:'days',offer:'offers',supplier:'suppliers',order:'orders',document:'documents',request:'requests',hour:'hours',minute:'minutes',category:'categories',contract:'contracts',quote:'quotes',week:'weeks',month:'months',thread:'threads',profile:'profiles',problem:'problems',task:'tasks',record:'records',trip:'trips'};
+  var PL={item:'items',line:'lines',day:'days',offer:'offers',supplier:'suppliers',order:'orders',document:'documents',request:'requests',hour:'hours',minute:'minutes',category:'categories',contract:'contracts',quote:'quotes',week:'weeks',month:'months',thread:'threads',profile:'profiles',problem:'problems',task:'tasks',record:'records',trip:'trips',delivery:'deliveries'};
   var SG={}; Object.keys(PL).forEach(function(k){ SG[PL[k]]=k; });
   var AFTER=/(\{\d+\}\s)([a-z]+)\b/g; /* the word right after a number */
   function look(core){

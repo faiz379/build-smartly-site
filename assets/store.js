@@ -107,7 +107,7 @@
   ];
   /* Simulated suppliers: how many seconds after a request each one answers, and how the simulated supplier
      handles counter-offers and the order steps. Test site only. */
-  BS.AUTO = { replyAfter:[60,120,180,240,300], counterAfter:90, confirmAfter:120, readyAfter:240, dispatchAfter:240, acceptCounterAbove:0.96 };
+  BS.AUTO = { replyAfter:[60,120,180,240,300], counterAfter:90, confirmAfter:120, readyAfter:240, dispatchAfter:240, acceptCounterAbove:0.96, driveSecs:600, handoverAfter:45 };
   /* Introductions for the simulated suppliers' public profiles (test site) */
   BS.SUPPLIER_INTRO = {
     derba:"Distributor of Derba and Dangote cement to contractors in Addis Ababa since 2014. Own fleet, deliveries within 24 hours inside the city.",
@@ -415,7 +415,23 @@
     });
     return function(){ cancelled = true; if(unsub) unsub(); listeners[col]=(listeners[col]||[]).filter(function(x){return x!==cb;}); };
   };
-  BS.clearLocal = function(){ ["boqs","offers","messages","profiles","news","verifications","settings","issues"].forEach(function(c){ try{ localStorage.removeItem(LS(c)); }catch(e){} notifyLocal(c); }); };
+  /* follow one document by its id (a delivery tracker: anyone with the link may read that one record, not the list) */
+  BS.watch = function(col, docId, cb){
+    var unsub = null, cancelled = false, lcb = function(arr){ cb((arr||[]).filter(function(x){ return x.id===docId; })[0] || null); };
+    BS.ready().then(function(){
+      if(cancelled) return;
+      if(mode==="shared"){
+        try {
+          unsub = db.collection(col).doc(docId).onSnapshot(function(d){ cb(d && d.exists ? Object.assign({id:d.id}, d.data()) : null); },
+            function(err){ if(err && err.code==="permission-denied"){ cb(null); return; } degrade(err && err.code); listeners[col]=(listeners[col]||[]).concat([lcb]); lcb(lsRead(col)); });
+          return;
+        } catch(e){ degrade(e && e.code); }
+      }
+      listeners[col]=(listeners[col]||[]).concat([lcb]); lcb(lsRead(col));
+    });
+    return function(){ cancelled = true; if(unsub) unsub(); listeners[col]=(listeners[col]||[]).filter(function(x){return x!==lcb;}); };
+  };
+  BS.clearLocal = function(){ ["boqs","offers","messages","profiles","news","verifications","settings","issues","tracks"].forEach(function(c){ try{ localStorage.removeItem(LS(c)); }catch(e){} notifyLocal(c); }); };
 
   /* who am I on this device (demo only). Accounts seen on this device are remembered by mobile number,
      so a number that signs in again after logging out gets its details back (the real app does this server-side). */

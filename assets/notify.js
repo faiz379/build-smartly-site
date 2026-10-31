@@ -34,7 +34,7 @@
       groups.forEach(function(g){ if(g.supplierId!==w.supplierId) return; var o=g.first, h='#order-'+g.id;
         add(o.acceptedAt, 'New order', g.poRef+' from '+(o.customerRevealed||'a buyer')+'. Reconfirm price and stock.', h);
         add(o.buyerAgreedAt, 'Contract', 'The buyer agreed to the contract for '+g.poRef+'.', h);
-        add(o.deliveredAt, 'Delivered', 'The buyer confirmed delivery of '+g.poRef+'.', h);
+        add(o.deliveredAt, 'Delivered', (o.deliveredHow==='code'?'Your driver entered the buyer\'s handover code for ':'The buyer confirmed delivery of ')+g.poRef+'.', h);
         add(o.paidAt, 'Paid', g.poRef+' paid · '+BS.fmt(o.paidTotal||0), h); });
     } else {
       var mine=data.boqs.filter(function(b){ return b.ownerPhone===w.phone; }).map(function(b){ return b.id; });
@@ -44,7 +44,8 @@
       groups.forEach(function(g){ if(mine.indexOf(g.boqId)<0) return; var o=g.first, h='#order-'+g.id;
         add(o.confirmedAt, 'Contract to agree', g.supplierName+' reconfirmed '+g.poRef+'. Read and agree to the contract.', h);
         add(o.readyAt, 'Ready for dispatch', g.poRef+' is ready at '+g.supplierName+'.', h);
-        add(o.dispatchedAt, 'Dispatched', g.poRef+' is on its way. Handover code '+(o.handoverCode||'')+'.', h);
+        add(o.dispatchedAt, 'Dispatched', g.poRef+' is on its way'+(o.trackId?'; follow the truck on the map':'')+'. Handover code '+(o.handoverCode||'')+'.', h);
+        add(o.deliveredAt, 'Delivered', g.poRef+' was delivered'+(o.deliveredHow==='code'?' with your handover code':'')+'. Something wrong? Report it within 24 hours.', h);
         add(o.paidAt, 'Receipt', 'Payment for '+g.poRef+' received. Receipt in your Statements.', '#statements'); });
       data.news.forEach(function(n){ if(n.status==='published') add(n.publishedAt||n.createdAt, 'Newsletter', (n.company?n.company+': ':'')+(n.title||''), '#newsletter'); });
     }
