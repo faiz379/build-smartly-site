@@ -623,7 +623,8 @@
     rec.pct = rec.lines ? Math.round(rec.good/rec.lines*100) : 0;
     return rec;
   };
-  BS.updateMany = async function(col, ids, patch){ for(var i=0;i<ids.length;i++){ await BS.update(col, ids[i], typeof patch==='function'?patch(ids[i]):patch); } };
+  /* every line of an order at once (one after another made a long order slow to save on a busy connection) */
+  BS.updateMany = async function(col, ids, patch){ await Promise.all(ids.map(function(id){ return BS.update(col, id, typeof patch==='function'?patch(id):patch); })); };
   BS.activeSuppliers = function(){ return BS.suppliersAll().filter(function(s){ return s.status==="active"; }); };
   BS.supplierById = function(id){ return BS.suppliersAll().filter(function(s){ return s.id===id; })[0] || BS.SUPPLIERS.filter(function(s){ return s.id===id; })[0] || null; };
   BS.supplierDoc = function(docId){ return (BS.supplierDocs||[]).filter(function(d){ return d.id===docId; })[0] || null; };

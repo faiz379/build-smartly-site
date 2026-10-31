@@ -138,12 +138,17 @@
   function shrink(file){ return new Promise(function(res, rej){ var r=new FileReader(); r.onerror=rej; r.onload=function(){ var im=new Image(); im.onerror=rej; im.onload=function(){ var k=Math.min(1, 1000/Math.max(im.width, im.height)), c=document.createElement('canvas'); c.width=Math.round(im.width*k); c.height=Math.round(im.height*k); c.getContext('2d').drawImage(im,0,0,c.width,c.height); res(c.toDataURL('image/jpeg', 0.72)); }; im.src=r.result; }; r.readAsDataURL(file); }); }
   async function sendCheck(x, c){
     var now=new Date().toISOString(), g=groupOf(x), b=boqOf(x.boqId)||{}, l=lineOf(b,x.lineN)||{};
-    c.at=now; await BS.update('offers', x.id, {check:c}); x.check=c; delete chk[x.id];
+    c.at=now; delete chk[x.id];
+    /* show the answer at once; the saving carries on in the background */
+    data.offers.forEach(function(y){ if(y.id===x.id) y.check=c; if(c.state==='problem' && g.some(function(z){ return z.id===y.id; })) y.problemAt=y.problemAt||now; });
+    var allDone=g.every(function(y){ return y.id===x.id || BS.lineCheck(y); }); if(allDone) data.offers.forEach(function(y){ if(g.some(function(z){ return z.id===y.id; })) y.checkedAt=y.checkedAt||now; });
+    render();
+    await BS.update('offers', x.id, {check:c}); x.check=c;
     if(c.state==='problem'){ var p=probOf(c.type)||{};
       await BS.updateMany('offers', ids(g), {problemAt:now});
       await BS.add('issues', {offerId:g[0].id, lineOffer:x.id, boqId:x.boqId, poRef:x.poRef, phone:digits((BS.me()||{}).phone), who:x.customerRevealed||b.company, role:'buyer', kind:'check', type:c.type,
         text:(l.item||'')+': '+(p.t||'Problem')+(c.qtyGot!=null&&c.qtyGot!==''?' · '+(c.type==='damaged'?'damaged ':'arrived ')+c.qtyGot+' of '+x.qtyOffered+' '+(l.unit||''):'')+(c.note?' · '+c.note:''), photo:c.photo||'', status:'open'}); }
-    if(g.every(function(y){ return y.id===x.id || BS.lineCheck(y); })) await BS.updateMany('offers', ids(g), {checkedAt:now});
+    if(allDone) await BS.updateMany('offers', ids(g), {checkedAt:now});
   }
   document.addEventListener('input', function(e){ var t=e.target; if(!t.closest || !t.closest('#view-order')) return;
     if(t.dataset.chkQty){ (chk[t.dataset.chkQty]=chk[t.dataset.chkQty]||{open:true}).qty=t.value; }
@@ -227,17 +232,17 @@
     var rc=t.closest('[data-received]'); if(rc){ var oo=offerOf(rc.dataset.received), ci=$('rcvCode'), cv=ci?ci.value.trim():'', want=oo&&(oo.noteCode||oo.handoverCode); if(want && cv!==String(want)){ bsToast(cv?'That code is not right. Read it again from the driver\'s delivery note.':'Type the 4-digit code from the driver\'s delivery note.'); if(ci) ci.focus(); return; } rc.disabled=true; await bsOrderAction('received', rc.dataset.received); return; }
     var pn=t.closest('[data-paynow]'); if(pn){ var ok=$('payAgree'); if(ok && !ok.checked){ bsToast('Tick the box to authorise the payment.'); return; } var m=(document.querySelector('input[name=opayM]:checked')||{}).value||'Telebirr'; payMethod=m; var o=offerOf(pn.dataset.paynow); var g=groupOf(o), b=boqOf(o.boqId)||{}; var ex=sums(g,b); pn.disabled=true; pn.textContent='Paying…';
       var ref='YP-'+Math.floor(100000+Math.random()*900000); await BS.updateMany('offers', ids(g), {paidAt:new Date().toISOString(), paymentRef:ref, paymentMethod:m, paidTotal:ex.total}); bsToast(m==='Bank transfer'?'Payment recorded (bank transfer). Receipt ready.':'Paid through Yagout Pay ('+m+'). Receipt ready.'); setTimeout(function(){ openDoc('receipt'); }, 400); return; }
-    var ck=t.closest('[data-chk-ok]'); if(ck){ ck.disabled=true; await sendCheck(offerOf(ck.dataset.chkOk), {state:'ok'}); bsToast('Thank you. Marked as received in full.'); return; }
+    var ck=t.closest('[data-chk-ok]'); if(ck){ ck.disabled=true; bsToast('Thank you. Marked as received in full.'); await sendCheck(offerOf(ck.dataset.chkOk), {state:'ok'}); return; }
     var cp=t.closest('[data-chk-prob]'); if(cp){ chk[cp.dataset.chkProb]={open:true}; render(); return; }
     var cc=t.closest('[data-chk-cancel]'); if(cc){ delete chk[cc.dataset.chkCancel]; render(); return; }
-    var ca=t.closest('[data-chk-allok]'); if(ca){ var oa=offerOf(ca.dataset.chkAllok); var rest=groupOf(oa).filter(function(y){ return !BS.lineCheck(y) && !(chk[y.id]&&chk[y.id].open); }); if(!rest.length) return; ca.disabled=true; for(var ri=0;ri<rest.length;ri++) await sendCheck(rest[ri], {state:'ok'}); bsToast('Thank you. Marked as received in full.'); return; }
+    var ca=t.closest('[data-chk-allok]'); if(ca){ var oa=offerOf(ca.dataset.chkAllok); var rest=groupOf(oa).filter(function(y){ return !BS.lineCheck(y) && !(chk[y.id]&&chk[y.id].open); }); if(!rest.length) return; ca.disabled=true; bsToast('Thank you. Marked as received in full.'); await Promise.all(rest.map(function(y){ return sendCheck(y, {state:'ok'}); })); return; }
     var cs=t.closest('[data-chk-send]'); if(cs){ var xo=offerOf(cs.dataset.chkSend), st=chk[xo.id]||{}, p=probOf(st.type);
       if(!p){ bsToast('Choose what is wrong.'); return; }
       var q=st.qty==null?'':String(st.qty).trim(); if(p.qty && (q==='' || !(+q>=0) || +q>+xo.qtyOffered)){ bsToast('Type the number, from 0 to '+xo.qtyOffered+'.'); return; }
       if(p.photo==='required' && !st.photo){ bsToast('Add a photo first: it is needed for this kind of problem.'); return; }
       if(p.note && !(st.note||'').trim()){ bsToast('Describe the problem in a few words.'); return; }
       cs.disabled=true; cs.textContent='Sending…';
-      await sendCheck(xo, {state:'problem', type:p.k, qtyGot:p.qty?+q:null, note:(st.note||'').trim(), photo:st.photo||''}); bsToast('Sent to the supplier and Build Smartly staff.'); return; }
+      bsToast('Sent to the supplier and Build Smartly staff.'); await sendCheck(xo, {state:'problem', type:p.k, qtyGot:p.qty?+q:null, note:(st.note||'').trim(), photo:st.photo||''}); return; }
     var mg=t.closest('[data-msg]'); if(mg){ var inp=$('orderMsgIn'); var text=inp.value.trim(); if(!text) return; var o2=offerOf(mg.dataset.msg); var b2=boqOf(o2.boqId)||{}; var role=roleFor(o2,b2); inp.value=''; await BS.add('messages', {orderId:o2.id, poRef:o2.poRef||'', phone:digits((BS.me()||{}).phone), who:role, text:text, name:role==='buyer'?(o2.customerRevealed||b2.company):role==='supplier'?o2.supplierName:'Build Smartly staff', toSupplier:o2.supplierId, toBuyer:digits(b2.ownerPhone)}); bsToast('Sent. The other party and staff see it.'); return; }
     var is=t.closest('[data-issue]'); if(is){ var inp2=$('orderIssueIn'); var text2=inp2.value.trim(); if(!text2) return; var o3=offerOf(is.dataset.issue); var b3=boqOf(o3.boqId)||{}; var role3=roleFor(o3,b3); inp2.value=''; await BS.add('issues', {offerId:o3.id, boqId:o3.boqId, poRef:o3.poRef, phone:digits((BS.me()||{}).phone), who:role3==='buyer'?(o3.customerRevealed||b3.company):o3.supplierName, role:role3, text:text2, status:'open'}); bsToast('Reported to Build Smartly staff.'); return; }
     var rs=t.closest('[data-resolve]'); if(rs){ var note=(document.querySelector('[data-note="'+rs.dataset.resolve+'"]')||{}).value||''; rs.disabled=true; await BS.update('issues', rs.dataset.resolve, {status:'resolved', note:note, by:(BS.staffName&&BS.staffName())||'staff', resolvedAt:new Date().toISOString()}); bsToast('Resolved.'); return; }
