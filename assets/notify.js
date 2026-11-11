@@ -23,7 +23,7 @@
       data.messages.forEach(function(m){ if(m.orderId){ if(m.who!=='staff') add(m.createdAt, 'Order message', (m.name||'')+': '+m.text, '#order-'+m.orderId); } else if(m.who==='customer') add(m.createdAt, 'Support', (m.name||'A member')+': '+m.text, '#staff-support'); });
       data.verifications.forEach(function(v){ if(v.status==='pending') add(v.submittedAt||v.createdAt, 'Supplier documents', v.company+' asks to be verified', '#staff-suppliers'); });
       data.profiles.forEach(function(p){ if(p.status==='pending') add(p.updatedAt||p.createdAt, 'Profile to approve', (p.name||'A member')+' asks to publish a profile', '#staff-members'); });
-      data.news.forEach(function(n){ if(n.status==='pending') add(n.createdAt, n.img?'Advert to approve':'Newsletter item', (n.company||'')+': '+(n.title||''), '#staff-promos'); });
+      data.news.forEach(function(n){ if(n.status==='pending') add(n.createdAt, n.img?'Advert to approve':'Newsletter item', (n.company||'')+': '+(n.title||''), '#staff-promos'); if(n.status==='approved') add(n.approvedAt, 'Advert waiting for payment', (n.company||'')+': '+BS.fmt(n.amount||0), '#staff-promos'); });
       data.issues.forEach(function(x){ if(x.status!=='resolved') add(x.createdAt, 'Problem reported', (x.poRef||'')+': '+x.text, '#staff-support'); });
       groups.forEach(function(g){ add(g.first.acceptedAt, 'Order placed', g.poRef+' · '+g.first.customerRevealed+' → '+g.supplierName, '#order-'+g.id); if(g.first.paidAt) add(g.first.paidAt, 'Paid', g.poRef+' · '+BS.fmt(g.first.paidTotal||0), '#staff-finance'); });
     } else if(w.role==='supplier'){
@@ -57,6 +57,10 @@
         if(m.orderId && m.phone!==w.phone && ((w.role==='supplier' && m.toSupplier===w.supplierId) || (w.role==='buyer' && m.toBuyer===w.phone))) add(m.createdAt, 'Message on your order', (m.name||'')+': '+m.text, '#order-'+m.orderId); });
       data.profiles.forEach(function(p){ if(p.phone===w.phone && p.reviewedAt) add(p.reviewedAt, 'Public profile', p.status==='approved'?'Your profile is published in the Members directory.':'Your profile was not approved: '+(p.reason||''), '#workspace'); });
       data.verifications.forEach(function(v){ if(v.phone===w.phone && v.verifiedAt) add(v.verifiedAt, 'Verified', 'Your documents were approved. You can quote.', '#supplier'); });
+      var p9=function(x){ return String(x||'').replace(/\D/g,'').replace(/^251/,'').slice(-9); };
+      data.news.forEach(function(n){ if(!n.phone || p9(n.phone)!==p9(w.phone)) return;
+        if(n.approvedAt) add(n.approvedAt, 'Advert approved', (n.title||'')+': invoice '+(n.invoiceRef||'')+' · '+BS.fmt(n.amount||0)+'. It goes live when paid.', '#newsletter');
+        if(n.status==='rejected' && n.reviewedAt) add(n.reviewedAt, 'Advert not accepted', (n.title||'')+': '+(n.reason||''), '#newsletter'); });
     }
     return out.sort(function(a,b){ return (b.t||'').localeCompare(a.t||''); }).slice(0,40);
   }

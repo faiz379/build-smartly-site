@@ -11,7 +11,7 @@ if(window.BS_CLEAN)document.write('<base href="/">');</script>
    Layout: quiet off-white ground, one deep-green band per view, ochre for the single accent. */
 :root{
   --bg:#F6F7F4; --bg-2:#ECEFE9; --fg:#14241E; --fg-2:#5B6B64; --line:#D6DDD7;
-  --green:#1E6B4E; --green-deep:#12402F; --ochre:#E3A63A; --ochre-ink:#8A5A0E; --white:#FFFFFF;
+  --green:#1E6B4E; --green-deep:#12402F; --alert:#C62828; --ochre:#E3A63A; --ochre-ink:#8A5A0E; --white:#FFFFFF;
   --band-fg:#F6F7F4; --band-muted:#B9CBC2; --ok:#1E6B4E; --warn:#8A5A0E;
   --display:"Sora","Manrope","Noto Sans Ethiopic","Segoe UI",Arial,sans-serif; --body:"Manrope","Noto Sans Ethiopic","Segoe UI",Arial,sans-serif;
   --radius:14px; --shadow:0 10px 30px rgba(20,36,30,.08);
@@ -19,14 +19,14 @@ if(window.BS_CLEAN)document.write('<base href="/">');</script>
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --bg:#0F1A16; --bg-2:#16241F; --fg:#EEF2EF; --fg-2:#A6B5AD; --line:#27372F;
-    --green:#3FA37B; --green-deep:#0D2C21; --ochre:#E9B04F; --ochre-ink:#F2C879; --white:#16241F;
+    --green:#3FA37B; --green-deep:#0D2C21; --alert:#FF6B6B; --ochre:#E9B04F; --ochre-ink:#F2C879; --white:#16241F;
     --band-fg:#EEF2EF; --band-muted:#9FB3A8; --ok:#3FA37B; --warn:#F2C879;
     --shadow:0 10px 30px rgba(0,0,0,.35); color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0F1A16; --bg-2:#16241F; --fg:#EEF2EF; --fg-2:#A6B5AD; --line:#27372F;
-  --green:#3FA37B; --green-deep:#0D2C21; --ochre:#E9B04F; --ochre-ink:#F2C879; --white:#16241F;
+  --green:#3FA37B; --green-deep:#0D2C21; --alert:#FF6B6B; --ochre:#E9B04F; --ochre-ink:#F2C879; --white:#16241F;
   --band-fg:#EEF2EF; --band-muted:#9FB3A8; --ok:#3FA37B; --warn:#F2C879;
   --shadow:0 10px 30px rgba(0,0,0,.35); color-scheme:dark;
 }
@@ -54,7 +54,7 @@ img{max-width:100%}
 .btn-ochre:hover{transform:translateY(-1px);box-shadow:0 10px 24px color-mix(in srgb,var(--ochre) 45%,transparent)}
 .btn{transition:transform .2s ease,box-shadow .2s ease,background-color .2s ease}
 .btn-sm{padding:.5rem .9rem;font-size:.85rem}
-.tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--bg-2);color:var(--fg-2);padding:.25rem .55rem;border-radius:6px}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--bg-2);color:var(--fg);padding:.25rem .55rem;border-radius:6px}
 .tag-ochre{background:color-mix(in srgb,var(--ochre) 22%,transparent);color:var(--ochre-ink)}
 .tag-green{background:color-mix(in srgb,var(--green) 16%,transparent);color:var(--green)}
 .card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:1.3rem;min-width:0;transition:transform .25s ease,box-shadow .25s ease}
@@ -114,7 +114,8 @@ img{max-width:100%}
 }
 .empty{color:var(--fg-2);font-size:.92rem;border:1.5px dashed var(--line);border-radius:12px;padding:1rem;text-align:center}
 .toast{position:fixed;right:max(12px,env(safe-area-inset-right,0px));bottom:calc(52px + env(safe-area-inset-bottom,0px));background:var(--green-deep);color:var(--band-fg);padding:.7rem 1rem;border-radius:12px;box-shadow:var(--shadow);font-size:.9rem;z-index:40;max-width:min(92vw,360px)}
-.deadline{font-size:.8rem;color:var(--ochre-ink);font-weight:600}
+.deadline,.cd{font-size:.92rem;color:var(--alert);font-weight:700}
+.keyinfo{color:var(--fg);font-weight:600}
 .view{padding-block:1.6rem 3rem;display:grid;gap:1.4rem}
 
 /* Header */
@@ -231,6 +232,10 @@ footer.site .staff-link:hover{opacity:1;text-decoration:underline}
 .helppanel .hhead button{background:none;border:0;color:inherit;font-size:1.4rem;cursor:pointer;line-height:1}
 .helppanel .hbody{overflow:auto;padding:.8rem;display:grid;gap:.5rem;align-content:start;background:var(--bg)}
 .hmsg{max-width:92%;border-radius:14px;padding:.55rem .8rem;font-size:.9rem;line-height:1.45;background:var(--white);border:1px solid var(--line)}
+.hmsg.staff{border-color:var(--green);background:color-mix(in srgb,var(--green) 7%,var(--white))}
+#helpBtn.hnew::after{content:'';position:absolute;top:.2rem;right:.2rem;width:.7rem;height:.7rem;border-radius:50%;background:#c62828;border:2px solid #fff}
+.chat-tools{display:flex;gap:.4rem;flex-wrap:wrap;justify-content:flex-end}.chat-tools:empty{display:none}
+.chat-past details{border-top:1px solid var(--line);padding-top:.5rem}.chat-past summary{cursor:pointer;font-weight:600}.chat-old{display:grid;gap:.3rem;margin-top:.6rem}.chat-old .chat{max-height:16rem}
 .hmsg.me{justify-self:end;background:color-mix(in srgb,var(--green) 12%,transparent);border-color:transparent}
 .hmsg .hlinks{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.4rem}
 .hmsg .hsend{font:inherit;font-size:.8rem;cursor:pointer;border:1px dashed var(--line);border-radius:999px;padding:.2rem .6rem;background:none;color:var(--fg-2)}
@@ -292,8 +297,16 @@ footer.site .staff-link:hover{opacity:1;text-decoration:underline}
 .tl li.done:not(:last-child)::before{background:var(--green)}
 .tl li.now strong{color:var(--ochre-ink)}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:.35rem 1rem;font-size:.9rem;align-items:baseline}
-.kv>span{color:var(--fg-2)}
-.payform{display:grid;gap:.7rem;border:1.5px solid var(--ochre);border-radius:12px;padding:.9rem;background:color-mix(in srgb,var(--ochre) 6%,transparent)}
+.kv>span{color:var(--fg);font-weight:700}.kv>span::after{content:':'}.kv>strong{font-weight:400;color:var(--fg)}
+.ocol{display:grid;gap:1rem;align-content:start}
+@media (max-width:860px){.ocols{display:grid;grid-template-columns:1fr;gap:1rem}.ocols .ocol{display:contents}#orderPay{order:1}#orderDeliv{order:2}#orderDocs{order:3}#orderProg{order:4}#orderMsgs{order:5}#orderIssue{order:6}}
+.doctable{width:100%;border-collapse:collapse;font-size:.9rem}.doctable th,.doctable td{border-bottom:1px solid var(--line);padding:.45rem .4rem;text-align:left;vertical-align:top}.doctable th{font-weight:700;color:var(--fg)}.doctable .num{text-align:right;white-space:nowrap}
+.codes{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:.7rem}
+.codebox{display:grid;gap:.35rem;align-content:start;border:2px solid var(--green);border-radius:12px;padding:.8rem;background:color-mix(in srgb,var(--green) 5%,var(--white))}
+.codelbl{font-weight:700}.codeval{font-family:var(--display);font-size:1.9rem;letter-spacing:.18em;color:var(--fg)}
+.codebox .btn{justify-self:start}
+.act{border:2px solid var(--ochre)!important;background:color-mix(in srgb,var(--ochre) 6%,var(--white))}
+.payform{display:grid;gap:.7rem;border:2px solid var(--ochre);border-radius:12px;padding:.9rem;background:color-mix(in srgb,var(--ochre) 6%,transparent)}
 .docsheet{font-size:.92rem}
 .docsheet .dochead{display:flex;justify-content:space-between;gap:1rem;border-bottom:2px solid var(--green);padding-bottom:.6rem;margin-bottom:.6rem}
 .docsheet .docparties{margin:.6rem 0}
@@ -482,8 +495,8 @@ html{overflow-x:clip}
 .todo .row.waiting{border-color:var(--ochre);background:color-mix(in srgb,var(--ochre) 7%,var(--white))}
 .todo .row.done{border-color:var(--green)}
 .lbox{border:1.5px solid var(--line);border-radius:14px;padding:.8rem;display:grid;gap:.6rem;background:var(--white)}
-.lbox.chosen{border-color:var(--green)}
-.lbox.done{border-color:color-mix(in srgb,var(--green) 45%,var(--line));background:color-mix(in srgb,var(--green) 4%,var(--white))}
+.lbox.chosen{border:2px solid var(--green)}
+.lbox.done{border:2px solid var(--green);background:color-mix(in srgb,var(--green) 4%,var(--white))}
 .lbox-head{display:grid;grid-template-columns:auto 1fr auto;gap:.7rem;align-items:center}
 .lbox-pic img{width:3.6rem;height:2.7rem;object-fit:cover;border-radius:8px;display:block}
 .lbox-pic:empty{display:none}
@@ -510,9 +523,10 @@ html{overflow-x:clip}
 .offer .letter{font-family:var(--display);font-weight:700;background:var(--bg-2);border-radius:8px;width:34px;height:34px;display:grid;place-items:center}
 .offer.best{border-color:var(--ochre);background:color-mix(in srgb,var(--ochre) 9%,transparent)}
 .offer.best .letter{background:var(--ochre);color:#14241E}
-.offer.accepted{border-color:var(--green);background:color-mix(in srgb,var(--green) 10%,transparent)}
+.offer.accepted{border:2px solid var(--green);background:color-mix(in srgb,var(--green) 10%,transparent)}
+.offer{color:var(--fg)}.offer .small.muted{color:var(--fg)}.tag.tag-strong{color:var(--fg)}
 .offer.dim{opacity:.6}
-.offer .k{font-size:.74rem;color:var(--fg-2);display:block}
+.offer .k{font-size:.76rem;color:var(--fg);font-weight:700;display:block}
 .offer .diff{font-size:.76rem;color:var(--fg-2)}
 .offer .best-tag{font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ochre-ink)}
 .members{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem}
@@ -595,6 +609,9 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 @media (max-width:860px){.qform{grid-template-columns:repeat(3,1fr)}}
 @media (max-width:520px){.qform{grid-template-columns:repeat(2,1fr)}}
 .sent{font-size:.88rem;color:var(--ok);font-weight:600}
+.qfoot{display:grid;grid-template-columns:1fr 11rem auto;gap:.7rem;align-items:end;border:2px solid var(--green);border-radius:12px;padding:.8rem;background:color-mix(in srgb,var(--green) 6%,var(--white));margin-top:.2rem}
+.qfoot>div:first-child{display:grid;gap:.2rem}.qfoot .field label{font-size:.76rem}
+@media (max-width:640px){.qfoot{grid-template-columns:1fr}}
 .prices{display:grid;gap:.4rem}
 .prow{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:.5rem;align-items:center;border:1px solid var(--line);border-radius:10px;padding:.5rem .7rem;background:var(--white);font-size:.9rem}
 .prow .stale{color:var(--warn);font-weight:600;font-size:.78rem}
@@ -713,6 +730,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
       <li><a href="#home">Home</a></li>
       <li><a href="#supply">Materials</a></li>
       <li><a href="#suppliers">For suppliers</a></li>
+      <li><a href="#members">Members</a></li>
       <li><a href="#newsletter">Newsletter</a></li>
       <li><a href="#support">Support</a></li>
       <li><a href="#aboutus">About</a></li>
@@ -766,10 +784,11 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
       <h1>Send your BOQ. Get real supplier quotes. Choose line by line.</h1>
       <p class="lead">Send your list once. Verified suppliers send written quotes. You compare them side by side and choose per item. We issue the PO.</p>
       <p class="small muted">Current supplier quotes with price, delivery cost and validity. Not live market prices.</p>
-      <div class="intro-meta" style="gap:.5rem">
+      <div class="intro-meta" style="gap:.5rem;align-items:center">
+        <a class="btn btn-primary btn-sm" href="#signin">Sign up</a>
+        <span class="small" style="font-weight:600">or</span>
         <a class="btn btn-primary btn-sm" href="#boq">Send a request</a>
         <a class="btn btn-ochre btn-sm" href="#signup-supplier">Register as a supplier</a>
-        <a class="btn btn-ghost btn-sm" href="#signin">Sign in</a>
       </div>
       <div class="intro-meta">
         <label>Service area <select id="area" aria-label="Service area"><option>Addis Ababa</option><option>Bishoftu · soon</option><option>Adama · soon</option><option>Hawassa · soon</option></select></label>
@@ -979,7 +998,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
               <div class="field"><label for="city">City</label><select id="city"><option>Addis Ababa</option><option>Adama</option><option>Bishoftu</option><option>Hawassa</option><option>Bahir Dar</option><option>Dire Dawa</option><option>Mekelle</option><option>Jimma</option><option>Gondar</option><option>Outside Ethiopia</option></select></div>
               <div class="field"><label for="email">Email <span id="emailOpt" style="font-weight:400;color:var(--fg-2)">(for documents and contracts)</span></label><input id="email" type="email" autocomplete="email"><span class="err" id="emailErr" hidden>That email address does not look right.</span></div>
             </div>
-            <div class="field"><label>What you supply <span style="font-weight:400;color:var(--fg-2)">(tap your main category first, then up to five more)</span></label><div class="chips" id="wCats"></div><span class="err" id="wCatsErr" hidden>Choose at least one category.</span></div>
+            <div class="field"><label>What you supply <span style="font-weight:400;color:var(--fg-2)">(tap each one you supply; the first is your main category)</span></label><div class="chips" id="wCats"></div><span class="err" id="wCatsErr" hidden>Choose at least one category.</span></div>
             <div class="su-row2">
               <div class="field"><label for="wSub">Dispatch point · sub-city of your main store</label><select id="wSub"></select><span class="hint">Used to work out transport to each site. Never shown to buyers.</span></div>
               <div class="field"><label for="wType">Supplier type</label><select id="wType"><option>Distributor</option><option>Manufacturer</option><option>Importer</option><option>Wholesaler</option><option>Retailer</option><option>Equipment owner</option></select></div>
@@ -1050,7 +1069,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
       <div><strong style="font-family:var(--display);font-size:1.05rem">2 · Where and how</strong><p class="small muted">Suppliers see only the sub-city. Your exact address is shared with the chosen supplier in the purchase order.</p></div>
       <div class="grid2">
         <div class="field"><label for="subcity">Delivery site · sub-city</label><select id="subcity"></select></div>
-        <div class="field"><label>Exact site on the map (optional, makes the delivery price exact)</label><div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center"><button class="btn btn-ghost btn-sm" type="button" id="pinMap">Pin on the map</button><button class="btn btn-ghost btn-sm" type="button" id="pinHere">Use my location</button><span class="small muted" id="pinText">Not pinned · the sub-city centre is used</span></div></div>
+        <div class="field"><label>Exact site on the map (optional, makes the delivery price exact)</label><div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center"><button class="btn btn-ghost btn-sm" type="button" id="pinMap">Pin on the map</button><button class="btn btn-ghost btn-sm" type="button" id="pinHere">Use my location</button><button class="btn btn-ghost btn-sm" type="button" id="pinClear" hidden>Clear pin</button><span class="small muted" id="pinText">Not pinned · the sub-city centre is used</span></div></div>
       </div>
       <input type="hidden" id="validity" value="4">
       <div class="grid2">
@@ -1090,10 +1109,10 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
   </section>
   <div class="modal" id="mapGate" hidden>
     <div class="card" style="max-width:40rem;display:grid;gap:.7rem">
-      <div><strong style="font-family:var(--display);font-size:1.05rem">Pin your delivery site</strong><p class="small muted">Tap the map where the goods should go. Suppliers see only the sub-city; the exact pin goes to the chosen supplier with the purchase order.</p></div>
+      <div><strong style="font-family:var(--display);font-size:1.05rem">Pin your delivery site</strong><p class="small muted">Click the map where the goods should go, or use your location. Drag the pin to adjust, or clear it. Suppliers see only the sub-city; the exact pin goes to the chosen supplier with the purchase order.</p></div>
       <div id="mapBox" style="height:320px;border-radius:12px;background:#e8ece9;display:grid;place-items:center;color:var(--fg-2)">Loading the map…</div>
       <p class="small muted" id="mapMsg" style="margin:0"></p>
-      <div class="su-nav"><button class="btn btn-ghost" type="button" id="mapCancel">Cancel</button><button class="btn btn-primary" type="button" id="mapSave" disabled>Use this pin</button></div>
+      <div class="su-nav"><button class="btn btn-ghost" type="button" id="mapCancel">Cancel</button><span style="display:flex;gap:.4rem;flex-wrap:wrap"><button class="btn btn-ghost" type="button" id="mapHere">Use my location</button><button class="btn btn-ghost" type="button" id="mapClear">Clear pin</button><button class="btn btn-primary" type="button" id="mapSave" disabled>Use this pin</button></span></div>
     </div>
   </div>
   <div class="modal" id="payGate" hidden>
@@ -1168,14 +1187,15 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     <div id="tab-requests" hidden></div>
     <div id="tab-deals" hidden style="display:grid;gap:1rem">
       <div class="field" style="max-width:26rem"><input id="spDealSearch" type="search" placeholder="Search: order number, request, item, customer"></div>
-      <section class="card" style="display:grid;gap:.6rem;border-color:var(--ochre)"><strong style="font-family:var(--display);font-size:1.05rem">Waiting for your action</strong><div id="spAction" style="display:grid;gap:.5rem"></div></section>
+      <section class="card act" style="display:grid;gap:.6rem"><strong style="font-family:var(--display);font-size:1.05rem">Waiting for your action</strong><div id="spAction" style="display:grid;gap:.5rem"></div></section>
       <div><strong style="font-family:var(--display);font-size:1.05rem">Orders</strong></div>
       <div id="tab-orders"></div>
       <div><strong style="font-family:var(--display);font-size:1.05rem">Offers you sent</strong></div>
       <div id="tab-offers"></div>
     </div>
     <div id="tab-mail" hidden style="display:grid;gap:1rem">
-      <div class="subtabs" id="spMailTabs"><button class="on" data-m="statements">Statements</button><button data-m="support">Support</button><button data-m="news">Newsletter</button></div>
+      <div class="subtabs" id="spMailTabs"><button class="on" data-m="statements">Statements</button><button data-m="support">Support</button><button data-m="inbox">Inbox</button><button data-m="news">Newsletter</button></div>
+      <div class="card panel" id="spm-inbox" hidden><div><strong style="font-family:var(--display)">Inbox</strong><p class="small muted">Messages Build Smartly sends you, and messages on your orders. For a question, use Support.</p></div><div id="spInbox" style="display:grid;gap:.5rem;margin-top:.6rem"></div></div>
       <div class="card panel" id="spm-statements"><div><strong style="font-family:var(--display)">Statements</strong><p class="small muted">Every purchase order, contract and receipt, by year. View, print or save as PDF.</p></div><div id="spStatements" style="display:grid;gap:.6rem"></div></div>
       <div class="card panel" id="spm-news" hidden><div><strong style="font-family:var(--display)">Newsletter</strong></div><div class="news-list" style="display:grid;gap:.6rem;margin-top:.6rem"></div></div>
       <div class="card panel" id="spm-support" hidden><div><strong style="font-family:var(--display)">Support</strong><p class="small muted">Write to Build Smartly support about a request, an order or your documents. Staff answer here and by SMS.</p></div><div class="chat" id="spSupportThread"></div><div class="chat-in"><div class="field"><input id="spSupportIn" placeholder="Type your message…"></div><button class="btn btn-primary btn-sm" type="button" id="spSupportSend">Send</button></div></div>
@@ -1221,7 +1241,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
       </div>
 
       <div class="card" style="display:grid;gap:.8rem" id="sec-cats">
-        <div><strong style="font-family:var(--display)">2 · What you supply</strong><p class="small muted">Choose a main category (first tap) and up to five more. Requests are sent to you only for these.</p></div>
+        <div><strong style="font-family:var(--display)">2 · What you supply</strong><p class="small muted">Tap each category you supply to switch it on or off; the first one is your main category. Requests are sent to you only for these. <button class="linkbtn" type="button" id="catAll">Select all</button></p></div>
         <div class="su-row2">
           <div class="field"><label for="supType">Supplier type</label><select id="supType"><option>Manufacturer</option><option>Importer</option><option>Distributor</option><option>Wholesaler</option><option>Retailer</option><option>Equipment owner</option></select></div>
           <div class="field"><label for="brands">Brands carried (optional)</label><input id="brands" placeholder="e.g. Dangote, Derba, Mugher"></div>
@@ -1280,7 +1300,8 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     <a class="tile" href="#boq"><strong>Send a request</strong><span>Build a list or upload your BOQ</span></a>
     <button class="tile on" data-panel="tracking"><strong>My orders</strong><span>Requests, offers and orders, step by step</span><em class="n" id="nTrack" hidden>0</em></button>
     <button class="tile" data-panel="statements"><strong>Statements</strong><span>Orders, contracts and receipts by year</span></button>
-    <button class="tile" data-panel="support"><strong>Support</strong><span>Write to Build Smartly staff</span><em class="n" id="nNotif" hidden>0</em></button>
+    <button class="tile" data-panel="support"><strong>Support</strong><span>Chat with Build Smartly staff</span><em class="n" id="nNotif" hidden>0</em></button>
+    <button class="tile" data-panel="inbox"><strong>Inbox</strong><span>Messages from Build Smartly and on your orders</span></button>
     <button class="tile" data-panel="news"><strong>Newsletter</strong><span>News and offers from members</span></button>
     <button class="tile" data-panel="settings"><strong>Settings</strong><span>Notifications, locations, public profile</span></button>
     <a class="tile" href="#supplier" id="tileSupplier" hidden><strong>Supplier portal</strong><span>Quote, price list, orders</span></a>
@@ -1293,6 +1314,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
   <section class="card" id="wsDetails" hidden style="display:grid;gap:.6rem;border-color:var(--ochre)"><div><strong style="font-family:var(--display)">Complete your company details</strong><p class="small muted">Who is buying, legal name and TIN. Needed once, before your first purchase order. You can also do it later, at your first Accept.</p></div><div><button class="btn btn-primary btn-sm" type="button" id="wsDetailsBtn">Add company details</button></div></section>
   <section class="card panel" id="p-tracking"><div><strong style="font-family:var(--display);font-size:1.05rem">Tracking</strong><p class="small muted">Where each request or order stands. Restricted between you and the platform.</p></div><div id="trackBody"></div></section>
   <section class="card panel" id="p-statements" hidden><div><strong style="font-family:var(--display);font-size:1.05rem">Statements</strong><p class="small muted">Every purchase order, contract and receipt, by year. View, print or save as PDF for your records.</p></div><div id="wsStatements" style="display:grid;gap:.6rem"></div></section>
+  <section class="card panel" id="p-inbox" hidden style="display:grid;gap:.7rem"><div><strong style="font-family:var(--display);font-size:1.05rem">Inbox</strong></div><p class="small muted">Messages Build Smartly sends you, and messages on your orders. For a question, use Support.</p><div id="wsInbox" style="display:grid;gap:.5rem"></div></section>
   <section class="card panel" id="p-support" hidden style="display:grid;gap:.7rem"><div><strong style="font-family:var(--display);font-size:1.05rem">Support</strong></div><p class="small muted">Write to Build Smartly support about a request, an offer or a delivery. Amharic, Afaan Oromoo or English. Staff answer here and by SMS; the thread is kept with your account.</p><div class="chat" id="supportThread"></div><div class="chat-in"><div class="field"><input id="supportIn" placeholder="Type your message…"></div><button class="btn btn-primary btn-sm" type="button" id="supportSend">Send</button></div></section>
   <section class="card panel" id="p-news" hidden style="display:grid;gap:.6rem"><div><strong style="font-family:var(--display);font-size:1.05rem">Newsletter</strong></div><p class="small muted">The latest Build Smartly newsletter: new brands, new supplies and offers from verified suppliers. Sponsored items are marked.</p><div class="news-list" style="display:grid;gap:.6rem"></div><p class="small"><a href="#newsletter">Suppliers: send your news for the next issue</a></p></section>
   <section class="card panel" id="p-settings" hidden>
@@ -1432,6 +1454,8 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
   <div class="adshow" id="nwAds" style="margin-bottom:1rem"></div>
   <div class="grid2" style="align-items:start">
     <div class="card panel" style="display:grid;gap:.7rem"><div><strong style="font-family:var(--display);font-size:1.05rem">Latest issue</strong><p class="small muted">What buyers received this month. Also in every member's Mailbox under Newsletter.</p></div><div id="newsList" style="display:grid;gap:.6rem"></div></div>
+    <div class="card panel" id="newMembersBox" hidden style="display:grid;gap:.6rem;align-content:start"><div><strong style="font-family:var(--display);font-size:1.05rem">New members</strong><p class="small muted">Companies that published a verified profile this month.</p></div><div id="newMembers" style="display:grid;gap:.5rem"></div><a class="btn btn-ghost btn-sm" href="#members" style="justify-self:start">See all members</a></div>
+    <div class="card panel" id="newsMineBox" hidden style="display:grid;gap:.6rem;align-content:start"><div><strong style="font-family:var(--display);font-size:1.05rem">Your submissions</strong><p class="small muted">Only you see these. Nothing is public until Build Smartly approves it and the invoice is paid.</p></div><div id="newsMine" style="display:grid;gap:.5rem"></div></div>
     <div class="card panel" id="adInvite" style="display:grid;gap:.7rem;align-content:start"><div><span class="tag tag-ochre">For brands, suppliers and contractors</span><strong style="display:block;font-family:var(--display);font-size:1.05rem;margin-top:.5rem">Interested in advertising?</strong><p class="small muted">A newsletter item, a banner in the slideshow, a featured-supplier card or a price-pulse tile. Press the button to see the placements, the prices and the form.</p></div><div><button class="btn btn-ochre" type="button" id="adInviteBtn">I want to advertise</button></div></div>
     <div class="card panel" id="newsFormBox" style="display:none;gap:.7rem">
       <div><strong style="font-family:var(--display);font-size:1.05rem">Send your news for the next issue</strong><p class="small muted">A new brand, a new supply, a price offer or your company's progress. Staff check the text (no phone numbers or addresses), finance sends the invoice, and it goes out in the next issue.</p></div>
@@ -1597,7 +1621,6 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
   <div class="wrap">
     <span>© 2026 Build Smartly S.C. · Addis Ababa, Ethiopia<span id="ftContact"></span><br></span>
     <nav><a href="#supply">Materials</a><a href="#how">How it works</a><a href="#suppliers">For suppliers</a><a href="#members">Members</a><a href="#newsletter">Newsletter</a><a href="#aboutus">About us</a><a href="#contact">Contact</a><a href="#faq">FAQ</a><a href="#terms">Terms</a><a href="#privacy">Privacy</a></nav>
-    <a href="#staff" class="staff-link">Staff sign-in</a>
   </div>
 </footer>
   <div class="modal" id="poGate" hidden>
@@ -1627,8 +1650,8 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 </div>
 
 
-<script src="assets/firebase-config.js?v=20261031i" onerror="this.remove()"></script>
-<script src="assets/store.js?v=20261031i"></script>
+<script src="assets/firebase-config.js?v=20261111a" onerror="this.remove()"></script>
+<script src="assets/store.js?v=20261111a"></script>
 <script>
 /* ---------- Router: one page, views switched by hash ---------- */
 window.BSRoute = (function(){
@@ -1824,7 +1847,10 @@ bsAdShow('nwAds', function(){ return !document.getElementById('view-advertise').
   function card(x){ return '<div '+(x.id?'id="news-'+x.id+'" ':'')+'style="scroll-margin-top:5rem;display:grid;gap:.25rem;border:1px solid var(--line);border-radius:12px;padding:.7rem .8rem;background:var(--white)">'+(x.img?'<img src="'+x.img+'" alt="" style="width:100%;aspect-ratio:3/1;object-fit:cover;border-radius:8px;margin-bottom:.3rem">':'')+'<span style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center"><span class="tag '+(x.status==='pending'?'':x.sponsored===false||x.kind==='platform'?'tag-green':'tag-ochre')+'">'+(x.status==='pending'?'Pending review':x.kind==='platform'?'Build Smartly':'Sponsored · '+(KIND[x.kind]||'Newsletter item'))+'</span><span class="small muted">'+esc(x.company)+(x.issue?' · '+esc(x.issue):'')+'</span></span><strong>'+esc(x.title)+'</strong><span class="small">'+esc(x.text)+'</span></div>'; }
   function render(){
     var me=BS.me()||{}, mine=(me.phone||'').replace(/\D/g,'').replace(/^251/,'');
-    var list=items.filter(function(x){ return x.status==='published' || (x.status==='pending' && mine && x.phone===mine); }).sort(function(a,b){ return (b.createdAt||'').localeCompare(a.createdAt||''); }).concat(BS.NEWS);
+    var list=items.filter(function(x){ return x.status==='published'; }).sort(function(a,b){ return (b.createdAt||'').localeCompare(a.createdAt||''); }).concat(BS.NEWS);
+    /* the sender's own items, with where each one stands; never in the public list until published */
+    var own=mine?items.filter(function(x){ return x.phone===mine && x.status!=='published'; }).sort(function(a,b){ return (b.createdAt||'').localeCompare(a.createdAt||''); }):[];
+    var mb=$('newsMineBox'); if(mb){ mb.hidden=!own.length; $('newsMine').innerHTML=own.map(function(x){ var st=x.status==='pending'?'<span class="tag tag-ochre">Waiting for review · not public yet</span>':x.status==='approved'?'<span class="tag tag-ochre">Approved · waiting for payment</span><span class="small"><span>Invoice</span> <span data-notr>'+esc(x.invoiceRef||'')+' · '+BS.fmt(x.amount||0)+'</span></span><span class="small">It goes live as soon as the payment arrives. Pay by bank transfer or Telebirr; the details are in the invoice we sent by SMS.</span>':x.status==='rejected'?'<span class="tag">Not accepted</span><span class="small">'+esc(x.reason||'')+'</span>':'<span class="tag">'+esc(x.status||'')+'</span>'; return '<div style="display:grid;gap:.25rem;border:1px solid var(--line);border-radius:10px;padding:.6rem .7rem;background:var(--white)"><strong>'+esc(x.title||'')+'</strong><span class="small muted"><span>'+esc(BS.AD_LABELS[x.kind]||'')+'</span> · <span data-notr>'+new Date(x.createdAt||Date.now()).toLocaleDateString('en-GB')+'</span></span>'+st+'</div>'; }).join(''); }
     var html=list.map(card).join('');
     var nl=$('newsList'); if(nl) nl.innerHTML=html;
     document.querySelectorAll('.news-list').forEach(function(el){ el.innerHTML=html; });
@@ -1841,7 +1867,7 @@ bsAdShow('nwAds', function(){ return !document.getElementById('view-advertise').
     $('nwSend').disabled=true;
     await BS.add('news', {company:company, who:$('nwWho').value, kind:$('nwKind').value, title:title, text:text, link:$('nwLink').value.trim(), img:picData, phone:(me.phone||'').replace(/\D/g,'').replace(/^251/,''), status:'pending', createdAt:new Date().toISOString()});
     $('nwTitle').value=''; $('nwText').value=''; $('nwLink').value=''; $('nwSend').disabled=false; picData=''; srcImg=null; $('nwPic').value=''; $('nwPicPrev').hidden=true; $('nwPicPosBox').hidden=true; $('nwPicLabel').textContent='＋ Banner picture (optional, shown in the slideshow; 3:1 works best)'; $('nwKind').selectedIndex=0; $('nwErr').hidden=true;
-    $('nwMsg').textContent='Received. Staff check the text, finance sends the invoice, and it goes out in the next issue.'; bsToast('Your news is with Build Smartly for the next issue.');
+    $('nwMsg').textContent='Received. It is not public yet: staff check it, then you get an invoice by SMS. It goes live once the invoice is paid.'; bsToast('Your news is with Build Smartly for the next issue.');
   };
 })();
 
@@ -1946,16 +1972,50 @@ function bsStatus(id, labelShared, labelLocal){
 function bsToast(msg){ var t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(function(){ t.remove(); }, 5500); }
 /* Support thread inside the mailbox. Messages are stored per account in the shared "messages" collection,
    so the future staff page can read and answer them. The demo posts a staff reply after a moment. */
+/* Inbox: messages Build Smartly sends a member (reminders, notices) and messages on their orders; Support is the separate chat */
+function bsInbox(boxId){
+  var box=document.getElementById(boxId), msgs=[], offers=[], boqs=[];
+  function esc(s){ return String(s||'').replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function render(){
+    var me=BS.me()||{}, ph=bsDigits(me.phone); if(!box) return; if(!ph){ box.innerHTML='<div class="empty">Sign in to see your messages.</div>'; return; }
+    var mineB={}; boqs.forEach(function(b){ if(bsDigits(b.ownerPhone)===ph) mineB[b.id]=1; });
+    var myOrders={}; offers.forEach(function(o){ if(o.status==='accepted' && (mineB[o.boqId] || (me.supplierId && o.supplierId===me.supplierId))) myOrders[o.id]=o; });
+    var list=msgs.filter(function(m){ return (m.phone===ph && (m.nudge || m.direct)) || (m.orderId && myOrders[m.orderId] && m.phone!==ph); }).sort(function(a,b){ return (b.createdAt||'').localeCompare(a.createdAt||''); });
+    box.innerHTML = list.length ? list.slice(0,60).map(function(m){ var o=m.orderId?myOrders[m.orderId]:null; return '<div class="doc" style="grid-template-columns:1fr auto"><span><strong>'+(m.orderId?'<span>Message on your order</span> <span data-notr>'+esc((o&&o.poRef)||'')+'</span>':'<span data-notr>'+esc(m.staff?'Build Smartly · '+m.staff:'Build Smartly')+'</span>')+'</strong> <span class="small muted">'+new Date(m.createdAt).toLocaleString('en-GB')+'</span><br><span>'+(m.orderId?esc(m.name||'')+': ':'')+esc(m.text)+'</span></span>'+(m.orderId?'<a class="btn btn-ghost btn-sm" href="#order-'+esc(m.orderId)+'">Open order</a>':'')+'</div>'; }).join('') : '<div class="empty">No messages yet.</div>';
+  }
+  BS.subscribe('messages', function(d){ msgs=d||[]; render(); });
+  BS.subscribe('offers', function(d){ offers=d||[]; render(); });
+  BS.subscribe('boqs', function(d){ boqs=d||[]; render(); });
+  window.addEventListener('hashchange', render);
+}
 function bsSupport(threadId, inputId, sendId){
   var thread=document.getElementById(threadId), input=document.getElementById(inputId), btn=document.getElementById(sendId), all=[];
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
-  function render(){
-    var ph=bsDigits((BS.me()||{}).phone); var mine=all.filter(function(m){ return m.phone===ph && !m.orderId; }).sort(function(a,b){ return (a.createdAt||'').localeCompare(b.createdAt||''); });
-    thread.innerHTML = mine.length ? mine.map(function(m){ return '<div class="msg '+(m.who==='staff'?'':'me')+'"><div class="t">'+(m.who==='staff'?'Build Smartly support':'You')+' · '+new Date(m.createdAt).toLocaleString()+'</div>'+esc(m.text)+'</div>'; }).join('') : '<div class="empty">No messages yet. Ask anything about a request, an offer, a delivery or your documents.</div>';
-    thread.scrollTop=thread.scrollHeight;
+  var tools=document.createElement('div'); tools.className='chat-tools'; (input.closest('.chat-in')||thread).after(tools);
+  var past=document.createElement('div'); past.className='chat-past'; tools.after(past);
+  function chats(){
+    var ph=bsDigits((BS.me()||{}).phone); var mine=all.filter(function(m){ return m.phone===ph && !m.orderId && !m.nudge && !m.direct; }).sort(function(a,b){ return (a.createdAt||'').localeCompare(b.createdAt||''); });
+    var out=[[]]; mine.forEach(function(m){ if(m.closed){ out[out.length-1].endedAt=m.createdAt; out.push([]); } else out[out.length-1].push(m); });
+    return out.filter(function(c, i){ return c.length || i===out.length-1; });
   }
+  function bubble(m){ return '<div class="msg '+(m.who==='staff'?'':'me')+'"><div class="t">'+(m.who==='staff'?esc(m.staff||'Build Smartly support'):'You')+' · '+new Date(m.createdAt).toLocaleString('en-GB')+'</div>'+esc(m.text)+'</div>'; }
+  function transcript(c){ return 'Build Smartly support chat\n\n'+c.map(function(m){ return new Date(m.createdAt).toLocaleString('en-GB')+' · '+(m.who==='staff'?(m.staff||'Build Smartly support'):'You')+':\n'+m.text; }).join('\n\n'); }
+  function mailIt(c){ var d=new Date((c[0]||{}).createdAt||Date.now()).toLocaleDateString('en-GB'); location.href='mailto:?subject='+encodeURIComponent('Build Smartly support chat · '+d)+'&body='+encodeURIComponent(transcript(c).slice(0,1800)); }
+  function render(){
+    var cs=chats(), cur=cs[cs.length-1]||[], old=cs.slice(0,-1).reverse();
+    thread.innerHTML = cur.length ? cur.map(bubble).join('') : '<div class="empty">No open chat. Ask anything about a request, an offer, a delivery or your documents.</div>';
+    thread.scrollTop=thread.scrollHeight;
+    tools.innerHTML = cur.length ? '<button class="btn btn-ghost btn-sm" type="button" data-chatmail>Email me this chat</button><button class="btn btn-ghost btn-sm" type="button" data-chatend>End chat</button>' : '';
+    past.innerHTML = old.length ? '<details><summary class="small">Past chats · '+old.length+'</summary>'+old.map(function(c, i){ return '<div class="chat-old"><div class="small muted"><span data-notr>'+new Date((c[0]||{}).createdAt||Date.now()).toLocaleString('en-GB')+'</span> · <span>'+c.length+' message'+(c.length>1?'s':'')+'</span> <button class="btn btn-ghost btn-sm" type="button" data-chatmailold="'+i+'">Email me this chat</button></div><div class="chat">'+c.map(bubble).join('')+'</div></div>'; }).join('')+'</details>' : '';
+  }
+  tools.addEventListener('click', async function(e){
+    var cs=chats(), cur=cs[cs.length-1]||[];
+    if(e.target.closest('[data-chatmail]')) mailIt(cur);
+    if(e.target.closest('[data-chatend]')){ if(!(await bsConfirm('End this chat?','It moves to Past chats, where you can still read it or email it to yourself.','End chat'))) return; await BS.add('messages', {phone:bsDigits((BS.me()||{}).phone), who:'customer', closed:true, text:'Chat ended'}); bsToast('Chat ended. You find it under Past chats.'); }
+  });
+  past.addEventListener('click', function(e){ var b=e.target.closest('[data-chatmailold]'); if(!b) return; var cs=chats(), old=cs.slice(0,-1).reverse(); mailIt(old[+b.dataset.chatmailold]||[]); });
   BS.subscribe('messages', function(d){ all=d; render(); });
-  window.addEventListener('hashchange', render); document.addEventListener('click', function(){ setTimeout(render, 60); });
+  window.addEventListener('hashchange', render);
   async function send(){
     var text=input.value.trim(); var me=BS.me()||{}; if(!text) return; if(!me.phone){ bsToast('Sign in first so we can answer you.'); return; }
     input.value=''; var ph=bsDigits(me.phone);
@@ -2024,7 +2084,7 @@ function bsSupport(threadId, inputId, sendId){
   var wcats=[], WCATS=BS.CATEGORIES.filter(function(c){ return c.indexOf('Other')<0; });
   function renderWCats(){ $('wCats').innerHTML = WCATS.map(function(c){ var i=wcats.indexOf(c); return '<span class="chip '+(i>=0?'on':'')+(i===0?' main':'')+'" data-wcat="'+c+'">'+(i===0?'Main · ':'')+c+'</span>'; }).join(''); }
   renderWCats();
-  $('wCats').addEventListener('click', function(e){ var c=e.target.closest('[data-wcat]'); if(!c) return; var cat=c.dataset.wcat, i=wcats.indexOf(cat); if(i>=0) wcats.splice(i,1); else { if(wcats.length>=6){ bsToast('One main category plus five more at most.'); return; } wcats.push(cat); } $('wCatsErr').hidden=!!wcats.length; renderWCats(); });
+  $('wCats').addEventListener('click', function(e){ var c=e.target.closest('[data-wcat]'); if(!c) return; var cat=c.dataset.wcat, i=wcats.indexOf(cat); if(i>=0) wcats.splice(i,1); else wcats.push(cat); $('wCatsErr').hidden=!!wcats.length; renderWCats(); });
   BS.SUBCITIES.forEach(function(sc){ var o=document.createElement('option'); o.textContent=sc; if(sc==='Akaki Kaliti') o.selected=true; $('wSub').appendChild(o); });
   function ownId(name){ return 'own-'+name.replace(/[^a-z0-9]/gi,'').toLowerCase(); }
   function finish(submitted){
@@ -2173,7 +2233,8 @@ function bsSupport(threadId, inputId, sendId){
   var pin=null, map=null, marker=null, draftPin=null;
   function siteTarget(){ return pin || $('subcity').value; }
   function pinLabel(){ if(!pin) return 'Not pinned · the sub-city centre is used'; return 'Pinned · '+pin.lat.toFixed(4)+', '+pin.lng.toFixed(4)+' · about '+BS.km(BS.CITY_CENTRE,[pin.lat,pin.lng])+' km from the city centre'+(pin.how==='gps'?' (your location)':''); }
-  function setPin(p){ pin=p; $('pinText').textContent=pinLabel(); updateEstimate(); saveDraft(); }
+  function setPin(p){ pin=p; $('pinText').textContent=pinLabel(); var pc=$('pinClear'); if(pc) pc.hidden=!pin; updateEstimate(); saveDraft(); }
+  function dropMarker(ll){ if(marker) marker.setLatLng(ll); else marker=L.marker(ll,{draggable:true}).addTo(map).on('dragend', function(ev){ var p2=ev.target.getLatLng(); draftPin={lat:p2.lat, lng:p2.lng, how:'map'}; }); }
   function loadLeaflet(){
     if(window.L) return Promise.resolve();
     return new Promise(function(res, rej){
@@ -2187,14 +2248,19 @@ function bsSupport(threadId, inputId, sendId){
     loadLeaflet().then(function(){
       var c = pin ? [pin.lat,pin.lng] : BS.pointOf($('subcity').value);
       if(!map){ $('mapBox').textContent=''; map=L.map('mapBox').setView(c, pin?15:13); L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19, attribution:'&copy; OpenStreetMap'}).addTo(map);
-        map.on('click', function(e){ draftPin={lat:e.latlng.lat, lng:e.latlng.lng, how:'map'}; if(marker) marker.setLatLng(e.latlng); else marker=L.marker(e.latlng,{draggable:true}).addTo(map).on('dragend', function(ev){ var ll=ev.target.getLatLng(); draftPin={lat:ll.lat, lng:ll.lng, how:'map'}; }); $('mapSave').disabled=false; $('mapMsg').textContent='Pin placed. Drag it to adjust, then press "Use this pin".'; });
-        if(pin){ marker=L.marker(c,{draggable:true}).addTo(map); } }
-      else { map.setView(c, pin?15:13); }
+        map.on('click', function(e){ draftPin={lat:e.latlng.lat, lng:e.latlng.lng, how:'map'}; dropMarker(e.latlng); $('mapSave').disabled=false; $('mapMsg').textContent='Pin placed. Drag it to adjust, then press "Use this pin".'; });
+        if(pin) dropMarker(c); }
+      else { map.setView(c, pin?15:13); if(pin) dropMarker(c); else if(marker){ map.removeLayer(marker); marker=null; } }
       setTimeout(function(){ map.invalidateSize(); },100);
     }).catch(function(){ $('mapBox').textContent='The map could not load on this connection. Use "Use my location" on site, or keep the sub-city.'; });
   };
   $('mapCancel').onclick=function(){ $('mapGate').hidden=true; };
-  $('mapSave').onclick=function(){ $('mapGate').hidden=true; if(draftPin) setPin(draftPin); };
+  $('mapSave').onclick=function(){ $('mapGate').hidden=true; setPin(draftPin||null); };
+  $('mapClear').onclick=function(){ draftPin=null; if(marker && map){ map.removeLayer(marker); marker=null; } $('mapSave').disabled=false; $('mapMsg').textContent='Pin cleared. Click the map to place a new one, or press "Use this pin" to keep the sub-city centre.'; };
+  $('mapHere').onclick=function(){ if(!navigator.geolocation){ $('mapMsg').textContent='This device cannot share its location.'; return; } $('mapMsg').textContent='Finding your location…';
+    navigator.geolocation.getCurrentPosition(function(pos){ var ll=[pos.coords.latitude, pos.coords.longitude]; draftPin={lat:ll[0], lng:ll[1], how:'gps'}; if(map){ map.setView(ll,16); dropMarker(ll); } $('mapSave').disabled=false; $('mapMsg').textContent='Pinned at your location. Drag it to adjust, then press "Use this pin".'; },
+      function(){ $('mapMsg').textContent='Could not get your location. Allow location access, or click the map.'; }, {timeout:10000, maximumAge:60000}); };
+  $('pinClear').onclick=function(){ setPin(null); bsToast('Pin cleared. The sub-city centre is used.'); };
   $('pinHere').onclick=function(){
     if(!navigator.geolocation){ bsToast('Location is not available on this device.'); return; }
     $('pinText').textContent='Finding your location…';
@@ -2227,7 +2293,7 @@ function bsSupport(threadId, inputId, sendId){
   /* the list is saved on this device as you type, so you can leave and continue where you stopped */
   var loading=false;
   function saveDraft(){ if(loading) return; try{ if(lines.some(function(l){return l.item;})){ localStorage.setItem('bs_demo_draft', JSON.stringify({lines:lines, pin:pin, company:$('company').value, validity:$('validity').value, stage:$('stage').value, subcity:$('subcity').value, delivery:$('delivery').value, payment:$('payment').value, partial:$('partial').checked, insurance:$('insurance').checked})); } }catch(e){} }
-  function loadDraft(){ var d=null; try{ d=JSON.parse(localStorage.getItem('bs_demo_draft')||'null'); }catch(e){} if(!d || !(d.lines||[]).length) return false; loading=true; lines=d.lines||[]; pin=d.pin||null; $('pinText').textContent=pinLabel(); $('company').value=d.company||$('company').value; $('validity').value=d.validity; $('stage').value=d.stage||'all'; $('subcity').value=d.subcity; $('delivery').value=d.delivery; $('payment').value=d.payment; $('partial').checked=!!d.partial; $('insurance').checked=!!d.insurance; loading=false; renderLines(); return true; }
+  function loadDraft(){ var d=null; try{ d=JSON.parse(localStorage.getItem('bs_demo_draft')||'null'); }catch(e){} if(!d || !(d.lines||[]).length) return false; loading=true; lines=d.lines||[]; pin=d.pin||null; $('pinClear').hidden=!pin; $('pinText').textContent=pinLabel(); $('company').value=d.company||$('company').value; $('validity').value=d.validity; $('stage').value=d.stage||'all'; $('subcity').value=d.subcity; $('delivery').value=d.delivery; $('payment').value=d.payment; $('partial').checked=!!d.partial; $('insurance').checked=!!d.insurance; loading=false; renderLines(); return true; }
   function clearDraft(){ try{ localStorage.removeItem('bs_demo_draft'); }catch(e){} }
   if(!loadDraft()){ renderLines(); } else { bsToast('Your saved list is back. Continue where you stopped.'); }
   BSRoute.on('boq-resume', function(){ var me2=BS.me()||{}; if(loadDraft() && me2.phone){ setTimeout(function(){ $('submit').click(); }, 200); } });
@@ -2327,12 +2393,12 @@ function bsSupport(threadId, inputId, sendId){
         var os=offersOn(b,l), po=poOf(b,l), ch=chosenOf(b,l), invited=BS.activeSuppliers().filter(function(s){ return s.cats.indexOf(l.cat)>=0; }).length;
         var live=os.filter(function(o){ return o.status!=='rejected'; }), best=live.filter(validOffer)[0], bestTotal=best?totalOf(best):0;
         if(!po){ openLines++; if(ch){ chosenN++; chosenSum+=totalOf(ch); } else if(best) bestMissing++; }
-        var state = po ? '<span class="tag tag-green">In order '+esc(po.poRef||'')+'</span>' : ch ? '<span class="tag tag-green">Chosen · '+esc(ch.brand)+'</span>' : os.length ? '<span class="tag">'+live.length+' offer'+(live.length!==1?'s':'')+'</span>' : '<span class="tag">Waiting for offers</span>';
+        var state = po ? '<span class="tag tag-green tag-strong">In order '+esc(po.poRef||'')+'</span>' : ch ? '<span class="tag tag-green">Chosen · '+esc(ch.brand)+'</span>' : os.length ? '<span class="tag">'+live.length+' offer'+(live.length!==1?'s':'')+'</span>' : '<span class="tag">Waiting for offers</span>';
         var rows=os.map(function(o,i){
           var total=totalOf(o), isCh=ch && ch.id===o.id, isBest=!po && best && o.id===best.id && live.length>1, isPo=po && po.id===o.id;
           var cls='offer'+(isCh||isPo?' accepted':'')+(isBest?' best':'')+((po&&!isPo)||o.status==='rejected'?' dim':'');
           var act;
-          if(isPo) act='<span class="small" style="font-weight:600">'+esc(o.supplierName)+' · <a href="#order-'+o.id+'">order page</a></span>';
+          if(isPo) act='<span class="small" style="font-weight:700;color:var(--fg)">'+esc(o.supplierName)+' · <a href="#order-'+o.id+'" style="font-weight:700">order page</a></span>';
           else if(po) act='<span class="small muted">Not chosen</span>';
           else if(withdrawn) act='<span class="small muted">Request withdrawn</span>';
           else if(o.status==='rejected') act='<span style="display:grid;gap:.25rem"><span class="small muted">You rejected this offer</span><button class="btn btn-ghost btn-sm" data-unreject="'+o.id+'">Undo</button></span>';
@@ -2344,9 +2410,9 @@ function bsSupport(threadId, inputId, sendId){
             '<span><span class="k">Brand</span>'+(BS.BRAND_LOGOS[o.brand]?'<img class="blogo" src="'+BS.BRAND_LOGOS[o.brand]+'" alt="">':'')+'<b>'+esc(o.brand||'—')+'</b><span class="small muted"> · '+o.qtyOffered+' '+esc(l.unit)+(o.qtyOffered<l.qty?' (partial)':'')+'</span></span>'+
             '<span><span class="k">'+rateLabel(l)+'</span>'+BS.fmt(o.unitPrice)+' <span class="small muted">'+(o.vat==='incl'?'incl. VAT':'excl. VAT')+'</span></span>'+
             '<span><span class="k">Total</span><strong>'+BS.fmt(total)+'</strong>'+(isBest?'<br><span class="best-tag">Best price</span>':(!po && live.length>1 && o.status!=='rejected' && total>bestTotal)?'<br><span class="diff">+ '+BS.fmt(total-bestTotal)+' vs best</span>':'')+'</span>'+
-            '<span><span class="k">Delivery · ready in · valid</span>'+(o.deliveryCost?BS.fmt(o.deliveryCost):(b.deliveryTerm==='Supplier delivers to site'?'included':'ex-works'))+' · '+o.leadDays+' d · '+o.validDays+' d</span>'+act+'</div>';
+            '<span><span class="k">Delivery · ready in · valid</span>'+(o.deliveryCost?BS.fmt(o.deliveryCost)+(o.deliveryTotal&&o.deliveryTotal>o.deliveryCost?' <span class="small" title="One delivery fee for all lines from this supplier, shared by value"><span>share of</span> <span data-notr>'+BS.fmt(o.deliveryTotal)+'</span></span>':''):(b.deliveryTerm==='Supplier delivers to site'?'included':'ex-works'))+' · '+o.leadDays+' d · <span class="cd">'+o.validDays+' d</span></span>'+act+'</div>';
         }).join('');
-        return '<section class="lbox'+(po?' done':ch?' chosen':'')+'"><div class="lbox-head"><span class="lbox-pic">'+(BS.itemPic(l.item)||BS.catPic(l.cat)?'<img src="'+esc(BS.itemPic(l.item)||BS.catPic(l.cat))+'" alt="" onerror="this.remove()">':'')+'</span><span><strong>'+lineTitle(l)+'</strong><br><span class="small muted">'+esc(l.cat)+(os.length?' · '+os.length+' of '+invited+' supplier'+(invited!==1?'s':'')+' quoted · cheapest first':' · sent to '+invited+' supplier'+(invited!==1?'s':''))+'</span></span>'+state+'</div>'+
+        return '<section class="lbox'+(po?' done':ch?' chosen':'')+'"><div class="lbox-head"><span class="lbox-pic">'+(BS.itemPic(l.item)||BS.catPic(l.cat)?'<img src="'+esc(BS.itemPic(l.item)||BS.catPic(l.cat))+'" alt="" onerror="this.remove()">':'')+'</span><span><strong>'+lineTitle(l)+'</strong><br><span class="small keyinfo">'+esc(l.cat)+(os.length?' · '+os.length+' of '+invited+' supplier'+(invited!==1?'s':'')+' quoted · cheapest first':' · sent to '+invited+' supplier'+(invited!==1?'s':''))+'</span></span>'+state+'</div>'+
           (os.length ? '<div class="offers">'+rows+'</div>' : '<div class="small muted">No offers yet. You get a notification when the first one arrives.</div>')+'</section>';
       }).join('');
       var bar='';
@@ -2601,8 +2667,8 @@ function bsSupport(threadId, inputId, sendId){
   function showTab(t){ var sub=t; t=TABMAP[t]||t; document.querySelectorAll('#spTabs button').forEach(function(x){x.classList.toggle('on',x.dataset.tab===t);}); TABS.forEach(function(k){ $('tab-'+k).hidden = k!==t; }); if(t==='mail'){ $('spMailBadge').hidden=true; } if(sub==='profile'||sub==='stats'){ var el=$('tab-'+sub); if(el) setTimeout(function(){ el.scrollIntoView({behavior:'smooth',block:'start'}); },30); return; } window.scrollTo(0,0); }
   document.querySelectorAll('#spTabs button').forEach(function(b){ b.onclick=function(){ showTab(b.dataset.tab); }; });
   window.bsSupplierTab=function(t, sub){ if(!sup) return; showTab(t); if(sub){ var mb=document.querySelector('#spMailTabs [data-m="'+sub+'"]'); if(mb) mb.click(); } };
-  $('spMailTabs').addEventListener('click', function(e){ var b=e.target.closest('[data-m]'); if(!b) return; $('spMailTabs').querySelectorAll('button').forEach(function(x){ x.classList.toggle('on', x===b); }); ['statements','support','news'].forEach(function(k){ $('spm-'+k).hidden = k!==b.dataset.m; }); });
-  bsSupport('spSupportThread','spSupportIn','spSupportSend');
+  $('spMailTabs').addEventListener('click', function(e){ var b=e.target.closest('[data-m]'); if(!b) return; $('spMailTabs').querySelectorAll('button').forEach(function(x){ x.classList.toggle('on', x===b); }); ['statements','support','inbox','news'].forEach(function(k){ $('spm-'+k).hidden = k!==b.dataset.m; }); });
+  bsSupport('spSupportThread','spSupportIn','spSupportSend'); bsInbox('spInbox');
   document.addEventListener('click', function(e){ var b=e.target.closest('[data-go]'); if(b && !$('view-supplier').hidden){ showTab(b.dataset.go); } });
 
   /* ----- verification and checklist ----- */
@@ -2641,7 +2707,8 @@ function bsSupport(threadId, inputId, sendId){
     $('catMsg').textContent = profile.cats.length ? 'Main: '+profile.cats[0]+(profile.cats.length>1?' · also '+profile.cats.slice(1).join(', '):'') : 'Tap your main category first.';
     $('zoneChips').innerHTML = BS.SUBCITIES.map(function(z){ return '<span class="chip '+(profile.zones.indexOf(z)>=0?'on':'')+'" data-zone="'+z+'">'+z+'</span>'; }).join('');
   }
-  $('catChips').addEventListener('click', function(e){ var c=e.target.closest('[data-cat]'); if(!c) return; var cat=c.dataset.cat, i=profile.cats.indexOf(cat); if(i>=0){ profile.cats.splice(i,1); } else { if(profile.cats.length>=6){ bsToast('One main category plus five more at most.'); return; } profile.cats.push(cat); } sup.cats=profile.cats; saveProfile(); renderChips(); render(); });
+  $('catAll').onclick=function(){ CATS.forEach(function(c){ if(profile.cats.indexOf(c)<0) profile.cats.push(c); }); sup.cats=profile.cats; saveProfile(); renderChips(); render(); bsToast('All categories selected.'); };
+  $('catChips').addEventListener('click', function(e){ var c=e.target.closest('[data-cat]'); if(!c) return; var cat=c.dataset.cat, i=profile.cats.indexOf(cat); if(i>=0){ profile.cats.splice(i,1); } else profile.cats.push(cat); sup.cats=profile.cats; saveProfile(); renderChips(); render(); });
   $('zoneChips').addEventListener('click', function(e){ var c=e.target.closest('[data-zone]'); if(!c) return; var z=c.dataset.zone, i=profile.zones.indexOf(z); if(i>=0) profile.zones.splice(i,1); else profile.zones.push(z); saveProfile(); renderChips(); });
   function renderLocs(){ $('lList').innerHTML = profile.locs.length ? profile.locs.map(function(l,i){ return '<div class="doc"><span class="ico">LOC</span><span>'+l.type+' · '+l.sub+', Addis Ababa'+(l.pin?' · map link saved':'')+'</span><button class="btn btn-ghost btn-sm" type="button" data-rmloc="'+i+'">Remove</button></div>'; }).join('') : '<div class="empty">No dispatch points yet.</div>'; }
   $('lAdd').onclick=function(){ profile.locs.push({type:$('lType').value, sub:$('lSub').value, pin:$('lPin').value.trim()}); $('lPin').value=''; saveProfile(); renderLocs(); render(); };
@@ -2790,18 +2857,24 @@ function bsSupport(threadId, inputId, sendId){
     reqs.forEach(function(b){
       var card=document.createElement('div'); card.className='card req'; var left=BS.days(new Date(b.deadlineAt)-Date.now());
       var prefilled=matches(b).filter(function(l){ return priceFor(l.item) && !mine.some(function(o){return o.boqId===b.id && o.lineN===l.n;}); }).length;
-      card.innerHTML='<div class="req-head"><div><h3>'+b.ref+' · Customer '+b.customerNo+' · '+b.subcity+', '+b.city+'</h3><span class="small muted">'+b.deliveryTerm+' · '+b.paymentTerm+(b.partial?' · partial quotes accepted':'')+' · customer name and exact address hidden until the PO</span></div><div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap"><span class="deadline">Reply within '+left+' day'+(left!==1?'s':'')+'</span>'+(can&&prefilled>1?'<button class="btn btn-primary btn-sm" type="button" data-sendall="'+b.id+'">Send all '+prefilled+' pre-filled offers</button>':'')+'</div></div>';
+      card.innerHTML='<div class="req-head"><div><h3>'+b.ref+' · Customer '+b.customerNo+' · '+b.subcity+', '+b.city+'</h3><span class="small muted">'+b.deliveryTerm+' · '+b.paymentTerm+(b.partial?' · partial quotes accepted':'')+' · customer name and exact address hidden until the PO</span></div><div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap"><span class="deadline">Reply within '+left+' day'+(left!==1?'s':'')+'</span></div></div>';
       matches(b).forEach(function(l){
         var done=mine.filter(function(o){return o.boqId===b.id && o.lineN===l.n;})[0]; var pl=priceFor(l.item);
         var fromSub=(profile.locs[0]||{}).sub||sup.sub||'Akaki Kaliti', dEst=BS.deliveryEstimate([l], fromSub, b.pin||b.subcity), delivers=b.deliveryTerm==='Supplier delivers to site';
         var dHint = BS.isHire(l) ? 'Mobilisation to '+b.subcity+(b.pin?' (site pinned)':'')+': about '+dEst.km+' km from '+fromSub+'.' : 'Transport to '+b.subcity+(b.pin?' (site pinned)':'')+': about '+dEst.km+' km from '+fromSub+', '+dEst.trips+' truck trip'+(dEst.trips!==1?'s':'')+' ('+dEst.tonnes+' t) · typical cost '+BS.fmt(dEst.cost)+'.'+(delivers?' Pre-filled below; change it to your own figure, or put 0 and quote a delivered unit price.':' The customer '+(b.deliveryTerm==='I collect from supplier'?'collects: quote ex-works.':'uses Build Smartly transport: quote ex-works.'));
         var d=document.createElement('div'); d.className='qline';
-        d.innerHTML='<div class="what"><strong>Line '+l.n+' · '+l.item+'</strong><span class="small muted">'+l.qty+' '+l.unit+(l.returnBy?' · hire from '+l.needed+' to '+l.returnBy:l.needed?' · needed by '+l.needed:'')+' · <span class="tag">'+l.cat+'</span></span></div>'+
-          (done ? '<div class="sent">Offer sent: '+BS.fmt(done.unitPrice)+' per '+l.unit+', delivery '+BS.fmt(done.deliveryCost||0)+', valid '+done.validDays+' days.</div>' :
-          '<form class="qform" data-boq="'+b.id+'" data-line="'+l.n+'"><div class="small muted" style="grid-column:1/-1">'+dHint+'</div>'+(pl?'<div class="small" style="grid-column:1/-1;color:var(--ok);font-weight:600">Pre-filled from your price list ('+(isStale(pl)?'stale, please check':'confirmed '+(ageDays(pl.confirmedAt)===0?'today':ageDays(pl.confirmedAt)+' d ago'))+'). One tap to send.</div>':'')+
-          '<div class="field"><label>Brand / origin</label><select name="brand" required>'+(BS.BRANDS[l.cat]||['Other']).map(function(bn){ return '<option'+(bn===(profile.brands.split(',')[0]||'').trim()?' selected':'')+'>'+bn+'</option>'; }).join('')+'</select></div><div class="field"><label>'+(BS.isHire(l)?(l.unit==='day'?'Days':l.unit==='hour'?'Hours':'Quantity')+(l.returnBy?' ('+l.needed+' to '+l.returnBy+')':''):'Qty offered ('+l.unit+')')+'</label><input name="qty" type="number" min="1" value="'+l.qty+'" required></div><div class="field"><label>'+(BS.isHire(l)?'Rate per '+l.unit+' (ETB)':'Unit price (ETB)')+'</label><input name="price" type="number" min="1" step="1" placeholder="0" value="'+(pl?pl.price:'')+'" required></div><div class="field"><label>VAT</label><select name="vat"><option value="incl"'+(!pl||pl.vat==='incl'?' selected':'')+'>Included</option><option value="excl"'+(pl&&pl.vat==='excl'?' selected':'')+'>Excluded</option></select></div><div class="field"><label>Delivery cost (ETB)</label><input name="delivery" type="number" min="0" step="1" value="'+(delivers?dEst.cost:0)+'"></div><div class="field"><label>Lead time (days)</label><input name="lead" type="number" min="0" value="2"></div><div class="field"><label>Valid for (days)</label><select name="valid"><option>1</option><option>2</option><option'+(!pl||pl.valid===3?' selected':'')+'>3</option><option'+(pl&&pl.valid===7?' selected':'')+'>7</option></select></div><div class="field" style="grid-column:span 2"><label>&nbsp;</label><button class="btn btn-primary btn-sm" type="submit" style="width:100%" '+(can?'':'disabled')+'>'+(can?'Send offer':'Locked until verified')+'</button></div></form>');
+        d.innerHTML='<div class="what"><strong>Line '+l.n+' · '+l.item+'</strong><span class="small keyinfo">'+l.qty+' '+l.unit+(l.returnBy?' · hire from '+l.needed+' to '+l.returnBy:l.needed?' · needed by '+l.needed:'')+' · <span class="tag">'+l.cat+'</span></span></div>'+
+          (done ? '<div class="sent">Offer sent: '+BS.fmt(done.unitPrice)+' per '+l.unit+(done.deliveryTotal?', share of delivery '+BS.fmt(done.deliveryCost||0):', delivery '+BS.fmt(done.deliveryCost||0))+', valid '+done.validDays+' days.</div>' :
+          '<form class="qform" data-boq="'+b.id+'" data-line="'+l.n+'">'+(pl?'<div class="small" style="grid-column:1/-1;color:var(--ok);font-weight:600">Pre-filled from your price list ('+(isStale(pl)?'stale, please check':'confirmed '+(ageDays(pl.confirmedAt)===0?'today':ageDays(pl.confirmedAt)+' d ago'))+'). One tap to send.</div>':'')+
+          '<div class="field"><label>Brand / origin</label><select name="brand" required>'+(BS.BRANDS[l.cat]||['Other']).map(function(bn){ return '<option'+(bn===(profile.brands.split(',')[0]||'').trim()?' selected':'')+'>'+bn+'</option>'; }).join('')+'</select></div><div class="field"><label>'+(BS.isHire(l)?(l.unit==='day'?'Days':l.unit==='hour'?'Hours':'Quantity')+(l.returnBy?' ('+l.needed+' to '+l.returnBy+')':''):'Qty offered ('+l.unit+')')+'</label><input name="qty" type="number" min="1" value="'+l.qty+'" required></div><div class="field"><label>'+(BS.isHire(l)?'Rate per '+l.unit+' (ETB)':'Unit price (ETB)')+'</label><input name="price" type="number" min="1" step="1" placeholder="0" value="'+(pl?pl.price:'')+'" required></div><div class="field"><label>VAT</label><select name="vat"><option value="incl"'+(!pl||pl.vat==='incl'?' selected':'')+'>Included</option><option value="excl"'+(pl&&pl.vat==='excl'?' selected':'')+'>Excluded</option></select></div><div class="field"><label>Lead time (days)</label><input name="lead" type="number" min="0" value="2"></div><div class="field"><label>Valid for (days)</label><select name="valid"><option>1</option><option>2</option><option'+(!pl||pl.valid===3?' selected':'')+'>3</option><option'+(pl&&pl.valid===7?' selected':'')+'>7</option></select></div><div class="field" style="grid-column:span 2"><label>&nbsp;</label><button class="btn btn-primary btn-sm" type="submit" style="width:100%" '+(can?'':'disabled')+'>'+(can?'Send offer':'Locked until verified')+'</button></div></form>');
         card.appendChild(d);
       });
+      var openL=matches(b).filter(function(l){ return !mine.some(function(o){return o.boqId===b.id && o.lineN===l.n;}); });
+      if(openL.length){ var fromS=(profile.locs[0]||{}).sub||sup.sub||'Akaki Kaliti', est=BS.deliveryEstimate(matches(b), fromS, b.pin||b.subcity), dlv=b.deliveryTerm==='Supplier delivers to site', sentD=mine.filter(function(o){ return o.boqId===b.id && o.deliveryTotal; })[0];
+        var ft=document.createElement('form'); ft.className='qfoot'; ft.dataset.dboq=b.id;
+        ft.innerHTML = dlv ? '<div><strong>Delivery for the whole request</strong><span class="small muted"><span>One fee for all lines; the customer sees it shared across the lines by value.</span> <span data-notr>'+fromS+' → '+b.subcity+(b.pin?' ⌖':'')+' · '+est.km+' km · '+est.tonnes+' t</span> · <span>'+est.trips+' truck trip'+(est.trips!==1?'s':'')+'</span></span></div><div class="field"><label>Delivery (ETB)</label><input name="dtot" data-dtot="'+b.id+'" type="number" min="0" step="1" value="'+(sentD?sentD.deliveryTotal:est.cost)+'"'+(sentD?' readonly title="Set with your first offer on this request"':'')+'></div>'+(can&&openL.length>1?'<button class="btn btn-primary btn-sm" type="button" data-sendall="'+b.id+'">Send all '+openL.length+' offers</button>':'')
+          : '<div><strong>No delivery to price</strong><span class="small muted">'+(b.deliveryTerm==='I collect from supplier'?'The customer collects from you: quote ex-works.':'The customer uses Build Smartly transport: quote ex-works.')+'</span></div>'+(can&&openL.length>1?'<button class="btn btn-primary btn-sm" type="button" data-sendall="'+b.id+'">Send all '+openL.length+' offers</button>':'');
+        card.appendChild(ft); }
       box.appendChild(card);
     });
     renderRest();
@@ -2819,7 +2892,7 @@ function bsSupport(threadId, inputId, sendId){
     var ob=$('tab-offers'); var sent=mine.filter(function(o){ return o.status!=='accepted'; }).sort(function(a,b){return (b.createdAt||'').localeCompare(a.createdAt||'');}).filter(function(o){ var b=boqs.filter(function(x){return x.id===o.boqId;})[0]||{}; return hit(b.ref, lineName(b,o.lineN), o.brand); });
     ob.innerHTML = sent.length ? sent.map(function(o){ var b=boqs.filter(function(x){return x.id===o.boqId;})[0]; var l=b?b.lines.filter(function(x){return x.n===o.lineN;})[0]:null; var other=offers.filter(function(x){ return x.boqId===o.boqId && x.lineN===o.lineN && x.status==='accepted'; })[0];
         var st = o.status==='rejected' ? '<span class="tag">Rejected by the customer</span>' : other ? '<span class="tag">The customer chose another offer</span>' : (o.counter&&o.counter.state==='open') ? '<span class="tag tag-ochre">Customer proposes '+BS.fmt(o.counter.price)+' · your answer needed</span>' : (o.counter&&o.counter.state==='accepted') ? '<span class="tag tag-green">You accepted the customer\'s price · waiting for the customer</span>' : (o.counter&&o.counter.state==='declined') ? '<span class="tag">You declined the counter · offer stands</span>' : (b && (b.chosen||{})[o.lineN]===o.id) ? '<span class="tag tag-green">Chosen by the customer · waiting for the order</span>' : '<span class="tag">Waiting for the customer</span>';
-        return '<div class="doc"><span class="ico">'+o.lineN+'</span><span><strong>'+(b?b.ref:'')+' · '+(l?l.item:'')+'</strong><br><span class="small muted">'+o.brand+' · '+o.qtyOffered+' '+(l?l.unit:'')+' · '+BS.fmt(o.unitPrice)+' · total '+BS.fmt(BS.offerTotal(o))+' · valid '+o.validDays+' d</span></span>'+st+'</div>'; }).join('')
+        return '<div class="doc"><span class="ico">'+o.lineN+'</span><span><strong>'+(b?b.ref:'')+' · '+(l?l.item:'')+'</strong><br><span class="small muted">'+o.brand+' · '+o.qtyOffered+' '+(l?l.unit:'')+' · '+BS.fmt(o.unitPrice)+' · total '+BS.fmt(BS.offerTotal(o))+' · <span class="cd">valid '+o.validDays+' d</span></span></span>'+st+'</div>'; }).join('')
       : '<div class="empty">'+(dq?'No offer matches.':'No open offers.')+'</div>';
     /* statements: purchase orders, contracts and receipts by year */
     renderStatements('spStatements', myGroups, boqs);
@@ -2827,9 +2900,19 @@ function bsSupport(threadId, inputId, sendId){
     renderPrices(); renderStats(mine);
     }
   }
+  /* one delivery fee per request, shared across the lines by value (qty × price) so each offer still has its own delivered total */
+  function delivShare(boqId, lineN){
+    var inp=document.querySelector('#tab-requests [data-dtot="'+boqId+'"]'); var tot=inp?Math.max(0,+inp.value||0):0; if(!tot) return {cost:0, total:0, lines:0};
+    var vals=[], mineQ=offers.filter(function(o){ return o.boqId===boqId && o.supplierId===sup.id; });
+    mineQ.forEach(function(o){ vals.push({n:o.lineN, v:(+o.qtyOffered||0)*(+o.unitPrice||0)}); });
+    document.querySelectorAll('#tab-requests form.qform[data-boq="'+boqId+'"]').forEach(function(f){ vals.push({n:+f.dataset.line, v:(+f.qty.value||0)*(+f.price.value||0)}); });
+    var sum=vals.reduce(function(a,x){ return a+x.v; },0), me=vals.filter(function(x){ return x.n===+lineN; })[0];
+    var share = sum>0 && me ? Math.round(tot*me.v/sum) : Math.round(tot/Math.max(1,vals.length));
+    return {cost:share, total:tot, lines:vals.length};
+  }
   $('tab-requests').addEventListener('submit', async function(e){
-    e.preventDefault(); var f=e.target; if(!f.dataset.boq) return; if(!verified() || !profile.agree){ bsToast(onHold()?'Your account is on hold for review. Quoting is locked.':'Quoting is locked.'); return; } var btn=f.querySelector('button[type=submit]'); btn.disabled=true; btn.textContent='Sending…';
-    await BS.add('offers', { boqId:f.dataset.boq, lineN:+f.dataset.line, supplierId:sup.id, supplierName:sup.name, supplierSub:(profile.locs[0]||{}).sub||sup.sub||'', brand:f.brand.value.trim(), qtyOffered:+f.qty.value, unitPrice:+f.price.value, vat:f.vat.value, deliveryCost:+f.delivery.value||0, leadDays:+f.lead.value||0, validDays:+f.valid.value, status:'sent' });
+    e.preventDefault(); var f=e.target; if(!f.dataset.boq) return; if(!verified() || !profile.agree){ bsToast(onHold()?'Your account is on hold for review. Quoting is locked.':'Quoting is locked.'); return; } var btn=f.querySelector('button[type=submit]'); btn.disabled=true; btn.textContent='Sending…'; var ds=delivShare(f.dataset.boq, f.dataset.line);
+    await BS.add('offers', { boqId:f.dataset.boq, lineN:+f.dataset.line, supplierId:sup.id, supplierName:sup.name, supplierSub:(profile.locs[0]||{}).sub||sup.sub||'', brand:f.brand.value.trim(), qtyOffered:+f.qty.value, unitPrice:+f.price.value, vat:f.vat.value, deliveryCost:ds.cost, deliveryTotal:ds.total||0, deliveryLines:ds.lines||0, leadDays:+f.lead.value||0, validDays:+f.valid.value, status:'sent' });
     bsToast('Offer sent. The customer sees it as an anonymous offer.');
   });
   $('spDealSearch').addEventListener('input', function(){ render(); var el=$('spDealSearch'); el.focus(); });
@@ -2845,8 +2928,9 @@ function bsSupport(threadId, inputId, sendId){
   $('tab-requests').addEventListener('click', async function(e){
     var s=e.target.closest('[data-sendall]'); if(!s) return; if(!verified() || !profile.agree){ bsToast(onHold()?'Your account is on hold for review. Quoting is locked.':'Quoting is locked.'); return; } s.disabled=true; s.textContent='Sending…';
     var forms=Array.prototype.slice.call(document.querySelectorAll('#tab-requests form[data-boq="'+s.dataset.sendall+'"]')).filter(function(f){ return +f.price.value>0; });
-    for(var i=0;i<forms.length;i++){ var f=forms[i]; await BS.add('offers', { boqId:f.dataset.boq, lineN:+f.dataset.line, supplierId:sup.id, supplierName:sup.name, supplierSub:(profile.locs[0]||{}).sub||sup.sub||'', brand:f.brand.value.trim(), qtyOffered:+f.qty.value, unitPrice:+f.price.value, vat:f.vat.value, deliveryCost:+f.delivery.value||0, leadDays:+f.lead.value||0, validDays:+f.valid.value, status:'sent' }); }
-    bsToast(forms.length+' offer'+(forms.length===1?'':'s')+' sent from your price list.');
+    var shares=forms.map(function(f){ return delivShare(f.dataset.boq, f.dataset.line); });
+    for(var i=0;i<forms.length;i++){ var f=forms[i], ds=shares[i]; await BS.add('offers', { boqId:f.dataset.boq, lineN:+f.dataset.line, supplierId:sup.id, supplierName:sup.name, supplierSub:(profile.locs[0]||{}).sub||sup.sub||'', brand:f.brand.value.trim(), qtyOffered:+f.qty.value, unitPrice:+f.price.value, vat:f.vat.value, deliveryCost:ds.cost, deliveryTotal:ds.total||0, deliveryLines:ds.lines||0, leadDays:+f.lead.value||0, validDays:+f.valid.value, status:'sent' }); }
+    bsToast(forms.length+' offer'+(forms.length===1?'':'s')+' sent, with one delivery fee shared across them.');
   });
 })();
 
@@ -2859,10 +2943,10 @@ function bsSupport(threadId, inputId, sendId){
   $('wsDetailsBtn').onclick=function(){ if(window.bsOpenGate) bsOpenGate(); };
   BS.SUBCITIES.forEach(function(s){ var o=document.createElement('option'); o.textContent=s; $('locSub').appendChild(o); });
   bsStatus('wsStatus','Online','On this device only');
-  function showPanel(p){ document.querySelectorAll('.tile[data-panel]').forEach(function(x){ x.classList.toggle('on', x.dataset.panel===p); }); ['tracking','statements','support','news','settings'].forEach(function(k){ $('p-'+k).hidden = k!==p; }); if(p==='support'){ $('nNotif').hidden=true; } }
+  function showPanel(p){ document.querySelectorAll('.tile[data-panel]').forEach(function(x){ x.classList.toggle('on', x.dataset.panel===p); }); ['tracking','statements','support','inbox','news','settings'].forEach(function(k){ $('p-'+k).hidden = k!==p; }); if(p==='support'){ $('nNotif').hidden=true; } }
   document.querySelectorAll('.tile[data-panel]').forEach(function(t){ t.onclick=function(){ showPanel(t.dataset.panel); }; });
   window.bsWorkspacePanel=showPanel;
-  bsSupport('supportThread','supportIn','supportSend');
+  bsSupport('supportThread','supportIn','supportSend'); bsInbox('wsInbox');
   var boqs=[], offers=[];
   BS.subscribe('boqs', function(d){ boqs=d; render(); }); BS.subscribe('offers', function(d){ offers=d; render(); });
   function mine(){ var me2=BS.me()||{}; var ph=(me2.phone||'').replace(/\D/g,'').replace(/^251/,''); return boqs.filter(function(b){ return (ph && b.ownerPhone===ph) || (!b.ownerPhone && company && b.company===company); }).sort(function(a,b){return (b.createdAt||'').localeCompare(a.createdAt||'');}); }
@@ -2935,7 +3019,10 @@ window.bsPublishProfile = async function(fields){
   var filter='all';
   function render(){ var list=all(); var mt=document.getElementById('memberList'); if(mt) mt.innerHTML = list.filter(function(p){ return filter==='all' || p.kind===filter; }).map(card).join('') || '<div class="empty">No members published yet.</div>'; var hm=document.getElementById('homeMembers'); if(hm) hm.innerHTML=list.slice(0,6).map(card).join(''); }
   var mt=document.getElementById('memTabs'); if(mt) mt.addEventListener('click', function(e){ var b=e.target.closest('[data-m]'); if(!b) return; mt.querySelectorAll('button').forEach(function(x){ x.classList.toggle('on', x===b); }); filter=b.dataset.m; render(); });
-  BS.subscribe('profiles', function(d){ profiles=d; render(); });
+  function renderNew(){ var box=document.getElementById('newMembersBox'); if(!box) return; var since=Date.now()-31*86400000;
+    var fresh=profiles.filter(function(p){ return p.publish && p.status==='approved' && p.name && new Date(p.reviewedAt||p.updatedAt||p.createdAt||0).getTime()>since; }).sort(function(a,b){ return String(b.reviewedAt||'').localeCompare(String(a.reviewedAt||'')); }).slice(0,4);
+    box.hidden=!fresh.length; document.getElementById('newMembers').innerHTML=fresh.map(function(p){ return '<div style="display:grid;gap:.15rem;border:1px solid var(--line);border-radius:10px;padding:.6rem .7rem;background:var(--white)"><strong>'+esc(p.name)+'</strong><span class="small keyinfo">'+(p.kind==='supplier'?'Supplier':'Builder or developer')+(p.cats&&p.cats.length?' · '+esc(p.cats.slice(0,3).join(', ')):'')+'</span>'+(p.intro?'<span class="small">'+esc(p.intro.length>120?p.intro.slice(0,117)+'…':p.intro)+'</span>':'')+'</div>'; }).join(''); }
+  BS.subscribe('profiles', function(d){ profiles=d; render(); renderNew(); });
   BSRoute.on('members', render);
   /* workspace: save introduction and publish flag */
   var save=document.getElementById('wsProfSave'); if(save) save.onclick=async function(){ var me=BS.me()||{}; if(!me.phone){ bsToast('Sign in first.'); return; } if(me.type==='Individual'){ bsToast('Public profiles are for companies and organisations only.'); return; } await bsPublishProfile({intro:document.getElementById('intro').value.trim(), publish:document.getElementById('wsPublish').checked, pics:await bsSmallPics('#p-settings .pics .wpic')}); document.getElementById('wsProfMsg').textContent = document.getElementById('wsPublish').checked ? 'Sent to Build Smartly staff. It appears in the Members directory once approved.' : 'Saved. Not published.'; bsToast(document.getElementById('wsPublish').checked ? 'Profile published in the Members directory.' : 'Profile saved, not published.'); };
@@ -3050,9 +3137,9 @@ window.bsPublishProfile = async function(fields){
 
 BSRoute.start();
 </script>
-<script src="assets/track.js?v=20261031i"></script>
-<script src="assets/order.js?v=20261031i"></script>
-<script src="assets/notify.js?v=20261031i"></script>
-<script src="assets/help.js?v=20261031i"></script>
-<script src="assets/admin.js?v=20261031i"></script>
-<script src="assets/i18n.js?v=20261031i"></script>
+<script src="assets/track.js?v=20261111a"></script>
+<script src="assets/order.js?v=20261111a"></script>
+<script src="assets/notify.js?v=20261111a"></script>
+<script src="assets/help.js?v=20261111a"></script>
+<script src="assets/admin.js?v=20261111a"></script>
+<script src="assets/i18n.js?v=20261111a"></script>

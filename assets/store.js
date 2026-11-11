@@ -553,6 +553,9 @@
   };
   /* ---- orders: one purchase order per supplier per request. Every offer in it carries the same poRef and the same
      order-step timestamps, so the group moves through the steps together. ---- */
+  /* advert placements and their prices (newsletter page); an advert goes live only after staff approval and payment */
+  BS.AD_PRICES = {news:5000, feature:15000, pulse:5000, banner:4000, directory:3000};
+  BS.AD_LABELS = {news:'Newsletter item', feature:'Featured supplier of the month', pulse:'Price pulse tile', banner:'Workspace banner', directory:'Highlighted Members card', platform:'From Build Smartly'};
   BS.offerTotal = function(o){ return (+o.qtyOffered||0)*(+o.unitPrice||0)+(+o.deliveryCost||0); };
   BS.orderGroup = function(offers, o){ if(!o) return []; if(!o.poRef) return [o]; return offers.filter(function(x){ return x.poRef===o.poRef && x.boqId===o.boqId && x.status==='accepted'; }).sort(function(a,b){ return a.lineN-b.lineN; }); };
   BS.orderGroups = function(offers, filter){

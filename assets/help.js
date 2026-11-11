@@ -14,6 +14,9 @@
 
   /* knowledge base: keywords → answer, links */
   var KB=[
+    {k:['requests to quote'], a:'Open requests in your categories are under Requests. Each line has the price filled in from your price list: choose the brand, check the price and the delivery, then press Send offer.', l:[['Open Requests','#supplier-requests']]},
+    {k:['price list'], a:'Under Price list, tick the items you sell, type your price and press Save. Your quotes are filled in from it, and you can still change a price on each quote.', l:[['Open Price list','#supplier-prices']]},
+    {k:['orders and contracts'], a:'Under Offers and orders, "Waiting for your action" shows what needs you: counter-offers, new orders to reconfirm, goods to mark ready and deliveries to dispatch. Each order page has the contract, the payment and the delivery.', l:[['Open Offers and orders','#supplier-deals']]},
     {k:['send','request','boq','quote','list','item','order materials','how do i start','start','begin'], a:'Go to Send a request, tick the materials you need, type the quantity and the date you need them, choose the delivery site and press Send. You sign in with your mobile number and the SMS code at that moment; no form to fill. You can also download the Excel template, let your engineer fill it, and upload it.', l:[['Send a request','#boq'],['Excel template','#boq']]},
     {k:['offer','offers','quotation','quote arrived','compare','best price','cheapest','where are my offers','my requests'], a:'Offers appear under My requests, cheapest delivered price first, with the brand but not the supplier name. Press Accept best on a line, or Accept the best price on all lines. You can also counter a price or reject an offer. You get an SMS when offers arrive.', l:[['My requests','#boq-mine']]},
     {k:['counter','negotiate','lower price','discount','cheaper'], a:'Under each offer there is a box "Your price per unit" and a Counter button. The supplier accepts or declines; if accepted the order is issued at your price. The original offer stays valid meanwhile.', l:[['My requests','#boq-mine']]},
@@ -30,7 +33,7 @@
     {k:['problem','complain','damage','wrong','late','dispute','report','issue','broken','missing'], a:'On the order page there is Report a problem. Build Smartly staff see it at once, track it until it is resolved, and answer within one working day. For anything else, write to support from your Mailbox or ask me to hand you over.', l:[['My workspace','#workspace']]},
     {k:['telegram','whatsapp','notification','notify'], a:'Notifications are SMS first. In Settings you can switch on Telegram as well. Telegram can also be used to send a request, never to sign in.', l:[['Settings','#workspace']]},
     {k:['category','categories','material','materials','cement','steel','block','finishing','equipment','what can i buy'], a:'Five categories: Foundation, Structure, Electrical and plumbing, Finishing, Equipment rental. Each line of your request goes only to verified suppliers of that material. Something not in the list? Type it; staff classify it.', l:[['Materials','#supply']]},
-    {k:['staff','admin','operations'], a:'The staff page is for Build Smartly operations: verification, categorisation, support, newsletter, finance, insights and tariffs. The link is at the bottom right of every page, for staff only.', l:[['Staff sign-in','#staff']]},
+        {k:['staff','admin','operations'], a:'The staff page is only for Build Smartly staff, who open it with their own address and login. Members never need it: everything you need is in your account.'},
     {k:['human','person','agent','talk','support','help me','call','contact','someone'], a:'HANDOFF'}
   ];
   function answer(q){
@@ -50,7 +53,7 @@
     return parts.join(' ');
   }
   function chips(){
-    var m=me(); var c = isSup() ? [['My requests to quote','#supplier'],['Price list','#supplier'],['Orders and contracts','#supplier'],['Talk to a person','HANDOFF']]
+    var m=me(); var c = isSup() ? [['My requests to quote','Q'],['Price list','Q'],['Orders and contracts','Q'],['Talk to a person','HANDOFF']]
       : m.phone ? [['Where are my offers?','Q'],['How do I pay?','Q'],['Contract and PO','Q'],['Talk to a person','HANDOFF']]
       : [['How do I send a request?','Q'],['How do offers work?','Q'],['Register as a supplier','#signup-supplier'],['Talk to a person','HANDOFF']];
     return '<div class="hchips">'+c.map(function(x){ return '<button type="button" data-hchip="'+esc(x[1])+'" data-q="'+esc(x[0])+'">'+esc(x[0])+'</button>'; }).join('')+'</div>';
@@ -59,10 +62,22 @@
   function draw(){
     var b=$('helpBody'); b.innerHTML=history.map(function(h){ return '<div class="hmsg '+h.who+'">'+h.html+'</div>'; }).join('')+chips(); b.scrollTop=b.scrollHeight;
   }
+  /* answers from Build Smartly staff appear here as well as in the bell and under Support */
+  var seenStaff={}, staffSince=null;
+  function watchStaff(){
+    if(watchStaff.on || !window.BS || !BS.subscribe) return; watchStaff.on=true;
+    BS.subscribe('messages', function(list){
+      var m=me(); if(!m.phone || !staffSince) return; var ph=digits(m.phone), fresh=[];
+      (list||[]).forEach(function(x){ if(x.orderId || x.who!=='staff' || digits(x.phone)!==ph || seenStaff[x.id] || (x.createdAt||'')<staffSince) return; seenStaff[x.id]=1; fresh.push(x); });
+      fresh.sort(function(a,b){ return (a.createdAt||'').localeCompare(b.createdAt||''); }).forEach(function(x){ history.push({who:'bot staff', html:'<strong>'+esc(x.staff||'Build Smartly staff')+':</strong> '+esc(x.text)}); });
+      if(fresh.length){ if(open) draw(); else { var b=$('helpBtn'); if(b) b.classList.add('hnew'); } }
+    });
+  }
   async function handoff(q){
     var m=me(); if(!m.phone){ push('bot','To talk to a person, sign in first with your mobile number, then write here or in your Mailbox under Support. Or use the <a href="#contact">contact page</a>.'); return; }
+    if(!staffSince) staffSince=new Date(Date.now()-5000).toISOString(); watchStaff();
     await BS.add('messages', {phone:digits(m.phone), who:'customer', name:m.company||m.name||'', text:(q&&q!=='HANDOFF'?q:'Request for help from the assistant')+' (sent from the help box)'});
-    push('bot','Sent to Build Smartly staff. A person answers under Support (and by SMS) within one working hour. <a href="#support">Open Support</a>');
+    push('bot','Sent to Build Smartly staff. Their answer appears here in this chat, under Support and by SMS, within one working hour. <a href="#support">Open Support</a>');
   }
   function ask(q){
     push('me', esc(q));
@@ -73,7 +88,7 @@
       lastQ=q; push('bot', esc(e.a)+(e.l&&e.l.length?'<div class="hlinks">'+e.l.map(function(x){ return '<a href="'+x[1]+'">'+esc(x[0])+' →</a>'; }).join('')+'</div>':'')+'<div class="hlinks"><button type="button" class="hsend" data-hsend="1">Not what I need: send my question to a person</button></div>');
     }, 350);
   }
-  function toggle(on){ open = on===undefined ? !open : on; $('helpPanel').hidden=!open; $('helpBtn').setAttribute('aria-expanded', open?'true':'false'); if(open){ if(!history.length) push('bot', greeting()); draw(); setTimeout(function(){ $('helpIn').focus(); },50); } }
+  function toggle(on){ open = on===undefined ? !open : on; $('helpPanel').hidden=!open; $('helpBtn').setAttribute('aria-expanded', open?'true':'false'); if(open){ var hb=$('helpBtn'); if(hb) hb.classList.remove('hnew'); if(!history.length) push('bot', greeting()); draw(); setTimeout(function(){ $('helpIn').focus(); },50); } }
   $('helpBtn').onclick=function(){ toggle(); };
   $('helpClose').onclick=function(){ toggle(false); };
   $('helpSend').onclick=function(){ var q=$('helpIn').value.trim(); if(!q) return; $('helpIn').value=''; ask(q); };
