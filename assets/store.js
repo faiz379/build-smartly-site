@@ -277,6 +277,91 @@
     }).filter(function(r){ return r.some(function(c){ return String(c).trim()!==""; }); });
   }
   function unxml(t){ return String(t).replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&#(\d+);/g,function(_,d){return String.fromCharCode(+d);}).replace(/&amp;/g,"&"); }
+  /* a small zip reader (Excel and Word files are zip folders): returns get(name) → Promise of the text, or null */
+  function zipGet(u8){
+    var dv=new DataView(u8.buffer,u8.byteOffset,u8.byteLength), dec=new TextDecoder();
+    var i=u8.length-22; while(i>=0 && dv.getUint32(i,true)!==0x06054b50) i--; if(i<0) return null;
+    var count=dv.getUint16(i+10,true), p=dv.getUint32(i+16,true), entries={};
+    for(var k=0;k<count;k++){ if(dv.getUint32(p,true)!==0x02014b50) break;
+      var fnl=dv.getUint16(p+28,true), exl=dv.getUint16(p+30,true), cml=dv.getUint16(p+32,true);
+      entries[dec.decode(u8.subarray(p+46,p+46+fnl))]={method:dv.getUint16(p+10,true), csize:dv.getUint32(p+20,true), off:dv.getUint32(p+42,true)};
+      p+=46+fnl+exl+cml; }
+    return function(name){ var e=entries[name]; if(!e) return Promise.resolve("");
+      var lf=e.off, start=lf+30+dv.getUint16(lf+26,true)+dv.getUint16(lf+28,true), data=u8.subarray(start,start+e.csize);
+      if(e.method===0) return Promise.resolve(dec.decode(data));
+      var ds=new DecompressionStream("deflate-raw"), w=ds.writable.getWriter(); w.write(data); w.close(); return new Response(ds.readable).text(); };
+  }
+  /* Word (.docx): every table row becomes a row of cells, every paragraph outside a table a row of one cell */
+  function docxRows(xml){
+    var d=new DOMParser().parseFromString(xml, "application/xml"), rows=[];
+    var kids=function(el, tag){ return [].filter.call(el.childNodes, function(c){ return c.nodeName===tag; }); };
+    var txt=function(el){ return [].map.call(el.getElementsByTagName("w:t"), function(t){ return t.textContent; }).join("").replace(/\s+/g," ").trim(); };
+    function walk(el){ [].forEach.call(el.childNodes, function(c){
+      if(c.nodeName==="w:tbl"){ kids(c,"w:tr").forEach(function(tr){ var cells=kids(tr,"w:tc").map(function(tc){ return kids(tc,"w:p").map(txt).filter(Boolean).join(" "); }); if(cells.some(Boolean)) rows.push(cells); }); }
+      else if(c.nodeName==="w:p"){ var t=txt(c); if(t) rows.push([t]); }
+      else if(c.nodeName==="w:sdt" || c.nodeName==="w:sdtContent" || c.nodeName==="w:customXml") walk(c); }); }
+    var body=d.getElementsByTagName("w:body")[0]; if(body) walk(body); return rows;
+  }
+  /* PDF: pdf.js (loaded only when needed) gives the words with their positions; words on one line are joined,
+     a wide gap starts a new cell, so a printed BOQ table comes back as rows of cells */
+  var PDFJS="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+  async function pdfRows(file){
+    if(!window.pdfjsLib){ await new Promise(function(res, rej){ var s=document.createElement("script"); s.src=PDFJS+"pdf.min.js"; s.onload=res; s.onerror=function(){ rej(new Error("pdf reader not available")); }; document.head.appendChild(s); }); }
+    pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS+"pdf.worker.min.js";
+    var pdf=await pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise, rows=[];
+    for(var pg=1; pg<=Math.min(pdf.numPages, 40); pg++){
+      var page=await pdf.getPage(pg), tc=await page.getTextContent(), lines=[];
+      tc.items.forEach(function(it){ var t=String(it.str||""); if(!t.trim()) return; var x=it.transform[4], y=it.transform[5], h=Math.abs(it.transform[3])||10;
+        var ln=lines.filter(function(l){ return Math.abs(l.y-y)<=Math.max(2.5, h*0.35); })[0]; if(!ln){ ln={y:y, items:[]}; lines.push(ln); } ln.items.push({x:x, w:it.width||t.length*h*0.5, t:t, h:h}); });
+      lines.sort(function(a,b){ return b.y-a.y; }).forEach(function(l){ l.items.sort(function(a,b){ return a.x-b.x; }); var cells=[], cur="", end=null;
+        l.items.forEach(function(it){ var gap=end==null?0:it.x-end; if(end!=null && gap>Math.max(8, it.h*0.9)){ cells.push(cur.trim()); cur=""; } else if(end!=null && gap>0.5 && !/\s$/.test(cur)) cur+=" "; cur+=it.t; end=it.x+it.w; });
+        if(cur.trim()) cells.push(cur.trim()); if(cells.length) rows.push(cells.map(function(c){ return c.replace(/\s+/g," "); })); });
+    }
+    return rows;
+  }
+  /* A buyer's own list (Word, PDF, Excel): read it in the browser. kind tells staff what it was; .doc and other
+     formats cannot be read here and are kept for staff to open. */
+  BS.readList = async function(file){
+    var name=(file.name||"").toLowerCase();
+    if(/\.docx$/.test(name)){ var get=zipGet(new Uint8Array(await file.arrayBuffer())); if(!get) throw new Error("not a Word file"); return {kind:"docx", rows:docxRows(await get("word/document.xml"))}; }
+    if(/\.pdf$/.test(name)) return {kind:"pdf", rows:await pdfRows(file)};
+    if(/\.(xlsx|csv|txt)$/.test(name)) return {kind:"sheet", rows:await BS.readSheet(file)};
+    return {kind:"other", rows:[]};
+  };
+  /* Suggested request lines from the rows of a list: a header row (Description · Unit · Qty) maps the columns when there
+     is one; otherwise each row's longest text is the item and the number with a unit is the quantity. Items are matched to
+     the catalogue where the words agree; the rest stay as typed for staff to check. */
+  var UNIT_ALIAS={"m3":"m³","m^3":"m³","cum":"m³","cu.m":"m³","m2":"m²","m^2":"m²","sqm":"m²","sq.m":"m²","pcs":"pcs","pc":"pcs","pce":"pcs","nos":"pcs","no":"pcs","no.":"pcs","nr":"pcs","qtl":"quintal","quintal":"quintal","quintals":"quintal","kg":"kg","kgs":"kg","ton":"ton","tons":"ton","tonne":"ton","t":"ton","litre":"litre","liter":"litre","litres":"litre","ltr":"litre","lt":"litre","l":"litre","m":"m","ml":"m","lm":"m","roll":"roll","rolls":"roll","set":"set","sets":"set","day":"day","days":"day","hour":"hour","hours":"hour","hr":"hour","hrs":"hour","bag":"bag","bags":"bag","sheet":"sheet","sheets":"sheet","trip":"trip","trips":"trip","box":"box","boxes":"box","lot":"lot","ls":"lot"};
+  BS.unitWord = function(t){ var k=String(t||"").toLowerCase().trim().replace(/\.$/,""); return UNIT_ALIAS[k] || UNIT_ALIAS[k+"."] || (BS.UNITS.indexOf(String(t||"").trim())>=0 ? String(t).trim() : ""); };
+  function num(t){ var m=String(t==null?"":t).replace(/,/g,"").match(/^\s*(\d+(?:\.\d+)?)\s*$/); return m ? +m[1] : NaN; }
+  function words(t){ return String(t||"").toLowerCase().replace(/[^a-z0-9.\s]/g," ").split(/\s+/).filter(function(w){ return w && (w.length>2 || /\d/.test(w)); }); }
+  BS.matchItem = function(text){
+    var c=BS.findItem(text); if(c) return c; var ws=words(text); if(!ws.length) return null; var best=null, bs=0;
+    BS.CATALOGUE.forEach(function(x){ if(x.hidden) return; var nw=words(x.name); if(!nw.length) return; var hit=nw.filter(function(w){ return ws.indexOf(w)>=0; }).length; var sc=hit/nw.length; if(hit>=Math.min(2,nw.length) && sc>bs){ bs=sc; best=x; } });
+    return bs>=0.6 ? best : null;
+  };
+  var QTY_RE=/(\d[\d,]*(?:\.\d+)?)\s*(m³|m3|m\^3|m²|m2|sqm|quintals?|qtl|pcs|pce|pc|nos|no\.?|nr|kgs?|tons?|tonnes?|litres?|liters?|ltr|rolls?|sets?|days?|hours?|hrs?|bags?|sheets?|trips?|boxes|box|lot|l\.m|lm|m)(?![a-z])/gi;
+  BS.suggestLines = function(rows){
+    var col=null, out=[];
+    (rows||[]).slice(0,25).some(function(r){ var low=r.map(function(c){ return String(c).toLowerCase().trim(); });
+      var q=low.findIndex(function(c){ return /^(qty|qty\.|quantity|qnty|quan\.?)/.test(c); }), d=low.findIndex(function(c){ return /(description|item|material|particular|specification)/.test(c); }), u=low.findIndex(function(c){ return /^(unit|units|uom|u\/m)\b/.test(c); });
+      if(q>=0 && d>=0){ col={desc:d, qty:q, unit:u}; return true; } return false; });
+    (rows||[]).forEach(function(r){
+      var cells=r.map(function(c){ return String(c==null?"":c).trim(); }), desc="", qty=NaN, unit="";
+      if(col && cells.length>Math.max(col.desc, col.qty)){ desc=cells[col.desc]; qty=num(cells[col.qty]); unit=col.unit>=0 ? BS.unitWord(cells[col.unit]) : ""; }
+      if(!(qty>0)){ /* no table columns: the longest text is the item; a number followed by a unit, or a number next to a unit cell, is the quantity */
+        var txt=cells.join(" · "); desc=""; cells.forEach(function(c){ if(/[a-z]{3}/i.test(c) && !BS.unitWord(c) && c.length>desc.length) desc=c; });
+        var m, last=null; QTY_RE.lastIndex=0; while((m=QTY_RE.exec(txt))) last=m;
+        if(last){ qty=+last[1].replace(/,/g,""); unit=BS.unitWord(last[2]); if(desc.indexOf(last[0])>=0) desc=desc.slice(0, desc.indexOf(last[0])).replace(/[\s\-–:·,]+$/,""); }
+        else { var ui=cells.findIndex(function(c){ return BS.unitWord(c); }); if(ui>=0){ for(var j=ui+1;j<cells.length;j++){ if(num(cells[j])>0){ qty=num(cells[j]); unit=BS.unitWord(cells[ui]); break; } } } }
+      }
+      desc=String(desc||"").replace(/^\s*(\d+(\.\d+)*|[a-z])[\.)]\s+/i,"").trim();
+      if(!desc || !(qty>0) || /^(total|sub ?total|grand total|vat)/i.test(desc)) return;
+      var it=BS.matchItem(desc), units=it ? BS.unitsOf(it.name) : [];
+      out.push({item:it?it.name:desc.slice(0,140), cat:it?it.cat:"Other (staff will classify)", qty:qty, unit: it ? (units.indexOf(unit)>=0 ? unit : units[0]) : (unit||"pcs"), src:desc.slice(0,200), matched:!!it});
+    });
+    return out.slice(0,200);
+  };
   function xlsxRows(u8){
     var dv=new DataView(u8.buffer,u8.byteOffset,u8.byteLength), dec=new TextDecoder();
     var i=u8.length-22; while(i>=0 && dv.getUint32(i,true)!==0x06054b50) i--; if(i<0) return Promise.reject(new Error("not an Excel file"));
@@ -433,6 +518,22 @@
       listeners[col]=(listeners[col]||[]).concat([lcb]); lcb(lsRead(col));
     });
     return function(){ cancelled = true; if(unsub) unsub(); listeners[col]=(listeners[col]||[]).filter(function(x){return x!==lcb;}); };
+  };
+  /* Files people send (a BOQ in Word or PDF): kept in the "uploads" collection, cut into pieces below the 1 MB limit
+     of one record. The record ids start with a random 16-character key, so only someone given the key (staff, through
+     the request) can open the file. Returns {fileId, parts} or null when the database refused it. */
+  BS.FILE_MAX = 10*1024*1024;
+  BS.saveFile = async function(file, meta){
+    var data=await new Promise(function(res, rej){ var r=new FileReader(); r.onload=function(){ res(r.result); }; r.onerror=rej; r.readAsDataURL(file); });
+    var a=new Uint8Array(12); crypto.getRandomValues(a); var id=Array.prototype.map.call(a, function(x){ return "abcdefghijkmnpqrstuvwxyz23456789".charAt(x%32); }).join("")+Date.now().toString(36).slice(-4);
+    var CH=900000, n=Math.max(1, Math.ceil(data.length/CH));
+    for(var i=0;i<n;i++){ var ok=await BS.set("uploads", id+"-"+i, Object.assign({fileId:id, part:i, parts:n, name:file.name||"", type:file.type||"", size:file.size||0, data:data.slice(i*CH,(i+1)*CH)}, meta||{})); if(!ok) return null; }
+    return {fileId:id, parts:n};
+  };
+  BS.loadFile = function(fileId, parts){
+    var one=function(i){ return new Promise(function(res){ var stop=null, done=false; stop=BS.watch("uploads", fileId+"-"+i, function(d){ if(done) return; done=true; res(d); setTimeout(function(){ if(stop) stop(); }, 0); }); setTimeout(function(){ if(!done){ done=true; res(null); } }, 20000); }); };
+    var list=[]; for(var i=0;i<(parts||1);i++) list.push(one(i));
+    return Promise.all(list).then(function(ds){ if(ds.some(function(d){ return !d || !d.data; })) return null; return ds.sort(function(a,b){ return a.part-b.part; }).map(function(d){ return d.data; }).join(""); });
   };
   BS.clearLocal = function(){ ["boqs","offers","messages","profiles","news","verifications","settings","issues","tracks"].forEach(function(c){ try{ localStorage.removeItem(LS(c)); }catch(e){} notifyLocal(c); }); };
 

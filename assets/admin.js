@@ -73,7 +73,8 @@
   /* ---- helpers over the records ---- */
   function boqOf(id){ return data.boqs.filter(function(b){ return b.id===id; })[0]; }
   function lineOf(b, n){ return b ? (b.lines||[]).filter(function(l){ return l.n===n; })[0] : null; }
-  function openBoq(b){ return b.status!=='withdrawn' && new Date(b.deadlineAt)>new Date(); }
+  function openBoq(b){ return b.status==='open' && new Date(b.deadlineAt)>new Date(); }
+  function toType(){ return data.boqs.filter(function(b){ return b.status==='review'; }); }
   function unclassified(){ var out=[]; data.boqs.forEach(function(b){ (b.lines||[]).forEach(function(l){ if(/Other/.test(l.cat||'')) out.push({b:b,l:l}); }); }); return out; }
   function threads(){
     var by={}; data.messages.forEach(function(m){ if(m.orderId) return; var k=m.phone||'?'; (by[k]=by[k]||{phone:k,name:'',msgs:[]}).msgs.push(m); if(m.name) by[k].name=m.name; });
@@ -119,7 +120,7 @@
     tiles=tiles.filter(function(t){ return BS.staffCan(t[2]); });
     adTilesHtml='<div class="queue" id="adTiles">'+tiles.map(function(t){ return '<button type="button" class="q" data-go="'+t[2]+'" style="text-align:left;cursor:pointer;font:inherit"><strong style="font-size:1.4rem">'+t[0]+'</strong><span class="small muted">'+t[1]+'</span></button>'; }).join('')+'</div>';
     $('adTabs').querySelectorAll('button').forEach(function(b){ b.classList.toggle('on', b.dataset.tab===tab); });
-    try{ var badges={support: threads().filter(function(t){ return t.waiting; }).length + data.issues.filter(function(i){ return i.status!=='resolved'; }).length, suppliers: data.verifications.filter(function(v){ return v.status==='pending'; }).length, requests: unclassified().length, news: data.news.filter(function(x){ return x.status==='pending'; }).length};
+    try{ var badges={support: threads().filter(function(t){ return t.waiting; }).length + data.issues.filter(function(i){ return i.status!=='resolved'; }).length, suppliers: data.verifications.filter(function(v){ return v.status==='pending'; }).length, requests: unclassified().length + toType().length, news: data.news.filter(function(x){ return x.status==='pending'; }).length};
       $('adTabs').querySelectorAll('button').forEach(function(b){ var n=badges[b.dataset.tab]||0; var old=b.querySelector('.badge'); if(old) old.remove(); if(n){ var sp=document.createElement('span'); sp.className='badge'; sp.textContent=n; b.appendChild(sp); } }); }catch(e){}
     if(tab!=='overview' && !BS.staffCan(tab)) tab='overview';
     $('adTabs').querySelectorAll('[data-tab]').forEach(function(b){ b.hidden=b.dataset.tab!=='overview' && !BS.staffCan(b.dataset.tab); });
@@ -152,6 +153,7 @@
     data.news.forEach(function(x){ recent.push([x.createdAt,'Newsletter item from '+esc(x.company)+' · '+esc(x.status)]); });
     recent.sort(function(a,c){ return (c[0]||'').localeCompare(a[0]||''); });
     var todo=[];
+    if(toType().length) todo.push('<a href="#" data-tab-go="requests">'+toType().length+' list(s) in Word or PDF to type in</a>');
     if(unclassified().length) todo.push('<a href="#" data-tab-go="requests">'+unclassified().length+' line(s) typed by customers need a category</a>');
     var pv=data.verifications.filter(function(v){return v.status==='pending';}).length; if(pv) todo.push('<a href="#" data-tab-go="suppliers">'+pv+' supplier(s) waiting for verification</a>');
     var w=threads().filter(function(t){return t.waiting;}).length; if(w) todo.push('<a href="#" data-tab-go="support">'+w+' support thread(s) waiting for an answer</a>');
@@ -178,13 +180,46 @@
   /* suppliers who were sent an open request and have not quoted on any line of it yet */
   function lateSuppliers(){ var out=[]; data.boqs.forEach(function(b){ if(!openBoq(b)) return; invitedFor(b).forEach(function(sp){ if(!data.offers.some(function(o){ return o.boqId===b.id && o.supplierId===sp.id; })) out.push({b:b, sp:sp}); }); }); return out; }
   var reqFilter='open';
+  /* Lists sent as a Word or PDF file: staff read the file, check the lines the site suggested from it, and send the
+     request to suppliers. The typed lines live here until sent, so a redraw never loses them. */
+  var typing={}, fileUrls={};
+  function typedLines(b){
+    if(!typing[b.id]){ var up=b.upload||{}, nd=up.needed||'';
+      typing[b.id]=(b.lines||[]).map(function(l){ return {item:l.item, qty:l.qty, unit:l.unit, needed:l.needed||nd}; })
+        .concat((up.suggest||[]).map(function(x){ return {item:x.item, qty:x.qty, unit:x.unit, needed:nd, src:x.src, matched:x.matched}; }));
+      if(!typing[b.id].length) typing[b.id].push({item:'', qty:'', unit:'', needed:nd}); }
+    return typing[b.id];
+  }
+  function reviewHtml(){
+    var list=toType(); if(!list.length) return '';
+    var names=BS.CATALOGUE.filter(function(x){ return !x.hidden; }).map(function(x){ return '<option value="'+esc(x.name)+'">'; }).join('');
+    var inp='font:inherit;font-size:.88rem;padding:.4rem .5rem;border:1.5px solid var(--line);border-radius:8px;width:100%;min-width:0';
+    return '<datalist id="tlItems">'+names+'</datalist>'+list.map(function(b){ var up=b.upload||{}, L=typedLines(b), kb=Math.max(1, Math.round((up.size||0)/1024));
+      var file = up.fileId ? (fileUrls[b.id] ? '<a class="btn btn-primary btn-sm" href="'+fileUrls[b.id]+'" download="'+esc(up.name)+'" target="_blank" rel="noopener">Open the file</a>' : '<button class="btn btn-primary btn-sm" type="button" data-openfile="'+b.id+'">Get the file</button>')
+        : '<span class="small" style="color:var(--warn)">The file could not be stored. Use the text below, or call the buyer.</span>';
+      var rows=L.map(function(l,i){ var cat=BS.itemOf(l.item); var units=cat ? BS.unitsOf(l.item) : BS.UNITS; var k=b.id+'|'+i+'|';
+        return '<div class="tlrow"><span class="ico">'+(i+1)+'</span><div style="display:grid;gap:.2rem;min-width:0"><input list="tlItems" data-tl="'+k+'item" value="'+esc(l.item)+'" placeholder="Item: pick from the list or type it" style="'+inp+'">'+
+          '<span class="small '+(cat?'muted':'')+'" style="'+(cat?'':'color:var(--ochre-deep,#8a5a00)')+'">'+'<span>'+(cat?esc(cat.cat):(l.item?'Not in our list: suppliers get it under its category once staff classify it':''))+'</span>'+(l.src?' · <span data-notr>“'+esc(l.src)+'”</span>':'')+'</span></div>'+
+          '<input type="number" min="0" step="any" data-tl="'+k+'qty" value="'+esc(l.qty)+'" placeholder="Qty" style="'+inp+'">'+
+          '<select data-tl="'+k+'unit" style="'+inp+'">'+(units.indexOf(l.unit)<0&&l.unit?'<option>'+esc(l.unit)+'</option>':'')+units.map(function(u){ return '<option'+(u===l.unit?' selected':'')+'>'+esc(u)+'</option>'; }).join('')+'</select>'+
+          '<input type="date" data-tl="'+k+'needed" value="'+esc(l.needed)+'" style="'+inp+'">'+
+          '<button class="btn btn-ghost btn-sm" type="button" data-tldel="'+k+'" aria-label="Remove line">✕</button></div>'; }).join('');
+      return card('List to type in · '+esc(b.ref)+' · '+esc(b.company), '<span data-notr>'+esc(up.name)+'</span> · <span>'+kb+' KB</span> · <span data-notr>'+when(b.createdAt)+' · '+fmtPhone(b.ownerPhone)+' · '+esc(b.subcity)+'</span>',
+        '<div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">'+file+'<button class="btn btn-ghost btn-sm" type="button" data-close="'+b.id+'">Close request</button></div>'+
+        (up.text ? '<details><summary class="small" style="cursor:pointer;font-weight:600">Text read from the file</summary><pre data-notr style="max-height:16rem;overflow:auto;white-space:pre-wrap;font-size:.8rem;background:var(--bg-2,#f4f4f0);padding:.6rem;border-radius:8px;margin:.4rem 0 0">'+esc(up.text)+'</pre></details>' : '')+
+        '<p class="small muted" style="margin:0">'+((up.suggest||[]).length ? 'The lines below were read from the file. Check each against the file, correct it, add what is missing, then send.' : 'Type the lines from the file, then send.')+'</p>'+
+        '<div class="tllist">'+rows+'</div>'+
+        '<div style="display:flex;gap:.5rem;flex-wrap:wrap"><button class="btn btn-ghost btn-sm" type="button" data-tladd="'+b.id+'">Add a line</button><button class="btn btn-ochre btn-sm" type="button" data-tlsend="'+b.id+'">Send to suppliers · '+L.length+' line'+(L.length!==1?'s':'')+'</button></div>');
+    }).join('');
+  }
   function renderRequests(){
     var list=data.boqs.slice().sort(function(a,c){ return (c.createdAt||'').localeCompare(a.createdAt||''); });
+    list=list.filter(function(b){ return b.status!=='review'; });
     var f={open:function(b){ return openBoq(b) && !data.offers.some(function(o){ return o.boqId===b.id && o.status==='accepted'; }); }, orders:function(b){ return data.offers.some(function(o){ return o.boqId===b.id && o.status==='accepted'; }); }, all:function(){ return true; }};
     var bar='<div class="subtabs">'+[['open','Waiting for offers'],['orders','With orders'],['all','All']].map(function(x){ return '<button type="button" class="'+(reqFilter===x[0]?'on':'')+'" data-reqf="'+x[0]+'">'+x[1]+' · '+list.filter(f[x[0]]).length+'</button>'; }).join('')+'</div>';
     list=list.filter(f[reqFilter]);
-    if(!list.length) return bar+'<div class="empty">Nothing here.</div>';
-    return bar+list.map(function(b){
+    if(!list.length) return reviewHtml()+bar+'<div class="empty">Nothing here.</div>';
+    return reviewHtml()+bar+list.map(function(b){
       var os=data.offers.filter(function(o){ return o.boqId===b.id; }); var left=BS.days(new Date(b.deadlineAt)-Date.now());
       var inv=invitedFor(b), groups=BS.orderGroups(os);
       var state = b.status==='withdrawn' ? '<span class="tag">Withdrawn</span>' : groups.length ? '<span class="tag tag-green">'+groups.length+' order'+(groups.length>1?'s':'')+'</span>' : left>0 ? '<span class="tag tag-ochre">Open · '+left+' d left</span>' : '<span class="tag">Closed</span>';
@@ -205,12 +240,29 @@
   }
   $('adBody').addEventListener('click', async function(e){
     var rf=e.target.closest('[data-reqf]'); if(rf){ reqFilter=rf.dataset.reqf; render(); return; }
+    var of=e.target.closest('[data-openfile]'); if(of){ var bf=boqOf(of.dataset.openfile), upf=(bf||{}).upload||{}; of.disabled=true; of.textContent='Getting the file…';
+      var du=await BS.loadFile(upf.fileId, upf.parts); if(!du){ of.disabled=false; of.textContent='Get the file'; bsToast('The file could not be found.'); return; }
+      var bl=await (await fetch(du)).blob(); fileUrls[bf.id]=URL.createObjectURL(bl); render(); return; }
+    var ta=e.target.closest('[data-tladd]'); if(ta){ var bb=boqOf(ta.dataset.tladd); typedLines(bb).push({item:'', qty:'', unit:'', needed:(bb.upload||{}).needed||''}); render(); return; }
+    var td=e.target.closest('[data-tldel]'); if(td){ var pp=td.dataset.tldel.split('|'); typing[pp[0]].splice(+pp[1],1); render(); return; }
+    var ts=e.target.closest('[data-tlsend]'); if(ts){ var b2=boqOf(ts.dataset.tlsend); if(!b2) return; var L2=typedLines(b2).filter(function(l){ return String(l.item||'').trim() || +l.qty>0; });
+      var min=new Date(Date.now()+BS.MIN_LEAD_DAYS*86400000).toISOString().slice(0,10);
+      var bad=L2.filter(function(l){ return !String(l.item||'').trim() || !(+l.qty>0) || !l.unit || !l.needed; });
+      if(!L2.length){ bsToast('Add at least one line.'); return; } if(bad.length){ bsToast('Each line needs an item, a quantity, a unit and a needed-by date.'); return; }
+      ts.disabled=true; var now=new Date().toISOString(), days=+b2.validityDays||4;
+      var lines=L2.map(function(l,i){ var it=String(l.item).trim(), r={n:i+1, item:it, cat:BS.catOf(it), qty:+l.qty, unit:l.unit, needed:l.needed}; if(BS.isHire && BS.isHire(r)) r.returnBy=l.needed; return r; });
+      await BS.update('boqs', b2.id, {lines:lines, status:'open', sentAt:now, deadlineAt:new Date(Date.now()+days*86400000).toISOString(), upload:Object.assign({}, b2.upload, {typedBy:staffName(), typedAt:now})});
+      delete typing[b2.id]; bsToast(b2.ref+' sent to suppliers with '+lines.length+' line'+(lines.length!==1?'s':'')+'. The buyer is told.'); return; }
     var n=e.target.closest('[data-nudge]'); if(n){ var b=boqOf(n.dataset.nudge), sp=BS.supplierById(n.dataset.sup); if(!b||!sp) return; n.disabled=true;
       await BS.add('messages', {phone:digits(supplierPhone(sp)), who:'staff', staff:staffName(), name:sp.name, nudge:b.id+'|'+sp.id, text:'Reminder from Build Smartly: request '+b.ref+' is waiting for your offer. It closes in '+Math.max(0,BS.days(new Date(b.deadlineAt)-Date.now()))+' day(s).'});
       bsToast('Reminder sent to '+sp.name+' (support thread and SMS).'); return; }
     var tk=e.target.closest('[data-taskdel]'); if(tk){ await BS.remove('tasks', tk.dataset.taskdel); return; }
     if(e.target.id==='adTaskAdd'){ var v=$('adTaskIn').value.trim(); if(!v) return; $('adTaskIn').value=''; await BS.add('tasks', {text:v, done:false, by:staffName()}); return; }
   });
+  /* typing a list in: keep every keystroke in the state; a new item redraws the row so its units and category follow */
+  function tlSet(el){ var p=el.dataset.tl.split('|'), L=typing[p[0]]; if(!L || !L[+p[1]]) return false; var old=L[+p[1]][p[2]]; L[+p[1]][p[2]]=el.value; if(p[2]==='item' && BS.itemOf(el.value)){ var us=BS.unitsOf(el.value); if(us.indexOf(L[+p[1]].unit)<0) L[+p[1]].unit=us[0]; } return p[2]==='item' && old!==el.value; }
+  $('adBody').addEventListener('input', function(e){ var t=e.target.closest('[data-tl]'); if(t) tlSet(t); });
+  $('adBody').addEventListener('change', function(e){ var t=e.target.closest('[data-tl]'); if(t && tlSet(t) !== null && t.dataset.tl.split('|')[2]==='item') render(); });
   $('adBody').addEventListener('change', async function(e){ var t=e.target.closest('[data-task]'); if(t){ await BS.update('tasks', t.dataset.task, {done:t.checked, doneAt:t.checked?new Date().toISOString():'', doneBy:staffName()}); } });
   $('adBody').addEventListener('keydown', function(e){ if(e.target.id==='adTaskIn' && e.key==='Enter'){ e.preventDefault(); $('adTaskAdd').click(); } });
   $('adBody').addEventListener('change', async function(e){
@@ -581,6 +633,7 @@
     if(!(await bsConfirm('Clear all test data?','Every request, offer, order, message, problem, newsletter item, promotion, profile, task and supplier change is deleted for everyone. This cannot be undone.','Yes, clear it'))) return;
     if(!(await bsConfirm('Are you sure?','Last check before deleting.','Delete everything'))) return;
     var cols=['boqs','offers','messages','issues','news','promotions','verifications','profiles','suppliers','tasks','tracks'], n=0; e.target.disabled=true;
+    for(var u=0;u<data.boqs.length;u++){ var up=data.boqs[u].upload; if(up && up.fileId){ for(var q=0;q<(up.parts||1);q++){ await BS.remove('uploads', up.fileId+'-'+q); n++; } } } /* files sent with requests */
     for(var i=0;i<cols.length;i++){ var docs=(data[cols[i]]||[]).slice(); for(var j=0;j<docs.length;j++){ await BS.remove(cols[i], docs[j].id); n++; $('adResetMsg').textContent='Deleted '+n+'…'; } }
     try{ Object.keys(localStorage).forEach(function(k){ if(/^bs_demo_(draft|prices_|supprofile_|locs)|^bs_bell_seen_/.test(k)) localStorage.removeItem(k); }); }catch(err){}
     e.target.disabled=false; $('adResetMsg').textContent='Done: '+n+' records deleted.'; bsToast('Test data cleared. The site starts clean.');

@@ -508,6 +508,13 @@ html{overflow-x:clip}
 .basket .btn-ghost{color:#F6F7F4;border-color:rgba(246,247,244,.4)}
 .ck-group{border:1px solid var(--line);border-radius:10px;padding:.55rem .75rem;display:grid;gap:.3rem;margin-bottom:.45rem}
 .ck-row{display:flex;justify-content:space-between;gap:.8rem;font-size:.92rem}
+.tllist{display:grid;gap:.45rem}
+.tlrow{display:grid;grid-template-columns:auto minmax(0,2.4fr) 5.5rem 7rem 9.5rem auto;gap:.45rem;align-items:start;padding:.45rem;border:1px solid var(--line);border-radius:10px}
+.tlrow .ico{display:grid;place-items:center;width:1.8rem;height:1.8rem;border-radius:8px;background:var(--bg-2,#eef1ec);font-weight:700;font-size:.8rem}
+@media (max-width:760px){ .tlrow{grid-template-columns:auto 1fr 1fr} .tlrow>div{grid-column:2/-1} .tlrow input[type=date]{grid-column:2/-1} }
+.docup{display:grid;gap:.6rem;padding:.85rem .95rem;border:2px dashed var(--green);border-radius:14px;background:color-mix(in srgb,var(--green) 5%,var(--bg-1,#fff))}
+.docup-file{display:grid;grid-template-columns:auto 1fr auto;gap:.7rem;align-items:center}
+.docup-file .ico{display:grid;place-items:center;width:2.6rem;height:2.6rem;border-radius:10px;background:var(--green);color:#fff;font-weight:800;font-size:.75rem}
 .ck-posa{display:grid;gap:.45rem;margin-top:.7rem;padding:.75rem .85rem;border:2px solid var(--ochre);border-radius:12px;background:color-mix(in srgb,var(--ochre) 7%,var(--bg-1,#fff))}
 .ck-total{border-top:1.5px solid var(--line);margin-top:.6rem;padding-top:.5rem;display:grid;gap:.25rem}
 #poGate .card{max-height:calc(100vh - 2rem);overflow:auto}
@@ -1059,7 +1066,13 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
         <button class="btn btn-ghost" type="button" id="addOther">Add it</button>
         <a class="btn btn-ghost" href="assets/boq-template.xlsx" download="Build-Smartly-BOQ-template.xlsx">Download the Excel template</a>
         <label class="btn btn-ghost" style="cursor:pointer">Upload your filled Excel<input type="file" id="boqFile" accept=".xlsx,.csv,.txt" hidden></label>
-        <span class="small muted" id="boqFileMsg" style="flex-basis:100%">Send the template to your site engineer, get it back filled in, and upload it here. Excel (.xlsx) or CSV.</span>
+        <label class="btn btn-ghost" style="cursor:pointer">Upload a Word or PDF list<input type="file" id="boqDoc" accept=".docx,.pdf,.doc" hidden></label>
+        <span class="small muted" id="boqFileMsg" style="flex-basis:100%">Send the template to your site engineer, get it back filled in, and upload it here. Excel (.xlsx) or CSV. Already have your bill of quantities in Word or PDF? Upload it as it is and our team types it in.</span>
+      </div>
+      <div id="docBox" class="docup" hidden>
+        <div class="docup-file"><span class="ico" data-notr>DOC</span><span><strong id="docName" data-notr></strong><br><span class="small muted" id="docInfo"></span></span><button class="btn btn-ghost btn-sm" type="button" id="docRemove">Remove</button></div>
+        <p class="small" style="margin:0">Our team reads your list, types the items in and sends the request to suppliers, usually within one working hour. You get a text message when it has gone out. You can also tick items above; they go in the same request.</p>
+        <div class="field" style="max-width:16rem"><label for="docNeeded">Needed by</label><input type="date" id="docNeeded"></div>
       </div>
       <div id="listBox" hidden style="display:grid;gap:.6rem">
         <div><strong style="font-family:var(--display)">Your list</strong><p class="small muted">Type the quantity for each item and when you need it. Earliest date: <span id="minLeadText"></span>.</p></div>
@@ -1651,8 +1664,8 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 </div>
 
 
-<script src="assets/firebase-config.js?v=20261113b" onerror="this.remove()"></script>
-<script src="assets/store.js?v=20261113b"></script>
+<script src="assets/firebase-config.js?v=20261113c" onerror="this.remove()"></script>
+<script src="assets/store.js?v=20261113c"></script>
 <script>
 /* ---------- Router: one page, views switched by hash ---------- */
 window.BSRoute = (function(){
@@ -2245,6 +2258,19 @@ function bsSupport(threadId, inputId, sendId){
   try{ if(!/github\.io$|localhost|^127\./.test(location.hostname) && location.protocol!=='file:' && !/buildsmartly|onsmartly/.test(location.hostname)){ var tl=document.querySelector('a[href="assets/boq-template.xlsx"]'); if(tl) tl.href='https://faiz379.github.io/build-smartly-site/assets/boq-template.xlsx'; } }catch(e){}
   $('boqFile').addEventListener('change', function(){ var f=this.files && this.files[0]; this.value=''; if(!f) return; $('boqFileMsg').textContent='Reading '+f.name+'…';
     BS.readSheet(f).then(importRows).catch(function(e){ $('boqFileMsg').textContent='Could not read '+f.name+'. Save it as .xlsx or .csv and try again.'; bsToast('Could not read the file.'); }); });
+  /* a BOQ in Word or PDF: read in the browser for staff, kept as it is, typed in by staff before it goes to suppliers */
+  var pendingDoc=null;
+  $('boqDoc').addEventListener('change', async function(){ var f=this.files && this.files[0]; this.value=''; if(!f) return;
+    if(f.size>BS.FILE_MAX){ bsToast('The file is larger than 10 MB. Save it as a smaller PDF and try again.'); return; }
+    $('docBox').hidden=false; $('docName').textContent=f.name; $('docInfo').textContent='Reading…';
+    var res={kind:'other', rows:[]}; try{ res=await BS.readList(f); }catch(e){ res={kind:'other', rows:[]}; }
+    var sug=BS.suggestLines(res.rows); pendingDoc={file:f, kind:res.kind, rows:res.rows, suggest:sug};
+    var kb=Math.max(1, Math.round(f.size/1024));
+    $('docInfo').textContent=kb+' KB · '+(sug.length ? sug.length+(sug.length>1?' items found':' item found') : res.rows.length ? 'read, our team checks it' : 'our team opens it');
+    $('docNeeded').min=MIN_DATE; if(!$('docNeeded').value) $('docNeeded').value=isoPlus(Math.max(7, BS.MIN_LEAD_DAYS));
+    $('docBox').scrollIntoView({behavior:'smooth', block:'center'}); });
+  $('docRemove').onclick=function(){ pendingDoc=null; $('docBox').hidden=true; };
+  window.bsPendingDoc=function(){ return pendingDoc; };
   if($('addSample')) $('addSample').onclick=function(){
     var iso=isoPlus(Math.max(10, BS.MIN_LEAD_DAYS)); $('stage').value='all';
     lines=[{item:'Cement OPC 42.5',qty:400,unit:'quintal',needed:iso,cat:'Cement'},{item:'Rebar 12 mm grade 60',qty:60,unit:'quintal',needed:iso,cat:'Reinforcement steel'},{item:'HCB 20 cm',qty:3000,unit:'pcs',needed:iso,cat:'Blocks, bricks and stone'},{item:'Aggregate 02 (coarse)',qty:40,unit:'m³',needed:iso,cat:'Aggregates and fill'},{item:'Electrical cable 2.5 mm²',qty:10,unit:'roll',needed:iso,cat:'Electrical'},{item:'Excavator hire with operator',qty:3,unit:'day',needed:iso,cat:'Equipment rental'}];
@@ -2321,7 +2347,8 @@ function bsSupport(threadId, inputId, sendId){
   function goodLines(){ return lines.filter(function(l){ return l.item && +l.qty>0; }); }
   $('submit').onclick=function(){
     var err=$('formErr'); err.hidden=true; var me2=BS.me()||{};
-    if(!lines.length){ err.textContent='Tick at least one item.'; err.hidden=false; return; }
+    if(!lines.length && !pendingDoc){ err.textContent='Tick at least one item, or upload your list.'; err.hidden=false; return; }
+    if(pendingDoc && !($('docNeeded').value>=MIN_DATE)){ err.textContent='Choose when you need the goods: '+MIN_DATE+' or later.'; err.hidden=false; $('docNeeded').focus(); return; }
     var missing=lines.filter(function(l){ return !(+l.qty>0); }).length;
     if(missing){ err.textContent='Type the quantity for '+(missing===1?'the item':'all '+missing+' items')+' in your list.'; err.hidden=false; $('lines').scrollIntoView({behavior:'smooth',block:'center'}); return; }
     if(lines.some(function(l){ return l.needed && l.needed<MIN_DATE; })){ err.textContent='A needed-by date is earlier than '+MIN_DATE+'.'; err.hidden=false; return; }
@@ -2349,20 +2376,28 @@ function bsSupport(threadId, inputId, sendId){
     doSend();
   };
   async function doSend(){
-    var me2=BS.me()||{}; var good=goodLines(); if(!good.length) return;
+    var me2=BS.me()||{}; var good=goodLines(); if(!good.length && !pendingDoc) return;
     var company=(me2.company || me2.name || $('company').value.trim() || ('Customer '+(me2.phone||'').slice(-4))).trim();
     if(!me2.company && !me2.name) BS.setMe(Object.assign({}, me2, {company:company}));
     var days=+$('validity').value, deadline=new Date(Date.now()+days*86400000).toISOString(), ref=BS.ref('BS');
     var doc={ ref:ref, company:company, ownerPhone:(me2.phone||'').replace(/\D/g,'').replace(/^251/,''), customerNo:'C-'+(Math.abs(hash(me2.phone||company))%9000+1000), status:'open', validityDays:days, deadlineAt:deadline, subcity:$('subcity').value, city:'Addis Ababa', deliveryTerm:$('delivery').value, paymentTerm:$('payment').value, partial:$('partial').checked, insurance:$('insurance').checked, pin:pin, estimate:estimate(),
       lines: good.map(function(l,i){ var r={n:i+1, item:l.item==='__other'?(l.other||'Other item'):l.item, cat:l.cat||'Other (staff will classify)', qty:+l.qty, unit:l.unit, needed:l.needed||''}; if(BS.isHire(l)) r.returnBy=l.returnBy||l.needed||''; return r; }) };
     $('submit').disabled=true; $('submit').textContent='Sending…';
+    var pd=pendingDoc;
+    if(pd){ /* the file goes to staff first: they type the lines in, then send the request to suppliers */
+      $('submit').textContent='Sending your file…'; var saved=null; try{ saved=await BS.saveFile(pd.file, {boqRef:ref, phone:doc.ownerPhone}); }catch(e){ saved=null; }
+      doc.status='review'; doc.upload={name:pd.file.name, type:pd.file.type||'', size:pd.file.size, kind:pd.kind, fileId:saved?saved.fileId:'', parts:saved?saved.parts:0,
+        text:pd.rows.slice(0,500).map(function(r){ return r.join(' | '); }).join('\n').slice(0,60000), suggest:pd.suggest, needed:$('docNeeded').value}; }
     await BS.add('boqs', doc);
     $('submit').disabled=false; $('submit').textContent='Send request to suppliers';
-    clearDraft(); loading=true; lines=[]; loading=false; renderLines();
+    clearDraft(); loading=true; lines=[]; loading=false; renderLines(); pendingDoc=null; $('docBox').hidden=true;
     var desks={}; good.forEach(function(l){ desks[l.cat||'x']=1; });
     $('sentTitle').textContent='Request '+ref+' sent'; $('sentText').textContent=good.length+' item'+(good.length>1?'s':'')+' sent to verified suppliers in '+Object.keys(desks).length+' categor'+(Object.keys(desks).length>1?'ies':'y')+'. They have '+days+' days to quote. We text you when offers are ready; you also see them under My requests.';
     if(window.__bsNewAccount){ var sx=document.createElement('span'); sx.textContent=' We created your account with mobile '+window.__bsNewAccount+'; that number and an SMS code is how you sign in.'; $('sentText').appendChild(sx); } /* its own piece of text, so each sentence is translated on its own */
     $('sentSms').textContent='Build Smartly: we received your request '+ref+' ('+good.length+' item'+(good.length>1?'s':'')+'). Suppliers have '+days+' days. We will text you when the first offer is ready.';
+    if(pd){ $('sentTitle').textContent='Request '+ref+' received'; $('sentText').textContent='Our team types in your list and sends it to suppliers, usually within one working hour. We text you when it has gone out; you see it under My requests.';
+      if(!doc.upload.fileId){ var sf=document.createElement('span'); sf.textContent=' Your file could not be stored; our team reads the text we took from it and calls you if anything is missing.'; $('sentText').appendChild(sf); }
+      $('sentSms').textContent='Build Smartly: we received your list (request '+ref+'). Our team types it in and sends it to suppliers. We will text you when it has gone out.'; }
     $('sentBox').hidden=false; $('sentBox').scrollIntoView({behavior:'smooth',block:'center'});
   }
   $('sentMine').onclick=function(){ $('sentBox').hidden=true; show('mine'); };
@@ -2400,7 +2435,7 @@ function bsSupport(threadId, inputId, sendId){
     list.forEach(function(b){
       var card=document.createElement('div'); card.className='card boq'; var left=BS.days(new Date(b.deadlineAt)-Date.now());
       var groups=BS.orderGroups(offers, function(o){ return o.boqId===b.id; });
-      var withdrawn=b.status==='withdrawn';
+      var withdrawn=b.status==='withdrawn', inReview=b.status==='review';
       var head='<div class="boq-head"><div><h3>'+esc(b.ref)+' · '+b.lines.length+' line'+(b.lines.length>1?'s':'')+' · '+esc(b.subcity)+'</h3><span class="small muted">'+esc(b.deliveryTerm)+' · '+esc(b.paymentTerm)+(b.extended?' · deadline extended once':'')+'</span></div><div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap">'+(withdrawn?'<span class="tag">Withdrawn</span>':'<span class="deadline">'+(left>0?'Quotes close in '+left+' day'+(left>1?'s':''):'Quotes closed')+'</span>'+(!groups.length?'<button class="btn btn-ghost btn-sm" data-withdraw="'+b.id+'">Withdraw</button>':'')+(!b.extended&&!groups.length&&left>0?'<button class="btn btn-ghost btn-sm" data-extend="'+b.id+'" data-days="'+b.validityDays+'">Extend '+b.validityDays+' days</button>':''))+'</div></div>';
       /* orders already placed on this request */
       var ordersHtml = groups.length ? '<div class="orders-box"><strong style="font-family:var(--display)">Your orders</strong>'+groups.map(function(g){ var st=BS.orderStatus(g.first), tot=0; g.offers.forEach(function(o){ tot+=lineExtras(b, lineOfB(b,o.lineN), o).total; });
@@ -2442,6 +2477,7 @@ function bsSupport(threadId, inputId, sendId){
         bar='<div class="basket"><span><strong>'+chosenN+' of '+openLines+' line'+(openLines!==1?'s':'')+' chosen</strong>'+(chosenN?' · '+BS.fmt(chosenSum):'')+'<br><span class="small muted">'+(chosenN?'Choose the rest now, or complete the order and come back for them later.':'Choose one offer per line, then complete the order once.')+'</span></span><span style="display:flex;gap:.4rem;flex-wrap:wrap">'+(bestMissing?'<button class="btn btn-ghost btn-sm" data-choosebest="'+b.id+'">Choose the best price on '+(bestMissing===openLines-chosenN && !chosenN?'every line':'the other lines')+'</button>':'')+(chosenN?'<button class="btn btn-ochre" data-checkout="'+b.id+'">Complete the order</button>':'')+'</span></div>';
       }
       var extraHtml = b.pin ? '<p class="small muted" style="margin:0">Site pinned on the map · shared with the supplier in the purchase order.</p>' : '';
+      if(inReview){ head=head.replace(' · 0 line · ', ' · '); head=head.replace(/<span class="deadline">[\s\S]*?<\/span>/, '<span class="tag tag-ochre">Being prepared by our team</span>'); body='<div class="docup"><div class="docup-file"><span class="ico" data-notr>DOC</span><span><strong data-notr>'+esc((b.upload||{}).name||'')+'</strong><br><span class="small muted">Our team is typing in your list. It goes to suppliers soon; you get a text message.</span></span><span></span></div></div>'; bar=''; }
       card.innerHTML=head+ordersHtml+extraHtml+body+bar; box.appendChild(card);
     });
   }
@@ -2453,8 +2489,8 @@ function bsSupport(threadId, inputId, sendId){
   function secs(iso){ return (Date.now()-new Date(iso).getTime())/1000; }
   async function autoTick(){
     var me2=BS.me()||{}; if(!me2.phone) return; var A=BS.AUTO;
-    var list=myBoqs().filter(function(b){ return b.status!=='withdrawn' && new Date(b.deadlineAt)>new Date(); });
-    for(var bi=0;bi<list.length;bi++){ var b=list[bi]; var age=secs(b.createdAt);
+    var list=myBoqs().filter(function(b){ return b.status==='open' && new Date(b.deadlineAt)>new Date(); });
+    for(var bi=0;bi<list.length;bi++){ var b=list[bi]; var age=secs(b.sentAt||b.createdAt);
       var sups=BS.activeSuppliers().filter(function(s){ return s.auto; });
       for(var k=0;k<sups.length;k++){ var s=sups[k]; var delay=A.replyAfter[k%A.replyAfter.length];
         for(var li=0;li<b.lines.length;li++){ var l=b.lines[li]; if(s.cats.indexOf(l.cat)<0) continue; var key='q|'+b.id+'|'+l.n+'|'+s.id;
@@ -3168,10 +3204,10 @@ window.bsPublishProfile = async function(fields){
 
 BSRoute.start();
 </script>
-<script src="assets/track.js?v=20261113b"></script>
-<script src="assets/order.js?v=20261113b"></script>
-<script src="assets/notify.js?v=20261113b"></script>
-<script src="assets/help.js?v=20261113b"></script>
-<script src="assets/admin.js?v=20261113b"></script>
-<script src="assets/editor.js?v=20261113b"></script>
-<script src="assets/i18n.js?v=20261113b"></script>
+<script src="assets/track.js?v=20261113c"></script>
+<script src="assets/order.js?v=20261113c"></script>
+<script src="assets/notify.js?v=20261113c"></script>
+<script src="assets/help.js?v=20261113c"></script>
+<script src="assets/admin.js?v=20261113c"></script>
+<script src="assets/editor.js?v=20261113c"></script>
+<script src="assets/i18n.js?v=20261113c"></script>

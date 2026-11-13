@@ -19,7 +19,7 @@
     var out=[]; function add(t, kind, text, href){ if(recent(t)) out.push({t:t, kind:kind, text:text, href:href}); }
     var groups=BS.orderGroups(data.offers);
     if(w.role==='staff'){
-      data.boqs.forEach(function(b){ add(b.createdAt, 'Request', b.ref+' · '+(b.lines||[]).length+' lines from '+(b.company||'a buyer'), '#staff-requests'); });
+      data.boqs.forEach(function(b){ if(b.status==='review') add(b.createdAt, 'List to type in', b.ref+' · '+((b.upload||{}).name||'a file')+' from '+(b.company||'a buyer'), '#staff-requests'); else add(b.createdAt, 'Request', b.ref+' · '+(b.lines||[]).length+' lines from '+(b.company||'a buyer'), '#staff-requests'); });
       data.messages.forEach(function(m){ if(m.orderId){ if(m.who!=='staff') add(m.createdAt, 'Order message', (m.name||'')+': '+m.text, '#order-'+m.orderId); } else if(m.who==='customer') add(m.createdAt, 'Support', (m.name||'A member')+': '+m.text, '#staff-support'); });
       data.verifications.forEach(function(v){ if(v.status==='pending') add(v.submittedAt||v.createdAt, 'Supplier documents', v.company+' asks to be verified', '#staff-suppliers'); });
       data.profiles.forEach(function(p){ if(p.status==='pending') add(p.updatedAt||p.createdAt, 'Profile to approve', (p.name||'A member')+' asks to publish a profile', '#staff-members'); });
@@ -27,7 +27,7 @@
       data.issues.forEach(function(x){ if(x.status!=='resolved') add(x.createdAt, 'Problem reported', (x.poRef||'')+': '+x.text, '#staff-support'); });
       groups.forEach(function(g){ add(g.first.acceptedAt, 'Order placed', g.poRef+' · '+g.first.customerRevealed+' → '+g.supplierName, '#order-'+g.id); if(g.first.paidAt) add(g.first.paidAt, 'Paid', g.poRef+' · '+BS.fmt(g.first.paidTotal||0), '#staff-finance'); });
     } else if(w.role==='supplier'){
-      data.boqs.forEach(function(b){ if(b.status!=='open' || b.ownerPhone===w.phone) return; var n=(b.lines||[]).filter(function(l){ return w.cats.indexOf(l.cat)>=0; }).length; if(n) add(b.createdAt, 'New request', b.ref+' · '+n+' line'+(n>1?'s':'')+' for you · '+b.subcity, '#supplier-requests'); });
+      data.boqs.forEach(function(b){ if(b.status!=='open' || b.ownerPhone===w.phone) return; var n=(b.lines||[]).filter(function(l){ return w.cats.indexOf(l.cat)>=0; }).length; if(n) add(b.sentAt||b.createdAt, 'New request', b.ref+' · '+n+' line'+(n>1?'s':'')+' for you · '+b.subcity, '#supplier-requests'); });
       data.offers.forEach(function(o){ if(o.supplierId!==w.supplierId) return; var b=boqOf(o.boqId);
         if(o.counter && o.counter.state==='open') add(o.counter.at, 'Counter-offer', 'The customer proposes '+BS.fmt(o.counter.price)+' on '+b.ref+' · '+lineName(b,o.lineN), '#supplier-deals');
         if(o.status==='rejected') add(o.rejectedAt, 'Offer rejected', b.ref+' · '+lineName(b,o.lineN), '#supplier-deals'); });
@@ -44,6 +44,7 @@
         if(o.counter && o.counter.answeredAt) add(o.counter.answeredAt, 'Answer to your price', 'The supplier '+(o.counter.state==='accepted'?'accepted':'declined')+' '+BS.fmt(o.counter.price)+' on '+b.ref+' · '+lineName(b,o.lineN), '#boq-mine'); });
       var offSeen={}; data.offers.forEach(function(o){ if(mine.indexOf(o.boqId)<0 || (o.status!=='declined' && o.status!=='expired') || offSeen[o.poRef]) return; offSeen[o.poRef]=1;
         add(o.declinedAt||o.expiredAt, o.status==='declined'?'PO/SA declined':'PO/SA lapsed', (o.poRef||'')+(o.status==='declined'?' was declined by the supplier':' was not confirmed in time')+'. Choose another offer.', '#boq-mine'); });
+      data.boqs.forEach(function(b){ if(b.ownerPhone===w.phone && b.upload && b.sentAt) add(b.sentAt, 'Your list went out', b.ref+': our team typed in '+(b.lines||[]).length+' item'+((b.lines||[]).length!==1?'s':'')+' from your file and sent them to suppliers.', '#boq-mine'); });
       groups.forEach(function(g){ if(mine.indexOf(g.boqId)<0) return; var o=g.first, h='#order-'+g.id;
         if(o.buyerAgreedAt && o.buyerAgreedAt<=(o.confirmedAt||'')) add(o.confirmedAt, 'PO/SA confirmed', g.poRef+' is confirmed by the supplier. It is binding now.', h);
         else add(o.confirmedAt, 'PO/SA to accept', g.poRef+' is confirmed by the supplier. Read and accept it.', h);
