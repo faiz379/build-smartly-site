@@ -112,6 +112,16 @@
      "buyer-<9 digits>" {kind:'buyer', status pending|verified|rejected, name, company, type, tin, idHint, kycId, reason};
      the ID number and documents themselves are in collection "kyc" (staff only). The built-in test buyer is verified. */
   BS.UNVERIFIED_MAX = 2;
+  /* Requests staff check before suppliers see them (Abdullah v4: "our team reviews every trial BOQ"): 'unverified' =
+     requests from buyers who are not verified yet (default), 'all' = every request, 'none' = straight to suppliers.
+     Word/PDF lists always go to staff. Staff setting: Settings → Delivery and payment (settings doc "verify"). */
+  BS.REVIEW_MODE = "unverified";
+  /* While staff verify a buyer, the supplier holds the order for up to BS.HOLD_DAYS working days (Mon–Fri); after
+     that the hold ends and the buyer chooses again once verified (Abdullah v4: "hold for up to 3 working days"). */
+  BS.HOLD_DAYS = 3;
+  BS.addWorkDays = function(iso, n){ var d=new Date(iso), left=n; while(left>0){ d=new Date(d.getTime()+86400000); var w=d.getDay(); if(w!==0 && w!==6) left--; } return d.getTime(); };
+  BS.holdDue = function(o){ return o && o.acceptedAt ? BS.addWorkDays(o.acceptedAt, BS.HOLD_DAYS) : 0; };
+  BS.needsReview = function(phone){ return BS.REVIEW_MODE==="all" || (BS.REVIEW_MODE==="unverified" && !BS.isVerified(phone)); };
   BS.VERIFIED_TEST = ["911000201"];
   BS.d9 = function(p){ return String(p||"").replace(/\D/g,"").replace(/^251/,"").replace(/^0/,"").slice(-9); };
   var VER=[], verCbs=[], verOn=false;
@@ -177,7 +187,8 @@
       if(d.id==="brandLogos" && d.map){ BS.BRAND_LOGOS=d.map; }
       if(d.id==="ads" && Array.isArray(d.hidden)){ BS.ADS_HIDDEN=d.hidden.slice(); }
       if(d.id==="payment"){ if(d.when==="before" || d.when==="after") BS.PAY_WHEN=d.when; if(Array.isArray(d.methods) && d.methods.length) BS.PAY_ON=d.methods.slice(); if(d.bank) BS.BANK=Object.assign({}, d.bank); }
-      if(d.id==="verify"){ if(+d.unverifiedMax>0) BS.UNVERIFIED_MAX=+d.unverifiedMax; }
+      if(d.id==="leadSms"){ BS.LEAD_SMS_EDIT=d.map||{}; }
+      if(d.id==="verify"){ if(+d.unverifiedMax>0) BS.UNVERIFIED_MAX=+d.unverifiedMax; if(["unverified","all","none"].indexOf(d.review)>=0) BS.REVIEW_MODE=d.review; if(+d.holdDays>0) BS.HOLD_DAYS=+d.holdDays; }
       if(d.id==="delivery"){ if(+d.confirmHours>0) BS.CONFIRM_HOURS=+d.confirmHours; if(+d.checkHours>0) BS.CHECK_HOURS=+d.checkHours; if(+d.proofMin>0) BS.PROOF_MIN=+d.proofMin; if(d.proofOn!==undefined) BS.PROOF_ON=!!d.proofOn; if(+d.linkHours>0) BS.TRACK_HOURS=Math.min(48, +d.linkHours); if(/^(am|en|om)$/.test(d.driverLang||"")) BS.DRIVER_LANG=d.driverLang; }
       if(d.id==="content" && d.map){ BS.CONTENT=d.map; if(window.bsSetOverrides) bsSetOverrides(d.map); }
       if(d.id==="style"){ BS.applyStyle(d); }
@@ -545,6 +556,15 @@
     for(var i=0;i<n;i++){ var ok=await BS.set("uploads", id+"-"+i, Object.assign({fileId:id, part:i, parts:n, name:file.name||"", type:file.type||"", size:file.size||0, data:data.slice(i*CH,(i+1)*CH)}, meta||{})); if(!ok) return null; }
     return {fileId:id, parts:n};
   };
+  /* the same for a file already read into a data URL (a shrunk photo) */
+  BS.saveData = async function(name, type, data, meta){
+    var a=new Uint8Array(12); crypto.getRandomValues(a); var id=Array.prototype.map.call(a, function(x){ return "abcdefghijkmnpqrstuvwxyz23456789".charAt(x%32); }).join("")+Date.now().toString(36).slice(-4);
+    var CH=900000, n=Math.max(1, Math.ceil(data.length/CH));
+    for(var i=0;i<n;i++){ var ok=await BS.set("uploads", id+"-"+i, Object.assign({fileId:id, part:i, parts:n, name:name||"", type:type||"", size:data.length, data:data.slice(i*CH,(i+1)*CH)}, meta||{})); if(!ok) return null; }
+    return {fileId:id, parts:n};
+  };
+  /* Business licence expiry (Abdullah v4): a reminder 30 days before; supplier services pause once it has expired. */
+  BS.licenceState = function(exp){ if(!exp) return "none"; var t=new Date(exp+"T23:59:59").getTime(); if(isNaN(t)) return "none"; var d=(t-Date.now())/86400000; return d<0 ? "expired" : d<=30 ? "soon" : "ok"; };
   BS.loadFile = function(fileId, parts){
     var one=function(i){ return new Promise(function(res){ var stop=null, done=false; stop=BS.watch("uploads", fileId+"-"+i, function(d){ if(done) return; done=true; res(d); setTimeout(function(){ if(stop) stop(); }, 0); }); setTimeout(function(){ if(!done){ done=true; res(null); } }, 20000); }); };
     var list=[]; for(var i=0;i<(parts||1);i++) list.push(one(i));
@@ -581,8 +601,16 @@
     sessionStorage.setItem("bs_staff_access", d && Array.isArray(d.access) ? JSON.stringify(d.access) : "");
   } catch(e){} }
   /* staff page sections the owner can give or withhold per staff login (Overview is always shown) */
-  BS.STAFF_SECTIONS = [["content","Site content"],["requests","Requests"],["suppliers","Suppliers"],["support","Support"],["news","Newsletter"],["promos","Promotions"],["members","Members"],["finance","Finance"],["catalogue","Catalogue"],["brands","Brands"],["insights","Insights"],["settings","Settings"]];
-  BS.STAFF_DEFAULT_ACCESS = ["requests","suppliers","support","news","promos","members","catalogue","brands"];
+  BS.STAFF_SECTIONS = [["content","Site content"],["requests","Requests"],["suppliers","Suppliers"],["support","Support"],["news","Newsletter"],["promos","Promotions"],["members","Members"],["finance","Finance"],["catalogue","Catalogue"],["brands","Brands"],["insights","Insights"],["leads","Leads"],["settings","Settings"]];
+  BS.STAFF_DEFAULT_ACCESS = ["requests","suppliers","support","news","promos","members","catalogue","brands","leads"];
+  /* Messages to new accounts (Abdullah v4, lead management). Editable by staff (settings doc "leadSms"); sent by hand from
+     the staff member's phone until an SMS provider is connected. {name} and {link} are filled in. */
+  BS.LEAD_SMS = [
+    ["welcome","Welcome (day 1)","Hello {name}, welcome to Build Smartly. Send your list of materials and verified suppliers quote within hours: {link} Reply STOP to stop these messages."],
+    ["day7","Reminder (day 7, no request yet)","Hello {name}, you can still send your first request on Build Smartly. Tick the materials, type the quantities and compare offers: {link} Reply STOP to stop these messages."],
+    ["offers","New offers","Hello {name}, you have new offers on Build Smartly. Compare them here: {link} Reply STOP to stop these messages."],
+    ["verify24","Order waiting for verification (after 24 hours)","Hello {name}, your order on Build Smartly is held for you. Send your Fayda number, or TIN and business licence, so the supplier can confirm it: {link} Reply STOP to stop these messages."]
+  ];
   BS.setStaffCache = setStaffCache;
   BS.staffRole = function(){ try { return sessionStorage.getItem("bs_staff_role") || (/owner/i.test(BS.staffName())?"owner":"staff"); } catch(e){ return "staff"; } };
   BS.staffCan = function(what){
@@ -705,7 +733,8 @@
   BS.CONFIRM_HOURS = 48;
   BS.confirmDue = function(o){ if(o && o.heldForVerify) return Infinity; /* held while staff verify the buyer: the hours start once verified */
     return o && o.acceptedAt ? new Date(o.verifiedAt||o.acceptedAt).getTime() + BS.CONFIRM_HOURS*3600000 : 0; };
-  BS.poLapsed = function(o){ return !!(o && o.status==='accepted' && !o.heldForVerify && !o.supplierConfirmed && o.acceptedAt && Date.now() > BS.confirmDue(o)); };
+  BS.poLapsed = function(o){ if(o && o.status==='accepted' && o.heldForVerify && !o.supplierConfirmed) return Date.now() > BS.holdDue(o);
+    return !!(o && o.status==='accepted' && !o.heldForVerify && !o.supplierConfirmed && o.acceptedAt && Date.now() > BS.confirmDue(o)); };
   BS.namesShown = function(o){ return !!(o && (o.supplierConfirmed || o.contractAt)); };
   BS.verifyNo = function(o){ var s=String((o&&o.poRef)||'')+'|'+String((o&&o.acceptedAt)||''), h=0; for(var i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))>>>0; } var x=h.toString(36).toUpperCase(); while(x.length<7) x='0'+x; return x.slice(0,4)+'-'+x.slice(4,7); };
   BS.orderSteps = function(){

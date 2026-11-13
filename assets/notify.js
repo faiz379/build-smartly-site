@@ -19,7 +19,7 @@
     var out=[]; function add(t, kind, text, href){ if(recent(t)) out.push({t:t, kind:kind, text:text, href:href}); }
     var groups=BS.orderGroups(data.offers);
     if(w.role==='staff'){
-      data.boqs.forEach(function(b){ if(b.status==='review') add(b.createdAt, 'List to type in', b.ref+' · '+((b.upload||{}).name||'a file')+' from '+(b.company||'a buyer'), '#staff-requests'); else add(b.createdAt, 'Request', b.ref+' · '+(b.lines||[]).length+' lines from '+(b.company||'a buyer'), '#staff-requests'); });
+      data.boqs.forEach(function(b){ if(b.status==='review') add(b.createdAt, b.upload?'List to type in':'Request to check', b.ref+' · '+((b.upload||{}).name||'a file')+' from '+(b.company||'a buyer'), '#staff-requests'); else add(b.createdAt, 'Request', b.ref+' · '+(b.lines||[]).length+' lines from '+(b.company||'a buyer'), '#staff-requests'); });
       data.messages.forEach(function(m){ if(m.orderId){ if(m.who!=='staff') add(m.createdAt, 'Order message', (m.name||'')+': '+m.text, '#order-'+m.orderId); } else if(m.who==='customer') add(m.createdAt, 'Support', (m.name||'A member')+': '+m.text, '#staff-support'); });
       data.verifications.forEach(function(v){ if(v.status!=='pending') return; if(v.kind==='buyer') add(v.submittedAt||v.createdAt, 'Buyer to verify', (v.company||v.name||'A buyer')+' asks to be verified', '#staff-members'); else add(v.submittedAt||v.createdAt, 'Supplier documents', v.company+' asks to be verified', '#staff-suppliers'); });
       data.profiles.forEach(function(p){ if(p.status==='pending') add(p.updatedAt||p.createdAt, 'Profile to approve', (p.name||'A member')+' asks to publish a profile', '#staff-members'); });
@@ -45,6 +45,7 @@
         if(o.counter && o.counter.answeredAt) add(o.counter.answeredAt, 'Answer to your price', 'The supplier '+(o.counter.state==='accepted'?'accepted':'declined')+' '+BS.fmt(o.counter.price)+' on '+b.ref+' · '+lineName(b,o.lineN), '#boq-mine'); });
       var offSeen={}; data.offers.forEach(function(o){ if(mine.indexOf(o.boqId)<0 || (o.status!=='declined' && o.status!=='expired') || offSeen[o.poRef]) return; offSeen[o.poRef]=1;
         add(o.declinedAt||o.expiredAt, o.status==='declined'?'PO/SA declined':'PO/SA lapsed', (o.poRef||'')+(o.status==='declined'?' was declined by the supplier':' was not confirmed in time')+'. Choose another offer.', '#boq-mine'); });
+      data.boqs.forEach(function(b){ if(b.ownerPhone===w.phone && b.status==='rejected' && b.rejectedAt) add(b.rejectedAt, 'Request not sent', b.ref+': '+(b.rejectReason||'')+'.', '#boq-mine'); if(b.ownerPhone===w.phone && !b.upload && b.sentAt) add(b.sentAt, 'Your request went out', b.ref+' was checked by our team and sent to suppliers.', '#boq-mine'); });
       data.boqs.forEach(function(b){ if(b.ownerPhone===w.phone && b.upload && b.sentAt) add(b.sentAt, 'Your list went out', b.ref+': our team typed in '+(b.lines||[]).length+' item'+((b.lines||[]).length!==1?'s':'')+' from your file and sent them to suppliers.', '#boq-mine'); });
       groups.forEach(function(g){ if(mine.indexOf(g.boqId)<0) return; var o=g.first, h='#order-'+g.id;
         if(o.buyerAgreedAt && o.buyerAgreedAt<=(o.confirmedAt||'')) add(o.confirmedAt, 'PO/SA confirmed', g.poRef+' is confirmed by the supplier. It is binding now.', h);
@@ -62,6 +63,9 @@
         if(m.orderId && m.phone!==w.phone && ((w.role==='supplier' && m.toSupplier===w.supplierId) || (w.role==='buyer' && m.toBuyer===w.phone))) add(m.createdAt, 'Message on your order', (m.name||'')+': '+m.text, '#order-'+m.orderId); });
       data.profiles.forEach(function(p){ if(p.phone===w.phone && p.reviewedAt) add(p.reviewedAt, 'Public profile', p.status==='approved'?'Your profile is published in the Members directory.':'Your profile was not approved: '+(p.reason||''), '#workspace'); });
       data.verifications.forEach(function(v){ if(v.phone!==w.phone) return;
+        var ex=v.kind==='buyer'?v.licExp:v.exp, ls=BS.licenceState(ex); /* licence reminders: 30 days before, and when it has ended */
+        if(v.status==='verified' && ls==='soon') add(new Date(new Date(ex).getTime()-30*86400000).toISOString(), 'Licence ends soon', 'Your business licence is valid until '+ex+'. Send the renewed licence to keep '+(v.kind==='buyer'?'your Verified badge':'quoting')+'.', v.kind==='buyer'?'#workspace':'#supplier-settings');
+        if(v.status==='verified' && ls==='expired') add(new Date(ex+'T23:59:59').toISOString(), 'Licence expired', 'Your business licence ended on '+ex+'.'+(v.kind==='buyer'?'':' Quoting is paused until our team has checked the renewed licence.'), v.kind==='buyer'?'#workspace':'#supplier-settings');
         if(v.kind==='buyer'){ if(v.status==='verified' && v.verifiedAt) add(v.verifiedAt, 'You are verified', 'Our team verified you. You can place orders; orders on hold go to the suppliers now.', '#workspace'); if(v.status==='rejected' && v.rejectedAt) add(v.rejectedAt, 'Verification not accepted', 'Reason: '+(v.reason||'')+'. Open your account to try again.', '#workspace'); return; }
         if(v.verifiedAt) add(v.verifiedAt, 'Verified', 'Your documents were approved. You can quote.', '#supplier'); });
       var p9=function(x){ return String(x||'').replace(/\D/g,'').replace(/^251/,'').slice(-9); };

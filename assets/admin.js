@@ -4,7 +4,7 @@
    test staff numbers and the staff password still work. The session is kept per browser tab. */
 (function(){
   var $=function(id){ return document.getElementById(id); };
-  var data={boqs:[],offers:[],messages:[],profiles:[],news:[],verifications:[],settings:[],issues:[],promotions:[],suppliers:[],tasks:[],staff:[],tracks:[]}, query='';
+  var data={boqs:[],offers:[],messages:[],profiles:[],news:[],verifications:[],settings:[],issues:[],promotions:[],suppliers:[],tasks:[],staff:[],tracks:[],leads:[]}, query='';
   var tab='overview', mode='local', booted=false, adTilesHtml='', actN=8;
   var CATS=BS.CATEGORIES.filter(function(c){ return c.indexOf('Other')<0; });
   function esc(t){ return String(t||'').replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
@@ -65,12 +65,14 @@
      is down on the page: replacing a button between press and release loses the click (seen 13 Nov 2026 when a staff
      reply did not send while background records kept arriving). */
   var rTimer=null, pressing=false, missed=false;
-  function laterRender(){ if(pressing){ missed=true; return; } clearTimeout(rTimer); rTimer=setTimeout(function(){ if(pressing){ missed=true; return; } if(isAdmin() && !$('adPanel').hidden) render(); }, 120); }
+  function choosingFile(){ var a=document.activeElement; return !!(a && a.type==='file' && $('adBody').contains(a) && !a.__picked); } /* a file dialog is open: replacing the box would lose the file */
+  $('adBody').addEventListener('change', function(e){ if(e.target.type==='file') e.target.__picked=true; }, true);
+  function laterRender(){ if(pressing){ missed=true; return; } if(choosingFile()){ clearTimeout(rTimer); rTimer=setTimeout(laterRender, 400); return; } clearTimeout(rTimer); rTimer=setTimeout(function(){ if(pressing){ missed=true; return; } if(choosingFile()){ laterRender(); return; } if(isAdmin() && !$('adPanel').hidden) render(); }, 120); }
   document.addEventListener('pointerdown', function(e){ if(e.target.closest && e.target.closest('#adBody')) pressing=true; }, true);
   ['pointerup','pointercancel'].forEach(function(ev){ document.addEventListener(ev, function(){ if(!pressing) return; pressing=false; if(missed){ missed=false; setTimeout(laterRender, 60); } }, true); });
-  ['boqs','offers','messages','profiles','news','verifications','settings','issues','promotions','suppliers','tasks','staff','tracks'].forEach(sub);
+  ['boqs','offers','messages','profiles','news','verifications','settings','issues','promotions','suppliers','tasks','staff','tracks','leads'].forEach(sub);
   /* staff-only lists are refused before sign-in; ask again once signed in */
-  function resubStaffOnly(){ sub('tasks'); sub('staff'); sub('tracks'); }
+  function resubStaffOnly(){ sub('tasks'); sub('staff'); sub('tracks'); sub('leads'); }
   $('adTabs').addEventListener('click', function(e){ var b=e.target.closest('[data-tab]'); if(!b) return; tab=b.dataset.tab; render(); $('adLayout').classList.remove('open'); $('adBurger').setAttribute('aria-expanded','false'); window.scrollTo({top:0,behavior:'smooth'}); });
   /* three-line button: on a phone it opens the menu as a drawer; on a wide screen it folds the sidebar to icons */
   $('adBurger').onclick=function(){ var L=$('adLayout'); if(window.matchMedia('(max-width:860px)').matches){ var o=!L.classList.contains('open'); L.classList.toggle('open', o); $('adBurger').setAttribute('aria-expanded', o?'true':'false'); } else { L.classList.toggle('fold'); try{ localStorage.setItem('bs_adfold', L.classList.contains('fold')?'1':''); }catch(e){} } };
@@ -81,6 +83,8 @@
   function boqOf(id){ return data.boqs.filter(function(b){ return b.id===id; })[0]; }
   function lineOf(b, n){ return b ? (b.lines||[]).filter(function(l){ return l.n===n; })[0] : null; }
   function openBoq(b){ return b.status==='open' && new Date(b.deadlineAt)>new Date(); }
+  function licTag(exp){ var s=BS.licenceState(exp); return s==='expired' ? '<span class="tag">Licence expired <span data-notr>'+esc(exp)+'</span></span>' : s==='soon' ? '<span class="tag tag-ochre">Licence ends <span data-notr>'+esc(exp)+'</span></span>' : '<span class="small muted">licence valid until <span data-notr>'+esc(exp)+'</span></span>'; }
+  function licencesDue(){ return data.verifications.filter(function(v){ var e=v.kind==='buyer'?v.licExp:v.exp; return v.status==='verified' && e && BS.licenceState(e)!=='ok'; }); }
   function buyersToVerify(){ return data.verifications.filter(function(v){ return v.kind==='buyer' && v.status==='pending'; }); }
   function toType(){ return data.boqs.filter(function(b){ return b.status==='review'; }); }
   function unclassified(){ var out=[]; data.boqs.forEach(function(b){ (b.lines||[]).forEach(function(l){ if(/Other/.test(l.cat||'')) out.push({b:b,l:l}); }); }); return out; }
@@ -132,7 +136,7 @@
       $('adTabs').querySelectorAll('button').forEach(function(b){ var n=badges[b.dataset.tab]||0; var old=b.querySelector('.badge'); if(old) old.remove(); if(n){ var sp=document.createElement('span'); sp.className='badge'; sp.textContent=n; b.appendChild(sp); } }); }catch(e){}
     if(tab!=='overview' && !BS.staffCan(tab)) tab='overview';
     $('adTabs').querySelectorAll('[data-tab]').forEach(function(b){ b.hidden=b.dataset.tab!=='overview' && !BS.staffCan(b.dataset.tab); });
-    var r={overview:renderOverview, requests:renderRequests, suppliers:renderSuppliers, support:renderSupport, news:renderNews, promos:renderPromos, brands:renderBrandsTab, members:renderMembers, finance:renderFinance, insights:renderInsights, catalogue:renderCatalogue, content:renderContent, settings:renderSettings}[tab]||renderOverview;
+    var r={overview:renderOverview, requests:renderRequests, suppliers:renderSuppliers, support:renderSupport, news:renderNews, promos:renderPromos, brands:renderBrandsTab, members:renderMembers, finance:renderFinance, insights:renderInsights, leads:renderLeads, catalogue:renderCatalogue, content:renderContent, settings:renderSettings}[tab]||renderOverview;
     var kept=keepTyped(); $('adBody').innerHTML=searchHtml()+r(); kept();
     if(window.bsTrack) bsTrack.mountFleet(data.tracks, data.offers);
   }
@@ -163,6 +167,7 @@
     var todo=[];
     if(toType().length) todo.push('<a href="#" data-tab-go="requests">'+toType().length+' list(s) in Word or PDF to type in</a>');
     if(unclassified().length) todo.push('<a href="#" data-tab-go="requests">'+unclassified().length+' line(s) typed by customers need a category</a>');
+    if(licencesDue().length) todo.push('<a href="#" data-tab-go="suppliers">'+licencesDue().length+' licence(s) expired or ending within 30 days</a>');
     if(buyersToVerify().length) todo.push('<a href="#" data-tab-go="members">'+buyersToVerify().length+' buyer(s) waiting for verification</a>');
     var pv=data.verifications.filter(function(v){return v.status==='pending' && v.kind!=='buyer';}).length; if(pv) todo.push('<a href="#" data-tab-go="suppliers">'+pv+' supplier(s) waiting for verification</a>');
     var w=threads().filter(function(t){return t.waiting;}).length; if(w) todo.push('<a href="#" data-tab-go="support">'+w+' support thread(s) waiting for an answer</a>');
@@ -203,7 +208,7 @@
     var list=toType(); if(!list.length) return '';
     var names=BS.CATALOGUE.filter(function(x){ return !x.hidden; }).map(function(x){ return '<option value="'+esc(x.name)+'">'; }).join('');
     var inp='font:inherit;font-size:.88rem;padding:.4rem .5rem;border:1.5px solid var(--line);border-radius:8px;width:100%;min-width:0';
-    return '<datalist id="tlItems">'+names+'</datalist>'+list.map(function(b){ var up=b.upload||{}, L=typedLines(b), kb=Math.max(1, Math.round((up.size||0)/1024));
+    return '<datalist id="tlItems">'+names+'</datalist>'+list.map(function(b){ var up=b.upload||{}, L=typedLines(b), kb=Math.max(1, Math.round((up.size||0)/1024)), isFile=!!b.upload;
       var file = up.fileId ? (fileUrls[b.id] ? '<a class="btn btn-primary btn-sm" href="'+fileUrls[b.id]+'" download="'+esc(up.name)+'" target="_blank" rel="noopener">Open the file</a>' : '<button class="btn btn-primary btn-sm" type="button" data-openfile="'+b.id+'">Get the file</button>')
         : '<span class="small" style="color:var(--warn)">The file could not be stored. Use the text below, or call the buyer.</span>';
       var rows=L.map(function(l,i){ var cat=BS.itemOf(l.item); var units=cat ? BS.unitsOf(l.item) : BS.UNITS; var k=b.id+'|'+i+'|';
@@ -213,12 +218,14 @@
           '<select data-tl="'+k+'unit" style="'+inp+'">'+(units.indexOf(l.unit)<0&&l.unit?'<option>'+esc(l.unit)+'</option>':'')+units.map(function(u){ return '<option'+(u===l.unit?' selected':'')+'>'+esc(u)+'</option>'; }).join('')+'</select>'+
           '<input type="date" data-tl="'+k+'needed" value="'+esc(l.needed)+'" style="'+inp+'">'+
           '<button class="btn btn-ghost btn-sm" type="button" data-tldel="'+k+'" aria-label="Remove line">✕</button></div>'; }).join('');
-      return card('List to type in · '+esc(b.ref)+' · '+esc(b.company), '<span data-notr>'+esc(up.name)+'</span> · <span>'+kb+' KB</span> · <span data-notr>'+when(b.createdAt)+' · '+fmtPhone(b.ownerPhone)+' · '+esc(b.subcity)+'</span>',
-        '<div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">'+file+'<button class="btn btn-ghost btn-sm" type="button" data-close="'+b.id+'">Close request</button></div>'+
+      var vb=BS.isVerified(b.ownerPhone)?'<span class="vbadge ok">✓ Verified buyer</span>':'<span class="vbadge no">Buyer not verified yet</span>';
+      return card((isFile?'List to type in':'Request to check')+' · '+esc(b.ref)+' · '+esc(b.company), (isFile?'<span data-notr>'+esc(up.name)+'</span> · <span>'+kb+' KB</span> · ':'')+'<span data-notr>'+when(b.createdAt)+' · '+fmtPhone(b.ownerPhone)+' · '+esc(b.subcity)+'</span> '+vb,
+        (isFile?'<div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">'+file+'</div>':'')+
         (up.text ? '<details><summary class="small" style="cursor:pointer;font-weight:600">Text read from the file</summary><pre data-notr style="max-height:16rem;overflow:auto;white-space:pre-wrap;font-size:.8rem;background:var(--bg-2,#f4f4f0);padding:.6rem;border-radius:8px;margin:.4rem 0 0">'+esc(up.text)+'</pre></details>' : '')+
-        '<p class="small muted" style="margin:0">'+((up.suggest||[]).length ? 'The lines below were read from the file. Check each against the file, correct it, add what is missing, then send.' : 'Type the lines from the file, then send.')+'</p>'+
+        '<p class="small muted" style="margin:0">'+(!isFile ? 'Check the lines are clear and real. Correct anything unclear, then send. If it is not a serious request, do not send it: write the reason below.' : (up.suggest||[]).length ? 'The lines below were read from the file. Check each against the file, correct it, add what is missing, then send.' : 'Type the lines from the file, then send.')+'</p>'+
         '<div class="tllist">'+rows+'</div>'+
-        '<div style="display:flex;gap:.5rem;flex-wrap:wrap"><button class="btn btn-ghost btn-sm" type="button" data-tladd="'+b.id+'">Add a line</button><button class="btn btn-ochre btn-sm" type="button" data-tlsend="'+b.id+'">Send to suppliers · '+L.length+' line'+(L.length!==1?'s':'')+'</button></div>');
+        '<div style="display:flex;gap:.5rem;flex-wrap:wrap"><button class="btn btn-ghost btn-sm" type="button" data-tladd="'+b.id+'">Add a line</button><button class="btn btn-ochre btn-sm" type="button" data-tlsend="'+b.id+'">Send to suppliers · '+L.length+' line'+(L.length!==1?'s':'')+'</button></div>'+
+        '<div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center"><input data-tlreason="'+b.id+'" placeholder="Reason, if you do not send it" style="font:inherit;font-size:.85rem;padding:.35rem .5rem;border:1.5px solid var(--line);border-radius:8px;min-width:14rem;flex:1"><button class="btn btn-ghost btn-sm" type="button" data-tlreject="'+b.id+'">Do not send: tell the buyer</button></div>');
     }).join('');
   }
   function renderRequests(){
@@ -252,6 +259,8 @@
     var of=e.target.closest('[data-openfile]'); if(of){ var bf=boqOf(of.dataset.openfile), upf=(bf||{}).upload||{}; of.disabled=true; of.textContent='Getting the file…';
       var du=await BS.loadFile(upf.fileId, upf.parts); if(!du){ of.disabled=false; of.textContent='Get the file'; bsToast('The file could not be found.'); return; }
       var bl=await (await fetch(du)).blob(); fileUrls[bf.id]=URL.createObjectURL(bl); render(); return; }
+    var tr=e.target.closest('[data-tlreject]'); if(tr){ var inpR=document.querySelector('[data-tlreason="'+tr.dataset.tlreject+'"]'), whyR=inpR?inpR.value.trim():''; if(!whyR){ bsToast('Write the reason first; the buyer sees it.'); if(inpR) inpR.focus(); return; } tr.disabled=true;
+      await BS.update('boqs', tr.dataset.tlreject, {status:'rejected', rejectReason:whyR, rejectedAt:new Date().toISOString(), rejectedBy:staffName()}); delete typing[tr.dataset.tlreject]; bsToast('Not sent. The buyer sees the reason.'); return; }
     var ta=e.target.closest('[data-tladd]'); if(ta){ var bb=boqOf(ta.dataset.tladd); typedLines(bb).push({item:'', qty:'', unit:'', needed:(bb.upload||{}).needed||''}); render(); return; }
     var td=e.target.closest('[data-tldel]'); if(td){ var pp=td.dataset.tldel.split('|'); typing[pp[0]].splice(+pp[1],1); render(); return; }
     var ts=e.target.closest('[data-tlsend]'); if(ts){ var b2=boqOf(ts.dataset.tlsend); if(!b2) return; var L2=typedLines(b2).filter(function(l){ return String(l.item||'').trim() || +l.qty>0; });
@@ -290,7 +299,7 @@
     var rows=list.map(function(v){
       var tag = v.status==='verified' ? '<span class="tag tag-green">Verified</span>' : v.status==='rejected' ? '<span class="tag">Rejected</span>' : '<span class="tag tag-ochre">Pending</span>';
       return '<div class="card" style="display:grid;gap:.5rem"><div style="display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap;align-items:center"><div><strong style="font-family:var(--display)">'+esc(v.company)+'</strong><br><span class="small muted">'+fmtPhone(v.phone)+' · TIN '+esc(v.tin||'')+' · '+esc((v.cats||[]).join(', '))+' · dispatch '+esc(v.sub||'')+'</span></div>'+tag+'</div>'+
-        '<div class="small">Licence <strong>'+esc(v.lic||'—')+'</strong>'+(v.exp?' · expires '+esc(v.exp):'')+' · VAT: '+esc(v.vat||'')+' · files: '+esc((v.files||[]).join(', ')||'none attached')+' · submitted '+when(v.submittedAt)+(v.reason?'<br>Reason given: '+esc(v.reason):'')+'</div>'+
+        '<div class="small">Licence <strong>'+esc(v.lic||'—')+'</strong>'+(v.exp?' · '+licTag(v.exp):'')+' · VAT: '+esc(v.vat||'')+' · files: '+esc((v.files||[]).join(', ')||'none attached')+' · submitted '+when(v.submittedAt)+(v.reason?'<br>Reason given: '+esc(v.reason):'')+'</div>'+
         '<div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">'+(v.status!=='verified'?'<button class="btn btn-primary btn-sm" type="button" data-verify="'+v.id+'">Approve</button>':'')+(v.status!=='rejected'?'<input placeholder="Reason (for a rejection)" data-reason="'+v.id+'" style="font:inherit;font-size:.85rem;padding:.35rem .5rem;border:1.5px solid var(--line);border-radius:8px;min-width:14rem"><button class="btn btn-ghost btn-sm" type="button" data-reject="'+v.id+'">Reject</button>':'')+'</div></div>';
     }).join('');
     var pending=list.filter(function(v){ return v.status==='pending'; }).length;
@@ -386,7 +395,7 @@
   });
   $('adBody').addEventListener('input', function(e){ if(e.target.id!=='supSearch') return; supQ=e.target.value; var pos=e.target.selectionStart; render(); var el=$('supSearch'); if(el){ el.focus(); try{ el.setSelectionRange(pos,pos); }catch(err){} } });
   /* open a staff section from a link or the bell */
-  window.bsAdminTab=function(t){ if(!isAdmin()) return; tab=({requests:'requests',suppliers:'suppliers',support:'support',members:'members',promos:'promos',finance:'finance',news:'news',brands:'brands',overview:'overview',insights:'insights',catalogue:'catalogue',settings:'settings',content:'content'})[t]||'overview'; if(!$('adPanel').hidden) render(); };
+  window.bsAdminTab=function(t){ if(!isAdmin()) return; tab=({requests:'requests',suppliers:'suppliers',support:'support',members:'members',promos:'promos',finance:'finance',news:'news',brands:'brands',overview:'overview',insights:'insights',catalogue:'catalogue',settings:'settings',content:'content',leads:'leads'})[t]||'overview'; if(!$('adPanel').hidden) render(); };
   function renderSupport(){
     var ts=threads(); var issuesHtml=renderIssues(); var w=ts.filter(function(t){ return t.waiting; }).length;
     var head='<div style="display:flex;justify-content:space-between;align-items:end;gap:.6rem;flex-wrap:wrap"><div><strong style="font-family:var(--display);font-size:1.05rem">Support inbox</strong><p class="small muted" style="margin:.1rem 0 0">Every message members send from their Mailbox, the help box or the supplier portal. Reply here; the member sees it in the Mailbox and gets an SMS.</p></div>'+(w?'<span class="tag tag-ochre">'+w+' waiting for an answer</span>':'<span class="tag">Nothing waiting</span>')+'</div>';
@@ -488,16 +497,16 @@
      document are in "kyc" (staff only) and are loaded when staff open them. Approving releases the buyer's held orders. */
   var kycCache={}, kycUrls={};
   function buyerVerifyHtml(){
-    var list=data.verifications.filter(function(v){ return v.kind==='buyer'; }).sort(function(a,c){ return (a.status==='pending'?0:1)-(c.status==='pending'?0:1) || (c.submittedAt||'').localeCompare(a.submittedAt||''); }).slice(0,30);
     var held=function(v){ return data.offers.filter(function(o){ if(!o.heldForVerify || o.status!=='accepted') return false; var b=boqOf(o.boqId); return b && BS.d9(b.ownerPhone)===v.phone; }); };
+    var list=data.verifications.filter(function(v){ return v.kind==='buyer'; }).sort(function(a,c){ return (a.status==='pending'?0:1)-(c.status==='pending'?0:1) || (held(c).length?1:0)-(held(a).length?1:0) || (c.submittedAt||'').localeCompare(a.submittedAt||''); }).slice(0,30);
     var rows=list.map(function(v){ var st=v.status||'pending', k=kycCache[v.kycId], h=held(v);
       var tag = st==='verified' ? '<span class="tag tag-green">Verified</span>' : st==='rejected' ? '<span class="tag">Not accepted</span>' : '<span class="tag tag-ochre">Waiting</span>';
       var det = !v.kycId ? '<p class="small" style="margin:0;color:var(--warn)">The ID number and document could not be stored. Call the buyer.</p>'
-        : k ? '<div class="kv small"><span>Type</span><strong>'+esc(k.type==='Organisation'?'Organization':k.type)+'</strong>'+(k.fayda?'<span>Fayda number</span><strong data-notr>'+esc(k.fayda)+'</strong>':'')+(k.tin?'<span>TIN</span><strong data-notr>'+esc(k.tin)+'</strong>':'')+(k.lic?'<span>Licence no.</span><strong data-notr>'+esc(k.lic)+'</strong>':'')+(k.contact?'<span>Contact</span><strong data-notr>'+esc(k.contact)+(k.title?' · '+esc(k.title):'')+'</strong>':'')+'</div>'+
-            (k.file&&kycUrls[v.kycId] ? '<div><a class="btn btn-ghost btn-sm" href="'+kycUrls[v.kycId]+'" target="_blank" rel="noopener" download="'+esc(k.file.name||'document')+'">Open the document</a></div>' : '<p class="small muted" style="margin:0">No document attached.</p>')
+        : k ? '<div class="kv small"><span>Type</span><strong>'+esc(k.type==='Organisation'?'Organization':k.type)+'</strong>'+(k.fayda?'<span>Fayda number</span><strong data-notr>'+esc(k.fayda)+'</strong>':'')+(k.passport?'<span>Passport</span><strong data-notr>'+esc(k.passport)+'</strong>':'')+(k.tin?'<span>TIN</span><strong data-notr>'+esc(k.tin)+'</strong>':'')+(k.lic?'<span>Licence no.</span><strong data-notr>'+esc(k.lic)+'</strong>':'')+(k.licExp?'<span>Licence valid until</span><strong data-notr>'+esc(k.licExp)+'</strong>':'')+(k.contact?'<span>Authorized person</span><strong data-notr>'+esc(k.contact)+(k.title?' · '+esc(k.title):'')+(k.repId?' · '+esc(k.repId):'')+'</strong>':'')+(k.address?'<span>Address</span><strong data-notr>'+esc(k.address)+'</strong>':'')+(k.email?'<span>Email</span><strong data-notr>'+esc(k.email)+'</strong>':'')+'</div>'+
+            ((kycUrls[v.kycId]||[]).length ? '<div style="display:flex;gap:.4rem;flex-wrap:wrap">'+kycUrls[v.kycId].map(function(u){ return '<a class="btn btn-ghost btn-sm" href="'+u.url+'" target="_blank" rel="noopener" download="'+esc(u.name||'document')+'">Open: <span data-notr>'+esc(u.label||u.name)+'</span></a>'; }).join('')+'</div>' : '<p class="small muted" style="margin:0">No document attached.</p>')
         : '<div><button class="btn btn-ghost btn-sm" type="button" data-kycload="'+esc(v.kycId)+'">Show the ID number and document</button></div>';
       return '<div class="card" style="display:grid;gap:.5rem;'+(st==='pending'?'border-color:var(--ochre)':'')+'"><div style="display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap;align-items:center"><span><strong data-notr>'+esc(v.company||v.name)+'</strong> <span class="small muted" data-notr>'+fmtPhone(v.phone)+' · '+when(v.submittedAt)+'</span></span>'+tag+'</div>'+
-        '<div class="small">'+esc(v.type==='Organisation'?'Organization':v.type==='Government'?'Government office':'Individual')+(v.idHint?' · Fayda <span data-notr>'+esc(v.idHint)+'</span>':'')+(v.tin?' · TIN <span data-notr>'+esc(v.tin)+'</span>':'')+(h.length?' · <strong>'+h.length+' order line(s) on hold</strong>':'')+'</div>'+det+
+        '<div class="small">'+esc(v.type==='Organisation'?'Organization':v.type==='Government'?'Government office':'Individual')+(v.idHint?' · <span data-notr>'+esc(v.idHint)+'</span>':'')+(v.licExp?' · '+licTag(v.licExp):'')+(v.tin?' · TIN <span data-notr>'+esc(v.tin)+'</span>':'')+(h.length?' · <strong>'+h.length+' order line(s) on hold</strong> · <span class="deadline" style="font-size:.85rem">hold ends <span data-notr>'+when(new Date(BS.holdDue(h[0])).toISOString())+'</span></span>':'')+'</div>'+det+
         (st==='rejected'&&v.reason?'<p class="small" style="margin:0">Reason given: <span data-notr>'+esc(v.reason)+'</span></p>':'')+
         (st==='pending' ? '<p class="small muted" style="margin:0">Check the Fayda number with the national ID system and the TIN and licence with the Ministry of Trade (eTrade) before approving.</p><div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center"><button class="btn btn-primary btn-sm" type="button" data-bverify="'+v.id+'">Approve: verified</button><input data-breason="'+v.id+'" placeholder="Reason, if you do not accept it" style="font:inherit;font-size:.85rem;padding:.35rem .5rem;border:1.5px solid var(--line);border-radius:8px;min-width:14rem;flex:1"><button class="btn btn-ghost btn-sm" type="button" data-breject="'+v.id+'">Not accepted</button></div>' : '')+'</div>'; }).join('');
     return card('Buyers to verify'+(buyersToVerify().length?' · '+buyersToVerify().length:''), 'Buyers send their Fayda number, or TIN and business licence, or an official letter. Approving gives them the Verified badge and sends their orders on hold to the suppliers.', rows||'<div class="empty">No buyer has asked to be verified yet.</div>');
@@ -506,7 +515,10 @@
     var kl=e.target.closest('[data-kycload]'); if(kl){ kl.disabled=true; kl.textContent='Loading…'; var id=kl.dataset.kycload;
       var doc=await new Promise(function(res){ var done=false, stop=BS.watch('kyc', id, function(d){ if(done) return; done=true; res(d); setTimeout(function(){ if(stop) stop(); },0); }); setTimeout(function(){ if(!done){ done=true; res(null); } }, 15000); });
       if(!doc){ kl.disabled=false; kl.textContent='Show the ID number and document'; bsToast('The details could not be loaded.'); return; }
-      kycCache[id]=doc; if(doc.file && doc.file.data){ try{ kycUrls[id]=URL.createObjectURL(await (await fetch(doc.file.data)).blob()); }catch(err){} } render(); return; }
+      kycCache[id]=doc; var urls=[];
+      if(doc.file && doc.file.data){ try{ urls.push({label:'Document', name:doc.file.name, url:URL.createObjectURL(await (await fetch(doc.file.data)).blob())}); }catch(err){} } /* records from before 13 Nov */
+      for(var fi=0; fi<(doc.files||[]).length; fi++){ var fx=doc.files[fi]; if(!fx.fileId) continue; var du=await BS.loadFile(fx.fileId, fx.parts); if(du){ try{ urls.push({label:fx.label, name:fx.name, url:URL.createObjectURL(await (await fetch(du)).blob())}); }catch(err){} } }
+      kycUrls[id]=urls; render(); return; }
     var bv=e.target.closest('[data-bverify]'); if(bv){ var v=data.verifications.filter(function(x){ return x.id===bv.dataset.bverify; })[0]; if(!v) return; bv.disabled=true; var now=new Date().toISOString();
       await BS.update('verifications', v.id, {status:'verified', verifiedAt:now, by:staffName(), reason:''});
       var ids=data.offers.filter(function(o){ if(!o.heldForVerify || o.status!=='accepted') return false; var b=boqOf(o.boqId); return b && BS.d9(b.ownerPhone)===v.phone; }).map(function(o){ return o.id; });
@@ -514,6 +526,58 @@
       bsToast((v.company||v.name)+' is verified.'+(ids.length?' '+ids.length+' order line(s) went to the suppliers.':'')); return; }
     var br=e.target.closest('[data-breject]'); if(br){ var inp=document.querySelector('[data-breason="'+br.dataset.breject+'"]'), why=inp?inp.value.trim():''; if(!why){ bsToast('Write the reason first; the buyer sees it.'); if(inp) inp.focus(); return; } br.disabled=true;
       await BS.update('verifications', br.dataset.breject, {status:'rejected', rejectedAt:new Date().toISOString(), by:staffName(), reason:why}); bsToast('Not accepted. The buyer sees the reason and can try again.'); return; }
+  });
+  /* Leads (Abdullah v4, "Trial Leads"): every account made on the site is a lead for the marketing team. Status is worked
+     out from the records: Active → Request sent → Order waiting for verification → Verified (converted); opted out shown.
+     Staff assign a person, keep call notes, and send the messages of the sequence from their own phone. */
+  var leadF={status:'', who:'', q:''}, leadOpen={};
+  function leadInfo(l){ var d=l.phone, mine=data.boqs.filter(function(b){ return BS.d9(b.ownerPhone)===d; }), ids=mine.map(function(b){ return b.id; });
+    var offs=data.offers.filter(function(o){ return ids.indexOf(o.boqId)>=0; }), held=offs.some(function(o){ return o.status==='accepted' && o.heldForVerify; });
+    var vst=BS.buyerState(d), last=[l.joinedAt||l.createdAt].concat(mine.map(function(b){ return b.createdAt; }), offs.map(function(o){ return o.acceptedAt||o.createdAt; })).filter(Boolean).sort().pop()||'';
+    var st = vst==='verified' ? 'converted' : (held || vst==='pending') ? 'waiting' : mine.length ? 'request' : 'active';
+    return {reqs:mine.length, offers:offs.length, held:held, vst:vst, last:last, st:st}; }
+  var LEAD_ST={active:'Active · no request yet', request:'Request sent', waiting:'Order waiting for verification', converted:'Verified · converted'};
+  function smsText(key, l){ var t=((BS.LEAD_SMS_EDIT||{})[key]) || (BS.LEAD_SMS.filter(function(x){ return x[0]===key; })[0]||[])[2] || ''; return t.replace(/\{name\}/g, (l.name||'').split(' ')[0]).replace(/\{link\}/g, 'build.onsmartly.com'); }
+  function dueSms(l, inf){ var sent=l.sent||{}, out=[], age=(Date.now()-new Date(l.joinedAt||l.createdAt||0).getTime())/86400000;
+    if(!sent.welcome) out.push('welcome'); if(age>=7 && !inf.reqs && !sent.day7) out.push('day7'); if(inf.offers && !sent.offers) out.push('offers');
+    if(inf.held && inf.vst!=='verified' && !sent.verify24){ var h=data.offers.filter(function(o){ return o.heldForVerify && o.status==='accepted'; }).some(function(o){ return Date.now()-new Date(o.acceptedAt).getTime()>86400000; }); if(h) out.push('verify24'); }
+    return l.optOut ? [] : out; }
+  function staffNames(){ var n=data.staff.filter(function(s){ return s.active!==false && !s.removed; }).map(function(s){ return s.name||s.email; }); if(!n.length) n=BS.STAFF.map(function(s){ return s.person; }); return n; }
+  function renderLeads(){
+    var all=data.leads.slice().sort(function(a,c){ return (c.joinedAt||'').localeCompare(a.joinedAt||''); }).map(function(l){ return {l:l, i:leadInfo(l)}; });
+    var list=all.filter(function(x){ var l=x.l; if(leadF.status && x.i.st!==leadF.status) return false; if(leadF.who==='-' ? l.assignedTo : (leadF.who && l.assignedTo!==leadF.who)) return false; if(leadF.q){ var q=leadF.q.toLowerCase(); if(((l.name||'')+' '+(l.org||'')+' '+l.phone).toLowerCase().indexOf(q)<0) return false; } return true; });
+    var counts={}; all.forEach(function(x){ counts[x.i.st]=(counts[x.i.st]||0)+1; });
+    var bar='<div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center"><select id="ldStatus" style="font:inherit;padding:.4rem .5rem;border:1.5px solid var(--line);border-radius:8px"><option value="">All statuses · '+all.length+'</option>'+Object.keys(LEAD_ST).map(function(k){ return '<option value="'+k+'"'+(leadF.status===k?' selected':'')+'>'+LEAD_ST[k]+' · '+(counts[k]||0)+'</option>'; }).join('')+'</select>'+
+      '<select id="ldWho" style="font:inherit;padding:.4rem .5rem;border:1.5px solid var(--line);border-radius:8px"><option value="">Anyone</option><option value="-"'+(leadF.who==='-'?' selected':'')+'>Not assigned</option>'+staffNames().map(function(n){ return '<option'+(leadF.who===n?' selected':'')+'>'+esc(n)+'</option>'; }).join('')+'</select>'+
+      '<input id="ldQ" type="search" placeholder="Search name, company or mobile" value="'+esc(leadF.q)+'" style="font:inherit;padding:.4rem .6rem;border:1.5px solid var(--line);border-radius:8px;flex:1;min-width:12rem"><button class="btn btn-ghost btn-sm" type="button" id="ldCsv">Export to Excel (CSV)</button></div>';
+    var rows=list.map(function(x){ var l=x.l, i=x.i, due=dueSms(l,i), open=leadOpen[l.id];
+      var tag = i.st==='converted' ? 'tag-green' : i.st==='waiting' ? 'tag-ochre' : '';
+      var head='<div style="display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap;align-items:center"><span><strong data-notr>'+esc(l.name||'?')+'</strong>'+(l.org?' · <span data-notr>'+esc(l.org)+'</span>':'')+' <span class="small muted" data-notr>'+fmtPhone(l.phone)+'</span></span><span style="display:flex;gap:.35rem;flex-wrap:wrap">'+(l.optOut?'<span class="tag">Opted out</span>':'')+'<span class="tag '+tag+'">'+LEAD_ST[i.st]+'</span></span></div>'+
+        '<div class="small muted"><span>'+esc(l.type==='Organisation'?'Organization':l.type==='Government'?'Government office':l.type==='Individual'?'Individual':'Buyer')+'</span> · <span>'+(l.want==='sell'?'Wants to sell':l.want==='both'?'Buy and sell':'Wants to buy')+'</span> · <span>joined</span> <span data-notr>'+when(l.joinedAt||l.createdAt)+'</span> · <span>'+i.reqs+' request(s)</span> · <span>'+i.offers+' offer(s)</span> · <span>last activity</span> <span data-notr>'+when(i.last)+'</span></div>';
+      var notes=(l.notes||[]).map(function(n){ return '<div class="small"><strong data-notr>'+esc(n.by)+'</strong> · <span data-notr>'+when(n.at)+'</span>: <span data-notr>'+esc(n.text)+'</span></div>'; }).join('');
+      var sms=due.map(function(k){ var t=smsText(k,l), label=(BS.LEAD_SMS.filter(function(x){ return x[0]===k; })[0]||[])[1]||k; return '<div class="doc" style="grid-template-columns:1fr auto"><span><strong>'+esc(label)+'</strong><br><span class="small muted" data-notr>'+esc(t)+'</span></span><span style="display:flex;gap:.3rem;flex-wrap:wrap;justify-content:flex-end"><a class="btn btn-ghost btn-sm" href="sms:+251'+l.phone+'?body='+encodeURIComponent(t)+'">SMS</a><a class="btn btn-ghost btn-sm" href="https://wa.me/251'+l.phone+'?text='+encodeURIComponent(t)+'" target="_blank" rel="noopener">WhatsApp</a><button class="btn btn-primary btn-sm" type="button" data-ldsent="'+l.id+'|'+k+'">Mark as sent</button></span></div>'; }).join('');
+      var body = open ? '<div style="display:grid;gap:.5rem;border-top:1px solid var(--line);padding-top:.5rem">'+
+          '<div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center"><label class="small" for="ldA-'+l.id+'">Assigned to</label><select id="ldA-'+l.id+'" data-ldassign="'+l.id+'" style="font:inherit;padding:.35rem .5rem;border:1.5px solid var(--line);border-radius:8px"><option value="">Nobody yet</option>'+staffNames().map(function(n){ return '<option'+(l.assignedTo===n?' selected':'')+'>'+esc(n)+'</option>'; }).join('')+'</select><label class="check small" style="margin-left:auto"><input type="checkbox" data-ldopt="'+l.id+'"'+(l.optOut?' checked':'')+'><span>Opted out of messages</span></label></div>'+
+          (sms ? '<div><strong class="small">Messages due</strong><div class="docs" style="margin-top:.3rem">'+sms+'</div></div>' : '<p class="small muted" style="margin:0">'+(l.optOut?'This person asked not to receive messages.':'No message due.')+'</p>')+
+          '<div><strong class="small">Call notes</strong>'+(notes?'<div style="display:grid;gap:.25rem;margin-top:.3rem">'+notes+'</div>':'<p class="small muted" style="margin:.2rem 0 0">No notes yet.</p>')+'<div style="display:flex;gap:.4rem;margin-top:.4rem"><input data-ldnote="'+l.id+'" placeholder="What was said on the call" style="font:inherit;font-size:.88rem;padding:.4rem .55rem;border:1.5px solid var(--line);border-radius:8px;flex:1"><button class="btn btn-ghost btn-sm" type="button" data-ldnoteadd="'+l.id+'">Add note</button></div></div></div>' : '';
+      return '<div class="card" style="display:grid;gap:.45rem;'+(due.length&&!l.optOut?'border-color:var(--ochre)':'')+'">'+head+'<div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center"><button class="btn btn-ghost btn-sm" type="button" data-ldopen="'+l.id+'">'+(open?'Close':'Open')+'</button>'+(due.length?'<span class="small" style="color:#7a5200;font-weight:600">'+due.length+' message(s) due</span>':'')+(l.assignedTo?'<span class="small muted">· <span data-notr>'+esc(l.assignedTo)+'</span></span>':'')+'</div>'+body+'</div>'; }).join('');
+    var tpl='<details><summary style="cursor:pointer;font-weight:600">Messages of the sequence (edit the text)</summary><div style="display:grid;gap:.6rem;margin-top:.6rem">'+BS.LEAD_SMS.map(function(x){ return '<div class="field"><label for="ldT-'+x[0]+'">'+esc(x[1])+'</label><textarea id="ldT-'+x[0]+'" rows="2" style="font:inherit">'+esc((BS.LEAD_SMS_EDIT||{})[x[0]]||x[2])+'</textarea></div>'; }).join('')+'<p class="small muted" style="margin:0">{name} becomes the first name and {link} the site address. Keep "Reply STOP" so people can opt out.</p><div><button class="btn btn-primary btn-sm" type="button" id="ldTSave">Save the messages</button></div></div></details>';
+    return card('Leads · '+all.length, 'Everyone who made an account, with where they are and what to do next.', bar+tpl)+(rows||'<div class="empty">No leads yet. Everyone who signs up appears here.</div>');
+  }
+  $('adBody').addEventListener('change', async function(e){
+    if(e.target.id==='ldStatus'){ leadF.status=e.target.value; render(); return; } if(e.target.id==='ldWho'){ leadF.who=e.target.value; render(); return; }
+    var a=e.target.closest('[data-ldassign]'); if(a){ await BS.update('leads', a.dataset.ldassign, {assignedTo:a.value}); bsToast(a.value?'Assigned to '+a.value+'.':'Not assigned.'); return; }
+    var o=e.target.closest('[data-ldopt]'); if(o){ await BS.update('leads', o.dataset.ldopt, {optOut:o.checked, optOutAt:o.checked?new Date().toISOString():''}); return; }
+  });
+  $('adBody').addEventListener('input', function(e){ if(e.target.id==='ldQ'){ leadF.q=e.target.value; clearTimeout(renderLeads.t); renderLeads.t=setTimeout(function(){ render(); var q=document.getElementById('ldQ'); if(q){ q.focus(); q.setSelectionRange(q.value.length, q.value.length); } }, 300); } });
+  $('adBody').addEventListener('click', async function(e){
+    var op=e.target.closest('[data-ldopen]'); if(op){ leadOpen[op.dataset.ldopen]=!leadOpen[op.dataset.ldopen]; render(); return; }
+    var sn=e.target.closest('[data-ldsent]'); if(sn){ var p=sn.dataset.ldsent.split('|'), l=data.leads.filter(function(x){ return x.id===p[0]; })[0]; if(!l) return; var s=Object.assign({}, l.sent||{}); s[p[1]]=new Date().toISOString(); sn.disabled=true; await BS.update('leads', l.id, {sent:s}); bsToast('Marked as sent.'); return; }
+    var na=e.target.closest('[data-ldnoteadd]'); if(na){ var inp=document.querySelector('[data-ldnote="'+na.dataset.ldnoteadd+'"]'), t=inp?inp.value.trim():''; if(!t){ if(inp) inp.focus(); return; } var l2=data.leads.filter(function(x){ return x.id===na.dataset.ldnoteadd; })[0]; inp.value=''; await BS.update('leads', l2.id, {notes:(l2.notes||[]).concat([{text:t, by:staffName(), at:new Date().toISOString()}])}); bsToast('Note added.'); return; }
+    if(e.target.id==='ldTSave'){ var m={}; BS.LEAD_SMS.forEach(function(x){ var v=document.getElementById('ldT-'+x[0]); if(v && v.value.trim()) m[x[0]]=v.value.trim(); }); e.target.disabled=true; await BS.set('settings','leadSms',{map:m, setBy:staffName()}); e.target.disabled=false; bsToast('Messages saved.'); return; }
+    if(e.target.id==='ldCsv'){ var rows=[['Name','Organization','Mobile','Type','Wants','Joined','Requests','Offers','Status','Assigned to','Opted out','Last activity','Notes']].concat(data.leads.map(function(l){ var i=leadInfo(l); return [l.name||'', l.org||'', '0'+l.phone, l.type||'', l.want||'', (l.joinedAt||'').slice(0,10), i.reqs, i.offers, LEAD_ST[i.st], l.assignedTo||'', l.optOut?'yes':'', (i.last||'').slice(0,10), (l.notes||[]).map(function(n){ return n.text; }).join(' / ')]; }));
+      var csv='﻿'+rows.map(function(r){ return r.map(function(c){ c=String(c==null?'':c); return /[",\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c; }).join(','); }).join('\r\n');
+      var a2=document.createElement('a'); a2.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a2.download='build-smartly-leads.csv'; document.body.appendChild(a2); a2.click(); a2.remove(); return; }
   });
   function renderMembers(){
     var list=data.profiles.slice().sort(function(a,c){ return (a.status==='pending'?0:1)-(c.status==='pending'?0:1) || (c.updatedAt||'').localeCompare(a.updatedAt||''); });
@@ -672,7 +736,7 @@
     if(e.target.id!=='adReset' || !isOwner()) return;
     if(!(await bsConfirm('Clear all test data?','Every request, offer, order, message, problem, newsletter item, promotion, profile, task and supplier change is deleted for everyone. This cannot be undone.','Yes, clear it'))) return;
     if(!(await bsConfirm('Are you sure?','Last check before deleting.','Delete everything'))) return;
-    var cols=['boqs','offers','messages','issues','news','promotions','verifications','profiles','suppliers','tasks','tracks'], n=0; e.target.disabled=true;
+    var cols=['boqs','offers','messages','issues','news','promotions','verifications','profiles','suppliers','tasks','tracks','leads'], n=0; e.target.disabled=true;
     for(var u=0;u<data.boqs.length;u++){ var up=data.boqs[u].upload; if(up && up.fileId){ for(var q=0;q<(up.parts||1);q++){ await BS.remove('uploads', up.fileId+'-'+q); n++; } } } /* files sent with requests */
     for(var i=0;i<cols.length;i++){ var docs=(data[cols[i]]||[]).slice(); for(var j=0;j<docs.length;j++){ await BS.remove(cols[i], docs[j].id); n++; $('adResetMsg').textContent='Deleted '+n+'…'; } }
     try{ Object.keys(localStorage).forEach(function(k){ if(/^bs_demo_(draft|prices_|supprofile_|locs)|^bs_bell_seen_/.test(k)) localStorage.removeItem(k); }); }catch(err){}
@@ -856,6 +920,8 @@
       '</div><div style="display:grid;gap:.6rem"><strong>Delivery</strong>'+
       inp('dpConfH','Hours the supplier has to confirm a PO/SA',BS.CONFIRM_HOURS,'number',' min="4" max="168"')+
       inp('dpUnvMax','Open requests a buyer may have before being verified',BS.UNVERIFIED_MAX,'number',' min="1" max="20"')+
+      '<div class="field"><label for="dpReview">Requests our team checks before suppliers see them</label><select id="dpReview">'+[['unverified','Requests from buyers who are not verified yet'],['all','Every request'],['none','None: straight to suppliers']].map(function(o){ return '<option value="'+o[0]+'"'+(BS.REVIEW_MODE===o[0]?' selected':'')+'>'+o[1]+'</option>'; }).join('')+'</select><span class="hint">Word and PDF lists always come to the team first.</span></div>'+
+      inp('dpHoldDays','Working days a supplier holds an order while the buyer is verified',BS.HOLD_DAYS,'number',' min="1" max="10"')+
       inp('dpCheckH','Hours the buyer has to check the items',BS.CHECK_HOURS,'number',' min="12" max="168"')+
       '<label class="check"><input type="checkbox" id="dpProofOn"'+(BS.PROOF_ON!==false?' checked':'')+'><span>Show the delivery record on the home page</span></label>'+
       inp('dpProofMin','Show it from this many checked deliveries',BS.PROOF_MIN,'number',' min="1"')+
@@ -908,7 +974,7 @@
       var ch=Math.max(12, Math.min(168, +g('dpCheckH').value||48)), cfh=Math.max(4, Math.min(168, +g('dpConfH').value||48)), lh=Math.max(2, Math.min(48, +g('dpLinkH').value||24)), pm=Math.max(1, +g('dpProofMin').value||20);
       e.target.disabled=true;
       await BS.set('settings','payment',{when:g('dpWhen').value, methods:methods, bank:{bank:g('dpBank').value.trim(), name:g('dpBankName').value.trim(), number:g('dpBankNo').value.trim(), note:g('dpBankNote').value.trim()}, setBy:staffName()});
-      await BS.set('settings','verify',{unverifiedMax:Math.max(1, Math.min(20, +g('dpUnvMax').value||2)), setBy:staffName()});
+      await BS.set('settings','verify',{unverifiedMax:Math.max(1, Math.min(20, +g('dpUnvMax').value||2)), review:g('dpReview').value, holdDays:Math.max(1, Math.min(10, +g('dpHoldDays').value||3)), setBy:staffName()});
       await BS.set('settings','delivery',{confirmHours:cfh, checkHours:ch, proofOn:g('dpProofOn').checked, proofMin:pm, linkHours:lh, driverLang:g('dpDrvLang').value, setBy:staffName()});
       $('adDeliveryMsg').textContent='Saved and applied.'; bsToast('Delivery and payment saved for every device.'); e.target.disabled=false; return; }
     if(e.target.id==='adSaveTariffs'){ e.target.disabled=true; var v=function(id){ return +document.getElementById(id).value; };
