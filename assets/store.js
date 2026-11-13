@@ -167,6 +167,7 @@
       if(d.id==="content" && d.map){ BS.CONTENT=d.map; if(window.bsSetOverrides) bsSetOverrides(d.map); }
       if(d.id==="style"){ BS.applyStyle(d); }
       if(d.id==="site"){ BS.SITE=d; }
+      if(d.id==="slides"){ BS.SLIDES = Array.isArray(d.list) && d.list.length ? {list:d.list, secs:+d.secs||6} : null; }
     });
     (BS._settingsCbs||[]).forEach(function(cb){ try{ cb(); }catch(e){} });
   };

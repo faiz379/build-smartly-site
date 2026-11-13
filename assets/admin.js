@@ -593,10 +593,11 @@
   function cDict(lang){ return lang==='en' ? null : (window.BS_LANG||{})[lang]; }
   function cCurrent(en){ var m=(cSettings('content').map||{})[cLang]||{}; if(m[en]!=null) return m[en]; var d=cDict(cLang); return d && d[en]!=null ? d[en] : (cLang==='en'?en:''); }
   function renderContent(){
-    var subs=[['text','Words on the pages'],['look','Look and feel'],['pics','Pictures and logo'],['contact','Contact and social'],['home','Home page and announcement'],['faq','Extra FAQ questions']];
+    var subs=[['text','Text list'],['look','Look and feel'],['pics','Pictures and logo'],['contact','Contact and social'],['home','Home page and announcement'],['faq','Extra FAQ questions']];
     var head='<div style="display:flex;gap:.4rem;flex-wrap:wrap">'+subs.map(function(x){ return '<button type="button" class="btn btn-sm '+(cSub===x[0]?'btn-primary':'btn-ghost')+'" data-csub="'+x[0]+'">'+x[1]+'</button>'; }).join('')+'</div>';
-    var help=card('How to use Site content','Change what visitors see without touching any code. Pick a part below, change it and press Save: every phone and computer shows it within seconds. Reset brings back the original.','');
-    return help+head+({text:cTextHtml, look:cLookHtml, pics:picturesCard, contact:cContactHtml, home:cHomeHtml, faq:cFaqHtml}[cSub]||cTextHtml)();
+    var hero='<section class="card" style="display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:center;border:2px solid var(--green);background:color-mix(in srgb,var(--green) 6%,var(--white))"><div><strong style="font-family:var(--display);font-size:1.15rem">Edit the site</strong><p class="small" style="margin:.25rem 0 0">Open any page exactly as visitors see it and change it right there: click a piece of text to change it, click a picture to replace it, hide a section, or edit the banner slides. Nothing changes for visitors until you press Save.</p></div><button type="button" class="btn btn-primary" id="cEditSite">Edit the site</button></section>';
+    var help=card('More settings','Fonts and colours, the logo, contact details, the announcement bar and extra FAQ questions. The text list shows every piece of text of a page in one list, including the supplier and account pages.','');
+    return hero+help+head+({text:cTextHtml, look:cLookHtml, pics:picturesCard, contact:cContactHtml, home:cHomeHtml, faq:cFaqHtml}[cSub]||cTextHtml)();
   }
   function cTextHtml(){
     cLoad(); if(cLang!=='en' && !cDict(cLang) && window.bsLoadLang) bsLoadLang(cLang).then(function(){ if(tab==='content') render(); });
@@ -652,6 +653,7 @@
   $('adBody').addEventListener('change', function(e){ var t=e.target; if(t.id==='cPage'){ cPage=t.value; render(); } if(t.id==='cLang'){ cLang=t.value; render(); } });
   $('adBody').addEventListener('click', async function(e){
     var t=e.target; if(tab!=='content') return;
+    if(t.id==='cEditSite'){ if(window.bsEditor) bsEditor.open(); return; }
     if(t.dataset.csub){ cSub=t.dataset.csub; render(); return; }
     var sv=t.closest('[data-csave]'), rs=t.closest('[data-creset]');
     if(sv || rs){ var en=(sv||rs).getAttribute(sv?'data-csave':'data-creset'), k=cLang+'|'+en, all=JSON.parse(JSON.stringify(cSettings('content').map||{})); all[cLang]=all[cLang]||{};
