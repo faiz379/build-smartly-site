@@ -21,7 +21,7 @@
     if(w.role==='staff'){
       data.boqs.forEach(function(b){ if(b.status==='review') add(b.createdAt, 'List to type in', b.ref+' · '+((b.upload||{}).name||'a file')+' from '+(b.company||'a buyer'), '#staff-requests'); else add(b.createdAt, 'Request', b.ref+' · '+(b.lines||[]).length+' lines from '+(b.company||'a buyer'), '#staff-requests'); });
       data.messages.forEach(function(m){ if(m.orderId){ if(m.who!=='staff') add(m.createdAt, 'Order message', (m.name||'')+': '+m.text, '#order-'+m.orderId); } else if(m.who==='customer') add(m.createdAt, 'Support', (m.name||'A member')+': '+m.text, '#staff-support'); });
-      data.verifications.forEach(function(v){ if(v.status==='pending') add(v.submittedAt||v.createdAt, 'Supplier documents', v.company+' asks to be verified', '#staff-suppliers'); });
+      data.verifications.forEach(function(v){ if(v.status!=='pending') return; if(v.kind==='buyer') add(v.submittedAt||v.createdAt, 'Buyer to verify', (v.company||v.name||'A buyer')+' asks to be verified', '#staff-members'); else add(v.submittedAt||v.createdAt, 'Supplier documents', v.company+' asks to be verified', '#staff-suppliers'); });
       data.profiles.forEach(function(p){ if(p.status==='pending') add(p.updatedAt||p.createdAt, 'Profile to approve', (p.name||'A member')+' asks to publish a profile', '#staff-members'); });
       data.news.forEach(function(n){ if(n.status==='pending') add(n.createdAt, n.img?'Advert to approve':'Newsletter item', (n.company||'')+': '+(n.title||''), '#staff-promos'); if(n.status==='approved') add(n.approvedAt, 'Advert waiting for payment', (n.company||'')+': '+BS.fmt(n.amount||0), '#staff-promos'); });
       data.issues.forEach(function(x){ if(x.status!=='resolved') add(x.createdAt, 'Problem reported', (x.poRef||'')+': '+x.text, '#staff-support'); });
@@ -32,7 +32,8 @@
         if(o.counter && o.counter.state==='open') add(o.counter.at, 'Counter-offer', 'The customer proposes '+BS.fmt(o.counter.price)+' on '+b.ref+' · '+lineName(b,o.lineN), '#supplier-deals');
         if(o.status==='rejected') add(o.rejectedAt, 'Offer rejected', b.ref+' · '+lineName(b,o.lineN), '#supplier-deals'); });
       groups.forEach(function(g){ if(g.supplierId!==w.supplierId) return; var o=g.first, h='#order-'+g.id, b=boqOf(g.boqId)||{};
-        add(o.acceptedAt, 'New PO/SA', g.poRef+(BS.namesShown(o)?' from '+(o.customerRevealed||'a buyer'):' from Customer '+(b.customerNo||''))+'. Confirm it within '+BS.CONFIRM_HOURS+' hours, or decline it.', h);
+        if(o.heldForVerify) add(o.acceptedAt, 'New PO/SA', g.poRef+' from Customer '+(b.customerNo||'')+'. Held while our team verifies the buyer; you can confirm once they are.', h);
+        else add(o.verifiedAt||o.acceptedAt, 'New PO/SA', g.poRef+(BS.namesShown(o)?' from '+(o.customerRevealed||'a buyer'):' from Customer '+(b.customerNo||''))+'. Confirm it within '+BS.CONFIRM_HOURS+' hours, or decline it.', h);
         if(o.buyerAgreedAt && o.supplierConfirmed && o.buyerAgreedAt>o.confirmedAt) add(o.buyerAgreedAt, 'PO/SA accepted', 'The buyer accepted the PO/SA '+g.poRef+'.', h);
         add(o.deliveredAt, 'Handed over', (o.deliveredHow==='code'?'Your driver entered the buyer\'s handover code for ':o.deliveredHow==='note'?'The buyer entered the delivery-note code for ':'The buyer confirmed delivery of ')+g.poRef+'.', h);
         g.offers.forEach(function(x){ if(x.check && !x.check.auto) add(x.check.at, x.check.state==='ok'?'Item received':'Problem reported', g.poRef+' · '+lineName(b,x.lineN)+(x.check.state==='ok'?' · received in full':' · the buyer reported a problem'), h); });
@@ -60,7 +61,9 @@
         if(!m.orderId && m.phone===w.phone && m.who==='staff' && m.staff) add(m.createdAt, 'Support', 'Build Smartly staff: '+m.text, '#support');
         if(m.orderId && m.phone!==w.phone && ((w.role==='supplier' && m.toSupplier===w.supplierId) || (w.role==='buyer' && m.toBuyer===w.phone))) add(m.createdAt, 'Message on your order', (m.name||'')+': '+m.text, '#order-'+m.orderId); });
       data.profiles.forEach(function(p){ if(p.phone===w.phone && p.reviewedAt) add(p.reviewedAt, 'Public profile', p.status==='approved'?'Your profile is published in the Members directory.':'Your profile was not approved: '+(p.reason||''), '#workspace'); });
-      data.verifications.forEach(function(v){ if(v.phone===w.phone && v.verifiedAt) add(v.verifiedAt, 'Verified', 'Your documents were approved. You can quote.', '#supplier'); });
+      data.verifications.forEach(function(v){ if(v.phone!==w.phone) return;
+        if(v.kind==='buyer'){ if(v.status==='verified' && v.verifiedAt) add(v.verifiedAt, 'You are verified', 'Our team verified you. You can place orders; orders on hold go to the suppliers now.', '#workspace'); if(v.status==='rejected' && v.rejectedAt) add(v.rejectedAt, 'Verification not accepted', 'Reason: '+(v.reason||'')+'. Open your account to try again.', '#workspace'); return; }
+        if(v.verifiedAt) add(v.verifiedAt, 'Verified', 'Your documents were approved. You can quote.', '#supplier'); });
       var p9=function(x){ return String(x||'').replace(/\D/g,'').replace(/^251/,'').slice(-9); };
       data.news.forEach(function(n){ if(!n.phone || p9(n.phone)!==p9(w.phone)) return;
         if(n.approvedAt) add(n.approvedAt, 'Advert approved', (n.title||'')+': invoice '+(n.invoiceRef||'')+' · '+BS.fmt(n.amount||0)+'. It goes live when paid.', '#newsletter');

@@ -60,7 +60,14 @@
     if(c==='tracks'){ if(isAdmin() && !$('adPanel').hidden && window.bsTrack) bsTrack.mountFleet(data.tracks, data.offers); return; } /* positions move often: update the map only */
     if(c==='staff' && BS.staffAuth() && isAdmin()){ var mine=data.staff.filter(function(x){ return x.id===BS.staffUid(); })[0]; /* the owner's changes reach this tab at once */
       if(!data.staff.length){ BS.recheckStaff(); } /* the list was refused: this login may have been removed or switched off */
-      else if(mine && mine.active===true){ BS.setStaffCache(Object.assign({uid:mine.id}, mine)); } else if(mine){ BS.staffSignOut().then(function(){ showLogin(); if(window.BSAuth) BSAuth.refresh(); bsToast('Your staff login was switched off.'); }); return; } } if(c==='settings') BS.applySettings(d||[]); if(isAdmin() && !$('adPanel').hidden) render(); }); }
+      else if(mine && mine.active===true){ BS.setStaffCache(Object.assign({uid:mine.id}, mine)); } else if(mine){ BS.staffSignOut().then(function(){ showLogin(); if(window.BSAuth) BSAuth.refresh(); bsToast('Your staff login was switched off.'); }); return; } } if(c==='settings') BS.applySettings(d||[]); if(isAdmin() && !$('adPanel').hidden) laterRender(); }); }
+  /* New records redraw the page. Redraws are grouped (one per 120 ms) and never happen while a mouse button or finger
+     is down on the page: replacing a button between press and release loses the click (seen 13 Nov 2026 when a staff
+     reply did not send while background records kept arriving). */
+  var rTimer=null, pressing=false, missed=false;
+  function laterRender(){ if(pressing){ missed=true; return; } clearTimeout(rTimer); rTimer=setTimeout(function(){ if(pressing){ missed=true; return; } if(isAdmin() && !$('adPanel').hidden) render(); }, 120); }
+  document.addEventListener('pointerdown', function(e){ if(e.target.closest && e.target.closest('#adBody')) pressing=true; }, true);
+  ['pointerup','pointercancel'].forEach(function(ev){ document.addEventListener(ev, function(){ if(!pressing) return; pressing=false; if(missed){ missed=false; setTimeout(laterRender, 60); } }, true); });
   ['boqs','offers','messages','profiles','news','verifications','settings','issues','promotions','suppliers','tasks','staff','tracks'].forEach(sub);
   /* staff-only lists are refused before sign-in; ask again once signed in */
   function resubStaffOnly(){ sub('tasks'); sub('staff'); sub('tracks'); }
@@ -74,6 +81,7 @@
   function boqOf(id){ return data.boqs.filter(function(b){ return b.id===id; })[0]; }
   function lineOf(b, n){ return b ? (b.lines||[]).filter(function(l){ return l.n===n; })[0] : null; }
   function openBoq(b){ return b.status==='open' && new Date(b.deadlineAt)>new Date(); }
+  function buyersToVerify(){ return data.verifications.filter(function(v){ return v.kind==='buyer' && v.status==='pending'; }); }
   function toType(){ return data.boqs.filter(function(b){ return b.status==='review'; }); }
   function unclassified(){ var out=[]; data.boqs.forEach(function(b){ (b.lines||[]).forEach(function(l){ if(/Other/.test(l.cat||'')) out.push({b:b,l:l}); }); }); return out; }
   function threads(){
@@ -110,7 +118,7 @@
       var f=focusKey && find(focusKey); if(f){ f.focus({preventScroll:true}); if(sel && sel[0]!=null) try{ f.setSelectionRange(sel[0], sel[1]); }catch(e){} } };
   }
   function render(){
-    var pendV=data.verifications.filter(function(v){ return v.status==='pending'; }).length;
+    var pendV=data.verifications.filter(function(v){ return v.status==='pending' && v.kind!=='buyer'; }).length;
     var waiting=threads().filter(function(t){ return t.waiting; }).length;
     var pendN=data.news.filter(function(x){ return x.status==='pending'; }).length;
     var openI=data.issues.filter(function(x){ return x.status!=='resolved'; }).length;
@@ -120,7 +128,7 @@
     tiles=tiles.filter(function(t){ return BS.staffCan(t[2]); });
     adTilesHtml='<div class="queue" id="adTiles">'+tiles.map(function(t){ return '<button type="button" class="q" data-go="'+t[2]+'" style="text-align:left;cursor:pointer;font:inherit"><strong style="font-size:1.4rem">'+t[0]+'</strong><span class="small muted">'+t[1]+'</span></button>'; }).join('')+'</div>';
     $('adTabs').querySelectorAll('button').forEach(function(b){ b.classList.toggle('on', b.dataset.tab===tab); });
-    try{ var badges={support: threads().filter(function(t){ return t.waiting; }).length + data.issues.filter(function(i){ return i.status!=='resolved'; }).length, suppliers: data.verifications.filter(function(v){ return v.status==='pending'; }).length, requests: unclassified().length + toType().length, news: data.news.filter(function(x){ return x.status==='pending'; }).length};
+    try{ var badges={support: threads().filter(function(t){ return t.waiting; }).length + data.issues.filter(function(i){ return i.status!=='resolved'; }).length, suppliers: data.verifications.filter(function(v){ return v.status==='pending' && v.kind!=='buyer'; }).length, members: buyersToVerify().length + data.profiles.filter(function(x){ return x.status==='pending'; }).length, requests: unclassified().length + toType().length, news: data.news.filter(function(x){ return x.status==='pending'; }).length};
       $('adTabs').querySelectorAll('button').forEach(function(b){ var n=badges[b.dataset.tab]||0; var old=b.querySelector('.badge'); if(old) old.remove(); if(n){ var sp=document.createElement('span'); sp.className='badge'; sp.textContent=n; b.appendChild(sp); } }); }catch(e){}
     if(tab!=='overview' && !BS.staffCan(tab)) tab='overview';
     $('adTabs').querySelectorAll('[data-tab]').forEach(function(b){ b.hidden=b.dataset.tab!=='overview' && !BS.staffCan(b.dataset.tab); });
@@ -155,7 +163,8 @@
     var todo=[];
     if(toType().length) todo.push('<a href="#" data-tab-go="requests">'+toType().length+' list(s) in Word or PDF to type in</a>');
     if(unclassified().length) todo.push('<a href="#" data-tab-go="requests">'+unclassified().length+' line(s) typed by customers need a category</a>');
-    var pv=data.verifications.filter(function(v){return v.status==='pending';}).length; if(pv) todo.push('<a href="#" data-tab-go="suppliers">'+pv+' supplier(s) waiting for verification</a>');
+    if(buyersToVerify().length) todo.push('<a href="#" data-tab-go="members">'+buyersToVerify().length+' buyer(s) waiting for verification</a>');
+    var pv=data.verifications.filter(function(v){return v.status==='pending' && v.kind!=='buyer';}).length; if(pv) todo.push('<a href="#" data-tab-go="suppliers">'+pv+' supplier(s) waiting for verification</a>');
     var w=threads().filter(function(t){return t.waiting;}).length; if(w) todo.push('<a href="#" data-tab-go="support">'+w+' support thread(s) waiting for an answer</a>');
     var pn=data.news.filter(function(x){return x.status==='pending';}).length; if(pn) todo.push('<a href="#" data-tab-go="news">'+pn+' newsletter item(s) to check</a>');
     var oi=data.issues.filter(function(x){return x.status!=='resolved';}).length; if(oi) todo.push('<a href="#" data-tab-go="support">'+oi+' problem(s) reported on orders, open or in progress</a>');
@@ -276,7 +285,7 @@
   function loginCard(){ if(!lastLogin) return ''; var L=lastLogin, ph='251'+L.phone, msg='Build Smartly: your supplier account for '+L.name+' is ready. Sign in at build.onsmartly.com/supplier with mobile 0'+L.phone+' and password '+L.pw+'. Keep this message private.';
     return card('Send the supplier their login','The password is not stored anywhere readable, so send it now. It goes from your own phone or WhatsApp.','<p class="small" data-notr style="margin:0;padding:.6rem;border:1px dashed var(--line);border-radius:8px">'+esc(msg)+'</p><div style="display:flex;gap:.4rem;flex-wrap:wrap"><a class="btn btn-primary btn-sm" href="sms:+'+ph+'?body='+encodeURIComponent(msg)+'">Send by SMS</a><a class="btn btn-ghost btn-sm" href="https://wa.me/'+ph+'?text='+encodeURIComponent(msg)+'" target="_blank" rel="noopener">WhatsApp</a><button class="btn btn-ghost btn-sm" type="button" data-logincopy>Copy</button><button class="btn btn-ghost btn-sm" type="button" data-logindone>Done</button></div>'); }
   function renderSuppliers(){
-    var list=data.verifications.slice().sort(function(a,c){ return (a.status==='pending'?0:1)-(c.status==='pending'?0:1) || (c.submittedAt||'').localeCompare(a.submittedAt||''); });
+    var list=data.verifications.filter(function(v){ return v.kind!=='buyer'; }).sort(function(a,c){ return (a.status==='pending'?0:1)-(c.status==='pending'?0:1) || (c.submittedAt||'').localeCompare(a.submittedAt||''); });
     var seeded=supplierListHtml();
     var rows=list.map(function(v){
       var tag = v.status==='verified' ? '<span class="tag tag-green">Verified</span>' : v.status==='rejected' ? '<span class="tag">Rejected</span>' : '<span class="tag tag-ochre">Pending</span>';
@@ -475,6 +484,37 @@
   });
 
   /* member profiles: everything the member sent, pictures included; approve to publish, reject with a reason */
+  /* Buyers asking to be verified (decided 13 Nov 2026). The public record holds the status; the ID number and the
+     document are in "kyc" (staff only) and are loaded when staff open them. Approving releases the buyer's held orders. */
+  var kycCache={}, kycUrls={};
+  function buyerVerifyHtml(){
+    var list=data.verifications.filter(function(v){ return v.kind==='buyer'; }).sort(function(a,c){ return (a.status==='pending'?0:1)-(c.status==='pending'?0:1) || (c.submittedAt||'').localeCompare(a.submittedAt||''); }).slice(0,30);
+    var held=function(v){ return data.offers.filter(function(o){ if(!o.heldForVerify || o.status!=='accepted') return false; var b=boqOf(o.boqId); return b && BS.d9(b.ownerPhone)===v.phone; }); };
+    var rows=list.map(function(v){ var st=v.status||'pending', k=kycCache[v.kycId], h=held(v);
+      var tag = st==='verified' ? '<span class="tag tag-green">Verified</span>' : st==='rejected' ? '<span class="tag">Not accepted</span>' : '<span class="tag tag-ochre">Waiting</span>';
+      var det = !v.kycId ? '<p class="small" style="margin:0;color:var(--warn)">The ID number and document could not be stored. Call the buyer.</p>'
+        : k ? '<div class="kv small"><span>Type</span><strong>'+esc(k.type==='Organisation'?'Organization':k.type)+'</strong>'+(k.fayda?'<span>Fayda number</span><strong data-notr>'+esc(k.fayda)+'</strong>':'')+(k.tin?'<span>TIN</span><strong data-notr>'+esc(k.tin)+'</strong>':'')+(k.lic?'<span>Licence no.</span><strong data-notr>'+esc(k.lic)+'</strong>':'')+(k.contact?'<span>Contact</span><strong data-notr>'+esc(k.contact)+(k.title?' · '+esc(k.title):'')+'</strong>':'')+'</div>'+
+            (k.file&&kycUrls[v.kycId] ? '<div><a class="btn btn-ghost btn-sm" href="'+kycUrls[v.kycId]+'" target="_blank" rel="noopener" download="'+esc(k.file.name||'document')+'">Open the document</a></div>' : '<p class="small muted" style="margin:0">No document attached.</p>')
+        : '<div><button class="btn btn-ghost btn-sm" type="button" data-kycload="'+esc(v.kycId)+'">Show the ID number and document</button></div>';
+      return '<div class="card" style="display:grid;gap:.5rem;'+(st==='pending'?'border-color:var(--ochre)':'')+'"><div style="display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap;align-items:center"><span><strong data-notr>'+esc(v.company||v.name)+'</strong> <span class="small muted" data-notr>'+fmtPhone(v.phone)+' · '+when(v.submittedAt)+'</span></span>'+tag+'</div>'+
+        '<div class="small">'+esc(v.type==='Organisation'?'Organization':v.type==='Government'?'Government office':'Individual')+(v.idHint?' · Fayda <span data-notr>'+esc(v.idHint)+'</span>':'')+(v.tin?' · TIN <span data-notr>'+esc(v.tin)+'</span>':'')+(h.length?' · <strong>'+h.length+' order line(s) on hold</strong>':'')+'</div>'+det+
+        (st==='rejected'&&v.reason?'<p class="small" style="margin:0">Reason given: <span data-notr>'+esc(v.reason)+'</span></p>':'')+
+        (st==='pending' ? '<p class="small muted" style="margin:0">Check the Fayda number with the national ID system and the TIN and licence with the Ministry of Trade (eTrade) before approving.</p><div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center"><button class="btn btn-primary btn-sm" type="button" data-bverify="'+v.id+'">Approve: verified</button><input data-breason="'+v.id+'" placeholder="Reason, if you do not accept it" style="font:inherit;font-size:.85rem;padding:.35rem .5rem;border:1.5px solid var(--line);border-radius:8px;min-width:14rem;flex:1"><button class="btn btn-ghost btn-sm" type="button" data-breject="'+v.id+'">Not accepted</button></div>' : '')+'</div>'; }).join('');
+    return card('Buyers to verify'+(buyersToVerify().length?' · '+buyersToVerify().length:''), 'Buyers send their Fayda number, or TIN and business licence, or an official letter. Approving gives them the Verified badge and sends their orders on hold to the suppliers.', rows||'<div class="empty">No buyer has asked to be verified yet.</div>');
+  }
+  $('adBody').addEventListener('click', async function(e){
+    var kl=e.target.closest('[data-kycload]'); if(kl){ kl.disabled=true; kl.textContent='Loading…'; var id=kl.dataset.kycload;
+      var doc=await new Promise(function(res){ var done=false, stop=BS.watch('kyc', id, function(d){ if(done) return; done=true; res(d); setTimeout(function(){ if(stop) stop(); },0); }); setTimeout(function(){ if(!done){ done=true; res(null); } }, 15000); });
+      if(!doc){ kl.disabled=false; kl.textContent='Show the ID number and document'; bsToast('The details could not be loaded.'); return; }
+      kycCache[id]=doc; if(doc.file && doc.file.data){ try{ kycUrls[id]=URL.createObjectURL(await (await fetch(doc.file.data)).blob()); }catch(err){} } render(); return; }
+    var bv=e.target.closest('[data-bverify]'); if(bv){ var v=data.verifications.filter(function(x){ return x.id===bv.dataset.bverify; })[0]; if(!v) return; bv.disabled=true; var now=new Date().toISOString();
+      await BS.update('verifications', v.id, {status:'verified', verifiedAt:now, by:staffName(), reason:''});
+      var ids=data.offers.filter(function(o){ if(!o.heldForVerify || o.status!=='accepted') return false; var b=boqOf(o.boqId); return b && BS.d9(b.ownerPhone)===v.phone; }).map(function(o){ return o.id; });
+      if(ids.length) await BS.updateMany('offers', ids, {heldForVerify:false, verifiedAt:now});
+      bsToast((v.company||v.name)+' is verified.'+(ids.length?' '+ids.length+' order line(s) went to the suppliers.':'')); return; }
+    var br=e.target.closest('[data-breject]'); if(br){ var inp=document.querySelector('[data-breason="'+br.dataset.breject+'"]'), why=inp?inp.value.trim():''; if(!why){ bsToast('Write the reason first; the buyer sees it.'); if(inp) inp.focus(); return; } br.disabled=true;
+      await BS.update('verifications', br.dataset.breject, {status:'rejected', rejectedAt:new Date().toISOString(), by:staffName(), reason:why}); bsToast('Not accepted. The buyer sees the reason and can try again.'); return; }
+  });
   function renderMembers(){
     var list=data.profiles.slice().sort(function(a,c){ return (a.status==='pending'?0:1)-(c.status==='pending'?0:1) || (c.updatedAt||'').localeCompare(a.updatedAt||''); });
     var one=function(p){ var st=p.status||'pending';
@@ -484,7 +524,7 @@
         (p.reason?'<div class="small muted">Reason given: '+esc(p.reason)+'</div>':'')+
         '<div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center">'+(st!=='approved'?'<button class="btn btn-primary btn-sm" type="button" data-papprove="'+p.id+'">Approve and publish</button>':'<button class="btn btn-ghost btn-sm" type="button" data-hide="'+p.id+'">Hide</button>')+(st==='pending'?'<input placeholder="Reason, if you reject" data-preason="'+p.id+'" style="font:inherit;font-size:.85rem;padding:.35rem .5rem;border:1.5px solid var(--line);border-radius:8px"><button class="btn btn-ghost btn-sm" type="button" data-preject="'+p.id+'">Reject</button>':'')+'</div></div>'; };
     var pend=list.filter(function(p){ return (p.status||'pending')==='pending'; }), rest=list.filter(function(p){ return (p.status||'pending')!=='pending'; });
-    return card('Profiles to approve · '+pend.length, 'Check text and pictures: no phone numbers, addresses or prices.', pend.length?pend.map(one).join(''):'<div class="empty">Nothing to approve.</div>')+card('All member profiles','', rest.length?rest.map(one).join(''):'<div class="empty">None yet.</div>')+(list.length?'':card('How a profile gets here','',
+    return buyerVerifyHtml()+card('Profiles to approve · '+pend.length, 'Check text and pictures: no phone numbers, addresses or prices.', pend.length?pend.map(one).join(''):'<div class="empty">Nothing to approve.</div>')+card('All member profiles','', rest.length?rest.map(one).join(''):'<div class="empty">None yet.</div>')+(list.length?'':card('How a profile gets here','',
       '<p class="small">A company writes its public profile in its own account, ticks <strong>Publish</strong> and saves. It then waits here for approval and, once approved, shows on the Members page.</p><p class="small"><strong>To test:</strong> sign in as the buyer 0911 000 201, open <strong>Settings</strong> in the account, write a short introduction, add a picture if you like, tick <strong>Publish in the Members directory</strong> and save. Suppliers do the same under <strong>Settings</strong> in the supplier portal.</p>'));
   }
   $('adBody').addEventListener('click', async function(e){
@@ -815,6 +855,7 @@
       inp('dpBank','Bank for transfers',bk.bank)+inp('dpBankName','Account name',bk.name)+inp('dpBankNo','Account number',bk.number)+inp('dpBankNote','Note for the buyer (optional)',bk.note)+
       '</div><div style="display:grid;gap:.6rem"><strong>Delivery</strong>'+
       inp('dpConfH','Hours the supplier has to confirm a PO/SA',BS.CONFIRM_HOURS,'number',' min="4" max="168"')+
+      inp('dpUnvMax','Open requests a buyer may have before being verified',BS.UNVERIFIED_MAX,'number',' min="1" max="20"')+
       inp('dpCheckH','Hours the buyer has to check the items',BS.CHECK_HOURS,'number',' min="12" max="168"')+
       '<label class="check"><input type="checkbox" id="dpProofOn"'+(BS.PROOF_ON!==false?' checked':'')+'><span>Show the delivery record on the home page</span></label>'+
       inp('dpProofMin','Show it from this many checked deliveries',BS.PROOF_MIN,'number',' min="1"')+
@@ -867,6 +908,7 @@
       var ch=Math.max(12, Math.min(168, +g('dpCheckH').value||48)), cfh=Math.max(4, Math.min(168, +g('dpConfH').value||48)), lh=Math.max(2, Math.min(48, +g('dpLinkH').value||24)), pm=Math.max(1, +g('dpProofMin').value||20);
       e.target.disabled=true;
       await BS.set('settings','payment',{when:g('dpWhen').value, methods:methods, bank:{bank:g('dpBank').value.trim(), name:g('dpBankName').value.trim(), number:g('dpBankNo').value.trim(), note:g('dpBankNote').value.trim()}, setBy:staffName()});
+      await BS.set('settings','verify',{unverifiedMax:Math.max(1, Math.min(20, +g('dpUnvMax').value||2)), setBy:staffName()});
       await BS.set('settings','delivery',{confirmHours:cfh, checkHours:ch, proofOn:g('dpProofOn').checked, proofMin:pm, linkHours:lh, driverLang:g('dpDrvLang').value, setBy:staffName()});
       $('adDeliveryMsg').textContent='Saved and applied.'; bsToast('Delivery and payment saved for every device.'); e.target.disabled=false; return; }
     if(e.target.id==='adSaveTariffs'){ e.target.disabled=true; var v=function(id){ return +document.getElementById(id).value; };

@@ -105,6 +105,20 @@
     {phone:"911000301", supplierId:"kality", label:"Supplier A"},
     {phone:"911000302", supplierId:"megenagna", label:"Supplier B"}
   ];
+  /* One account for everyone with a Verified badge (decided 13 Nov 2026, Alibaba style): signing up needs only a mobile
+     number, the SMS code, a name and Buy/Sell/Both. A buyer starts "Unverified": up to BS.UNVERIFIED_MAX open requests and
+     comparing offers. To order they get verified (Fayda number, or TIN and business licence, or an official letter);
+     the order can be placed meanwhile and is held until staff approve. The record is collection "verifications", doc
+     "buyer-<9 digits>" {kind:'buyer', status pending|verified|rejected, name, company, type, tin, idHint, kycId, reason};
+     the ID number and documents themselves are in collection "kyc" (staff only). The built-in test buyer is verified. */
+  BS.UNVERIFIED_MAX = 2;
+  BS.VERIFIED_TEST = ["911000201"];
+  BS.d9 = function(p){ return String(p||"").replace(/\D/g,"").replace(/^251/,"").replace(/^0/,"").slice(-9); };
+  var VER=[], verCbs=[], verOn=false;
+  BS.onVerify = function(cb){ if(cb) verCbs.push(cb); if(!verOn){ verOn=true; BS.subscribe("verifications", function(d){ VER=d||[]; verCbs.forEach(function(f){ try{ f(); }catch(e){} }); }); } };
+  BS.buyerVer = function(phone){ var d=BS.d9(phone); if(!d) return null; var v=VER.filter(function(x){ return x.id==="buyer-"+d; })[0]; if(v) return v; return BS.VERIFIED_TEST.indexOf(d)>=0 ? {status:"verified", test:true} : null; };
+  BS.buyerState = function(phone){ var v=BS.buyerVer(phone); return v ? (v.status||"pending") : "none"; };
+  BS.isVerified = function(phone){ return BS.buyerState(phone)==="verified"; };
   /* Simulated suppliers: how many seconds after a request each one answers, and how the simulated supplier
      handles counter-offers and the order steps. Test site only. */
   BS.AUTO = { replyAfter:[60,120,180,240,300], counterAfter:90, confirmAfter:120, readyAfter:240, dispatchAfter:240, acceptCounterAbove:0.96, driveSecs:600, handoverAfter:45 };
@@ -163,6 +177,7 @@
       if(d.id==="brandLogos" && d.map){ BS.BRAND_LOGOS=d.map; }
       if(d.id==="ads" && Array.isArray(d.hidden)){ BS.ADS_HIDDEN=d.hidden.slice(); }
       if(d.id==="payment"){ if(d.when==="before" || d.when==="after") BS.PAY_WHEN=d.when; if(Array.isArray(d.methods) && d.methods.length) BS.PAY_ON=d.methods.slice(); if(d.bank) BS.BANK=Object.assign({}, d.bank); }
+      if(d.id==="verify"){ if(+d.unverifiedMax>0) BS.UNVERIFIED_MAX=+d.unverifiedMax; }
       if(d.id==="delivery"){ if(+d.confirmHours>0) BS.CONFIRM_HOURS=+d.confirmHours; if(+d.checkHours>0) BS.CHECK_HOURS=+d.checkHours; if(+d.proofMin>0) BS.PROOF_MIN=+d.proofMin; if(d.proofOn!==undefined) BS.PROOF_ON=!!d.proofOn; if(+d.linkHours>0) BS.TRACK_HOURS=Math.min(48, +d.linkHours); if(/^(am|en|om)$/.test(d.driverLang||"")) BS.DRIVER_LANG=d.driverLang; }
       if(d.id==="content" && d.map){ BS.CONTENT=d.map; if(window.bsSetOverrides) bsSetOverrides(d.map); }
       if(d.id==="style"){ BS.applyStyle(d); }
@@ -688,8 +703,9 @@
      reason; on confirmation it is binding (contractAt) and the two parties see each other's names. A PO/SA the supplier
      neither confirms nor declines in time lapses, and the buyer chooses another offer. */
   BS.CONFIRM_HOURS = 48;
-  BS.confirmDue = function(o){ return o && o.acceptedAt ? new Date(o.acceptedAt).getTime() + BS.CONFIRM_HOURS*3600000 : 0; };
-  BS.poLapsed = function(o){ return !!(o && o.status==='accepted' && !o.supplierConfirmed && o.acceptedAt && Date.now() > BS.confirmDue(o)); };
+  BS.confirmDue = function(o){ if(o && o.heldForVerify) return Infinity; /* held while staff verify the buyer: the hours start once verified */
+    return o && o.acceptedAt ? new Date(o.verifiedAt||o.acceptedAt).getTime() + BS.CONFIRM_HOURS*3600000 : 0; };
+  BS.poLapsed = function(o){ return !!(o && o.status==='accepted' && !o.heldForVerify && !o.supplierConfirmed && o.acceptedAt && Date.now() > BS.confirmDue(o)); };
   BS.namesShown = function(o){ return !!(o && (o.supplierConfirmed || o.contractAt)); };
   BS.verifyNo = function(o){ var s=String((o&&o.poRef)||'')+'|'+String((o&&o.acceptedAt)||''), h=0; for(var i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))>>>0; } var x=h.toString(36).toUpperCase(); while(x.length<7) x='0'+x; return x.slice(0,4)+'-'+x.slice(4,7); };
   BS.orderSteps = function(){
@@ -719,6 +735,7 @@
       if(o.contractAt) return {t:'Confirmed · preparing', c:'tag-green', who:'supplier'};
     }
     if(o.status==='declined') return {t:'Declined by the supplier', c:'', who:'buyer'};
+    if(o.heldForVerify && !o.supplierConfirmed) return {t:'Held · buyer being verified', c:'tag-ochre', who:'staff'}; /* staff act next; "none" would mean closed */
     if(o.status==='expired' || BS.poLapsed(o)) return {t:'Not confirmed in time', c:'', who:'buyer'};
     if(o.supplierConfirmed && !o.buyerAgreedAt) return {t:'Waiting for the buyer to accept', c:'tag-ochre', who:'buyer'}; /* orders from before the single PO/SA */
     return {t:'Issued · awaiting supplier confirmation', c:'tag-ochre', who:'supplier'};

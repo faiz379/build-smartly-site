@@ -512,6 +512,14 @@ html{overflow-x:clip}
 .tlrow{display:grid;grid-template-columns:auto minmax(0,2.4fr) 5.5rem 7rem 9.5rem auto;gap:.45rem;align-items:start;padding:.45rem;border:1px solid var(--line);border-radius:10px}
 .tlrow .ico{display:grid;place-items:center;width:1.8rem;height:1.8rem;border-radius:8px;background:var(--bg-2,#eef1ec);font-weight:700;font-size:.8rem}
 @media (max-width:760px){ .tlrow{grid-template-columns:auto 1fr 1fr} .tlrow>div{grid-column:2/-1} .tlrow input[type=date]{grid-column:2/-1} }
+.su-choices3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:640px){ .su-choices3{grid-template-columns:1fr} }
+.vbadge{display:inline-flex;align-items:center;gap:.3rem;font-size:.78rem;font-weight:700;padding:.18rem .55rem;border-radius:999px;vertical-align:middle;letter-spacing:.01em}
+.vbadge.ok{background:color-mix(in srgb,var(--green) 14%,transparent);color:var(--green-deep,var(--green))}
+.vbadge.no{background:var(--bg-2,#eef1ec);color:var(--fg-2,#55605c)}
+.vbadge.wait{background:color-mix(in srgb,var(--ochre) 18%,transparent);color:#7a5200}
+.vbox{display:grid;gap:.5rem;padding:.85rem .95rem;border:2px solid var(--ochre);border-radius:12px;background:color-mix(in srgb,var(--ochre) 7%,var(--bg-1,#fff))}
+.vbox.ok{border-color:var(--green);background:color-mix(in srgb,var(--green) 6%,var(--bg-1,#fff))}
 .docup{display:grid;gap:.6rem;padding:.85rem .95rem;border:2px dashed var(--green);border-radius:14px;background:color-mix(in srgb,var(--green) 5%,var(--bg-1,#fff))}
 .docup-file{display:grid;grid-template-columns:auto 1fr auto;gap:.7rem;align-items:center}
 .docup-file .ico{display:grid;place-items:center;width:2.6rem;height:2.6rem;border-radius:10px;background:var(--green);color:#fff;font-weight:800;font-size:.75rem}
@@ -978,7 +986,24 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
           <div class="field" id="liOtpBox" hidden><label>Enter the code we sent</label><div class="su-otp"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"></div><span class="hint" id="liHint">Type the 6-digit code we sent you by SMS.</span></div>
           <div class="su-nav"><span></span><button class="btn btn-primary" type="button" id="liGo">Send code</button></div>
           <div class="card" id="liSupplier" style="padding:.9rem;display:flex;gap:.6rem;align-items:center;justify-content:space-between;flex-wrap:wrap"><span><strong style="font-family:var(--display)">Are you a supplier?</strong><br><span class="small muted">Suppliers sign in to the supplier portal with their mobile number and password.</span></span><a class="btn btn-ochre btn-sm" href="#supplier">Supplier sign-in</a></div>
-          <div class="card" id="liNew" style="display:grid;gap:.6rem;padding:1rem"><strong style="font-family:var(--display)">New to Build Smartly?</strong><p class="small muted">Buyers need only a name and a mobile number. Company details and TIN come later, before your first purchase order. Suppliers register their company, TIN and a password.</p><div style="display:flex;gap:.5rem;flex-wrap:wrap"><a class="btn btn-ghost btn-sm" href="#signup">Create a buyer account</a><a class="btn btn-ochre btn-sm" href="#signup-supplier">Register as a supplier</a></div></div>
+          <div class="card" id="liNew" style="display:grid;gap:.6rem;padding:1rem"><strong style="font-family:var(--display)">New to Build Smartly?</strong><p class="small muted">Sign up in two short steps: your mobile number and the SMS code, then your name and whether you buy, sell or both. No documents until you are ready to order.</p><div style="display:flex;gap:.5rem;flex-wrap:wrap"><a class="btn btn-ghost btn-sm" href="#signup">Sign up</a><a class="btn btn-ochre btn-sm" href="#signup-supplier">Register as a supplier</a></div></div>
+        </section>
+
+        <section id="suProfile" hidden class="su-step">
+          <div><span class="tag tag-green">Mobile confirmed</span><h1 style="font-size:1.6rem;margin-top:.5rem">About you</h1><p class="muted">Step 2 of 2. No documents now: you can use the site straight away. You get verified when you are ready to order.</p></div>
+          <div class="field"><label for="spfName">Your full name</label><input id="spfName" autocomplete="name" placeholder="e.g. Abebe Kebede"><span class="err" id="spfNameErr" hidden>Please enter your name.</span></div>
+          <div class="field"><label>I want to</label><div class="su-choices su-choices3">
+            <div class="choice"><input type="radio" name="spfWant" id="spf-buy" value="buy" checked><label for="spf-buy"><strong>Buy</strong><span>Send requests and compare offers.</span></label></div>
+            <div class="choice"><input type="radio" name="spfWant" id="spf-sell" value="sell"><label for="spf-sell"><strong>Sell</strong><span>Quote on requests as a supplier.</span></label></div>
+            <div class="choice"><input type="radio" name="spfWant" id="spf-both" value="both"><label for="spf-both"><strong>Both</strong><span>Buy and sell with one account.</span></label></div>
+          </div></div>
+          <div class="field"><label>Who are you?</label><div class="su-choices su-choices3">
+            <div class="choice"><input type="radio" name="spfType" id="spf-ind" value="Individual" checked><label for="spf-ind"><strong>Individual</strong><span>Building or renovating for yourself.</span></label></div>
+            <div class="choice"><input type="radio" name="spfType" id="spf-org" value="Organisation"><label for="spf-org"><strong>Organization</strong><span>Contractor, developer, trader, factory.</span></label></div>
+            <div class="choice"><input type="radio" name="spfType" id="spf-gov" value="Government"><label for="spf-gov"><strong>Government office</strong><span>A public body or office.</span></label></div>
+          </div></div>
+          <div class="field" id="spfOrgField" hidden><label for="spfOrg" id="spfOrgLabel">Name of the organization</label><input id="spfOrg" autocomplete="organization"><span class="err" id="spfOrgErr" hidden>Please enter the name.</span></div>
+          <div class="su-nav"><span></span><button class="btn btn-primary" type="button" id="spfGo">Done</button></div>
         </section>
 
         <section id="wizard" class="su-step">
@@ -1325,7 +1350,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     <div><span class="eyebrow">Member</span><h1 id="wsName">Your company</h1><p class="small muted" id="wsMeta"></p></div>
     <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap"><span class="status" id="wsStatus"><i></i><span>Connecting…</span></span><button class="btn btn-ghost btn-sm" type="button" id="wsLogout">Log out</button></div>
   </div>
-  <section class="card" id="wsDetails" hidden style="display:grid;gap:.6rem;border-color:var(--ochre)"><div><strong style="font-family:var(--display)">Complete your company details</strong><p class="small muted">Who is buying, legal name and TIN. Needed once, before your first purchase order. You can also do it later, at your first Accept.</p></div><div><button class="btn btn-primary btn-sm" type="button" id="wsDetailsBtn">Add company details</button></div></section>
+  <section class="card" id="wsVerify" hidden style="display:grid;gap:.6rem"></section>
   <section class="card panel" id="p-tracking"><div><strong style="font-family:var(--display);font-size:1.05rem">Tracking</strong><p class="small muted">Where each request or order stands. Restricted between you and the platform.</p></div><div id="trackBody"></div></section>
   <section class="card panel" id="p-statements" hidden><div><strong style="font-family:var(--display);font-size:1.05rem">Statements</strong><p class="small muted">Every Purchase Order / Sales Agreement and receipt, by year. View, print or save as PDF for your records.</p></div><div id="wsStatements" style="display:grid;gap:.6rem"></div></section>
   <section class="card panel" id="p-inbox" hidden style="display:grid;gap:.7rem"><div><strong style="font-family:var(--display);font-size:1.05rem">Inbox</strong></div><p class="small muted">Messages Build Smartly sends you, and messages on your orders. For a question, use Support.</p><div id="wsInbox" style="display:grid;gap:.5rem"></div></section>
@@ -1656,6 +1681,27 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
       <div class="su-nav"><button class="btn btn-ghost" type="button" id="gCancel">Not now</button><button class="btn btn-primary" type="button" id="gSave">Save and issue the PO</button></div>
     </div>
   </div>
+  <div class="modal" id="verGate" hidden>
+    <div class="card" style="display:grid;gap:.85rem">
+      <div><span class="eyebrow">Get verified</span><h3 style="margin-top:.2rem">Show us who is buying</h3><p class="small muted">Needed once, before your first order. Our team checks it, usually within one working day. Only Build Smartly staff see your documents.</p></div>
+      <div class="su-choices">
+        <div class="choice"><input type="radio" name="vType" id="v-ind" value="Individual" checked><label for="v-ind"><strong>An individual</strong><span>Your Fayda national ID number.</span></label></div>
+        <div class="choice"><input type="radio" name="vType" id="v-org" value="Organisation"><label for="v-org"><strong>An organization</strong><span>TIN and a copy of the business licence.</span></label></div>
+        <div class="choice"><input type="radio" name="vType" id="v-gov" value="Government"><label for="v-gov"><strong>A government office</strong><span>An official letter or staff ID.</span></label></div>
+      </div>
+      <div class="field"><label for="vName" id="vNameLabel">Full name as on your Fayda ID</label><input id="vName"></div>
+      <div class="field" data-vfor="Individual"><label for="vFayda">Fayda number</label><input id="vFayda" inputmode="numeric" placeholder="12 or 16 digits"><span class="hint">The FIN or FAN on your Fayda card. We check it with the national ID system.</span></div>
+      <div class="su-row2" data-vfor="Organisation Government">
+        <div class="field"><label for="vTin" id="vTinLabel">TIN</label><input id="vTin" inputmode="numeric" placeholder="10 digits"></div>
+        <div class="field" data-vfor="Organisation"><label for="vLic">Business licence number</label><input id="vLic"></div>
+        <div class="field" data-vfor="Government"><label for="vTitle">Your job title</label><input id="vTitle"></div>
+      </div>
+      <div class="field" data-vfor="Organisation Government"><label for="vContact">Contact person</label><input id="vContact" placeholder="Full name"></div>
+      <div class="field"><label for="vFile" id="vFileLabel">Photo of your Fayda card (optional)</label><input id="vFile" type="file" accept=".pdf,.jpg,.jpeg,.png"><span class="hint">A photo, or a PDF under 700 KB.</span></div>
+      <p class="err" id="vErr" hidden style="margin:0;font-size:.85rem;color:var(--warn);font-weight:600"></p>
+      <div class="su-nav"><button class="btn btn-ghost" type="button" id="vCancel">Not now</button><button class="btn btn-primary" type="button" id="vGo">Send for verification</button></div>
+    </div>
+  </div>
 <button class="helpbtn" id="helpBtn" type="button" aria-expanded="false" aria-controls="helpPanel" aria-label="Help"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M9.5 9.5a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 3.5"/><path d="M12 17h.01"/></svg><span>Help</span></button>
 <div class="helppanel" id="helpPanel" hidden role="dialog" aria-label="Build Smartly assistant">
   <div class="hhead"><div><strong>Build Smartly assistant</strong><br><span class="small">Answers in seconds · a person is one tap away</span></div><button type="button" id="helpClose" aria-label="Close">×</button></div>
@@ -1664,8 +1710,8 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 </div>
 
 
-<script src="assets/firebase-config.js?v=20261113c" onerror="this.remove()"></script>
-<script src="assets/store.js?v=20261113c"></script>
+<script src="assets/firebase-config.js?v=20261113d" onerror="this.remove()"></script>
+<script src="assets/store.js?v=20261113d"></script>
 <script>
 /* ---------- Router: one page, views switched by hash ---------- */
 window.BSRoute = (function(){
@@ -1762,6 +1808,69 @@ function bsSignInByPhone(digits){
   if(mine===digits){ return (me.role && me.role!=='Request materials') ? 'supplier' : 'buyer'; }
   BS.setMe({phone:'+251 '+digits, role:'Request materials'}); return 'new';
 }
+
+/* ---------- Get verified (buyers, decided 13 Nov 2026) ----------
+   The status record is public ("verifications", doc buyer-<9 digits>); the ID number and the document go to "kyc",
+   which only staff can read. bsVerifyHtml(where) draws the status box used in the workspace and the checkout. */
+(function(){
+  var $=function(id){ return document.getElementById(id); }, after=null;
+  function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function vtype(){ return (document.querySelector('input[name=vType]:checked')||{}).value||'Individual'; }
+  function show(){ var t=vtype();
+    document.querySelectorAll('#verGate [data-vfor]').forEach(function(el){ el.hidden=el.dataset.vfor.split(' ').indexOf(t)<0; });
+    $('vNameLabel').textContent = t==='Individual'?'Full name as on your Fayda ID':t==='Organisation'?'Legal name of the organization':'Name of the office';
+    $('vTinLabel').textContent = t==='Government'?'TIN (if the office has one)':'TIN';
+    $('vFileLabel').textContent = t==='Individual'?'Photo of your Fayda card (optional)':t==='Organisation'?'Copy of the business licence':'Official letter or your staff ID';
+    $('vErr').hidden=true; }
+  document.querySelectorAll('input[name=vType]').forEach(function(r){ r.addEventListener('change', show); });
+  window.bsVerify=function(cb){ after=cb||null; var m=BS.me()||{};
+    var t=m.type==='Government'?'Government':m.type==='Organisation'||m.type==='Organization'?'Organisation':'Individual'; var r=document.querySelector('input[name=vType][value="'+t+'"]'); if(r) r.checked=true;
+    if(!$('vName').value) $('vName').value = t==='Individual' ? (m.person||m.name||'') : (m.company||'');
+    if(!$('vTin').value && /^\d{10}$/.test(m.tin||'')) $('vTin').value=m.tin; if(!$('vContact').value && t!=='Individual') $('vContact').value=m.person||m.contact||'';
+    show(); $('verGate').hidden=false; };
+  $('vCancel').onclick=function(){ $('verGate').hidden=true; };
+  function readFile(f){ return new Promise(function(res, rej){ if(!f) return res(null);
+    var r=new FileReader(); r.onerror=rej;
+    if(/^image\//.test(f.type)){ r.onload=function(){ var img=new Image(); img.onload=function(){ var sc=Math.min(1, 1400/Math.max(img.width, img.height)), c=document.createElement('canvas'); c.width=Math.round(img.width*sc); c.height=Math.round(img.height*sc); c.getContext('2d').drawImage(img,0,0,c.width,c.height); res({name:f.name, type:'image/jpeg', data:c.toDataURL('image/jpeg',0.82)}); }; img.onerror=rej; img.src=r.result; }; r.readAsDataURL(f); return; }
+    if(f.size>700*1024) return rej(new Error('big')); r.onload=function(){ res({name:f.name, type:f.type||'application/pdf', data:r.result}); }; r.readAsDataURL(f); }); }
+  $('vGo').onclick=async function(){
+    var t=vtype(), err=function(msg){ $('vErr').textContent=msg; $('vErr').hidden=false; };
+    var me=BS.me()||{}, d=BS.d9(me.phone); if(!d){ err('Sign in first.'); return; }
+    var name=$('vName').value.trim(), fayda=$('vFayda').value.replace(/\D/g,''), tin=$('vTin').value.replace(/[\s-]/g,''), lic=$('vLic').value.trim(), contact=$('vContact').value.trim(), title=$('vTitle').value.trim(), f=$('vFile').files && $('vFile').files[0];
+    if(!name) return err('Please enter the name.');
+    if(t==='Individual' && !/^(\d{12}|\d{16})$/.test(fayda)) return err('A Fayda number has 12 or 16 digits.');
+    if(t==='Organisation' && !/^\d{10}$/.test(tin)) return err('A TIN has exactly 10 digits.');
+    if(t==='Government' && tin && !/^\d{10}$/.test(tin)) return err('A TIN has exactly 10 digits.');
+    if(t==='Organisation' && !lic) return err('Enter the business licence number.');
+    if(t!=='Individual' && !contact) return err('Enter the contact person.');
+    if(t!=='Individual' && !f) return err(t==='Organisation'?'Attach a copy of the business licence.':'Attach the official letter or your staff ID.');
+    var file=null; try{ file=await readFile(f); }catch(e){ return err('That file is too large. Use a photo, or a PDF under 700 KB.'); }
+    $('vGo').disabled=true; $('vGo').textContent='Sending…';
+    var now=new Date().toISOString(), a=new Uint8Array(14); crypto.getRandomValues(a); var kid=Array.prototype.map.call(a, function(x){ return 'abcdefghijkmnpqrstuvwxyz23456789'.charAt(x%32); }).join('');
+    var stored=await BS.set('kyc', kid, {phone:d, type:t, name:name, fayda:fayda, tin:tin, lic:lic, contact:contact, title:title, file:file, submittedAt:now});
+    await BS.set('verifications', 'buyer-'+d, {kind:'buyer', phone:d, name: t==='Individual'?name:contact, company:name, type:t, tin: t==='Individual'?'':tin, idHint: fayda?'•••• '+fayda.slice(-4):'', hasFile:!!file, kycId: stored?kid:'', status:'pending', submittedAt:now, reason:''});
+    BS.setMe(Object.assign({}, me, {type:t, company:name, person: t==='Individual'?name:(contact||me.person||''), name: me.name||name, tin: t==='Individual'?'':(tin||''), contact: contact||me.contact||''}));
+    $('vGo').disabled=false; $('vGo').textContent='Send for verification'; $('verGate').hidden=true; ['vFayda','vLic','vTitle'].forEach(function(id){ $(id).value=''; }); $('vFile').value='';
+    bsToast('Sent. Our team checks it, usually within one working day. We let you know by SMS.');
+    if(window.BSAuth) BSAuth.refresh(); var cb=after; after=null; if(cb) cb();
+  };
+  window.bsVerifyHtml=function(where){
+    var me=BS.me()||{}, v=BS.buyerVer(me.phone), st=v?(v.status||'pending'):'none';
+    if(st==='verified') return '<div class="vbox ok"><div><span class="vbadge ok">✓ Verified buyer</span></div><p class="small" style="margin:0">'+(where==='checkout'?'Your order goes to the supplier straight away.':'You can place orders. Suppliers see that you are verified.')+'</p></div>';
+    if(st==='pending') return '<div class="vbox"><div><span class="vbadge wait">Checking your documents</span></div><p class="small" style="margin:0">Our team is checking them, usually within one working day. You can place orders meanwhile: the supplier holds them until you are verified.</p></div>';
+    var rej=st==='rejected';
+    return '<div class="vbox"><div><span class="vbadge no">Not verified yet</span></div>'+
+      (rej?'<p class="small" style="margin:0">Your verification was not accepted:</p><p class="small" style="margin:0;font-weight:600" data-notr>“'+esc(v.reason||'')+'”</p>':'')+
+      '<p class="small" style="margin:0">'+(where==='checkout'?'Get verified to place the order: your Fayda number, or your TIN and business licence. It takes two minutes; the supplier holds your order while our team checks.':'You can send up to '+BS.UNVERIFIED_MAX+' requests at a time and compare offers. Get verified to place orders: your Fayda number, or your TIN and business licence.')+'</p>'+
+      '<div><button class="btn btn-primary btn-sm" type="button" data-getverified>'+(rej?'Try again':'Get verified')+'</button></div></div>';
+  };
+  function refreshAll(){ if(window.BSWorkspaceRefresh) BSWorkspaceRefresh(); if(window.bsCheckoutRedraw) bsCheckoutRedraw(); if(window.BSRefreshMine) BSRefreshMine(); }
+  document.addEventListener('click', function(e){ if(e.target.closest('[data-getverified]')){ e.preventDefault(); bsVerify(refreshAll); } });
+  /* when staff verify this buyer on another device, take the confirmed name and TIN into this device's account */
+  BS.onVerify(function(){ var me=BS.me()||{}, v=BS.buyerVer(me.phone);
+    if(v && v.status==='verified' && !v.test && (!me.company || (v.tin && me.tin!==v.tin))) BS.setMe(Object.assign({}, me, {company:v.company||me.company, type:v.type||me.type, tin:v.tin||me.tin||''}));
+    refreshAll(); });
+})();
 
 /* ---------- Site pictures set by staff (settings docs pic-*): swap the drawn placeholders for real photos ---------- */
 /* Site settings from Staff → Site content (settings doc "site"): contact and social details, hidden home sections,
@@ -2076,11 +2185,12 @@ function bsSupport(threadId, inputId, sendId){
     var supplier = kind==='supplier';
     $('signinBox').hidden=supplier; $('wizard').hidden=!supplier;
     $('suSideTitle').textContent = supplier ? 'Suppliers: four short steps.' : 'Your mobile number is your account.';
-    $('suSideText').textContent = supplier ? 'Mobile and code; company, TIN, what you supply and a password; licence and TIN copies; done. Documents can also wait until the portal.' : 'Enter your number, type the SMS code, done. Company details and TIN are asked for only when you accept an offer. Documents only before your first order.';
-    $('liTitle').textContent = kind==='signup' ? 'Create a buyer account' : 'Sign in';
-    $('liSub').textContent = kind==='signup' ? 'Your name, your mobile number and an SMS code. Company details and TIN are asked for before your first purchase order.' : 'Your mobile number and an SMS code.';
-    $('liNameField').hidden = kind!=='signup'; $('liNew').hidden = kind==='signup'; liKind=kind;
-    liReset(); if(supplier){ showStep(1); $('acctBox').hidden=true; if(window.__bsPrefillPhone){ $('phone').value=window.__bsPrefillPhone; window.__bsPrefillPhone=''; } } else { renderAccts(); }
+    $('suSideText').textContent = supplier ? 'Mobile and code; company, TIN, what you supply and a password; licence and TIN copies; done. Documents can also wait until the portal.' : 'Your number and the SMS code, then your name and whether you buy, sell or both. Start straight away; get verified when you are ready to order.';
+    $('liTitle').textContent = kind==='signup' ? 'Sign up' : 'Sign in';
+    $('liSub').textContent = kind==='signup' ? 'Step 1 of 2. Your mobile number and the SMS code we send you.' : 'Your mobile number and an SMS code.';
+    $('liNameField').hidden = true; $('liNew').hidden = kind==='signup'; liKind=kind; $('suProfile').hidden=true;
+    liReset(); var wf=window.__bsWizardFrom; if(supplier && wf){ window.__bsWizardFrom=null; $('acctBox').hidden=true; data.phone='+251 '+wf.phone; $('phone').value='0'+wf.phone; $('legal').value=wf.org||wf.name; $('contact').value=wf.name; showStep(4); }
+    else if(supplier){ showStep(1); $('acctBox').hidden=true; if(window.__bsPrefillPhone){ $('phone').value=window.__bsPrefillPhone; window.__bsPrefillPhone=''; } } else { renderAccts(); }
   });
   function afterSignIn(kind){
     var hasDraft=false; try{ hasDraft=!!localStorage.getItem('bs_demo_draft'); }catch(e){}
@@ -2092,15 +2202,28 @@ function bsSupport(threadId, inputId, sendId){
     BSRoute.go(kind==='new' ? 'boq' : 'workspace');
   }
   $('liGo').onclick=function(){
-    var nm=$('liName').value.trim(); if(liKind==='signup'){ $('liNameErr').hidden=!!nm; if(!nm){ $('liName').focus(); return; } }
+    var nm='';
     var digits=bsDigits($('liPhone').value); var ok=/^[97]\d{8}$/.test(digits); $('liErr').hidden=ok; if(!ok){ $('liPhone').focus(); return; }
     if(liStage===0){ liStage=1; $('liOtpBox').hidden=false; $('liGo').textContent='Verify code'; liOtp.focus(); return; }
     if(liOtp.code()!==BS.DEMO_CODE){ $('liHint').textContent=liOtp.code().length<6?'Enter all 6 digits.':'Wrong code. The test code is '+BS.DEMO_CODE+'.'; return; }
     var kind=bsSignInByPhone(digits); var m=BS.me()||{}; if(nm && !(m.company||m.name)){ BS.setMe(Object.assign({}, m, {name:nm, company:nm})); }
-    if(liKind==='signup' && kind==='new'){ liReset(); if(window.BSAuth) BSAuth.refresh(); bsToast('Account created. Add your company details when you are ready.'); BSRoute.go('workspace'); return; }
+    if(liKind==='signup' && (kind==='new' || !(m.company||m.name))){ liReset(); if(window.BSAuth) BSAuth.refresh(); spfDigits=digits; $('signinBox').hidden=true; $('acctBox').hidden=true; $('suProfile').hidden=false; $('suSideTitle').textContent='Almost done.'; $('spfName').focus(); return; }
     liReset(); afterSignIn(kind);
   };
   $('liPhone').addEventListener('keydown', function(e){ if(e.key==='Enter') $('liGo').click(); });
+  /* sign-up step 2: name, buy / sell / both, who you are. Selling continues in the supplier details (no second code). */
+  var spfDigits='';
+  function spfType(){ return (document.querySelector('input[name=spfType]:checked')||{}).value||'Individual'; }
+  document.querySelectorAll('input[name=spfType]').forEach(function(r){ r.addEventListener('change', function(){ var t=spfType(); $('spfOrgField').hidden=t==='Individual'; $('spfOrgLabel').textContent=t==='Government'?'Name of the office':'Name of the organization'; }); });
+  $('spfGo').onclick=function(){
+    var name=$('spfName').value.trim(), t=spfType(), org=$('spfOrg').value.trim(), want=(document.querySelector('input[name=spfWant]:checked')||{}).value||'buy';
+    $('spfNameErr').hidden=!!name; if(!name){ $('spfName').focus(); return; }
+    var needOrg=t!=='Individual'; $('spfOrgErr').hidden=!needOrg||!!org; if(needOrg && !org){ $('spfOrg').focus(); return; }
+    var m=BS.me()||{}; BS.setMe(Object.assign({}, m, {name:name, person:name, company: needOrg?org:name, type:t, want:want}));
+    if(window.BSAuth) BSAuth.refresh();
+    if(want==='buy'){ bsToast('Welcome to Build Smartly. You can send requests now; get verified when you are ready to order.'); BSRoute.go('workspace'); return; }
+    window.__bsWizardFrom={phone:spfDigits, name:name, org: needOrg?org:''}; BSRoute.go('signup-supplier');
+  };
 
   /* --- supplier registration wizard: phone, company, done --- */
   var step=1, data={};
@@ -2259,7 +2382,7 @@ function bsSupport(threadId, inputId, sendId){
   $('boqFile').addEventListener('change', function(){ var f=this.files && this.files[0]; this.value=''; if(!f) return; $('boqFileMsg').textContent='Reading '+f.name+'…';
     BS.readSheet(f).then(importRows).catch(function(e){ $('boqFileMsg').textContent='Could not read '+f.name+'. Save it as .xlsx or .csv and try again.'; bsToast('Could not read the file.'); }); });
   /* a BOQ in Word or PDF: read in the browser for staff, kept as it is, typed in by staff before it goes to suppliers */
-  var pendingDoc=null;
+  var pendingDoc=null, formBoqs=[]; BS.subscribe('boqs', function(d){ formBoqs=d||[]; });
   $('boqDoc').addEventListener('change', async function(){ var f=this.files && this.files[0]; this.value=''; if(!f) return;
     if(f.size>BS.FILE_MAX){ bsToast('The file is larger than 10 MB. Save it as a smaller PDF and try again.'); return; }
     $('docBox').hidden=false; $('docName').textContent=f.name; $('docInfo').textContent='Reading…';
@@ -2377,6 +2500,8 @@ function bsSupport(threadId, inputId, sendId){
   };
   async function doSend(){
     var me2=BS.me()||{}; var good=goodLines(); if(!good.length && !pendingDoc) return;
+    if(!BS.isVerified(me2.phone)){ var d9=BS.d9(me2.phone), openN=formBoqs.filter(function(b){ return BS.d9(b.ownerPhone)===d9 && (b.status==='open'||b.status==='review') && new Date(b.deadlineAt)>new Date(); }).length;
+      if(openN>=BS.UNVERIFIED_MAX){ var err=$('formErr'); err.innerHTML=''; err.appendChild(document.createTextNode('You have '+openN+' open requests. Accounts that are not verified yet can have '+BS.UNVERIFIED_MAX+' at a time. Get verified to send more. ')); var gb=document.createElement('button'); gb.type='button'; gb.className='btn btn-primary btn-sm'; gb.setAttribute('data-getverified',''); gb.textContent='Get verified'; err.appendChild(gb); err.hidden=false; err.scrollIntoView({behavior:'smooth',block:'center'}); return; } }
     var company=(me2.company || me2.name || $('company').value.trim() || ('Customer '+(me2.phone||'').slice(-4))).trim();
     if(!me2.company && !me2.name) BS.setMe(Object.assign({}, me2, {company:company}));
     var days=+$('validity').value, deadline=new Date(Date.now()+days*86400000).toISOString(), ref=BS.ref('BS');
@@ -2514,7 +2639,9 @@ function bsSupport(threadId, inputId, sendId){
     }
     var groups=BS.orderGroups(mineO);
     for(var gi=0;gi<groups.length;gi++){ var g=groups[gi], f=g.first, ids=g.offers.map(function(x){ return x.id; }); if(BS.orderClosed(f) || f.deliveredAt) continue;
-      if(!f.supplierConfirmed && secs(f.acceptedAt)>A.confirmAfter){ var k1='s1|'+g.key; if(autoBusy[k1]) continue; autoBusy[k1]=1; var now1=new Date().toISOString(); await BS.updateMany('offers', ids, Object.assign({supplierConfirmed:true, confirmedAt:now1}, f.buyerAgreedAt?{contractAt:now1}:{})); continue; }
+      if(f.heldForVerify && BS.isVerified(me2.phone)){ var kv='v|'+g.key; if(!autoBusy[kv]){ autoBusy[kv]=1; await BS.updateMany('offers', ids, {heldForVerify:false, verifiedAt:new Date().toISOString()}); } continue; }
+      if(f.heldForVerify) continue;
+      if(!f.supplierConfirmed && secs(f.verifiedAt||f.acceptedAt)>A.confirmAfter){ var k1='s1|'+g.key; if(autoBusy[k1]) continue; autoBusy[k1]=1; var now1=new Date().toISOString(); await BS.updateMany('offers', ids, Object.assign({supplierConfirmed:true, confirmedAt:now1}, f.buyerAgreedAt?{contractAt:now1}:{})); continue; }
       if(BS.mayPrepare(f) && !f.readyAt && secs(f.paidAt||f.contractAt)>A.readyAfter){ var k2='s2|'+g.key; if(autoBusy[k2]) continue; autoBusy[k2]=1; await BS.updateMany('offers', ids, {readyAt:new Date().toISOString()}); continue; }
       if(f.readyAt && !f.dispatchedAt && secs(f.readyAt)>A.dispatchAfter){ var k3='s3|'+g.key; if(autoBusy[k3]) continue; autoBusy[k3]=1; await bsOrderAction('dispatch', f.id, simDriver(g.key)); continue; }
       if(f.dispatchedAt && !f.deliveredAt && f.trackId && window.bsTrack){ var bb=boqs.filter(function(x){ return x.id===g.boqId; })[0]; if(bb) bsTrack.simStep(f, bb).catch(function(){}); }
@@ -2583,14 +2710,16 @@ function bsSupport(threadId, inputId, sendId){
       '<details class="small"><summary style="cursor:pointer;font-weight:600">Read the terms</summary><ol style="margin:.4rem 0 0;padding-left:1.2rem;display:grid;gap:.25rem"><li>The supplier sells and you buy the goods above at the stated price. Build Smartly facilitates this transaction and is not a party to this sale.</li><li>The supplier confirms or declines within '+BS.CONFIRM_HOURS+' hours. If it declines or does not answer, nothing is owed and you choose another offer.</li><li>'+(BS.payFirst()?'You pay the full amount before dispatch, through Yagout Pay or bank transfer.':'You pay after delivery, through Yagout Pay.')+'</li><li>You give the driver your handover code only after checking the goods, then check each item within '+BS.CHECK_HOURS+' hours.</li><li>Once confirmed, neither side may withdraw; changes need an amendment both accept.</li></ol></details>'+
       '<label class="check"><input type="checkbox" id="gAccept"'+(accWas?' checked':'')+'><span>I have read and accept this Purchase Order / Sales Agreement and its terms and conditions.</span></label><p class="err" id="gAcceptErr" hidden style="margin:0;font-size:.85rem;color:var(--warn);font-weight:600">Tick the box to accept the PO/SA.</p></div>';
     $('gDeliv').innerHTML=html; $('gDeliv').hidden=false;
-    $('gSave').textContent = groups.length>1 ? 'Accept and issue '+groups.length+' PO/SAs' : 'Accept and issue the PO/SA';
+    var vst=BS.buyerState((BS.me()||{}).phone); if(vst!=='verified') $('gDeliv').insertAdjacentHTML('afterbegin', '<div style="margin:.3rem 0 .7rem">'+bsVerifyHtml('checkout')+'</div>');
+    $('gSave').textContent = (vst==='none'||vst==='rejected') ? 'Get verified to continue' : groups.length>1 ? 'Accept and issue '+groups.length+' PO/SAs' : 'Accept and issue the PO/SA';
   }
   function openCheckout(boqId){
     checkoutBoq=boqId; var m=BS.me()||{}; if(m.company && !$('gName').value) $('gName').value=m.company; gateLabels();
-    var needCompany=!buyerKnown(); $('gCompany').hidden=!needCompany; $('gCompany').style.display=needCompany?'grid':'none';
+    var needCompany=false; /* who is buying now comes from the verification */ $('gCompany').hidden=!needCompany; $('gCompany').style.display=needCompany?'grid':'none';
     $('gDeliv').innerHTML=''; drawCheckout(); $('poGate').hidden=false;
   }
   $('gDeliv').addEventListener('change', function(){ drawCheckout(); });
+  window.bsCheckoutRedraw=function(){ if(checkoutBoq && !$('poGate').hidden) drawCheckout(); };
   function openGate(){ checkoutBoq=null; var m=BS.me()||{}; if(m.company && !$('gName').value) $('gName').value=m.company; gateLabels(); $('gDeliv').hidden=true; $('gCompany').hidden=false; $('gCompany').style.display='grid'; $('gSave').textContent='Save'; $('poGate').hidden=false; $('gName').focus(); }
   window.bsOpenGate=function(){ openGate(); };
   $('gCancel').onclick=function(){ $('poGate').hidden=true; checkoutBoq=null; };
@@ -2607,6 +2736,8 @@ function bsSupport(threadId, inputId, sendId){
       }
     }
     if(!checkoutBoq){ $('poGate').hidden=true; bsToast('Company details saved.'); return; }
+    var vs=BS.buyerState((BS.me()||{}).phone); if(vs==='none' || vs==='rejected'){ bsVerify(function(){ if(window.bsCheckoutRedraw) bsCheckoutRedraw(); }); return; }
+    var held = vs!=='verified', vrec=BS.buyerVer((BS.me()||{}).phone)||{};
     var b=boqById(checkoutBoq); if(!b) return; var items=checkoutItems(b), groups=checkoutGroups(items); if(!items.length){ $('poGate').hidden=true; return; }
     var acc=$('gAccept'); if(acc && !acc.checked){ $('gAcceptErr').hidden=false; acc.focus(); return; }
     var bs=useBsTransport(b), ins=!!(document.getElementById('gIns')||{}).checked, m=BS.me()||{}, now=new Date().toISOString();
@@ -2615,10 +2746,11 @@ function bsSupport(threadId, inputId, sendId){
     var used={}; offers.forEach(function(o){ if(o.boqId===b.id && o.poRef) used[o.poRef]=1; }); var k=Object.keys(used).length, refs=[];
     for(var gi=0; gi<groups.length; gi++){ k++; var poRef='PO-'+b.ref+'-'+k; refs.push(poRef);
       for(var j=0;j<groups[gi].items.length;j++){ var it=groups[gi].items[j]; var pf=bs && !it.hire;
-        await BS.update('offers', it.o.id, {status:'accepted', poRef:poRef, acceptedAt:now, customerRevealed:m.company||m.name||b.company||'', customerTin:m.tin||'', buyerAgreedAt:now, buyerAgreedBy:m.contact||m.name||m.company||'', platformDelivery:pf, deliveryAmt:pf?it.est.cost:0, deliveryTrips:pf?it.est.trips:0, insurance:ins, insuranceAmt:ins?it.ins:0}); } }
+        await BS.update('offers', it.o.id, {status:'accepted', poRef:poRef, acceptedAt:now, customerRevealed:m.company||vrec.company||m.name||b.company||'', customerTin:m.tin||vrec.tin||'', heldForVerify:held, buyerAgreedAt:now, buyerAgreedBy:m.contact||m.name||m.company||'', platformDelivery:pf, deliveryAmt:pf?it.est.cost:0, deliveryTrips:pf?it.est.trips:0, insurance:ins, insuranceAmt:ins?it.ins:0}); } }
     var ch=Object.assign({}, b.chosen||{}); items.forEach(function(it){ delete ch[it.l.n]; }); await BS.update('boqs', b.id, {chosen:ch});
     $('gSave').disabled=false; $('poGate').hidden=true; checkoutBoq=null;
-    bsToast((refs.length>1?refs.length+' PO/SAs issued: ':'PO/SA issued: ')+refs.join(', ')+'. The supplier confirms within '+BS.CONFIRM_HOURS+' hours; you get a notification.');
+    bsToast(held ? (refs.length>1?refs.length+' PO/SAs issued: ':'PO/SA issued: ')+refs.join(', ')+'. The supplier holds it until our team has verified you; then the supplier has '+BS.CONFIRM_HOURS+' hours to confirm.'
+      : (refs.length>1?refs.length+' PO/SAs issued: ':'PO/SA issued: ')+refs.join(', ')+'. The supplier confirms within '+BS.CONFIRM_HOURS+' hours; you get a notification.');
   };
   /* cheapest valid offer on every open line that has no choice yet */
   async function chooseBest(boqId){ var b=boqById(boqId); if(!b) return; var ch=Object.assign({}, b.chosen||{}); var n=0;
@@ -2901,7 +3033,8 @@ function bsSupport(threadId, inputId, sendId){
       out.push({ico:'€', title:'Customer proposes '+BS.fmt(o.counter.price)+' per '+(l.unit||'unit')+' · '+(b.ref||'')+' · '+(l.item||''), sub:'Your price was '+BS.fmt(o.unitPrice)+'. If you accept, your offer changes to their price.', btn:'<button class="btn btn-primary btn-sm" type="button" data-cacc="'+o.id+'">Accept '+BS.fmt(o.counter.price)+'</button><button class="btn btn-ghost btn-sm" type="button" data-cdec="'+o.id+'">Decline</button>'}); } });
     groups.forEach(function(g){ var o=g.first, b=boqs.filter(function(x){return x.id===g.boqId;})[0]||{}, what=g.poRef+' · '+(BS.namesShown(o)?(o.customerRevealed||''):'Customer '+(b.customerNo||''))+' · '+g.offers.length+' line'+(g.offers.length>1?'s':'');
       if(BS.poLapsed(o)) return;
-      if(!o.supplierConfirmed) out.push({ico:'PO', title:'New PO/SA '+what, sub:'<span>Confirm by</span> <span data-notr>'+new Date(BS.confirmDue(o)).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})+'</span> <span>to make it binding, or decline it with a reason.</span>', btn:'<a class="btn btn-ochre btn-sm" href="#order-'+g.id+'">Read and confirm</a>'});
+      if(!o.supplierConfirmed && o.heldForVerify) out.push({ico:'PO', title:'New PO/SA '+what, sub:'<span>Held: the buyer is being verified by our team. You can confirm once they are; your hours start then.</span>', btn:'<a class="btn btn-ghost btn-sm" href="#order-'+g.id+'">Open</a>'});
+      else if(!o.supplierConfirmed) out.push({ico:'PO', title:'New PO/SA '+what, sub:'<span>Confirm by</span> <span data-notr>'+new Date(BS.confirmDue(o)).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})+'</span> <span>to make it binding, or decline it with a reason.</span>', btn:'<a class="btn btn-ochre btn-sm" href="#order-'+g.id+'">Read and confirm</a>'});
       else if(BS.mayPrepare(o) && !o.readyAt) out.push({ico:'✓', title:'Prepare '+what, sub:(BS.payFirst()?'Paid by the buyer.':'The PO/SA is binding.')+' Mark the goods ready when packed.', btn:'<button class="btn btn-primary btn-sm" type="button" data-oact="ready" data-id="'+g.id+'">Ready for dispatch</button>'});
       else if(o.readyAt && !o.dispatchedAt) out.push({ico:'→', title:'Dispatch '+what, sub:'Add the driver and send them the tracking link · '+(b.subcity||'the site'), btn:'<a class="btn btn-primary btn-sm" href="#order-'+g.id+'">Dispatch</a>'});
     });
@@ -2924,7 +3057,7 @@ function bsSupport(threadId, inputId, sendId){
     reqs.forEach(function(b){
       var card=document.createElement('div'); card.className='card req'; var left=BS.days(new Date(b.deadlineAt)-Date.now());
       var prefilled=matches(b).filter(function(l){ return priceFor(l.item) && !mine.some(function(o){return o.boqId===b.id && o.lineN===l.n;}); }).length;
-      card.innerHTML='<div class="req-head"><div><h3>'+b.ref+' · Customer '+b.customerNo+' · '+b.subcity+', '+b.city+'</h3><span class="small muted">'+b.deliveryTerm+' · '+b.paymentTerm+(b.partial?' · partial quotes accepted':'')+' · customer name and exact address hidden until the PO</span></div><div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap"><span class="deadline">Reply within '+left+' day'+(left!==1?'s':'')+'</span></div></div>';
+      card.innerHTML='<div class="req-head"><div><h3>'+b.ref+' · Customer '+b.customerNo+' · '+b.subcity+', '+b.city+' '+(BS.isVerified(b.ownerPhone)?'<span class="vbadge ok">✓ Verified buyer</span>':'<span class="vbadge no">Buyer not verified yet</span>')+'</h3><span class="small muted">'+b.deliveryTerm+' · '+b.paymentTerm+(b.partial?' · partial quotes accepted':'')+' · customer name and exact address hidden until the PO</span></div><div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap"><span class="deadline">Reply within '+left+' day'+(left!==1?'s':'')+'</span></div></div>';
       matches(b).forEach(function(l){
         var done=mine.filter(function(o){return o.boqId===b.id && o.lineN===l.n;})[0]; var pl=priceFor(l.item);
         var fromSub=(profile.locs[0]||{}).sub||sup.sub||'Akaki Kaliti', dEst=BS.deliveryEstimate([l], fromSub, b.pin||b.subcity), delivers=b.deliveryTerm==='Supplier delivers to site';
@@ -3005,9 +3138,11 @@ function bsSupport(threadId, inputId, sendId){
 (function(){
   var $=function(id){return document.getElementById(id);};
   var company='';
-  function refreshMe(){ var me=BS.me()||{}; company=(me.company||'').trim(); var wd=$('wsDetails'); if(wd) wd.hidden=!!me.tin || !me.phone; $('wsName').textContent = company || me.name || (me.phone ? 'Member '+me.phone : 'Your company'); var isSup=!!(me.supplierId || (me.role&&me.role!=='Request materials')); $('tileSupplier').hidden=!isSup; $('wsMeta').textContent = me.tin ? ((me.type==='Individual'?'Person':me.type==='Government'?'Government office':'Company')+' · TIN on file · Buyer verified'+(isSup?' · also a supplier':'')) : 'Buyer · your company details and TIN are asked once, when you accept your first offer'+(isSup?' · also a supplier':''); }
+  function refreshMe(){ var me=BS.me()||{}; company=(me.company||'').trim(); var isSup=!!(me.supplierId || (me.role&&me.role!=='Request materials'));
+    $('wsName').textContent = company || me.name || (me.phone ? 'Member '+me.phone : 'Your company'); $('tileSupplier').hidden=!isSup;
+    var st=BS.buyerState(me.phone), wv=$('wsVerify'); if(wv){ wv.hidden=!me.phone || st==='verified'; if(!wv.hidden) wv.innerHTML=bsVerifyHtml('workspace'); }
+    $('wsMeta').innerHTML = (st==='verified'?'<span class="vbadge ok">✓ Verified buyer</span>':st==='pending'?'<span class="vbadge wait">Verification in progress</span>':'<span class="vbadge no">Not verified yet</span>')+' <span>'+(me.type==='Individual'?'Person':me.type==='Government'?'Government office':'Company')+(isSup?' · also a supplier':'')+'</span>'; }
   refreshMe(); BSRoute.on('workspace', function(){ refreshMe(); render(); }); window.BSWorkspaceRefresh=refreshMe;
-  $('wsDetailsBtn').onclick=function(){ if(window.bsOpenGate) bsOpenGate(); };
   BS.SUBCITIES.forEach(function(s){ var o=document.createElement('option'); o.textContent=s; $('locSub').appendChild(o); });
   bsStatus('wsStatus','Online','On this device only');
   function showPanel(p){ document.querySelectorAll('.tile[data-panel]').forEach(function(x){ x.classList.toggle('on', x.dataset.panel===p); }); ['tracking','statements','support','inbox','news','settings'].forEach(function(k){ $('p-'+k).hidden = k!==p; }); if(p==='support'){ $('nNotif').hidden=true; } }
@@ -3204,10 +3339,10 @@ window.bsPublishProfile = async function(fields){
 
 BSRoute.start();
 </script>
-<script src="assets/track.js?v=20261113c"></script>
-<script src="assets/order.js?v=20261113c"></script>
-<script src="assets/notify.js?v=20261113c"></script>
-<script src="assets/help.js?v=20261113c"></script>
-<script src="assets/admin.js?v=20261113c"></script>
-<script src="assets/editor.js?v=20261113c"></script>
-<script src="assets/i18n.js?v=20261113c"></script>
+<script src="assets/track.js?v=20261113d"></script>
+<script src="assets/order.js?v=20261113d"></script>
+<script src="assets/notify.js?v=20261113d"></script>
+<script src="assets/help.js?v=20261113d"></script>
+<script src="assets/admin.js?v=20261113d"></script>
+<script src="assets/editor.js?v=20261113d"></script>
+<script src="assets/i18n.js?v=20261113d"></script>
