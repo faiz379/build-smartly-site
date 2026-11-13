@@ -163,7 +163,7 @@
       if(d.id==="brandLogos" && d.map){ BS.BRAND_LOGOS=d.map; }
       if(d.id==="ads" && Array.isArray(d.hidden)){ BS.ADS_HIDDEN=d.hidden.slice(); }
       if(d.id==="payment"){ if(d.when==="before" || d.when==="after") BS.PAY_WHEN=d.when; if(Array.isArray(d.methods) && d.methods.length) BS.PAY_ON=d.methods.slice(); if(d.bank) BS.BANK=Object.assign({}, d.bank); }
-      if(d.id==="delivery"){ if(+d.checkHours>0) BS.CHECK_HOURS=+d.checkHours; if(+d.proofMin>0) BS.PROOF_MIN=+d.proofMin; if(d.proofOn!==undefined) BS.PROOF_ON=!!d.proofOn; if(+d.linkHours>0) BS.TRACK_HOURS=Math.min(48, +d.linkHours); if(/^(am|en|om)$/.test(d.driverLang||"")) BS.DRIVER_LANG=d.driverLang; }
+      if(d.id==="delivery"){ if(+d.confirmHours>0) BS.CONFIRM_HOURS=+d.confirmHours; if(+d.checkHours>0) BS.CHECK_HOURS=+d.checkHours; if(+d.proofMin>0) BS.PROOF_MIN=+d.proofMin; if(d.proofOn!==undefined) BS.PROOF_ON=!!d.proofOn; if(+d.linkHours>0) BS.TRACK_HOURS=Math.min(48, +d.linkHours); if(/^(am|en|om)$/.test(d.driverLang||"")) BS.DRIVER_LANG=d.driverLang; }
       if(d.id==="content" && d.map){ BS.CONTENT=d.map; if(window.bsSetOverrides) bsSetOverrides(d.map); }
       if(d.id==="style"){ BS.applyStyle(d); }
       if(d.id==="site"){ BS.SITE=d; }
@@ -558,7 +558,7 @@
   BS.AD_PRICES = {news:5000, feature:15000, pulse:5000, banner:4000, directory:3000};
   BS.AD_LABELS = {news:'Newsletter item', feature:'Featured supplier of the month', pulse:'Price pulse tile', banner:'Workspace banner', directory:'Highlighted Members card', platform:'From Build Smartly'};
   BS.offerTotal = function(o){ return (+o.qtyOffered||0)*(+o.unitPrice||0)+(+o.deliveryCost||0); };
-  BS.orderGroup = function(offers, o){ if(!o) return []; if(!o.poRef) return [o]; return offers.filter(function(x){ return x.poRef===o.poRef && x.boqId===o.boqId && x.status==='accepted'; }).sort(function(a,b){ return a.lineN-b.lineN; }); };
+  BS.orderGroup = function(offers, o){ if(!o) return []; if(!o.poRef) return [o]; return offers.filter(function(x){ return x.poRef===o.poRef && x.boqId===o.boqId && x.status===(o.status==='declined'||o.status==='expired'?o.status:'accepted'); }).sort(function(a,b){ return a.lineN-b.lineN; }); };
   BS.orderGroups = function(offers, filter){
     var by={}, out=[];
     offers.forEach(function(o){ if(o.status!=='accepted' || (filter && !filter(o))) return; var k=o.boqId+'|'+(o.poRef||o.id); if(!by[k]){ by[k]={key:k, poRef:o.poRef, boqId:o.boqId, supplierId:o.supplierId, supplierName:o.supplierName, offers:[]}; out.push(by[k]); } by[k].offers.push(o); });
@@ -582,8 +582,17 @@
   BS.PAY_METHODS = [["telebirr","Telebirr","Mobile money"],["cbebirr","CBE Birr","Commercial Bank of Ethiopia mobile"],["bank","Bank transfer","From any Ethiopian bank to the Build Smartly account"],["card","Bank card","Visa or Mastercard"]];
   BS.PAY_ON = ["telebirr","cbebirr","bank","card"];
   BS.BANK = {bank:"", name:"", number:"", note:""};
+  /* One Purchase Order / Sales Agreement (PO/SA), decided 13 Nov 2026 with Abdullah's Version 4: the buyer accepts it when
+     placing the order (buyerAgreedAt), the supplier confirms it within BS.CONFIRM_HOURS (staff setting) or declines with a
+     reason; on confirmation it is binding (contractAt) and the two parties see each other's names. A PO/SA the supplier
+     neither confirms nor declines in time lapses, and the buyer chooses another offer. */
+  BS.CONFIRM_HOURS = 48;
+  BS.confirmDue = function(o){ return o && o.acceptedAt ? new Date(o.acceptedAt).getTime() + BS.CONFIRM_HOURS*3600000 : 0; };
+  BS.poLapsed = function(o){ return !!(o && o.status==='accepted' && !o.supplierConfirmed && o.acceptedAt && Date.now() > BS.confirmDue(o)); };
+  BS.namesShown = function(o){ return !!(o && (o.supplierConfirmed || o.contractAt)); };
+  BS.verifyNo = function(o){ var s=String((o&&o.poRef)||'')+'|'+String((o&&o.acceptedAt)||''), h=0; for(var i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))>>>0; } var x=h.toString(36).toUpperCase(); while(x.length<7) x='0'+x; return x.slice(0,4)+'-'+x.slice(4,7); };
   BS.orderSteps = function(){
-    var head=[['acceptedAt','Order placed'],['confirmedAt','Supplier reconfirmed'],['contractAt','Contract agreed']], go=[['readyAt','Ready for dispatch'],['dispatchedAt','Dispatched'],['deliveredAt','Handed over'],['checkedAt','Items checked']];
+    var head=[['acceptedAt','PO/SA issued'],['contractAt','Confirmed · binding']], go=[['readyAt','Ready for dispatch'],['dispatchedAt','Dispatched'],['deliveredAt','Handed over'],['checkedAt','Items checked']];
     return BS.payFirst() ? head.concat([['paidAt','Paid']], go) : head.concat(go, [['paidAt','Paid']]);
   };
   Object.defineProperty(BS, "ORDER_STEPS", { get: function(){ return BS.orderSteps(); }, configurable: true });
@@ -599,16 +608,19 @@
       if(o.dispatchedAt) return {t:'Dispatched', c:'tag-ochre', who:'buyer'};
       if(o.readyAt) return {t:'Ready for dispatch', c:'tag-green', who:'supplier'};
       if(o.paidAt) return {t:'Paid · preparing', c:'tag-green', who:'supplier'};
-      if(o.contractAt) return {t:'Contract agreed · payment due', c:'tag-ochre', who:'buyer'};
+      if(o.contractAt) return {t:'Confirmed · payment due', c:'tag-ochre', who:'buyer'};
     } else {
       if(o.paidAt) return {t:'Paid · closed', c:'tag-green', who:'none'};
       if(checked) return {t:'Delivered · payment due', c:'tag-ochre', who:'buyer'};
       if(o.deliveredAt) return {t:'Handed over · check the items', c:'tag-ochre', who:'buyer'};
       if(o.dispatchedAt) return {t:'Dispatched', c:'tag-ochre', who:'buyer'};
       if(o.readyAt) return {t:'Ready for dispatch', c:'tag-green', who:'supplier'};
-      if(o.contractAt) return {t:'Contract agreed · preparing', c:'tag-green', who:'supplier'};
+      if(o.contractAt) return {t:'Confirmed · preparing', c:'tag-green', who:'supplier'};
     }
-    return o.supplierConfirmed ? {t:'Waiting for the buyer to agree to the contract', c:'tag-ochre', who:'buyer'} : {t:'Waiting for the supplier to reconfirm', c:'tag-ochre', who:'supplier'};
+    if(o.status==='declined') return {t:'Declined by the supplier', c:'', who:'buyer'};
+    if(o.status==='expired' || BS.poLapsed(o)) return {t:'Not confirmed in time', c:'', who:'buyer'};
+    if(o.supplierConfirmed && !o.buyerAgreedAt) return {t:'Waiting for the buyer to accept', c:'tag-ochre', who:'buyer'}; /* orders from before the single PO/SA */
+    return {t:'Issued · awaiting supplier confirmation', c:'tag-ochre', who:'supplier'};
   };
   BS.orderClosed = function(o){ return BS.orderStatus(o).who === 'none'; };
   /* payment is open: before dispatch once the contract is agreed, or after the items are checked */

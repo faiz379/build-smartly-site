@@ -508,6 +508,7 @@ html{overflow-x:clip}
 .basket .btn-ghost{color:#F6F7F4;border-color:rgba(246,247,244,.4)}
 .ck-group{border:1px solid var(--line);border-radius:10px;padding:.55rem .75rem;display:grid;gap:.3rem;margin-bottom:.45rem}
 .ck-row{display:flex;justify-content:space-between;gap:.8rem;font-size:.92rem}
+.ck-posa{display:grid;gap:.45rem;margin-top:.7rem;padding:.75rem .85rem;border:2px solid var(--ochre);border-radius:12px;background:color-mix(in srgb,var(--ochre) 7%,var(--bg-1,#fff))}
 .ck-total{border-top:1.5px solid var(--line);margin-top:.6rem;padding-top:.5rem;display:grid;gap:.25rem}
 #poGate .card{max-height:calc(100vh - 2rem);overflow:auto}
 @media (max-width:640px){.order-row{grid-template-columns:1fr}.lbox-head{grid-template-columns:auto 1fr}.lbox-head .tag{grid-column:1/-1;justify-self:start}}
@@ -885,7 +886,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
         <ul style="margin-top:1.2rem">
           <li><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#E3A63A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l4 4 8-8"/></svg><span>Your dispatch points and prices are never shown to competitors</span></li>
           <li><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#E3A63A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l4 4 8-8"/></svg><span>Quotes pre-filled from your price list, so replying takes seconds</span></li>
-          <li><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#E3A63A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l4 4 8-8"/></svg><span>Purchase orders and contracts generated for you, with a record of every deal</span></li>
+          <li><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#E3A63A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l4 4 8-8"/></svg><span>One Purchase Order / Sales Agreement per supplier, with a record of every deal</span></li>
         </ul>
         <a class="btn btn-ochre" href="#signup-supplier" style="margin-top:1.3rem">Register as a supplier</a>
       </div>
@@ -903,7 +904,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     <div class="sec-head"><span class="eyebrow">Why it is safe</span><h2>Built for how business is done in Ethiopia.</h2></div>
     <div class="trust">
       <div class="card"><h3>Verified members</h3><p>Licence and TIN checked before a supplier can quote. Clear status on every account.</p></div>
-      <div class="card"><h3>Anonymous until the PO</h3><p>Suppliers see a district, not your address. You see offers, not names. Identities appear only in the contract.</p></div>
+      <div class="card"><h3>Anonymous until the PO</h3><p>Suppliers see a district, not your address. You see offers, not names. Names appear once the supplier confirms the Purchase Order / Sales Agreement.</p></div>
       <div class="card"><h3>Current prices only</h3><p>Every price carries a confirmation time and expiry. Stale prices are never shown as current.</p></div>
       <div class="card"><h3>Your data stays in Ethiopia</h3><p>Hosted in Ethiopia under the Personal Data Protection Proclamation. Amharic, Afaan Oromoo and English.</p></div>
     </div>
@@ -920,7 +921,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     <div class="trust" style="grid-template-columns:1.2fr .8fr">
       <div class="card" style="gap:.7rem">
         <p>Build Smartly S.C. is an Ethiopian share company. Its shareholders are contractors, engineers, suppliers and investors who have all bought materials the hard way: many phone calls, prices that change by the day, and no record of what was agreed.</p>
-        <p>We are building one place where a contractor sends a list once, verified suppliers quote in writing, and the purchase order and contract are issued with a full record. Addis Ababa first, then the regional cities.</p>
+        <p>We are building one place where a contractor sends a list once, verified suppliers quote in writing, and the Purchase Order / Sales Agreement is issued with a full record. Addis Ababa first, then the regional cities.</p>
         <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.3rem"><a class="btn btn-ghost btn-sm" href="#contact">Contact us</a><a class="btn btn-ghost btn-sm" href="#faq">Questions and answers</a><a class="btn btn-ghost btn-sm" href="#terms">Terms (draft)</a><a class="btn btn-ghost btn-sm" href="#privacy">Privacy (draft)</a></div>
       </div>
       <div class="card" style="gap:.5rem">
@@ -1196,7 +1197,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     <div id="tab-mail" hidden style="display:grid;gap:1rem">
       <div class="subtabs" id="spMailTabs"><button class="on" data-m="statements">Statements</button><button data-m="support">Support</button><button data-m="inbox">Inbox</button><button data-m="news">Newsletter</button></div>
       <div class="card panel" id="spm-inbox" hidden><div><strong style="font-family:var(--display)">Inbox</strong><p class="small muted">Messages Build Smartly sends you, and messages on your orders. For a question, use Support.</p></div><div id="spInbox" style="display:grid;gap:.5rem;margin-top:.6rem"></div></div>
-      <div class="card panel" id="spm-statements"><div><strong style="font-family:var(--display)">Statements</strong><p class="small muted">Every purchase order, contract and receipt, by year. View, print or save as PDF.</p></div><div id="spStatements" style="display:grid;gap:.6rem"></div></div>
+      <div class="card panel" id="spm-statements"><div><strong style="font-family:var(--display)">Statements</strong><p class="small muted">Every Purchase Order / Sales Agreement and receipt, by year. View, print or save as PDF.</p></div><div id="spStatements" style="display:grid;gap:.6rem"></div></div>
       <div class="card panel" id="spm-news" hidden><div><strong style="font-family:var(--display)">Newsletter</strong></div><div class="news-list" style="display:grid;gap:.6rem;margin-top:.6rem"></div></div>
       <div class="card panel" id="spm-support" hidden><div><strong style="font-family:var(--display)">Support</strong><p class="small muted">Write to Build Smartly support about a request, an order or your documents. Staff answer here and by SMS.</p></div><div class="chat" id="spSupportThread"></div><div class="chat-in"><div class="field"><input id="spSupportIn" placeholder="Type your message…"></div><button class="btn btn-primary btn-sm" type="button" id="spSupportSend">Send</button></div></div>
     </div>
@@ -1299,7 +1300,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
   <div class="tiles" id="tiles">
     <a class="tile" href="#boq"><strong>Send a request</strong><span>Build a list or upload your BOQ</span></a>
     <button class="tile on" data-panel="tracking"><strong>My orders</strong><span>Requests, offers and orders, step by step</span><em class="n" id="nTrack" hidden>0</em></button>
-    <button class="tile" data-panel="statements"><strong>Statements</strong><span>Orders, contracts and receipts by year</span></button>
+    <button class="tile" data-panel="statements"><strong>Statements</strong><span>PO/SAs and receipts by year</span></button>
     <button class="tile" data-panel="support"><strong>Support</strong><span>Chat with Build Smartly staff</span><em class="n" id="nNotif" hidden>0</em></button>
     <button class="tile" data-panel="inbox"><strong>Inbox</strong><span>Messages from Build Smartly and on your orders</span></button>
     <button class="tile" data-panel="news"><strong>Newsletter</strong><span>News and offers from members</span></button>
@@ -1313,7 +1314,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
   </div>
   <section class="card" id="wsDetails" hidden style="display:grid;gap:.6rem;border-color:var(--ochre)"><div><strong style="font-family:var(--display)">Complete your company details</strong><p class="small muted">Who is buying, legal name and TIN. Needed once, before your first purchase order. You can also do it later, at your first Accept.</p></div><div><button class="btn btn-primary btn-sm" type="button" id="wsDetailsBtn">Add company details</button></div></section>
   <section class="card panel" id="p-tracking"><div><strong style="font-family:var(--display);font-size:1.05rem">Tracking</strong><p class="small muted">Where each request or order stands. Restricted between you and the platform.</p></div><div id="trackBody"></div></section>
-  <section class="card panel" id="p-statements" hidden><div><strong style="font-family:var(--display);font-size:1.05rem">Statements</strong><p class="small muted">Every purchase order, contract and receipt, by year. View, print or save as PDF for your records.</p></div><div id="wsStatements" style="display:grid;gap:.6rem"></div></section>
+  <section class="card panel" id="p-statements" hidden><div><strong style="font-family:var(--display);font-size:1.05rem">Statements</strong><p class="small muted">Every Purchase Order / Sales Agreement and receipt, by year. View, print or save as PDF for your records.</p></div><div id="wsStatements" style="display:grid;gap:.6rem"></div></section>
   <section class="card panel" id="p-inbox" hidden style="display:grid;gap:.7rem"><div><strong style="font-family:var(--display);font-size:1.05rem">Inbox</strong></div><p class="small muted">Messages Build Smartly sends you, and messages on your orders. For a question, use Support.</p><div id="wsInbox" style="display:grid;gap:.5rem"></div></section>
   <section class="card panel" id="p-support" hidden style="display:grid;gap:.7rem"><div><strong style="font-family:var(--display);font-size:1.05rem">Support</strong></div><p class="small muted">Write to Build Smartly support about a request, an offer or a delivery. Amharic, Afaan Oromoo or English. Staff answer here and by SMS; the thread is kept with your account.</p><div class="chat" id="supportThread"></div><div class="chat-in"><div class="field"><input id="supportIn" placeholder="Type your message…"></div><button class="btn btn-primary btn-sm" type="button" id="supportSend">Send</button></div></section>
   <section class="card panel" id="p-news" hidden style="display:grid;gap:.6rem"><div><strong style="font-family:var(--display);font-size:1.05rem">Newsletter</strong></div><p class="small muted">The latest Build Smartly newsletter: new brands, new supplies and offers from verified suppliers. Sponsored items are marked.</p><div class="news-list" style="display:grid;gap:.6rem"></div><p class="small"><a href="#newsletter">Suppliers: send your news for the next issue</a></p></section>
@@ -1423,9 +1424,9 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 <div id="view-terms" data-view hidden class="wrap view">
   <div><span class="eyebrow">Draft for legal review</span><h1 style="font-size:1.6rem">Terms of use</h1><p class="muted small">Plain-language summary of what the final terms will cover. Ethiopian counsel writes the binding text.</p></div>
   <div class="card" style="display:grid;gap:.6rem">
-    <h3>1. The service</h3><p class="muted">Build Smartly is a platform that connects verified buyers and suppliers of construction materials and equipment. The sale contract is between the buyer and the supplier. Build Smartly issues the purchase order and contract documents and records the deal.</p>
+    <h3>1. The service</h3><p class="muted">Build Smartly is a platform that connects verified buyers and suppliers of construction materials and equipment. The sale is between the buyer and the supplier; Build Smartly facilitates it and is not a party to it. Build Smartly issues the Purchase Order / Sales Agreement and records the deal.</p>
     <h3>2. Accounts and verification</h3><p class="muted">One account per person or organisation. Suppliers must hold a valid business licence. Documents are checked by staff before trading. Accounts with expired documents are restricted.</p>
-    <h3>3. Requests and offers</h3><p class="muted">An offer is binding for its validity period. A buyer who accepts an offer and a supplier who reconfirms it are bound by the purchase order and contract.</p>
+    <h3>3. Requests and offers</h3><p class="muted">An offer is binding for its validity period. When a buyer completes an order, a Purchase Order / Sales Agreement (PO/SA) is issued to the supplier, who confirms or declines it within 48 hours. Once confirmed, both are bound by it; changes need an amendment both accept.</p>
     <h3>4. Fees</h3><p class="muted">A percentage of each completed sale, published on the website. No fee for registration or for sending requests.</p>
     <h3>5. Hidden information</h3><p class="muted">Locations, contact details and identities are hidden until the purchase order. Members may not use information from the platform to deal outside it during the protection period.</p>
     <h3>6. Disputes</h3><p class="muted">Delivery shortages, damage and payment issues are reported in the app and handled by Build Smartly support before any other step.</p>
@@ -1561,7 +1562,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
         <li>Both test suppliers receive it, and a few background suppliers quote by themselves within minutes, so each line gets several offers. The bell at the top right lights up.</li>
         <li>Open <a href="#boq-mine">My requests</a>. Each line has its own box, cheapest first. Choose one offer per line, reject, or propose your own price.</li>
         <li>Press <strong>Complete the order</strong>: delivery, insurance and your company details, once. One order per supplier.</li>
-        <li>Follow each order on its page: agree to the contract, confirm delivery with the handover code, pay. Documents are under Statements.</li>
+        <li>Follow each order on its page: pay once the supplier confirms the PO/SA, confirm delivery with the handover code, check your items. Documents are under Statements.</li>
       </ol>
     </section>
     <section class="card panel">
@@ -1570,7 +1571,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
         <li>Open the <a href="#supplier">Supplier portal</a> with 0911 000 301 or 0911 000 302 and the password smartly.</li>
         <li>Price list: tick what you sell, type prices, Save. Quotes are pre-filled from it.</li>
         <li>Requests: send your offer per line. The buyer sees your brand, not your name.</li>
-        <li>Offers and orders: <strong>Waiting for your action</strong> lists counter-offers to answer and orders to reconfirm, prepare and dispatch.</li>
+        <li>Offers and orders: <strong>Waiting for your action</strong> lists counter-offers to answer and PO/SAs to confirm, orders to prepare and dispatch.</li>
       </ol>
       <p class="small muted">Tip: use two browser windows, one as the buyer and one as a supplier.</p>
     </section>
@@ -1627,7 +1628,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     <div class="card">
       <div><span class="eyebrow">Before we issue the purchase order</span><div id="gDeliv"></div></div>
       <div id="gCompany" style="display:grid;gap:.9rem">
-      <div><h3 style="margin-top:.2rem">Who is buying?</h3><p class="small muted">The PO and contract name the buyer and the supplier. Staff check the TIN against the registry before the PO is confirmed. Asked once.</p></div>
+      <div><h3 style="margin-top:.2rem">Who is buying?</h3><p class="small muted">The Purchase Order / Sales Agreement names the buyer and the supplier. Staff check the TIN against the registry before the PO is confirmed. Asked once.</p></div>
       <div class="su-choices">
         <div class="choice"><input type="radio" name="gType" id="g-com" value="Organisation" checked><label for="g-com"><strong>A company or organisation</strong><span>Contractor, developer, trader, factory, cooperative, NGO.</span></label></div>
         <div class="choice"><input type="radio" name="gType" id="g-ind" value="Individual"><label for="g-ind"><strong>A person</strong><span>Building or renovating for yourself.</span></label></div>
@@ -1650,8 +1651,8 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 </div>
 
 
-<script src="assets/firebase-config.js?v=20261113a" onerror="this.remove()"></script>
-<script src="assets/store.js?v=20261113a"></script>
+<script src="assets/firebase-config.js?v=20261113b" onerror="this.remove()"></script>
+<script src="assets/store.js?v=20261113b"></script>
 <script>
 /* ---------- Router: one page, views switched by hash ---------- */
 window.BSRoute = (function(){
@@ -1785,11 +1786,11 @@ function renderStatements(boxId, groups, boqs){
   var box=document.getElementById(boxId); if(!box) return;
   var rows=[];
   groups.forEach(function(g){ var o=g.first, b=boqs.filter(function(x){ return x.id===g.boqId; })[0]||{}, tot=0; g.offers.forEach(function(x){ var l=(b.lines||[]).filter(function(y){ return y.n===x.lineN; })[0]||{}; tot+=(window.bsLineExtras?bsLineExtras(b,l,x).total:BS.offerTotal(x)); });
-    rows.push({t:o.acceptedAt, k:'po', ico:'PO', id:g.id, title:'Purchase order '+(g.poRef||''), sub:(o.supplierName||'')+' · '+(o.customerRevealed||'')+' · '+BS.fmt(tot)});
-    if(o.contractAt) rows.push({t:o.contractAt, k:'contract', ico:'CT', id:g.id, title:'Sale contract '+(g.poRef||''), sub:'Agreed by both parties'});
+    var shown=BS.namesShown(o);
+    rows.push({t:o.acceptedAt, k:'posa', ico:'PO', id:g.id, title:'Purchase Order / Sales Agreement '+(g.poRef||''), sub:(shown?(o.supplierName||'')+' · '+(o.customerRevealed||'')+' · ':'')+BS.fmt(tot)+' · '+(o.contractAt?'Confirmed · binding':'Awaiting the supplier\'s confirmation')});
     if(o.paidAt) rows.push({t:o.paidAt, k:'receipt', ico:'RC', id:g.id, title:'Receipt '+(o.paymentRef||''), sub:(g.poRef||'')+' · '+BS.fmt(o.paidTotal||tot)+' · '+(o.paymentMethod||'Yagout Pay')}); });
   rows.sort(function(a,b){ return (b.t||'').localeCompare(a.t||''); });
-  if(!rows.length){ box.innerHTML='<div class="empty">Nothing yet. Purchase orders, contracts and receipts appear here.</div>'; return; }
+  if(!rows.length){ box.innerHTML='<div class="empty">Nothing yet. Purchase Order / Sales Agreements and receipts appear here.</div>'; return; }
   var years={}; rows.forEach(function(r){ var y=String(r.t||'').slice(0,4)||'—'; (years[y]=years[y]||[]).push(r); });
   box.innerHTML=Object.keys(years).sort().reverse().map(function(y){ return '<details open><summary style="font-family:var(--display);font-weight:700;cursor:pointer">'+y+' · '+years[y].length+' document'+(years[y].length!==1?'s':'')+'</summary><div class="docs" style="margin-top:.4rem">'+years[y].map(function(r){ return '<div class="doc"><span class="ico">'+r.ico+'</span><span><strong>'+r.title+'</strong><br><span class="small muted">'+new Date(r.t).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})+' · '+r.sub+'</span></span><button class="btn btn-ghost btn-sm" type="button" data-stmt="'+r.id+'" data-kind="'+r.k+'">View / print</button></div>'; }).join('')+'</div></details>'; }).join('');
 }
@@ -2403,24 +2404,25 @@ function bsSupport(threadId, inputId, sendId){
       var head='<div class="boq-head"><div><h3>'+esc(b.ref)+' · '+b.lines.length+' line'+(b.lines.length>1?'s':'')+' · '+esc(b.subcity)+'</h3><span class="small muted">'+esc(b.deliveryTerm)+' · '+esc(b.paymentTerm)+(b.extended?' · deadline extended once':'')+'</span></div><div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap">'+(withdrawn?'<span class="tag">Withdrawn</span>':'<span class="deadline">'+(left>0?'Quotes close in '+left+' day'+(left>1?'s':''):'Quotes closed')+'</span>'+(!groups.length?'<button class="btn btn-ghost btn-sm" data-withdraw="'+b.id+'">Withdraw</button>':'')+(!b.extended&&!groups.length&&left>0?'<button class="btn btn-ghost btn-sm" data-extend="'+b.id+'" data-days="'+b.validityDays+'">Extend '+b.validityDays+' days</button>':''))+'</div></div>';
       /* orders already placed on this request */
       var ordersHtml = groups.length ? '<div class="orders-box"><strong style="font-family:var(--display)">Your orders</strong>'+groups.map(function(g){ var st=BS.orderStatus(g.first), tot=0; g.offers.forEach(function(o){ tot+=lineExtras(b, lineOfB(b,o.lineN), o).total; });
-          var act = st.who==='buyer' ? (BS.payOpen(g.first)?'Pay '+BS.fmt(tot):g.first.deliveredAt?'Check your items':g.first.dispatchedAt?'Follow the delivery':'Agree to the contract') : 'Open';
-          var info='<span><strong>'+esc(g.poRef||'')+'</strong> · '+esc(g.supplierName)+'<br><span class="small muted">'+g.offers.map(function(o){ return esc(lineOfB(b,o.lineN).item||''); }).join(', ')+' · '+BS.fmt(tot)+'</span></span><span class="tag '+st.c+'">'+esc(st.t)+'</span>';
+          var act = st.who==='buyer' ? (BS.payOpen(g.first)?'Pay '+BS.fmt(tot):g.first.deliveredAt?'Check your items':g.first.dispatchedAt?'Follow the delivery':'Accept the PO/SA') : 'Open';
+          var info='<span><strong>'+esc(g.poRef||'')+'</strong> · '+(BS.namesShown(g.first)?esc(g.supplierName):'<span class="muted">supplier shown when they confirm</span>')+'<br><span class="small muted">'+g.offers.map(function(o){ return esc(lineOfB(b,o.lineN).item||''); }).join(', ')+' · '+BS.fmt(tot)+'</span></span><span class="tag '+st.c+'">'+esc(st.t)+'</span>';
           /* the contract opens in a pop-up right here, so several orders can be agreed one after another without leaving the page */
-          if(st.who==='buyer' && g.first.supplierConfirmed && !g.first.buyerAgreedAt && !g.first.dispatchedAt) return '<div class="order-row">'+info+'<span style="display:flex;gap:.4rem;flex-wrap:wrap;justify-content:flex-end"><button class="btn btn-ochre btn-sm" type="button" data-stmt="'+g.id+'" data-kind="contract">Agree to the contract</button><a class="btn btn-ghost btn-sm" href="#order-'+g.id+'">Open</a></span></div>';
+          if(st.who==='buyer' && g.first.supplierConfirmed && !g.first.buyerAgreedAt && !g.first.dispatchedAt) return '<div class="order-row">'+info+'<span style="display:flex;gap:.4rem;flex-wrap:wrap;justify-content:flex-end"><button class="btn btn-ochre btn-sm" type="button" data-stmt="'+g.id+'" data-kind="posa">Accept the PO/SA</button><a class="btn btn-ghost btn-sm" href="#order-'+g.id+'">Open</a></span></div>';
           return '<a class="order-row" href="#order-'+g.id+'">'+info+'<span class="btn '+(st.who==='buyer'?'btn-ochre':'btn-ghost')+' btn-sm">'+act+'</span></a>'; }).join('')+'</div>' : '';
       var chosenN=0, chosenSum=0, openLines=0, bestMissing=0;
       var body=b.lines.map(function(l){
         var os=offersOn(b,l), po=poOf(b,l), ch=chosenOf(b,l), invited=BS.activeSuppliers().filter(function(s){ return s.cats.indexOf(l.cat)>=0; }).length;
-        var live=os.filter(function(o){ return o.status!=='rejected'; }), best=live.filter(validOffer)[0], bestTotal=best?totalOf(best):0;
+        var live=os.filter(function(o){ return o.status!=='rejected' && o.status!=='declined' && o.status!=='expired'; }), best=live.filter(validOffer)[0], bestTotal=best?totalOf(best):0;
         if(!po){ openLines++; if(ch){ chosenN++; chosenSum+=totalOf(ch); } else if(best) bestMissing++; }
         var state = po ? '<span class="tag tag-green tag-strong">In order '+esc(po.poRef||'')+'</span>' : ch ? '<span class="tag tag-green">Chosen · '+esc(ch.brand)+'</span>' : os.length ? '<span class="tag">'+live.length+' offer'+(live.length!==1?'s':'')+'</span>' : '<span class="tag">Waiting for offers</span>';
         var rows=os.map(function(o,i){
           var total=totalOf(o), isCh=ch && ch.id===o.id, isBest=!po && best && o.id===best.id && live.length>1, isPo=po && po.id===o.id;
-          var cls='offer'+(isCh||isPo?' accepted':'')+(isBest?' best':'')+((po&&!isPo)||o.status==='rejected'?' dim':'');
+          var cls='offer'+(isCh||isPo?' accepted':'')+(isBest?' best':'')+((po&&!isPo)||o.status==='rejected'||o.status==='declined'||o.status==='expired'?' dim':'');
           var act;
-          if(isPo) act='<span class="small" style="font-weight:700;color:var(--fg)">'+esc(o.supplierName)+' · <a href="#order-'+o.id+'" style="font-weight:700">order page</a></span>';
+          if(isPo) act='<span class="small" style="font-weight:700;color:var(--fg)">'+(BS.namesShown(o)?esc(o.supplierName):'<span class="muted" style="font-weight:400">Awaiting the supplier\'s confirmation</span>')+' · <a href="#order-'+o.id+'" style="font-weight:700">order page</a></span>';
           else if(po) act='<span class="small muted">Not chosen</span>';
           else if(withdrawn) act='<span class="small muted">Request withdrawn</span>';
+          else if(o.status==='declined' || o.status==='expired') act='<span class="small muted" style="display:grid;gap:.15rem"><span>'+(o.status==='declined'?'The supplier declined the PO/SA. Choose another offer.':'The supplier did not confirm the PO/SA in time. Choose another offer.')+'</span>'+(o.declineReason?'<span data-notr>“'+esc(o.declineReason)+'”</span>':'')+'</span>';
           else if(o.status==='rejected') act='<span style="display:grid;gap:.25rem"><span class="small muted">You rejected this offer</span><button class="btn btn-ghost btn-sm" data-unreject="'+o.id+'">Undo</button></span>';
           else if(o.counter && o.counter.state==='open') act='<span class="tag tag-ochre" style="text-transform:none;letter-spacing:0">You proposed '+BS.fmt(o.counter.price)+' · waiting for the supplier\'s answer</span>';
           else act='<span style="display:grid;gap:.3rem">'+(o.counter&&o.counter.state==='declined'?'<span class="small muted">The supplier declined '+BS.fmt(o.counter.price)+'. The offer stands.</span>':o.counter&&o.counter.state==='accepted'?'<span class="small" style="color:var(--ok);font-weight:600">The supplier accepted your price.</span>':'')+
@@ -2464,6 +2466,9 @@ function bsSupport(threadId, inputId, sendId){
       }
     }
     var mineIds=myBoqs().map(function(b){ return b.id; });
+    /* a PO/SA that no supplier (test, background or registered) confirmed in time lapses; the buyer then chooses another offer */
+    var lapsed=BS.orderGroups(offers, function(o){ return mineIds.indexOf(o.boqId)>=0; }).filter(function(g){ return BS.poLapsed(g.first); });
+    for(var li2=0; li2<lapsed.length; li2++){ var lg=lapsed[li2], k0='s0|'+lg.key; if(autoBusy[k0]) continue; autoBusy[k0]=1; await BS.updateMany('offers', lg.offers.map(function(x){ return x.id; }), {status:'expired', expiredAt:new Date().toISOString()}); }
     var mineO=offers.filter(function(o){ var sp=BS.supplierById(o.supplierId); return mineIds.indexOf(o.boqId)>=0 && sp && sp.auto; });
     for(var oi=0;oi<mineO.length;oi++){ var o=mineO[oi];
       if(o.status==='sent' && o.counter && o.counter.state==='open' && secs(o.counter.at)>A.counterAfter){ var ck='c|'+o.id+'|'+o.counter.at; if(autoBusy[ck]) continue; autoBusy[ck]=1;
@@ -2504,14 +2509,14 @@ function bsSupport(threadId, inputId, sendId){
     var toPay=groups.filter(function(g){ return BS.payOpen(g.first); });
     var toCheck=groups.filter(function(g){ return g.first.deliveredAt && !BS.isChecked(g.first); });
     var parts=[];
-    if(toAgree.length) parts.push(toAgree.length+' contract'+(toAgree.length>1?'s':'')+' to agree');
+    if(toAgree.length) parts.push(toAgree.length+' PO/SA'+(toAgree.length>1?'s':'')+' to accept');
     if(waiting.length) parts.push(waiting.length+' offer'+(waiting.length>1?'s':'')+' to compare');
     if(toReceive.length) parts.push(toReceive.length+(toReceive.length>1?' deliveries':' delivery')+' on the way');
     if(toPay.length) parts.push(toPay.length+' payment due');
     if(toCheck.length) parts.push(toCheck.length+(toCheck.length>1?' deliveries':' delivery')+' to check');
     var showBar = parts.length>0 && !!(BS.me()||{}).phone && !(BS.isStaff&&BS.isStaff());
     $('alertBar').hidden = !showBar;
-    if(showBar){ $('alertText').textContent = parts.join(' · ')+'.'; $('alertGo').href = toAgree.length ? '#order-'+toAgree[0].id : toPay.length ? '#order-'+toPay[0].id : toCheck.length ? '#order-'+toCheck[0].id : toReceive.length ? '#order-'+toReceive[0].id : '#boq-mine'; $('alertGo').textContent = toAgree.length ? 'Agree to the contract' : toPay.length ? 'Pay now' : toCheck.length ? 'Check your items' : toReceive.length ? 'Follow the delivery' : 'Compare offers'; }
+    if(showBar){ $('alertText').textContent = parts.join(' · ')+'.'; $('alertGo').href = toAgree.length ? '#order-'+toAgree[0].id : toPay.length ? '#order-'+toPay[0].id : toCheck.length ? '#order-'+toCheck[0].id : toReceive.length ? '#order-'+toReceive[0].id : '#boq-mine'; $('alertGo').textContent = toAgree.length ? 'Accept the PO/SA' : toPay.length ? 'Pay now' : toCheck.length ? 'Check your items' : toReceive.length ? 'Follow the delivery' : 'Compare offers'; }
   }
   /* ---------- Complete the order: delivery, insurance and (first time only) the company details, once ---------- */
   var checkoutBoq=null;
@@ -2521,11 +2526,11 @@ function bsSupport(threadId, inputId, sendId){
   function checkoutItems(b){ return b.lines.map(function(l){ if(poOf(b,l)) return null; var o=chosenOf(b,l); if(!o) return null; var sub=o.supplierSub||(BS.supplierById(o.supplierId)||{}).sub||'Akaki Kaliti'; var est=BS.deliveryEstimate([{item:l.item, qty:o.qtyOffered, unit:l.unit}], sub, b.pin||b.subcity||'Bole'); return {o:o, l:l, goods:totalOf(o), est:est, ins:BS.insuranceFor(totalOf(o)), hire:BS.isHire(l)}; }).filter(Boolean); }
   function checkoutGroups(items){ var by={}, out=[]; items.forEach(function(it){ var k=it.o.supplierId; if(!by[k]){ by[k]={items:[]}; out.push(by[k]); } by[k].items.push(it); }); return out; }
   function useBsTransport(b){ var t=b.deliveryTerm||''; if(/^Build Smartly/.test(t)) return !document.getElementById('gDel-own') || !document.getElementById('gDel-own').checked; if(t==='I collect from supplier') return !!(document.getElementById('gDel-bs')||{}).checked; return false; }
-  function drawCheckout(){
+  function drawCheckout(){ var accWas=!!(document.getElementById('gAccept')||{}).checked;
     var b=boqById(checkoutBoq); if(!b) return; var items=checkoutItems(b), groups=checkoutGroups(items), term=b.deliveryTerm||'';
     var bs=useBsTransport(b), ins=!!(document.getElementById('gIns')||{}).checked;
     var goods=0, trans=0, trips=0, insT=0; items.forEach(function(it){ goods+=it.goods; if(!it.hire){ trans+=it.est.cost; trips+=it.est.trips; } insT+=it.ins; });
-    var html='<h3 style="margin-top:.3rem">Complete the order · '+esc(b.ref)+'</h3><p class="small muted" style="margin:.2rem 0 .6rem">'+items.length+' line'+(items.length!==1?'s':'')+' from '+groups.length+' supplier'+(groups.length!==1?'s':'')+': '+(groups.length>1?groups.length+' purchase orders, one per supplier.':'one purchase order.')+' The supplier\'s name appears on the order.</p>'+
+    var html='<h3 style="margin-top:.3rem">Complete the order · '+esc(b.ref)+'</h3><p class="small muted" style="margin:.2rem 0 .6rem">'+items.length+' line'+(items.length!==1?'s':'')+' from '+groups.length+' supplier'+(groups.length!==1?'s':'')+': '+(groups.length>1?groups.length+' PO/SAs, one per supplier.':'one PO/SA.')+' The supplier\'s name appears once they confirm.</p>'+
       groups.map(function(g,gi){ var sum=0; g.items.forEach(function(it){ sum+=it.goods; }); return '<div class="ck-group"><div class="small muted" style="font-weight:600">Order '+(gi+1)+'</div>'+g.items.map(function(it){ return '<div class="ck-row"><span>'+esc(it.l.item)+' · '+it.o.qtyOffered+' '+esc(it.l.unit)+' · brand '+esc(it.o.brand)+'</span><strong>'+BS.fmt(it.goods)+'</strong></div>'; }).join('')+(g.items.length>1?'<div class="ck-row small muted"><span>Order '+(gi+1)+' goods</span><span>'+BS.fmt(sum)+'</span></div>':'')+'</div>'; }).join('');
     var delivery='';
     if(term==='Supplier delivers to site') delivery='<p class="small muted" style="margin:.2rem 0">Delivery to '+esc(b.subcity)+(b.pin?' (pinned site)':'')+' by the supplier, included in the prices above.</p>';
@@ -2537,9 +2542,12 @@ function bsSupport(threadId, inputId, sendId){
     html+='<div style="margin-top:.6rem"><strong>Delivery</strong>'+delivery+'</div>'+
       '<label class="check" style="margin-top:.5rem"><input type="checkbox" id="gIns"'+(ins?' checked':'')+'><span>Add transit insurance for the whole order · <strong>'+BS.fmt(insT)+'</strong> <span class="small muted">('+BS.pct(BS.INSURANCE.rate)+' of the goods value)</span></span></label>'+
       '<div class="ck-total"><div class="ck-row"><span>Goods</span><span>'+BS.fmt(goods)+'</span></div>'+(bs?'<div class="ck-row"><span>Build Smartly delivery</span><span>'+BS.fmt(trans)+'</span></div>':'')+(ins?'<div class="ck-row"><span>Transit insurance</span><span>'+BS.fmt(insT)+'</span></div>':'')+'<div class="ck-row" style="font-size:1.1rem"><strong>Total</strong><strong>'+BS.fmt(total)+'</strong></div></div>'+
-      '<p class="small muted" style="margin:.4rem 0 0">Nothing is charged now. You pay after delivery through Yagout Pay.</p>';
+      '<p class="small muted" style="margin:.4rem 0 0">'+(BS.payFirst()?'Nothing is charged now. You pay once the supplier confirms, before the goods are dispatched.':'Nothing is charged now. You pay after delivery through Yagout Pay.')+'</p>'+
+      '<div class="ck-posa"><p class="small" style="margin:0">'+(groups.length>1?'Placing the order issues a Purchase Order / Sales Agreement (PO/SA) to each supplier.':'Placing the order issues a Purchase Order / Sales Agreement (PO/SA) to the supplier.')+' The supplier confirms it within '+BS.CONFIRM_HOURS+' hours; from then it is binding and you see each other\'s names.</p>'+
+      '<details class="small"><summary style="cursor:pointer;font-weight:600">Read the terms</summary><ol style="margin:.4rem 0 0;padding-left:1.2rem;display:grid;gap:.25rem"><li>The supplier sells and you buy the goods above at the stated price. Build Smartly facilitates this transaction and is not a party to this sale.</li><li>The supplier confirms or declines within '+BS.CONFIRM_HOURS+' hours. If it declines or does not answer, nothing is owed and you choose another offer.</li><li>'+(BS.payFirst()?'You pay the full amount before dispatch, through Yagout Pay or bank transfer.':'You pay after delivery, through Yagout Pay.')+'</li><li>You give the driver your handover code only after checking the goods, then check each item within '+BS.CHECK_HOURS+' hours.</li><li>Once confirmed, neither side may withdraw; changes need an amendment both accept.</li></ol></details>'+
+      '<label class="check"><input type="checkbox" id="gAccept"'+(accWas?' checked':'')+'><span>I have read and accept this Purchase Order / Sales Agreement and its terms and conditions.</span></label><p class="err" id="gAcceptErr" hidden style="margin:0;font-size:.85rem;color:var(--warn);font-weight:600">Tick the box to accept the PO/SA.</p></div>';
     $('gDeliv').innerHTML=html; $('gDeliv').hidden=false;
-    $('gSave').textContent = groups.length>1 ? 'Place '+groups.length+' orders' : 'Place the order';
+    $('gSave').textContent = groups.length>1 ? 'Accept and issue '+groups.length+' PO/SAs' : 'Accept and issue the PO/SA';
   }
   function openCheckout(boqId){
     checkoutBoq=boqId; var m=BS.me()||{}; if(m.company && !$('gName').value) $('gName').value=m.company; gateLabels();
@@ -2564,15 +2572,17 @@ function bsSupport(threadId, inputId, sendId){
     }
     if(!checkoutBoq){ $('poGate').hidden=true; bsToast('Company details saved.'); return; }
     var b=boqById(checkoutBoq); if(!b) return; var items=checkoutItems(b), groups=checkoutGroups(items); if(!items.length){ $('poGate').hidden=true; return; }
+    var acc=$('gAccept'); if(acc && !acc.checked){ $('gAcceptErr').hidden=false; acc.focus(); return; }
     var bs=useBsTransport(b), ins=!!(document.getElementById('gIns')||{}).checked, m=BS.me()||{}, now=new Date().toISOString();
     $('gSave').disabled=true; $('gSave').textContent='Placing…';
-    var k=BS.orderGroups(offers, function(o){ return o.boqId===b.id; }).length, refs=[];
+    /* PO numbers never repeat on a request, also after a supplier declined or let one lapse */
+    var used={}; offers.forEach(function(o){ if(o.boqId===b.id && o.poRef) used[o.poRef]=1; }); var k=Object.keys(used).length, refs=[];
     for(var gi=0; gi<groups.length; gi++){ k++; var poRef='PO-'+b.ref+'-'+k; refs.push(poRef);
       for(var j=0;j<groups[gi].items.length;j++){ var it=groups[gi].items[j]; var pf=bs && !it.hire;
-        await BS.update('offers', it.o.id, {status:'accepted', poRef:poRef, acceptedAt:now, customerRevealed:m.company||m.name||b.company||'', customerTin:m.tin||'', platformDelivery:pf, deliveryAmt:pf?it.est.cost:0, deliveryTrips:pf?it.est.trips:0, insurance:ins, insuranceAmt:ins?it.ins:0}); } }
+        await BS.update('offers', it.o.id, {status:'accepted', poRef:poRef, acceptedAt:now, customerRevealed:m.company||m.name||b.company||'', customerTin:m.tin||'', buyerAgreedAt:now, buyerAgreedBy:m.contact||m.name||m.company||'', platformDelivery:pf, deliveryAmt:pf?it.est.cost:0, deliveryTrips:pf?it.est.trips:0, insurance:ins, insuranceAmt:ins?it.ins:0}); } }
     var ch=Object.assign({}, b.chosen||{}); items.forEach(function(it){ delete ch[it.l.n]; }); await BS.update('boqs', b.id, {chosen:ch});
     $('gSave').disabled=false; $('poGate').hidden=true; checkoutBoq=null;
-    bsToast((refs.length>1?refs.length+' orders placed: ':'Order placed: ')+refs.join(', ')+'. The supplier reconfirms price and stock; you get a notification.');
+    bsToast((refs.length>1?refs.length+' PO/SAs issued: ':'PO/SA issued: ')+refs.join(', ')+'. The supplier confirms within '+BS.CONFIRM_HOURS+' hours; you get a notification.');
   };
   /* cheapest valid offer on every open line that has no choice yet */
   async function chooseBest(boqId){ var b=boqById(boqId); if(!b) return; var ch=Object.assign({}, b.chosen||{}); var n=0;
@@ -2853,9 +2863,10 @@ function bsSupport(threadId, inputId, sendId){
     var out=[];
     mine.forEach(function(o){ if(o.status==='sent' && o.counter && o.counter.state==='open'){ var b=boqs.filter(function(x){return x.id===o.boqId;})[0]||{}; var l=(b.lines||[]).filter(function(x){return x.n===o.lineN;})[0]||{};
       out.push({ico:'€', title:'Customer proposes '+BS.fmt(o.counter.price)+' per '+(l.unit||'unit')+' · '+(b.ref||'')+' · '+(l.item||''), sub:'Your price was '+BS.fmt(o.unitPrice)+'. If you accept, your offer changes to their price.', btn:'<button class="btn btn-primary btn-sm" type="button" data-cacc="'+o.id+'">Accept '+BS.fmt(o.counter.price)+'</button><button class="btn btn-ghost btn-sm" type="button" data-cdec="'+o.id+'">Decline</button>'}); } });
-    groups.forEach(function(g){ var o=g.first, b=boqs.filter(function(x){return x.id===g.boqId;})[0]||{}, what=g.poRef+' · '+(o.customerRevealed||'')+' · '+g.offers.length+' line'+(g.offers.length>1?'s':'');
-      if(!o.supplierConfirmed) out.push({ico:'PO', title:'New order '+what, sub:'Reconfirm price and stock to agree to the contract.', btn:'<a class="btn btn-ochre btn-sm" href="#order-'+g.id+'">Read and reconfirm</a>'});
-      else if(BS.mayPrepare(o) && !o.readyAt) out.push({ico:'✓', title:'Prepare '+what, sub:(BS.payFirst()?'Paid by the buyer.':'Contract agreed.')+' Mark the goods ready when packed.', btn:'<button class="btn btn-primary btn-sm" type="button" data-oact="ready" data-id="'+g.id+'">Ready for dispatch</button>'});
+    groups.forEach(function(g){ var o=g.first, b=boqs.filter(function(x){return x.id===g.boqId;})[0]||{}, what=g.poRef+' · '+(BS.namesShown(o)?(o.customerRevealed||''):'Customer '+(b.customerNo||''))+' · '+g.offers.length+' line'+(g.offers.length>1?'s':'');
+      if(BS.poLapsed(o)) return;
+      if(!o.supplierConfirmed) out.push({ico:'PO', title:'New PO/SA '+what, sub:'<span>Confirm by</span> <span data-notr>'+new Date(BS.confirmDue(o)).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})+'</span> <span>to make it binding, or decline it with a reason.</span>', btn:'<a class="btn btn-ochre btn-sm" href="#order-'+g.id+'">Read and confirm</a>'});
+      else if(BS.mayPrepare(o) && !o.readyAt) out.push({ico:'✓', title:'Prepare '+what, sub:(BS.payFirst()?'Paid by the buyer.':'The PO/SA is binding.')+' Mark the goods ready when packed.', btn:'<button class="btn btn-primary btn-sm" type="button" data-oact="ready" data-id="'+g.id+'">Ready for dispatch</button>'});
       else if(o.readyAt && !o.dispatchedAt) out.push({ico:'→', title:'Dispatch '+what, sub:'Add the driver and send them the tracking link · '+(b.subcity||'the site'), btn:'<a class="btn btn-primary btn-sm" href="#order-'+g.id+'">Dispatch</a>'});
     });
     return out;
@@ -2906,12 +2917,12 @@ function bsSupport(threadId, inputId, sendId){
     /* orders, one per purchase order */
     var orb=$('tab-orders'); var gs=myGroups.filter(function(g){ var b=boqs.filter(function(x){return x.id===g.boqId;})[0]||{}; return hit(g.poRef, g.first.customerRevealed, b.ref, g.offers.map(function(o){ return lineName(b,o.lineN); }).join(' ')); });
     orb.innerHTML = gs.length ? gs.map(function(g){ var b=boqs.filter(function(x){return x.id===g.boqId;})[0]||{}, st=BS.orderStatus(g.first), tot=0; g.offers.forEach(function(o){ tot+=BS.offerTotal(o); });
-        return '<a class="order-row" href="#order-'+g.id+'"><span><strong>'+g.poRef+'</strong> · '+(g.first.customerRevealed||'')+'<br><span class="small muted">'+g.offers.map(function(o){ return lineName(b,o.lineN); }).join(', ')+' · '+BS.fmt(tot)+' · '+(b.subcity||'')+'</span></span><span class="tag '+st.c+'">'+st.t+'</span><span class="btn btn-ghost btn-sm">Open</span></a>'; }).join('')
+        return '<a class="order-row" href="#order-'+g.id+'"><span><strong>'+g.poRef+'</strong> · '+(BS.namesShown(g.first)?(g.first.customerRevealed||''):'Customer '+(b.customerNo||''))+'<br><span class="small muted">'+g.offers.map(function(o){ return lineName(b,o.lineN); }).join(', ')+' · '+BS.fmt(tot)+' · '+(b.subcity||'')+'</span></span><span class="tag '+st.c+'">'+st.t+'</span><span class="btn btn-ghost btn-sm">Open</span></a>'; }).join('')
       : '<div class="empty">'+(dq?'No order matches.':'No orders yet. When a customer completes an order with your offers, it appears here.')+'</div>';
     /* offers sent */
     var ob=$('tab-offers'); var sent=mine.filter(function(o){ return o.status!=='accepted'; }).sort(function(a,b){return (b.createdAt||'').localeCompare(a.createdAt||'');}).filter(function(o){ var b=boqs.filter(function(x){return x.id===o.boqId;})[0]||{}; return hit(b.ref, lineName(b,o.lineN), o.brand); });
     ob.innerHTML = sent.length ? sent.map(function(o){ var b=boqs.filter(function(x){return x.id===o.boqId;})[0]; var l=b?b.lines.filter(function(x){return x.n===o.lineN;})[0]:null; var other=offers.filter(function(x){ return x.boqId===o.boqId && x.lineN===o.lineN && x.status==='accepted'; })[0];
-        var st = o.status==='rejected' ? '<span class="tag">Rejected by the customer</span>' : other ? '<span class="tag">The customer chose another offer</span>' : (o.counter&&o.counter.state==='open') ? '<span class="tag tag-ochre">Customer proposes '+BS.fmt(o.counter.price)+' · your answer needed</span>' : (o.counter&&o.counter.state==='accepted') ? '<span class="tag tag-green">You accepted the customer\'s price · waiting for the customer</span>' : (o.counter&&o.counter.state==='declined') ? '<span class="tag">You declined the counter · offer stands</span>' : (b && (b.chosen||{})[o.lineN]===o.id) ? '<span class="tag tag-green">Chosen by the customer · waiting for the order</span>' : '<span class="tag">Waiting for the customer</span>';
+        var st = o.status==='rejected' ? '<span class="tag">Rejected by the customer</span>' : o.status==='declined' ? '<span class="tag">You declined the PO/SA</span>' : o.status==='expired' ? '<span class="tag">PO/SA lapsed · not confirmed in time</span>' : other ? '<span class="tag">The customer chose another offer</span>' : (o.counter&&o.counter.state==='open') ? '<span class="tag tag-ochre">Customer proposes '+BS.fmt(o.counter.price)+' · your answer needed</span>' : (o.counter&&o.counter.state==='accepted') ? '<span class="tag tag-green">You accepted the customer\'s price · waiting for the customer</span>' : (o.counter&&o.counter.state==='declined') ? '<span class="tag">You declined the counter · offer stands</span>' : (b && (b.chosen||{})[o.lineN]===o.id) ? '<span class="tag tag-green">Chosen by the customer · waiting for the order</span>' : '<span class="tag">Waiting for the customer</span>';
         return '<div class="doc"><span class="ico">'+o.lineN+'</span><span><strong>'+(b?b.ref:'')+' · '+(l?l.item:'')+'</strong><br><span class="small muted">'+o.brand+' · '+o.qtyOffered+' '+(l?l.unit:'')+' · '+BS.fmt(o.unitPrice)+' · total '+BS.fmt(BS.offerTotal(o))+' · <span class="cd">valid '+o.validDays+' d</span></span></span>'+st+'</div>'; }).join('')
       : '<div class="empty">'+(dq?'No offer matches.':'No open offers.')+'</div>';
     /* statements: purchase orders, contracts and receipts by year */
@@ -2970,7 +2981,7 @@ function bsSupport(threadId, inputId, sendId){
   var boqs=[], offers=[];
   BS.subscribe('boqs', function(d){ boqs=d; render(); }); BS.subscribe('offers', function(d){ offers=d; render(); });
   function mine(){ var me2=BS.me()||{}; var ph=(me2.phone||'').replace(/\D/g,'').replace(/^251/,''); return boqs.filter(function(b){ return (ph && b.ownerPhone===ph) || (!b.ownerPhone && company && b.company===company); }).sort(function(a,b){return (b.createdAt||'').localeCompare(a.createdAt||'');}); }
-  var CHAIN_PAYFIRST=['Request sent','Offers arriving','Order placed','Contract agreed','Paid','Ready for dispatch','Dispatched','Handed over','Items checked'], CHAIN_PAYLATER=['Request sent','Offers arriving','Order placed','Contract agreed','Ready for dispatch','Dispatched','Handed over','Items checked','Paid'], CHAIN=CHAIN_PAYFIRST;
+  var CHAIN_PAYFIRST=['Request sent','Offers arriving','PO/SA issued','Confirmed · binding','Paid','Ready for dispatch','Dispatched','Handed over','Items checked'], CHAIN_PAYLATER=['Request sent','Offers arriving','PO/SA issued','Confirmed · binding','Ready for dispatch','Dispatched','Handed over','Items checked','Paid'], CHAIN=CHAIN_PAYFIRST;
   function stageOf(b, os, gs){
     if(b.status==='withdrawn') return -1;
     if(gs.length){ var f=function(k){ return gs.every(function(g){ return g.first[k]; }); };
@@ -2988,7 +2999,7 @@ function bsSupport(threadId, inputId, sendId){
       var waiting=os.filter(function(o){ return o.status==='sent'; }).length; if(s===1 && waiting) pending++;
       var d=document.createElement('div'); d.className='order';
       if(s<0){ d.innerHTML='<div class="order-head"><strong>'+b.ref+' · '+b.lines.length+' lines</strong><span class="tag">Withdrawn</span></div>'; tb.appendChild(d); return; }
-      var act = gs.map(function(g){ var st=BS.orderStatus(g.first); return '<a class="order-row" href="#order-'+g.id+'"><span><strong>'+g.poRef+'</strong> · '+g.supplierName+'<br><span class="small muted">'+g.offers.length+' line'+(g.offers.length>1?'s':'')+'</span></span><span class="tag '+st.c+'">'+st.t+'</span><span class="btn '+(st.who==='buyer'?'btn-ochre':'btn-ghost')+' btn-sm">'+(st.who==='buyer'?'Your turn':'Open')+'</span></a>'; }).join('');
+      var act = gs.map(function(g){ var st=BS.orderStatus(g.first); return '<a class="order-row" href="#order-'+g.id+'"><span><strong>'+g.poRef+'</strong> · '+(BS.namesShown(g.first)?g.supplierName:'supplier shown when they confirm')+'<br><span class="small muted">'+g.offers.length+' line'+(g.offers.length>1?'s':'')+'</span></span><span class="tag '+st.c+'">'+st.t+'</span><span class="btn '+(st.who==='buyer'?'btn-ochre':'btn-ghost')+' btn-sm">'+(st.who==='buyer'?'Your turn':'Open')+'</span></a>'; }).join('');
       d.innerHTML='<div class="order-head"><strong>'+b.ref+' · '+b.lines.length+' line'+(b.lines.length>1?'s':'')+' · '+b.subcity+'</strong><span class="tag '+(s>=2?'tag-green':'')+'">'+CHAIN[s]+'</span></div><div class="chain">'+CHAIN.map(function(c,i){ return '<div class="chainrow '+(i<s?'done':i===s?'now':'')+'"><i></i><span>'+c+(i===1&&s===1?' · '+waiting+' offer'+(waiting!==1?'s':'')+' to compare':'')+'</span></div>'; }).join('')+'</div>'+
         (s<=1 || os.some(function(o){ return o.status==='sent'; }) ? '<a class="btn btn-primary btn-sm" href="#boq-mine" style="justify-self:start">'+(waiting?'Compare offers':'See the request')+'</a>' : '')+(act?'<div style="display:grid;gap:.4rem">'+act+'</div>':'');
       tb.appendChild(d);
@@ -3091,7 +3102,7 @@ window.bsPublishProfile = async function(fields){
       ['sptabs','Supplier portal layout','Home, Requests, Offers and orders, Price list, Mailbox, Settings','#supplier'],
       ['queue','Work queue numbers','New requests, offers sent, orders won, prices due','#supplier'],
       ['quote','Requests and quote form','Fields: brand, qty, price, VAT, delivery, lead time, validity','#supplier'],
-      ['orders','Orders and PO','Customer revealed in PO, reconfirm button','#supplier'],
+      ['orders','Orders and PO','Confirm or decline the PO/SA, customer named after confirming','#supplier'],
       ['pricelist','Price list','Confirm prices, stale marking','#supplier'],
       ['analytics','Analytics','Lines invited, offers, win rate, value won','#supplier']
     ]],
@@ -3157,10 +3168,10 @@ window.bsPublishProfile = async function(fields){
 
 BSRoute.start();
 </script>
-<script src="assets/track.js?v=20261113a"></script>
-<script src="assets/order.js?v=20261113a"></script>
-<script src="assets/notify.js?v=20261113a"></script>
-<script src="assets/help.js?v=20261113a"></script>
-<script src="assets/admin.js?v=20261113a"></script>
-<script src="assets/editor.js?v=20261113a"></script>
-<script src="assets/i18n.js?v=20261113a"></script>
+<script src="assets/track.js?v=20261113b"></script>
+<script src="assets/order.js?v=20261113b"></script>
+<script src="assets/notify.js?v=20261113b"></script>
+<script src="assets/help.js?v=20261113b"></script>
+<script src="assets/admin.js?v=20261113b"></script>
+<script src="assets/editor.js?v=20261113b"></script>
+<script src="assets/i18n.js?v=20261113b"></script>

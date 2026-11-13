@@ -90,6 +90,24 @@
   function offerTotal(o){ return o.qtyOffered*o.unitPrice+(+o.deliveryCost||0); }
 
   /* ---- render ---- */
+  /* The page redraws whenever any record changes (on the live site that can be every few seconds). Boxes the staff member has
+     typed in keep their text, and the box being typed in keeps the cursor, so a reply or a form is never wiped mid-sentence. */
+  function q(v){ return '"'+String(v).replace(/\\/g,'\\\\').replace(/"/g,'\\"')+'"'; }
+  function fieldKey(el){ var t=el.tagName.toLowerCase(), k='';
+    if(el.id) k='#'+CSS.escape(el.id); else if(el.name) k=t+'[name='+q(el.name)+']'; else { for(var i=0;i<el.attributes.length;i++){ var a=el.attributes[i]; if(/^data-/.test(a.name)){ k=t+'['+a.name+'='+q(a.value)+']'; break; } } }
+    if(k && el.type==='radio') k+='[value='+q(el.value)+']'; return k; }
+  $('adBody').addEventListener('input', function(e){ e.target.__typed=true; }, true);
+  $('adBody').addEventListener('change', function(e){ e.target.__typed=true; }, true);
+  /* pressing a button (Send, Save, Add …) hands that card's boxes over to the page again, so a form that empties after saving stays empty */
+  $('adBody').addEventListener('click', function(e){ var b=e.target.closest('button,.btn'); if(!b) return; var c=b.closest('form,.card,section,details')||$('adBody'); c.querySelectorAll('input,textarea,select').forEach(function(el){ el.__typed=false; }); }, true);
+  function keepTyped(){
+    var box=$('adBody'), vals={}, act=document.activeElement, focusKey='', sel=null;
+    box.querySelectorAll('input,textarea,select').forEach(function(el){ if(!el.__typed || el.type==='file') return; var k=fieldKey(el); if(!k) return; vals[k]=(el.type==='checkbox'||el.type==='radio')?{c:el.checked}:{v:el.value}; });
+    if(act && box.contains(act) && /^(INPUT|TEXTAREA)$/.test(act.tagName)){ focusKey=fieldKey(act); try{ sel=[act.selectionStart, act.selectionEnd]; }catch(e){} }
+    var find=function(k){ try{ return box.querySelector(k); }catch(e){ return null; } };
+    return function(){ Object.keys(vals).forEach(function(k){ var el=find(k); if(!el) return; var v=vals[k]; if('c' in v) el.checked=v.c; else el.value=v.v; el.__typed=true; });
+      var f=focusKey && find(focusKey); if(f){ f.focus({preventScroll:true}); if(sel && sel[0]!=null) try{ f.setSelectionRange(sel[0], sel[1]); }catch(e){} } };
+  }
   function render(){
     var pendV=data.verifications.filter(function(v){ return v.status==='pending'; }).length;
     var waiting=threads().filter(function(t){ return t.waiting; }).length;
@@ -106,7 +124,7 @@
     if(tab!=='overview' && !BS.staffCan(tab)) tab='overview';
     $('adTabs').querySelectorAll('[data-tab]').forEach(function(b){ b.hidden=b.dataset.tab!=='overview' && !BS.staffCan(b.dataset.tab); });
     var r={overview:renderOverview, requests:renderRequests, suppliers:renderSuppliers, support:renderSupport, news:renderNews, promos:renderPromos, brands:renderBrandsTab, members:renderMembers, finance:renderFinance, insights:renderInsights, catalogue:renderCatalogue, content:renderContent, settings:renderSettings}[tab]||renderOverview;
-    $('adBody').innerHTML=searchHtml()+r();
+    var kept=keepTyped(); $('adBody').innerHTML=searchHtml()+r(); kept();
     if(window.bsTrack) bsTrack.mountFleet(data.tracks, data.offers);
   }
   $('adBody').addEventListener('click', function(e){ var b=e.target.closest('[data-go]'); if(!b) return; tab=b.dataset.go; render(); });
@@ -743,6 +761,7 @@
       '<div class="field"><label>Payment methods buyers can choose</label>'+BS.PAY_METHODS.map(function(m){ return '<label class="check"><input type="checkbox" data-dpm="'+m[0]+'"'+(on.indexOf(m[0])>=0?' checked':'')+'><span>'+m[1]+'</span></label>'; }).join('')+'</div>'+
       inp('dpBank','Bank for transfers',bk.bank)+inp('dpBankName','Account name',bk.name)+inp('dpBankNo','Account number',bk.number)+inp('dpBankNote','Note for the buyer (optional)',bk.note)+
       '</div><div style="display:grid;gap:.6rem"><strong>Delivery</strong>'+
+      inp('dpConfH','Hours the supplier has to confirm a PO/SA',BS.CONFIRM_HOURS,'number',' min="4" max="168"')+
       inp('dpCheckH','Hours the buyer has to check the items',BS.CHECK_HOURS,'number',' min="12" max="168"')+
       '<label class="check"><input type="checkbox" id="dpProofOn"'+(BS.PROOF_ON!==false?' checked':'')+'><span>Show the delivery record on the home page</span></label>'+
       inp('dpProofMin','Show it from this many checked deliveries',BS.PROOF_MIN,'number',' min="1"')+
@@ -792,10 +811,10 @@
     if(e.target.id==='adSaveBrands'){ e.target.disabled=true; var m=brandsNow(); await BS.set('settings','brands',{map:m, setBy:staffName()}); await BS.set('settings','brandLogos',{map:logosNow(), setBy:staffName()}); brandDraft=null; logoDraft=null; $('adBrandMsg').textContent='Saved for every device.'; bsToast('Brands saved.'); e.target.disabled=false; return; }
     if(e.target.id==='adSaveDelivery'){ var g=function(id){ return document.getElementById(id); }; var methods=[].slice.call(document.querySelectorAll('[data-dpm]')).filter(function(c){ return c.checked; }).map(function(c){ return c.dataset.dpm; });
       if(!methods.length){ bsToast('Keep at least one payment method.'); return; }
-      var ch=Math.max(12, Math.min(168, +g('dpCheckH').value||48)), lh=Math.max(2, Math.min(48, +g('dpLinkH').value||24)), pm=Math.max(1, +g('dpProofMin').value||20);
+      var ch=Math.max(12, Math.min(168, +g('dpCheckH').value||48)), cfh=Math.max(4, Math.min(168, +g('dpConfH').value||48)), lh=Math.max(2, Math.min(48, +g('dpLinkH').value||24)), pm=Math.max(1, +g('dpProofMin').value||20);
       e.target.disabled=true;
       await BS.set('settings','payment',{when:g('dpWhen').value, methods:methods, bank:{bank:g('dpBank').value.trim(), name:g('dpBankName').value.trim(), number:g('dpBankNo').value.trim(), note:g('dpBankNote').value.trim()}, setBy:staffName()});
-      await BS.set('settings','delivery',{checkHours:ch, proofOn:g('dpProofOn').checked, proofMin:pm, linkHours:lh, driverLang:g('dpDrvLang').value, setBy:staffName()});
+      await BS.set('settings','delivery',{confirmHours:cfh, checkHours:ch, proofOn:g('dpProofOn').checked, proofMin:pm, linkHours:lh, driverLang:g('dpDrvLang').value, setBy:staffName()});
       $('adDeliveryMsg').textContent='Saved and applied.'; bsToast('Delivery and payment saved for every device.'); e.target.disabled=false; return; }
     if(e.target.id==='adSaveTariffs'){ e.target.disabled=true; var v=function(id){ return +document.getElementById(id).value; };
       await BS.set('settings','tariffs',{perTrip:v('tPerTrip'), perKm:v('tPerKm'), capacityT:v('tCap'), mobilisation:v('tMob'), insuranceRate:v('tInsRate')/100, insuranceMin:v('tInsMin'), feeRate:v('tFee')/100, minLeadDays:v('tLead'), validityDays:v('tValid'), setBy:staffName()});
