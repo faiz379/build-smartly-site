@@ -522,6 +522,17 @@ html{overflow-x:clip}
 .vbox.ok{border-color:var(--green);background:color-mix(in srgb,var(--green) 6%,var(--bg-1,#fff))}
 .locked{opacity:.5;pointer-events:none;filter:grayscale(.4)}
 .locknote{display:flex;gap:.4rem;align-items:center;margin:0;font-weight:600;color:var(--fg-2,#55605c)}
+.hist{display:grid;gap:.35rem}.hrow{display:grid;grid-template-columns:7.5rem 1fr;gap:.6rem;font-size:.88rem;line-height:1.35}
+@media (max-width:640px){ .hrow{grid-template-columns:1fr;gap:.05rem} }
+.docverify{display:flex;gap:.8rem;align-items:center;margin-top:.7rem;padding-top:.6rem;border-top:1px solid var(--line)}
+.docqr{width:96px;height:96px;flex:none;image-rendering:pixelated}
+.bname{display:grid;line-height:1.1}
+.tagline{display:none;font-size:.62rem;font-weight:600;letter-spacing:.02em;color:var(--fg-2,#55605c);font-style:normal;white-space:nowrap}
+@media (min-width:1180px){ .tagline{display:block} }
+.mbar{display:none}
+body.home-visitor .mbar{display:flex;gap:.5rem;position:fixed;left:1rem;bottom:1rem;z-index:40;padding:.45rem;border-radius:999px;background:var(--bg-1,#fff);box-shadow:0 8px 24px rgba(0,0,0,.14)}
+body.home-visitor .mbar .btn{border-radius:999px}
+@media (max-width:640px){ body.home-visitor .mbar{left:0;right:0;bottom:0;border-radius:0;padding:.55rem .8rem calc(.55rem + env(safe-area-inset-bottom));justify-content:center} body.home-visitor .mbar .btn{flex:1} body.home-visitor .helpbtn{bottom:4.4rem} body.home-visitor footer{padding-bottom:5rem} }
 .docup{display:grid;gap:.6rem;padding:.85rem .95rem;border:2px dashed var(--green);border-radius:14px;background:color-mix(in srgb,var(--green) 5%,var(--bg-1,#fff))}
 .docup-file{display:grid;grid-template-columns:auto 1fr auto;gap:.7rem;align-items:center}
 .docup-file .ico{display:grid;place-items:center;width:2.6rem;height:2.6rem;border-radius:10px;background:var(--green);color:#fff;font-weight:800;font-size:.75rem}
@@ -742,7 +753,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
   <div class="wrap nav" id="nav">
     <a class="brand" href="#home" aria-label="Build Smartly home">
       <svg class="mark" viewBox="0 0 96 96" aria-hidden="true"><rect x="4" y="4" width="88" height="88" rx="20" fill="#1E6B4E"/><rect x="20" y="62" width="34" height="14" rx="3" fill="#F6F7F4"/><rect x="32" y="44" width="34" height="14" rx="3" fill="#F6F7F4"/><rect x="44" y="26" width="34" height="14" rx="3" fill="#E3A63A"/><path d="M64 17 l7 -7 l7 7" fill="none" stroke="#E3A63A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span>Build <em>Smartly</em></span>
+      <span class="bname">Build <em>Smartly</em><small class="tagline">Intelligent Process • Buy Smarter • Sell Stronger • Build Better</small></span>
     </a>
     <ul class="links">
       <li><a href="#home">Home</a></li>
@@ -788,9 +799,12 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 <div id="view-home" data-view>
   <div class="wrap">
     <div class="hero" id="hero" aria-roledescription="carousel" aria-label="Build Smartly in pictures">
-      <div class="hslide on"><img data-pic="hero1" src="assets/photos/hero1.jpg" alt="Build Smartly: send your BOQ, get real supplier quotes, choose line by line" width="1600" height="520"><span class="photo-slot">Addis Ababa at dusk · photo credits in the footer</span></div>
-      <div class="hslide msg"><img class="bg" data-pic="hero2" src="assets/photos/hero2.jpg" alt="" width="1600" height="520"><div class="hcopy"><span class="eyebrow">For contractors and developers</span><h2>Send your list once. Verified suppliers quote in writing.</h2><p>Cement, steel, blocks, aggregates, finishing and equipment. Compare Offer A, B and C by brand and delivered price, then accept line by line.</p><div class="hbtns"><a class="btn btn-ochre btn-sm" href="#boq">Send a request</a><a class="btn btn-ghost btn-sm" href="#how">How it works</a></div></div></div>
-      <div class="hslide msg"><img class="bg" data-pic="hero3" src="assets/photos/hero3.jpg" alt="" width="1600" height="520"><div class="hcopy"><span class="eyebrow">For suppliers</span><h2>Requests for your materials, near your stores. Pay only when a deal completes.</h2><p>Keep your price list current from your phone. Quotes are pre-filled, so replying takes seconds.</p><div class="hbtns"><a class="btn btn-ochre btn-sm" href="#signup-supplier">Register as a supplier</a><a class="btn btn-ghost btn-sm" href="#supplier">Supplier sign-in</a></div></div></div>
+      <div class="hslide msg on"><img class="bg" data-pic="hero1" src="assets/photos/hero1.jpg" alt="" width="1600" height="520"><div class="hcopy"><span class="eyebrow">Build Smartly</span><h2>The smart B2B platform for building materials</h2><p>A B2B commercial platform for building materials and related professional procurement services.</p><div class="hbtns"><a class="btn btn-ochre btn-sm" href="#signup">Sign up · free</a><a class="btn btn-ghost btn-sm" href="#how">How it works</a></div></div></div>
+      <div class="hslide msg"><img class="bg" data-pic="hero2" src="assets/photos/hero2.jpg" alt="" width="1600" height="520"><div class="hcopy"><span class="eyebrow">For buyers and suppliers</span><h2>Two complementary service wings</h2><p>Outsourced procurement management for verified buyers, and outsourced marketing and sales management for verified suppliers.</p><div class="hbtns"><a class="btn btn-ochre btn-sm" href="#boq">Send a request</a><a class="btn btn-ghost btn-sm" href="#signup-supplier">Register as a supplier</a></div></div></div>
+      <div class="hslide msg"><img class="bg" data-pic="hero3" src="assets/photos/hero3.jpg" alt="" width="1600" height="520"><div class="hcopy"><span class="eyebrow">How we work</span><h2>Secure. Transparent. Auditable.</h2><p>Both wings are managed through processes that are simple to use and intelligent behind the scenes.</p><div class="hbtns"><a class="btn btn-ochre btn-sm" href="#how">How it works</a></div></div></div>
+      <div class="hslide msg"><img class="bg" data-pic="hero4" src="assets/photos/hero4.jpg" alt="" width="1600" height="520"><div class="hcopy"><span class="eyebrow">Your choice</span><h2>Your business, your decision</h2><p>Buyers and suppliers keep full authority over every commercial decision they make.</p><div class="hbtns"><a class="btn btn-ochre btn-sm" href="#boq">Send a request</a></div></div></div>
+      <div class="hslide msg"><img class="bg" data-pic="hero5" src="assets/photos/hero5.jpg" alt="" width="1600" height="520"><div class="hcopy"><span class="eyebrow">Short video</span><h2>See how it works</h2><p>Watch our short introduction video.</p><div class="hbtns"><a class="btn btn-ochre btn-sm" href="#video" data-video>▶ Watch video</a></div></div></div>
+      <div class="hslide msg"><img class="bg" data-pic="hero6" src="assets/photos/hero6.jpg" alt="" width="1600" height="520"><div class="hcopy"><span class="eyebrow">Start today</span><h2>Not ready to send documents yet?</h2><p>Start with just your name and mobile number. Send a request and compare real offers; get verified only when you order.</p><div class="hbtns"><a class="btn btn-ochre btn-sm" href="#signup">Sign up · free</a><a class="btn btn-ghost btn-sm" href="#boq">Send a request</a></div></div></div>
       <button class="harrow l" id="hPrev" aria-label="Previous picture"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg></button>
       <button class="harrow r" id="hNext" aria-label="Next picture"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg></button>
       <div class="hdots" id="hDots"></div>
@@ -1595,6 +1609,13 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 </div>
 
 <!-- ================= START HERE (test site guide) ================= -->
+<div id="view-check" data-view hidden class="wrap view">
+  <section class="card" style="display:grid;gap:.8rem;max-width:40rem;margin:1rem auto">
+    <div><span class="eyebrow">Check a document</span><h1 style="font-size:1.5rem">Is this Purchase Order / Sales Agreement genuine?</h1><p class="small muted">Type the verification number printed at the bottom of the document, or scan its QR code.</p></div>
+    <div class="chat-in"><div class="field"><input id="ckNo" placeholder="e.g. 4KX2-9QD" autocomplete="off" style="text-transform:uppercase"></div><button class="btn btn-primary btn-sm" type="button" id="ckGo">Check</button></div>
+    <div id="ckOut"></div>
+  </section>
+</div>
 <div id="view-start" data-view hidden class="wrap view">
   <div><span class="eyebrow">Test site</span><h1 style="font-size:1.6rem">Start here</h1><p class="muted">Build Smartly is the working name. Everything works, but no SMS is sent and no money moves. One buyer, two suppliers and two staff logins.</p></div>
   <section class="card panel" style="display:grid;gap:.6rem"><div><strong style="font-family:var(--display);font-size:1.05rem">Watch how it works</strong><p class="small muted">A 7-minute walkthrough with sound (turn your volume up): a buyer sends a request, suppliers quote, the buyer chooses and completes the order, agrees to the contracts, receives the goods and pays; then the staff page and the three languages.</p></div><video controls preload="metadata" playsinline style="width:100%;max-width:960px;border-radius:12px;background:#0D2C21" src="docs/how-it-works.mp4?v=20261031c"></video></section>
@@ -1724,6 +1745,13 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
       <div class="su-nav"><button class="btn btn-ghost" type="button" id="vCancel">Not now</button><button class="btn btn-primary" type="button" id="vGo">Send for verification</button></div>
     </div>
   </div>
+<div class="mbar" id="mBar"><a class="btn btn-primary" href="#signup">Sign up · free</a><button class="btn btn-ghost" type="button" data-video>▶ Watch video</button></div>
+  <div class="modal" id="vidGate" hidden>
+    <div class="card" style="display:grid;gap:.7rem;max-width:62rem;width:min(62rem,94vw)">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:.6rem"><strong style="font-family:var(--display)">How Build Smartly works</strong><button class="btn btn-ghost btn-sm" type="button" id="vidClose">Close</button></div>
+      <video id="vidPlayer" controls preload="none" playsinline style="width:100%;border-radius:12px;background:#000" src=""></video>
+    </div>
+  </div>
 <button class="helpbtn" id="helpBtn" type="button" aria-expanded="false" aria-controls="helpPanel" aria-label="Help"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M9.5 9.5a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 3.5"/><path d="M12 17h.01"/></svg><span>Help</span></button>
 <div class="helppanel" id="helpPanel" hidden role="dialog" aria-label="Build Smartly assistant">
   <div class="hhead"><div><strong>Build Smartly assistant</strong><br><span class="small">Answers in seconds · a person is one tap away</span></div><button type="button" id="helpClose" aria-label="Close">×</button></div>
@@ -1732,22 +1760,23 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 </div>
 
 
-<script src="assets/firebase-config.js?v=20261113e" onerror="this.remove()"></script>
-<script src="assets/store.js?v=20261113e"></script>
+<script src="assets/firebase-config.js?v=20261113f" onerror="this.remove()"></script>
+<script src="assets/store.js?v=20261113f"></script>
 <script>
 /* ---------- Router: one page, views switched by hash ---------- */
 window.BSRoute = (function(){
-  var views=['home','signup','boq','supplier','workspace','brand','review','contact','faq','terms','privacy','start','members','advertise','admin','order','drive'];
+  var views=['home','signup','boq','supplier','workspace','brand','review','contact','faq','terms','privacy','start','members','advertise','admin','order','drive','check'];
   var hooks={};
   function show(name){
     views.forEach(function(v){ var el=document.getElementById('view-'+v); if(el) el.hidden = v!==name; });
     var nav=document.getElementById('nav'); if(nav) nav.classList.remove('open');
-    document.body.classList.toggle('drive-mode', name==='drive'); /* the driver's page shows only the delivery */
+    document.body.classList.toggle('drive-mode', name==='drive');
+    var meV=(window.BS && BS.me && BS.me())||{}; document.body.classList.toggle('home-visitor', name==='home' && !meV.phone && !(BS.isStaff && BS.isStaff())); /* the driver's page shows only the delivery */
   }
   var current='home';
   /* page names inside the site ↔ the address shown in the browser */
-  var PRETTY={home:'',top:'',about:'',supply:'materials',how:'how-it-works',suppliers:'for-suppliers',aboutus:'about',boq:'request','boq-mine':'my-requests','boq-resume':'request',signin:'sign-in',signup:'register','signup-supplier':'register-supplier',workspace:'account',admin:'staff','faq-telegram':'faq/telegram'};
-  var GROUP={'boq-':'request/','supplier-':'supplier/','staff-':'staff/','order-':'order/','news-':'newsletter/','drive-':'drive/'};
+  var PRETTY={home:'',top:'',about:'',supply:'materials',how:'how-it-works',suppliers:'for-suppliers',aboutus:'about',boq:'request','boq-mine':'my-requests','boq-resume':'request',signin:'sign-in',signup:'register','signup-supplier':'register-supplier',workspace:'account',admin:'staff','faq-telegram':'faq/telegram',check:'check'};
+  var GROUP={'boq-':'request/','supplier-':'supplier/','staff-':'staff/','order-':'order/','news-':'newsletter/','drive-':'drive/','check-':'check/'};
   var BACK={}; Object.keys(PRETTY).forEach(function(k){ if(PRETTY[k] && !BACK[PRETTY[k]]) BACK[PRETTY[k]]=k; }); BACK['about']='aboutus'; BACK['staff']='staff'; BACK['request']='boq';
   function urlFor(h){ h=h||'home'; if(PRETTY[h]!=null) return '/'+PRETTY[h];
     for(var g in GROUP){ if(h.indexOf(g)===0 && h.length>g.length && !(g==='boq-' && (h==='boq-mine'||h==='boq-resume'))) return '/'+GROUP[g]+encodeURIComponent(h.slice(g.length)); }
@@ -1790,6 +1819,7 @@ window.BSRoute = (function(){
     if(h==='brand'){ show('brand'); window.scrollTo(0,0); return; }
     if(h==='start'){ show('start'); window.scrollTo(0,0); return; }
     if(h==='members'||h==='advertise'){ show(h); if(hooks[h]) hooks[h](); window.scrollTo(0,0); return; }
+    if(h==='check' || h.indexOf('check-')===0){ show('check'); if(hooks.check) hooks.check(h==='check'?'':h.slice(6)); window.scrollTo(0,0); return; }
     show('home');
   }
   function fromAddress(){ var h=nameFrom(); if(h!==current || (window.BS_CLEAN && location.hash)) routeTo(h, {replace:true}); }
@@ -1898,7 +1928,7 @@ function bsSignInByPhone(digits){
     var files=[]; var put=async function(fo, label){ if(!fo) return; var r=await BS.saveData(fo.name, fo.type, fo.data, {kind:'kyc'}); files.push({label:label, name:fo.name, type:fo.type, fileId:r?r.fileId:'', parts:r?r.parts:0}); };
     await put(file, $('vFileLabel').textContent); await put(file2, $('vFile2Label').textContent); await put(file3, 'Commercial registration certificate');
     var stored=await BS.set('kyc', kid, {phone:d, type:t, name:name, fayda:fayda, passport:passport, tin:tin, lic:lic, licExp:licExp, contact:contact, title:title, repId:repId, address:addr, email:email, files:files, submittedAt:now});
-    await BS.set('verifications', 'buyer-'+d, {kind:'buyer', phone:d, name: t==='Individual'?name:contact, company:name, type:t, tin: t==='Individual'?'':tin, idHint: fayda?'Fayda •••• '+fayda.slice(-4):passport?'Passport •••• '+passport.slice(-3):'', licExp: t==='Organisation'?licExp:'', hasFile:!!files.length, kycId: stored?kid:'', status:'pending', submittedAt:now, reason:''});
+    await BS.set('verifications', 'buyer-'+d, {kind:'buyer', phone:d, name: t==='Individual'?name:contact, company:name, type:t, tin: t==='Individual'?'':tin, idHint: fayda?'Fayda •••• '+fayda.slice(-4):passport?'Passport •••• '+passport.slice(-3):'', licExp: t==='Organisation'?licExp:'', lic: t==='Organisation'?lic:'', contact: t!=='Individual'?contact:'', hasFile:!!files.length, kycId: stored?kid:'', status:'pending', submittedAt:now, reason:''});
     BS.setMe(Object.assign({}, me, {type:t, company:name, person: t==='Individual'?name:(contact||me.person||''), name: me.name||name, tin: t==='Individual'?'':(tin||''), contact: contact||me.contact||''}));
     $('vGo').disabled=false; $('vGo').textContent='Send for verification'; $('verGate').hidden=true; ['vFayda','vLic','vTitle'].forEach(function(id){ $(id).value=''; }); $('vFile').value='';
     bsToast('Sent. Our team checks it, usually within one working day. We let you know by SMS.');
@@ -1920,6 +1950,30 @@ function bsSignInByPhone(digits){
   BS.onVerify(function(){ var me=BS.me()||{}, v=BS.buyerVer(me.phone);
     if(v && v.status==='verified' && !v.test && (!me.company || (v.tin && me.tin!==v.tin))) BS.setMe(Object.assign({}, me, {company:v.company||me.company, type:v.type||me.type, tin:v.tin||me.tin||''}));
     refreshAll(); });
+})();
+
+/* ---------- Watch video (Abdullah v4: "Watch Video" on the front page and as a fixed button) ---------- */
+(function(){
+  var $=function(id){ return document.getElementById(id); };
+  var SRC='docs/how-it-works.mp4?v=20261031';
+  try{ if(!/github\.io$|onsmartly|localhost|^127\./.test(location.hostname) && location.protocol!=='file:') SRC='https://build.onsmartly.com/docs/how-it-works.mp4?v=20261031'; }catch(e){}
+  document.addEventListener('click', function(e){ if(!e.target.closest('[data-video],a[href="#video"]')) return; if(document.body.classList.contains('bs-editing')) return; e.preventDefault(); e.stopPropagation(); var v=$('vidPlayer'); if(!v.getAttribute('src')) v.setAttribute('src', SRC); $('vidGate').hidden=false; try{ var pr=v.play(); if(pr && pr.catch) pr.catch(function(){}); }catch(err){} }, true); /* before the router, so the address does not change */
+  $('vidClose').onclick=function(){ var v=$('vidPlayer'); try{ v.pause(); }catch(err){} $('vidGate').hidden=true; };
+})();
+
+/* ---------- Check a document (Abdullah v4: each PO/SA carries a verification number and a QR code) ---------- */
+(function(){
+  var $=function(id){ return document.getElementById(id); }, offers=[], boqs=[];
+  function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  BS.subscribe('offers', function(d){ offers=d||[]; if(!$('view-check').hidden && $('ckNo').value) look(); }); BS.subscribe('boqs', function(d){ boqs=d||[]; });
+  function look(){ var no=$('ckNo').value.trim().toUpperCase(); if(!no){ $('ckOut').innerHTML=''; return; }
+    var by={}; offers.forEach(function(o){ if(!o.poRef || !o.acceptedAt) return; var k=o.boqId+'|'+o.poRef; (by[k]=by[k]||[]).push(o); });
+    var hit=null; Object.keys(by).some(function(k){ var g=by[k], f=g[0]; if(BS.verifyNo(f)===no){ hit=g; return true; } return false; });
+    if(!hit){ $('ckOut').innerHTML='<div class="vbox"><strong>No document with this number.</strong><p class="small" style="margin:0">Check the number again. If it is right, the document is not genuine: please tell us under Support.</p></div>'; return; }
+    var f=hit[0], st=BS.orderStatus(f), tot=0; hit.forEach(function(o){ tot+=BS.offerTotal(o); }); var b=boqs.filter(function(x){ return x.id===f.boqId; })[0]||{}, shown=BS.namesShown(f);
+    $('ckOut').innerHTML='<div class="vbox ok"><div><span class="vbadge ok">✓ Genuine</span></div><div class="kv small"><span>Document</span><strong data-notr>'+esc(f.poRef)+'</strong><span>Issued</span><strong data-notr>'+new Date(f.acceptedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})+'</strong><span>Status</span><strong>'+esc(st.t)+'</strong><span>Lines</span><strong data-notr>'+hit.length+'</strong><span>Total</span><strong data-notr>'+BS.fmt(tot)+'</strong>'+(shown?'<span>Buyer</span><strong data-notr>'+esc(f.customerRevealed||b.company||'')+'</strong><span>Supplier</span><strong data-notr>'+esc(f.supplierName||'')+'</strong>':'')+'</div>'+(shown?'':'<p class="small muted" style="margin:0">The names are shown once the supplier has confirmed it.</p>')+'</div>'; }
+  $('ckGo').onclick=look; $('ckNo').addEventListener('keydown', function(e){ if(e.key==='Enter') look(); });
+  BSRoute.on('check', function(no){ if(no){ $('ckNo').value=decodeURIComponent(no).toUpperCase(); } setTimeout(look, 300); });
 })();
 
 /* ---------- Site pictures set by staff (settings docs pic-*): swap the drawn placeholders for real photos ---------- */
@@ -2147,6 +2201,7 @@ window.BSAuth = (function(){
     else if(signed){ var isSup = !!(me.supplierId || (me.role && me.role!=='Request materials')); var nm=(me.person||me.company||me.name||'Account'); document.getElementById('authName').textContent = nm.length>18 ? nm.slice(0,17)+'…' : nm; document.getElementById('authPortal').hidden=!isSup; }
     var wsOut=document.getElementById('wsLogout'); if(wsOut) wsOut.hidden=!signed;
     var av=document.getElementById('authVerify'); if(av) av.hidden = staff || !signed || BS.buyerState(me.phone)==='verified';
+    document.body.classList.toggle('home-visitor', !signed && window.BSRoute && BSRoute.current()==='home');
     if(window.BSRefreshMine) BSRefreshMine();
   }
   document.getElementById('authLogout').onclick=function(){ if(BS.isStaff && BS.isStaff()){ BS.staffSignOut(); refresh(); bsToast('Signed out of the staff page.'); BSRoute.go('home'); return; } BS.setMe({}); refresh(); bsToast('Signed out.'); BSRoute.go('home'); };
@@ -2629,17 +2684,17 @@ function bsSupport(threadId, inputId, sendId){
       var chosenN=0, chosenSum=0, openLines=0, bestMissing=0;
       var body=b.lines.map(function(l){
         var os=offersOn(b,l), po=poOf(b,l), ch=chosenOf(b,l), invited=BS.activeSuppliers().filter(function(s){ return s.cats.indexOf(l.cat)>=0; }).length;
-        var live=os.filter(function(o){ return o.status!=='rejected' && o.status!=='declined' && o.status!=='expired'; }), best=live.filter(validOffer)[0], bestTotal=best?totalOf(best):0;
+        var live=os.filter(function(o){ return o.status!=='rejected' && o.status!=='declined' && o.status!=='expired' && o.status!=='cancelled'; }), best=live.filter(validOffer)[0], bestTotal=best?totalOf(best):0;
         if(!po){ openLines++; if(ch){ chosenN++; chosenSum+=totalOf(ch); } else if(best) bestMissing++; }
         var state = po ? '<span class="tag tag-green tag-strong">In order '+esc(po.poRef||'')+'</span>' : ch ? '<span class="tag tag-green">Chosen · '+esc(ch.brand)+'</span>' : os.length ? '<span class="tag">'+live.length+' offer'+(live.length!==1?'s':'')+'</span>' : '<span class="tag">Waiting for offers</span>';
         var rows=os.map(function(o,i){
           var total=totalOf(o), isCh=ch && ch.id===o.id, isBest=!po && best && o.id===best.id && live.length>1, isPo=po && po.id===o.id;
-          var cls='offer'+(isCh||isPo?' accepted':'')+(isBest?' best':'')+((po&&!isPo)||o.status==='rejected'||o.status==='declined'||o.status==='expired'?' dim':'');
+          var cls='offer'+(isCh||isPo?' accepted':'')+(isBest?' best':'')+((po&&!isPo)||o.status==='rejected'||o.status==='declined'||o.status==='expired'||o.status==='cancelled'?' dim':'');
           var act;
           if(isPo) act='<span class="small" style="font-weight:700;color:var(--fg)">'+(BS.namesShown(o)?esc(o.supplierName):'<span class="muted" style="font-weight:400">Awaiting the supplier\'s confirmation</span>')+' · <a href="#order-'+o.id+'" style="font-weight:700">order page</a></span>';
           else if(po) act='<span class="small muted">Not chosen</span>';
           else if(withdrawn) act='<span class="small muted">Request withdrawn</span>';
-          else if(o.status==='declined' || o.status==='expired') act='<span class="small muted" style="display:grid;gap:.15rem"><span>'+(o.status==='declined'?'The supplier declined the PO/SA. Choose another offer.':o.expiredWhy==='verify'?'The supplier held this order for '+BS.HOLD_DAYS+' working days while we verified you; the hold has ended. Choose an offer again.':'The supplier did not confirm the PO/SA in time. Choose another offer.')+'</span>'+(o.declineReason?'<span data-notr>“'+esc(o.declineReason)+'”</span>':'')+'</span>';
+          else if(o.status==='declined' || o.status==='expired' || o.status==='cancelled') act='<span class="small muted" style="display:grid;gap:.15rem"><span>'+(o.status==='cancelled'?'Build Smartly cancelled this PO/SA. Choose another offer.':o.status==='declined'?'The supplier declined the PO/SA. Choose another offer.':o.expiredWhy==='verify'?'The supplier held this order for '+BS.HOLD_DAYS+' working days while we verified you; the hold has ended. Choose an offer again.':'The supplier did not confirm the PO/SA in time. Choose another offer.')+'</span>'+((o.declineReason||o.cancelReason)?'<span data-notr>“'+esc(o.declineReason||o.cancelReason)+'”</span>':'')+'</span>';
           else if(o.status==='rejected') act='<span style="display:grid;gap:.25rem"><span class="small muted">You rejected this offer</span><button class="btn btn-ghost btn-sm" data-unreject="'+o.id+'">Undo</button></span>';
           else if(o.counter && o.counter.state==='open') act='<span class="tag tag-ochre" style="text-transform:none;letter-spacing:0">You proposed '+BS.fmt(o.counter.price)+' · waiting for the supplier\'s answer</span>';
           else act='<span style="display:grid;gap:.3rem">'+(o.counter&&o.counter.state==='declined'?'<span class="small muted">The supplier declined '+BS.fmt(o.counter.price)+'. The offer stands.</span>':o.counter&&o.counter.state==='accepted'?'<span class="small" style="color:var(--ok);font-weight:600">The supplier accepted your price.</span>':'')+
@@ -2748,7 +2803,7 @@ function bsSupport(threadId, inputId, sendId){
   function checkoutItems(b){ return b.lines.map(function(l){ if(poOf(b,l)) return null; var o=chosenOf(b,l); if(!o) return null; var sub=o.supplierSub||(BS.supplierById(o.supplierId)||{}).sub||'Akaki Kaliti'; var est=BS.deliveryEstimate([{item:l.item, qty:o.qtyOffered, unit:l.unit}], sub, b.pin||b.subcity||'Bole'); return {o:o, l:l, goods:totalOf(o), est:est, ins:BS.insuranceFor(totalOf(o)), hire:BS.isHire(l)}; }).filter(Boolean); }
   function checkoutGroups(items){ var by={}, out=[]; items.forEach(function(it){ var k=it.o.supplierId; if(!by[k]){ by[k]={items:[]}; out.push(by[k]); } by[k].items.push(it); }); return out; }
   function useBsTransport(b){ var t=b.deliveryTerm||''; if(/^Build Smartly/.test(t)) return !document.getElementById('gDel-own') || !document.getElementById('gDel-own').checked; if(t==='I collect from supplier') return !!(document.getElementById('gDel-bs')||{}).checked; return false; }
-  function drawCheckout(){ var accWas=!!(document.getElementById('gAccept')||{}).checked;
+  function drawCheckout(){ var accWas=!!(document.getElementById('gAccept')||{}).checked, ownPoWas=!!(document.getElementById('gOwnPo')||{}).checked;
     var b=boqById(checkoutBoq); if(!b) return; var items=checkoutItems(b), groups=checkoutGroups(items), term=b.deliveryTerm||'';
     var bs=useBsTransport(b), ins=!!(document.getElementById('gIns')||{}).checked;
     var goods=0, trans=0, trips=0, insT=0; items.forEach(function(it){ goods+=it.goods; if(!it.hire){ trans+=it.est.cost; trips+=it.est.trips; } insT+=it.ins; });
@@ -2767,7 +2822,7 @@ function bsSupport(threadId, inputId, sendId){
       '<p class="small muted" style="margin:.4rem 0 0">'+(BS.payFirst()?'Nothing is charged now. You pay once the supplier confirms, before the goods are dispatched.':'Nothing is charged now. You pay after delivery through Yagout Pay.')+'</p>'+
       '<div class="ck-posa"><p class="small" style="margin:0">'+(groups.length>1?'Placing the order issues a Purchase Order / Sales Agreement (PO/SA) to each supplier.':'Placing the order issues a Purchase Order / Sales Agreement (PO/SA) to the supplier.')+' The supplier confirms it within '+BS.CONFIRM_HOURS+' hours; from then it is binding and you see each other\'s names.</p>'+
       '<details class="small"><summary style="cursor:pointer;font-weight:600">Read the terms</summary><ol style="margin:.4rem 0 0;padding-left:1.2rem;display:grid;gap:.25rem"><li>The supplier sells and you buy the goods above at the stated price. Build Smartly facilitates this transaction and is not a party to this sale.</li><li>The supplier confirms or declines within '+BS.CONFIRM_HOURS+' hours. If it declines or does not answer, nothing is owed and you choose another offer.</li><li>'+(BS.payFirst()?'You pay the full amount before dispatch, through Yagout Pay or bank transfer.':'You pay after delivery, through Yagout Pay.')+'</li><li>You give the driver your handover code only after checking the goods, then check each item within '+BS.CHECK_HOURS+' hours.</li><li>Once confirmed, neither side may withdraw; changes need an amendment both accept.</li></ol></details>'+
-      '<label class="check"><input type="checkbox" id="gAccept"'+(accWas?' checked':'')+'><span>I have read and accept this Purchase Order / Sales Agreement and its terms and conditions.</span></label><p class="err" id="gAcceptErr" hidden style="margin:0;font-size:.85rem;color:var(--warn);font-weight:600">Tick the box to accept the PO/SA.</p></div>';
+      '<label class="check"><input type="checkbox" id="gAccept"'+(accWas?' checked':'')+'><span>I have read and accept this Purchase Order / Sales Agreement and its terms and conditions.</span></label>'+(((BS.me()||{}).type==='Government')?'<label class="check"><input type="checkbox" id="gOwnPo"'+(ownPoWas?' checked':'')+'><span>Use our own PO / contract format: I attach the signed document.</span></label><div class="field" id="gOwnPoBox"'+(ownPoWas?'':' hidden')+'><input type="file" id="gOwnPoFile" accept=".pdf,.jpg,.jpeg,.png,.docx"><span class="hint">'+(ownPoPicked?'<span data-notr>'+esc(ownPoPicked.name)+'</span> · ':'')+'<span>The supplier confirms it on the platform; tracking continues the same way.</span></span></div>':'')+'<p class="err" id="gAcceptErr" hidden style="margin:0;font-size:.85rem;color:var(--warn);font-weight:600">Tick the box to accept the PO/SA.</p></div>';
     $('gDeliv').innerHTML=html; $('gDeliv').hidden=false;
     var vst=BS.buyerState((BS.me()||{}).phone); if(vst!=='verified') $('gDeliv').insertAdjacentHTML('afterbegin', '<div style="margin:.3rem 0 .7rem">'+bsVerifyHtml('checkout')+'</div>');
     $('gSave').textContent = (vst==='none'||vst==='rejected') ? 'Get verified to continue' : groups.length>1 ? 'Accept and issue '+groups.length+' PO/SAs' : 'Accept and issue the PO/SA';
@@ -2777,7 +2832,8 @@ function bsSupport(threadId, inputId, sendId){
     var needCompany=false; /* who is buying now comes from the verification */ $('gCompany').hidden=!needCompany; $('gCompany').style.display=needCompany?'grid':'none';
     $('gDeliv').innerHTML=''; drawCheckout(); $('poGate').hidden=false;
   }
-  $('gDeliv').addEventListener('change', function(){ drawCheckout(); });
+  var ownPoPicked=null;
+  $('gDeliv').addEventListener('change', function(e){ if(e.target.id==='gOwnPoFile'){ ownPoPicked=(e.target.files||[])[0]||null; return; } if(e.target.id==='gOwnPo'){ $('gOwnPoBox').hidden=!e.target.checked; return; } drawCheckout(); });
   window.bsCheckoutRedraw=function(){ if(checkoutBoq && !$('poGate').hidden) drawCheckout(); };
   function openGate(){ checkoutBoq=null; var m=BS.me()||{}; if(m.company && !$('gName').value) $('gName').value=m.company; gateLabels(); $('gDeliv').hidden=true; $('gCompany').hidden=false; $('gCompany').style.display='grid'; $('gSave').textContent='Save'; $('poGate').hidden=false; $('gName').focus(); }
   window.bsOpenGate=function(){ openGate(); };
@@ -2799,13 +2855,15 @@ function bsSupport(threadId, inputId, sendId){
     var held = vs!=='verified', vrec=BS.buyerVer((BS.me()||{}).phone)||{};
     var b=boqById(checkoutBoq); if(!b) return; var items=checkoutItems(b), groups=checkoutGroups(items); if(!items.length){ $('poGate').hidden=true; return; }
     var acc=$('gAccept'); if(acc && !acc.checked){ $('gAcceptErr').hidden=false; acc.focus(); return; }
+    var ownPo=null, own=$('gOwnPo'); if(own && own.checked){ var of=ownPoPicked; if(!of){ bsToast('Attach your signed PO or contract, or untick "Use our own PO".'); return; } if(of.size>BS.FILE_MAX){ bsToast('The file is larger than 10 MB.'); return; }
+      $('gSave').disabled=true; $('gSave').textContent='Sending your PO…'; var sv=null; try{ sv=await BS.saveFile(of, {kind:'ownpo'}); }catch(e){ sv=null; } $('gSave').disabled=false; if(!sv){ bsToast('The file could not be stored. Try again, or untick "Use our own PO".'); drawCheckout(); return; } ownPo={name:of.name, fileId:sv.fileId, parts:sv.parts}; }
     var bs=useBsTransport(b), ins=!!(document.getElementById('gIns')||{}).checked, m=BS.me()||{}, now=new Date().toISOString();
     $('gSave').disabled=true; $('gSave').textContent='Placing…';
     /* PO numbers never repeat on a request, also after a supplier declined or let one lapse */
     var used={}; offers.forEach(function(o){ if(o.boqId===b.id && o.poRef) used[o.poRef]=1; }); var k=Object.keys(used).length, refs=[];
     for(var gi=0; gi<groups.length; gi++){ k++; var poRef='PO-'+b.ref+'-'+k; refs.push(poRef);
       for(var j=0;j<groups[gi].items.length;j++){ var it=groups[gi].items[j]; var pf=bs && !it.hire;
-        await BS.update('offers', it.o.id, {status:'accepted', poRef:poRef, acceptedAt:now, customerRevealed:m.company||vrec.company||m.name||b.company||'', customerTin:m.tin||vrec.tin||'', heldForVerify:held, buyerAgreedAt:now, buyerAgreedBy:m.contact||m.name||m.company||'', platformDelivery:pf, deliveryAmt:pf?it.est.cost:0, deliveryTrips:pf?it.est.trips:0, insurance:ins, insuranceAmt:ins?it.ins:0}); } }
+        await BS.update('offers', it.o.id, {status:'accepted', poRef:poRef, acceptedAt:now, customerRevealed:m.company||vrec.company||m.name||b.company||'', customerTin:m.tin||vrec.tin||'', heldForVerify:held, ownPo:ownPo, buyerAgreedAt:now, buyerAgreedBy:m.contact||m.name||m.company||'', platformDelivery:pf, deliveryAmt:pf?it.est.cost:0, deliveryTrips:pf?it.est.trips:0, insurance:ins, insuranceAmt:ins?it.ins:0}); } }
     var ch=Object.assign({}, b.chosen||{}); items.forEach(function(it){ delete ch[it.l.n]; }); await BS.update('boqs', b.id, {chosen:ch});
     $('gSave').disabled=false; $('poGate').hidden=true; checkoutBoq=null;
     bsToast(held ? (refs.length>1?refs.length+' PO/SAs issued: ':'PO/SA issued: ')+refs.join(', ')+'. The supplier holds it until our team has verified you; then the supplier has '+BS.CONFIRM_HOURS+' hours to confirm.'
@@ -3156,7 +3214,7 @@ function bsSupport(threadId, inputId, sendId){
     /* offers sent */
     var ob=$('tab-offers'); var sent=mine.filter(function(o){ return o.status!=='accepted'; }).sort(function(a,b){return (b.createdAt||'').localeCompare(a.createdAt||'');}).filter(function(o){ var b=boqs.filter(function(x){return x.id===o.boqId;})[0]||{}; return hit(b.ref, lineName(b,o.lineN), o.brand); });
     ob.innerHTML = sent.length ? sent.map(function(o){ var b=boqs.filter(function(x){return x.id===o.boqId;})[0]; var l=b?b.lines.filter(function(x){return x.n===o.lineN;})[0]:null; var other=offers.filter(function(x){ return x.boqId===o.boqId && x.lineN===o.lineN && x.status==='accepted'; })[0];
-        var st = o.status==='rejected' ? '<span class="tag">Rejected by the customer</span>' : o.status==='declined' ? '<span class="tag">You declined the PO/SA</span>' : o.status==='expired' ? '<span class="tag">PO/SA lapsed · not confirmed in time</span>' : other ? '<span class="tag">The customer chose another offer</span>' : (o.counter&&o.counter.state==='open') ? '<span class="tag tag-ochre">Customer proposes '+BS.fmt(o.counter.price)+' · your answer needed</span>' : (o.counter&&o.counter.state==='accepted') ? '<span class="tag tag-green">You accepted the customer\'s price · waiting for the customer</span>' : (o.counter&&o.counter.state==='declined') ? '<span class="tag">You declined the counter · offer stands</span>' : (b && (b.chosen||{})[o.lineN]===o.id) ? '<span class="tag tag-green">Chosen by the customer · waiting for the order</span>' : '<span class="tag">Waiting for the customer</span>';
+        var st = o.status==='rejected' ? '<span class="tag">Rejected by the customer</span>' : o.status==='declined' ? '<span class="tag">You declined the PO/SA</span>' : o.status==='expired' ? '<span class="tag">PO/SA lapsed · not confirmed in time</span>' : o.status==='cancelled' ? '<span class="tag">PO/SA cancelled by Build Smartly</span>' : other ? '<span class="tag">The customer chose another offer</span>' : (o.counter&&o.counter.state==='open') ? '<span class="tag tag-ochre">Customer proposes '+BS.fmt(o.counter.price)+' · your answer needed</span>' : (o.counter&&o.counter.state==='accepted') ? '<span class="tag tag-green">You accepted the customer\'s price · waiting for the customer</span>' : (o.counter&&o.counter.state==='declined') ? '<span class="tag">You declined the counter · offer stands</span>' : (b && (b.chosen||{})[o.lineN]===o.id) ? '<span class="tag tag-green">Chosen by the customer · waiting for the order</span>' : '<span class="tag">Waiting for the customer</span>';
         return '<div class="doc"><span class="ico">'+o.lineN+'</span><span><strong>'+(b?b.ref:'')+' · '+(l?l.item:'')+'</strong><br><span class="small muted">'+o.brand+' · '+o.qtyOffered+' '+(l?l.unit:'')+' · '+BS.fmt(o.unitPrice)+' · total '+BS.fmt(BS.offerTotal(o))+' · <span class="cd">valid '+o.validDays+' d</span></span></span>'+st+'</div>'; }).join('')
       : '<div class="empty">'+(dq?'No offer matches.':'No open offers.')+'</div>';
     /* statements: purchase orders, contracts and receipts by year */
@@ -3407,10 +3465,10 @@ window.bsPublishProfile = async function(fields){
 
 BSRoute.start();
 </script>
-<script src="assets/track.js?v=20261113e"></script>
-<script src="assets/order.js?v=20261113e"></script>
-<script src="assets/notify.js?v=20261113e"></script>
-<script src="assets/help.js?v=20261113e"></script>
-<script src="assets/admin.js?v=20261113e"></script>
-<script src="assets/editor.js?v=20261113e"></script>
-<script src="assets/i18n.js?v=20261113e"></script>
+<script src="assets/track.js?v=20261113f"></script>
+<script src="assets/order.js?v=20261113f"></script>
+<script src="assets/notify.js?v=20261113f"></script>
+<script src="assets/help.js?v=20261113f"></script>
+<script src="assets/admin.js?v=20261113f"></script>
+<script src="assets/editor.js?v=20261113f"></script>
+<script src="assets/i18n.js?v=20261113f"></script>

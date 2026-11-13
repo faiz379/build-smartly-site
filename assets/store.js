@@ -159,9 +159,12 @@
   /* picture slots staff can fill from the staff page; each is one settings doc pic-<key> holding a resized JPEG data URL */
   BS.PIC_SLOTS = [
     {key:"logo", label:"Logo · header, footer and browser tab (PNG with a clear background works best)", w:512, h:512, whole:true, def:"assets/logo.svg"},
-    {key:"hero1", label:"Home banner · wide photo of a site in Addis Ababa", w:1600, h:520},
-    {key:"hero2", label:"Home slide 2 · wide photo behind the contractors message", w:1600, h:520},
-    {key:"hero3", label:"Home slide 3 · wide photo behind the suppliers message", w:1600, h:520},
+    {key:"hero1", label:"Home slide 1 · wide photo", w:1600, h:520},
+    {key:"hero2", label:"Home slide 2 · wide photo", w:1600, h:520},
+    {key:"hero3", label:"Home slide 3 · wide photo", w:1600, h:520},
+    {key:"hero4", label:"Home slide 4 · wide photo", w:1600, h:520},
+    {key:"hero5", label:"Home slide 5 · wide photo", w:1600, h:520},
+    {key:"hero6", label:"Home slide 6 · wide photo", w:1600, h:520},
     {key:"cat-foundation", label:"Category circle · Foundation", w:700, h:700},
     {key:"cat-structure", label:"Category circle · Structure", w:700, h:700},
     {key:"cat-services", label:"Category circle · Electrical and plumbing", w:700, h:700},
@@ -702,7 +705,7 @@
   BS.AD_PRICES = {news:5000, feature:15000, pulse:5000, banner:4000, directory:3000};
   BS.AD_LABELS = {news:'Newsletter item', feature:'Featured supplier of the month', pulse:'Price pulse tile', banner:'Workspace banner', directory:'Highlighted Members card', platform:'From Build Smartly'};
   BS.offerTotal = function(o){ return (+o.qtyOffered||0)*(+o.unitPrice||0)+(+o.deliveryCost||0); };
-  BS.orderGroup = function(offers, o){ if(!o) return []; if(!o.poRef) return [o]; return offers.filter(function(x){ return x.poRef===o.poRef && x.boqId===o.boqId && x.status===(o.status==='declined'||o.status==='expired'?o.status:'accepted'); }).sort(function(a,b){ return a.lineN-b.lineN; }); };
+  BS.orderGroup = function(offers, o){ if(!o) return []; if(!o.poRef) return [o]; return offers.filter(function(x){ return x.poRef===o.poRef && x.boqId===o.boqId && x.status===(o.status==='declined'||o.status==='expired'||o.status==='cancelled'?o.status:'accepted'); }).sort(function(a,b){ return a.lineN-b.lineN; }); };
   BS.orderGroups = function(offers, filter){
     var by={}, out=[];
     offers.forEach(function(o){ if(o.status!=='accepted' || (filter && !filter(o))) return; var k=o.boqId+'|'+(o.poRef||o.id); if(!by[k]){ by[k]={key:k, poRef:o.poRef, boqId:o.boqId, supplierId:o.supplierId, supplierName:o.supplierName, offers:[]}; out.push(by[k]); } by[k].offers.push(o); });
@@ -747,16 +750,17 @@
   BS.lineCheck = function(o){ if(o.check) return o.check; if(o.deliveredAt && Date.now() > BS.checkDue(o)) return {state:"ok", auto:true, at:new Date(BS.checkDue(o)).toISOString()}; return null; };
   BS.isChecked = function(o){ return !!(o.deliveredAt && (o.checkedAt || Date.now() > BS.checkDue(o))); };
   BS.orderStatus = function(o){
+    if(o.status==='cancelled') return {t:'Cancelled', c:'', who:'none'};
     var checked = BS.isChecked(o);
     if(BS.payFirst()){
-      if(checked) return o.problemAt ? {t:'Delivered · problem reported', c:'tag-ochre', who:'none'} : {t:'Delivered · closed', c:'tag-green', who:'none'};
+      if(checked) return o.problemAt ? {t:'Delivered · problem reported', c:'tag-ochre', who:'none'} : {t:'Completed', c:'tag-green', who:'none'};
       if(o.deliveredAt) return {t:'Handed over · check the items', c:'tag-ochre', who:'buyer'};
       if(o.dispatchedAt) return {t:'Dispatched', c:'tag-ochre', who:'buyer'};
       if(o.readyAt) return {t:'Ready for dispatch', c:'tag-green', who:'supplier'};
       if(o.paidAt) return {t:'Paid · preparing', c:'tag-green', who:'supplier'};
       if(o.contractAt) return {t:'Confirmed · payment due', c:'tag-ochre', who:'buyer'};
     } else {
-      if(o.paidAt) return {t:'Paid · closed', c:'tag-green', who:'none'};
+      if(o.paidAt) return {t:'Completed', c:'tag-green', who:'none'};
       if(checked) return {t:'Delivered · payment due', c:'tag-ochre', who:'buyer'};
       if(o.deliveredAt) return {t:'Handed over · check the items', c:'tag-ochre', who:'buyer'};
       if(o.dispatchedAt) return {t:'Dispatched', c:'tag-ochre', who:'buyer'};

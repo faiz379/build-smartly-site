@@ -4,7 +4,7 @@
    (or "Mark all as read"); read state is kept per account on the device. */
 (function(){
   var $=function(id){ return document.getElementById(id); };
-  var data={boqs:[],offers:[],messages:[],news:[],verifications:[],profiles:[],issues:[],suppliers:[]};
+  var data={boqs:[],offers:[],messages:[],news:[],verifications:[],profiles:[],issues:[],suppliers:[],amendments:[]};
   var DAY=86400000, open=false;
   function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function digits(p){ return String(p||'').replace(/\D/g,'').replace(/^251/,'').replace(/^0/,''); }
@@ -47,6 +47,7 @@
         add(o.declinedAt||o.expiredAt, o.status==='declined'?'PO/SA declined':'PO/SA lapsed', (o.poRef||'')+(o.status==='declined'?' was declined by the supplier':' was not confirmed in time')+'. Choose another offer.', '#boq-mine'); });
       data.boqs.forEach(function(b){ if(b.ownerPhone===w.phone && b.status==='rejected' && b.rejectedAt) add(b.rejectedAt, 'Request not sent', b.ref+': '+(b.rejectReason||'')+'.', '#boq-mine'); if(b.ownerPhone===w.phone && !b.upload && b.sentAt) add(b.sentAt, 'Your request went out', b.ref+' was checked by our team and sent to suppliers.', '#boq-mine'); });
       data.boqs.forEach(function(b){ if(b.ownerPhone===w.phone && b.upload && b.sentAt) add(b.sentAt, 'Your list went out', b.ref+': our team typed in '+(b.lines||[]).length+' item'+((b.lines||[]).length!==1?'s':'')+' from your file and sent them to suppliers.', '#boq-mine'); });
+      data.offers.forEach(function(o){ if(mine.indexOf(o.boqId)<0 || o.status!=='cancelled' || offSeen['c'+o.poRef]) return; offSeen['c'+o.poRef]=1; add(o.cancelledAt, 'PO/SA cancelled', (o.poRef||'')+' was cancelled by Build Smartly. Choose another offer.', '#boq-mine'); });
       groups.forEach(function(g){ if(mine.indexOf(g.boqId)<0) return; var o=g.first, h='#order-'+g.id;
         if(o.buyerAgreedAt && o.buyerAgreedAt<=(o.confirmedAt||'')) add(o.confirmedAt, 'PO/SA confirmed', g.poRef+' is confirmed by the supplier. It is binding now.', h);
         else add(o.confirmedAt, 'PO/SA to accept', g.poRef+' is confirmed by the supplier. Read and accept it.', h);
@@ -58,6 +59,9 @@
       data.news.forEach(function(n){ if(n.status==='published') add(n.publishedAt||n.createdAt, 'Newsletter', (n.company?n.company+': ':'')+(n.title||''), '#newsletter'); });
     }
     if(w.role!=='staff'){
+      data.amendments.forEach(function(a){ var g=data.offers.filter(function(o){ return o.poRef===a.poRef && o.boqId===a.boqId; })[0]; if(!g) return; var b=boqOf(a.boqId), isBuyer=b.ownerPhone===w.phone, isSup=w.role==='supplier' && g.supplierId===w.supplierId; if(!isBuyer && !isSup) return; var mine=(a.by==='buyer')===isBuyer;
+        if(!mine && a.status==='pending') add(a.at, 'Change asked', (a.poRef||'')+': Amendment '+a.n+' waits for your answer.', '#order-'+(a.orderId||g.id));
+        if(mine && a.answeredAt) add(a.answeredAt, a.status==='accepted'?'Change accepted':'Change declined', (a.poRef||'')+': Amendment '+a.n+(a.status==='accepted'?' is part of the PO/SA now.':' was declined.'), '#order-'+(a.orderId||g.id)); });
       data.messages.forEach(function(m){
         if(!m.orderId && m.phone===w.phone && m.who==='staff' && m.staff) add(m.createdAt, 'Support', 'Build Smartly staff: '+m.text, '#support');
         if(m.orderId && m.phone!==w.phone && ((w.role==='supplier' && m.toSupplier===w.supplierId) || (w.role==='buyer' && m.toBuyer===w.phone))) add(m.createdAt, 'Message on your order', (m.name||'')+': '+m.text, '#order-'+m.orderId); });
