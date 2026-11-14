@@ -189,7 +189,9 @@
       if(d.id==="brands" && d.map){ Object.keys(d.map).forEach(function(c){ if(Array.isArray(d.map[c]) && d.map[c].length) BS.BRANDS[c]=d.map[c].slice(); }); }
       if(d.id==="brandLogos" && d.map){ BS.BRAND_LOGOS=d.map; }
       if(d.id==="ads" && Array.isArray(d.hidden)){ BS.ADS_HIDDEN=d.hidden.slice(); }
-      if(d.id==="payment"){ if(d.when==="before" || d.when==="after") BS.PAY_WHEN=d.when; if(Array.isArray(d.methods) && d.methods.length) BS.PAY_ON=d.methods.slice(); if(d.bank) BS.BANK=Object.assign({}, d.bank); }
+      if(d.id==="payment"){ if(d.when==="before" || d.when==="after") BS.PAY_WHEN=d.when;
+        if(Array.isArray(d.terms) && d.terms.length) BS.TERMS_ON=d.terms.filter(function(k){ return BS.TERM_KINDS.indexOf(k)>=0; }); if(!BS.TERMS_ON.length) BS.TERMS_ON=["before"];
+        if(+d.depositPct>0 && +d.depositPct<100) BS.DEPOSIT_PCT=+d.depositPct; if(+d.creditMax>0) BS.CREDIT_MAX=+d.creditMax; if(Array.isArray(d.methods) && d.methods.length) BS.PAY_ON=d.methods.slice(); if(d.bank) BS.BANK=Object.assign({}, d.bank); }
       if(d.id==="leadSms"){ BS.LEAD_SMS_EDIT=d.map||{}; }
       if(d.id==="verify"){ if(+d.unverifiedMax>0) BS.UNVERIFIED_MAX=+d.unverifiedMax; if(["unverified","all","none"].indexOf(d.review)>=0) BS.REVIEW_MODE=d.review; if(+d.holdDays>0) BS.HOLD_DAYS=+d.holdDays; }
       if(d.id==="delivery"){ if(+d.confirmHours>0) BS.CONFIRM_HOURS=+d.confirmHours; if(+d.checkHours>0) BS.CHECK_HOURS=+d.checkHours; if(+d.proofMin>0) BS.PROOF_MIN=+d.proofMin; if(d.proofOn!==undefined) BS.PROOF_ON=!!d.proofOn; if(+d.linkHours>0) BS.TRACK_HOURS=Math.min(48, +d.linkHours); if(/^(am|en|om)$/.test(d.driverLang||"")) BS.DRIVER_LANG=d.driverLang; }
@@ -715,7 +717,40 @@
   /* When the buyer pays (Staff → Settings → Payment, settings doc "payment" {when}). "before": the full amount once the contract is
      agreed, before the goods leave (decided 31 Oct 2026 until the shareholders settle the payment terms); "after": on delivery. */
   BS.PAY_WHEN = "before";
-  BS.payFirst = function(){ return BS.PAY_WHEN !== "after"; };
+  /* Payment terms (14 Nov 2026): the supplier chooses one per offer from the terms staff allow (settings doc "payment"
+     {terms, depositPct, creditMax}); it is stored on each offer as payTerm {kind, pct, days} and is part of the PO/SA.
+       before  · full payment before dispatch
+       deposit · a deposit (pct %) before the goods are prepared, the balance after the item check
+       after   · full payment after the item check
+       credit  · full payment within `days` days of the handover
+     Orders from before the terms follow BS.PAY_WHEN. The deposit is recorded in depositAt/depositRef/depositAmt; paidAt is
+     the final payment (full amount or balance) and paidTotal everything paid. */
+  BS.TERM_KINDS = ["before","deposit","after","credit"];
+  BS.TERMS_ON = ["before","deposit","after","credit"];
+  BS.DEPOSIT_PCT = 50;
+  BS.CREDIT_MAX = 30;
+  BS.termOf = function(o){ var t=o&&o.payTerm; if(t && BS.TERM_KINDS.indexOf(t.kind)>=0) return t; return {kind: BS.PAY_WHEN==="after" ? "after" : "before"}; };
+  BS.termLabel = function(t){ t=t||{}; return t.kind==="deposit" ? (+t.pct||BS.DEPOSIT_PCT)+"% deposit, balance after delivery"
+    : t.kind==="after" ? "Full payment after delivery" : t.kind==="credit" ? "Credit: pay within "+(+t.days||BS.CREDIT_MAX)+" days of delivery" : "Full payment before dispatch"; };
+  BS.termDefault = function(){ var k=BS.TERMS_ON[0]||"before"; return k==="deposit" ? {kind:k, pct:BS.DEPOSIT_PCT} : k==="credit" ? {kind:k, days:BS.CREDIT_MAX} : {kind:k}; };
+  /* the term a supplier starts from: the customer's preferred one when staff allow it, else the first allowed */
+  BS.termFor = function(pref){ var m={"Full payment before dispatch":"before","Deposit, balance after delivery":"deposit","Full payment after delivery":"after","Credit":"credit"}[pref||""];
+    if(m && BS.TERMS_ON.indexOf(m)>=0) return m==="deposit" ? {kind:m, pct:BS.DEPOSIT_PCT} : m==="credit" ? {kind:m, days:BS.CREDIT_MAX} : {kind:m};
+    return BS.termDefault(); };
+  /* with an order: is the full amount paid before dispatch; without: the old site-wide setting */
+  BS.payFirst = function(o){ return o ? BS.termOf(o).kind==="before" : BS.PAY_WHEN !== "after"; };
+  /* what the buyer owes now: "deposit", "full", "balance" or "" (nothing yet) */
+  BS.payStage = function(o){ if(!o || o.paidAt || !o.contractAt) return ""; var k=BS.termOf(o).kind;
+    if(k==="before") return "full";
+    if(k==="deposit") return !o.depositAt ? "deposit" : BS.isChecked(o) ? "balance" : "";
+    return BS.isChecked(o) ? "full" : ""; };
+  BS.payAmount = function(o, total, stage){ stage=stage||BS.payStage(o); var t=BS.termOf(o);
+    if(stage==="deposit") return Math.round(total*(+t.pct||BS.DEPOSIT_PCT)/100);
+    if(stage==="balance") return Math.max(0, total-(+o.depositAmt||0));
+    return total; };
+  /* credit: the date the payment is due (handover + days) */
+  BS.creditDue = function(o){ var t=BS.termOf(o); return t.kind==="credit" && o && o.deliveredAt ? new Date(o.deliveredAt).getTime() + (+t.days||BS.CREDIT_MAX)*86400000 : 0; };
+  BS.payOverdue = function(o){ var d=BS.creditDue(o); return !!(d && !o.paidAt && Date.now()>d); };
   /* After the handover the buyer checks every item; an item not answered within this many hours counts as received. */
   BS.CHECK_HOURS = 48;
   /* the delivery record is shown on the home page only from this many checked deliveries */
@@ -740,9 +775,12 @@
     return !!(o && o.status==='accepted' && !o.heldForVerify && !o.supplierConfirmed && o.acceptedAt && Date.now() > BS.confirmDue(o)); };
   BS.namesShown = function(o){ return !!(o && (o.supplierConfirmed || o.contractAt)); };
   BS.verifyNo = function(o){ var s=String((o&&o.poRef)||'')+'|'+String((o&&o.acceptedAt)||''), h=0; for(var i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))>>>0; } var x=h.toString(36).toUpperCase(); while(x.length<7) x='0'+x; return x.slice(0,4)+'-'+x.slice(4,7); };
-  BS.orderSteps = function(){
+  BS.orderSteps = function(o){
     var head=[['acceptedAt','PO/SA issued'],['contractAt','Confirmed · binding']], go=[['readyAt','Ready for dispatch'],['dispatchedAt','Dispatched'],['deliveredAt','Handed over'],['checkedAt','Items checked']];
-    return BS.payFirst() ? head.concat([['paidAt','Paid']], go) : head.concat(go, [['paidAt','Paid']]);
+    var k = o ? BS.termOf(o).kind : (BS.payFirst() ? "before" : "after");
+    if(k==="before") return head.concat([['paidAt','Paid']], go);
+    if(k==="deposit") return head.concat([['depositAt','Deposit paid']], go, [['paidAt','Balance paid']]);
+    return head.concat(go, [['paidAt','Paid']]);
   };
   Object.defineProperty(BS, "ORDER_STEPS", { get: function(){ return BS.orderSteps(); }, configurable: true });
   BS.checkDue = function(o){ return o && o.deliveredAt ? new Date(o.deliveredAt).getTime() + BS.CHECK_HOURS*3600000 : 0; };
@@ -751,21 +789,16 @@
   BS.isChecked = function(o){ return !!(o.deliveredAt && (o.checkedAt || Date.now() > BS.checkDue(o))); };
   BS.orderStatus = function(o){
     if(o.status==='cancelled') return {t:'Cancelled', c:'', who:'none'};
-    var checked = BS.isChecked(o);
-    if(BS.payFirst()){
-      if(checked) return o.problemAt ? {t:'Delivered · problem reported', c:'tag-ochre', who:'none'} : {t:'Completed', c:'tag-green', who:'none'};
+    var checked = BS.isChecked(o), k = BS.termOf(o).kind;
+    if(o.contractAt){
+      if(checked && o.paidAt) return o.problemAt ? {t:'Delivered · problem reported', c:'tag-ochre', who:'none'} : {t:'Completed', c:'tag-green', who:'none'};
+      if(checked) return k==="credit" ? (BS.payOverdue(o) ? {t:'Delivered · payment overdue', c:'tag-ochre', who:'buyer'} : {t:'Delivered · on credit', c:'tag-ochre', who:'buyer'})
+        : {t:k==="deposit"?'Delivered · balance due':'Delivered · payment due', c:'tag-ochre', who:'buyer'};
       if(o.deliveredAt) return {t:'Handed over · check the items', c:'tag-ochre', who:'buyer'};
       if(o.dispatchedAt) return {t:'Dispatched', c:'tag-ochre', who:'buyer'};
       if(o.readyAt) return {t:'Ready for dispatch', c:'tag-green', who:'supplier'};
-      if(o.paidAt) return {t:'Paid · preparing', c:'tag-green', who:'supplier'};
-      if(o.contractAt) return {t:'Confirmed · payment due', c:'tag-ochre', who:'buyer'};
-    } else {
-      if(o.paidAt) return {t:'Completed', c:'tag-green', who:'none'};
-      if(checked) return {t:'Delivered · payment due', c:'tag-ochre', who:'buyer'};
-      if(o.deliveredAt) return {t:'Handed over · check the items', c:'tag-ochre', who:'buyer'};
-      if(o.dispatchedAt) return {t:'Dispatched', c:'tag-ochre', who:'buyer'};
-      if(o.readyAt) return {t:'Ready for dispatch', c:'tag-green', who:'supplier'};
-      if(o.contractAt) return {t:'Confirmed · preparing', c:'tag-green', who:'supplier'};
+      if(BS.mayPrepare(o)) return {t:k==="before"?'Paid · preparing':k==="deposit"?'Deposit paid · preparing':'Confirmed · preparing', c:'tag-green', who:'supplier'};
+      return {t:k==="deposit"?'Confirmed · deposit due':'Confirmed · payment due', c:'tag-ochre', who:'buyer'};
     }
     if(o.status==='declined') return {t:'Declined by the supplier', c:'', who:'buyer'};
     if(o.heldForVerify && !o.supplierConfirmed) return {t:'Held · buyer being verified', c:'tag-ochre', who:'staff'}; /* staff act next; "none" would mean closed */
@@ -775,9 +808,9 @@
   };
   BS.orderClosed = function(o){ return BS.orderStatus(o).who === 'none'; };
   /* payment is open: before dispatch once the contract is agreed, or after the items are checked */
-  BS.payOpen = function(o){ return !o.paidAt && (BS.payFirst() ? !!o.contractAt : BS.isChecked(o)); };
+  BS.payOpen = function(o){ return !!BS.payStage(o); };
   /* the goods may be prepared: the contract is agreed, and with payment first, the order is paid */
-  BS.mayPrepare = function(o){ return !!o.contractAt && (!BS.payFirst() || !!o.paidAt); };
+  BS.mayPrepare = function(o){ if(!o || !o.contractAt) return false; var k=BS.termOf(o).kind; return k==="before" ? !!o.paidAt : k==="deposit" ? !!o.depositAt : true; };
   /* Delivery record from the buyers' checks: items received complete, and on time (handed over by the needed-by date). */
   BS.deliveryRecord = function(offers, boqs){
     var rec={deliveries:0, lines:0, complete:0, onTime:0, good:0, problems:0, sups:{}};

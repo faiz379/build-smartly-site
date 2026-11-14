@@ -639,7 +639,8 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 @media (max-width:520px){.qform{grid-template-columns:repeat(2,1fr)}}
 .sent{font-size:.88rem;color:var(--ok);font-weight:600}
 .qfoot{display:grid;grid-template-columns:1fr 11rem auto;gap:.7rem;align-items:end;border:2px solid var(--green);border-radius:12px;padding:.8rem;background:color-mix(in srgb,var(--green) 6%,var(--white));margin-top:.2rem}
-.qfoot>div:first-child{display:grid;gap:.2rem}.qfoot .field label{font-size:.76rem}
+.qfoot>div:first-child{display:grid;gap:.2rem}
+.qfoot .qterm{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:.4rem .8rem;align-items:end;border-top:1px dashed var(--line);padding-top:.6rem}.qfoot .qterm .field{min-width:10rem}.qfoot .field label{font-size:.76rem}
 @media (max-width:640px){.qfoot{grid-template-columns:1fr}}
 .prices{display:grid;gap:.4rem}
 .prow{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:.5rem;align-items:center;border:1px solid var(--line);border-radius:10px;padding:.5rem .7rem;background:var(--white);font-size:.9rem}
@@ -1134,7 +1135,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
       <input type="hidden" id="validity" value="4">
       <div class="grid2">
         <div class="field"><label for="delivery">Delivery</label><select id="delivery"><option>Supplier delivers to site</option><option>Build Smartly delivers</option><option>I collect from supplier</option></select><span class="hint" id="deliveryHint"></span></div>
-        <div class="field"><label for="payment">Preferred payment</label><select id="payment"><option>On delivery</option><option>Advance</option><option>On shipping</option><option>Credit (date to agree)</option></select></div>
+        <div class="field"><label for="payment">Preferred payment</label><select id="payment"><option>Any terms</option><option>Full payment before dispatch</option><option>Deposit, balance after delivery</option><option>Full payment after delivery</option><option>Credit</option></select></div>
       </div>
       <div class="grid2">
         <label class="check"><input type="checkbox" id="partial" checked><span>Partial delivery accepted (a line may be split between suppliers)</span></label>
@@ -1760,8 +1761,8 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 </div>
 
 
-<script src="assets/firebase-config.js?v=20261113f" onerror="this.remove()"></script>
-<script src="assets/store.js?v=20261113f"></script>
+<script src="assets/firebase-config.js?v=20261114a" onerror="this.remove()"></script>
+<script src="assets/store.js?v=20261114a"></script>
 <script>
 /* ---------- Router: one page, views switched by hash ---------- */
 window.BSRoute = (function(){
@@ -2014,7 +2015,8 @@ function renderStatements(boxId, groups, boqs){
   groups.forEach(function(g){ var o=g.first, b=boqs.filter(function(x){ return x.id===g.boqId; })[0]||{}, tot=0; g.offers.forEach(function(x){ var l=(b.lines||[]).filter(function(y){ return y.n===x.lineN; })[0]||{}; tot+=(window.bsLineExtras?bsLineExtras(b,l,x).total:BS.offerTotal(x)); });
     var shown=BS.namesShown(o);
     rows.push({t:o.acceptedAt, k:'posa', ico:'PO', id:g.id, title:'Purchase Order / Sales Agreement '+(g.poRef||''), sub:(shown?(o.supplierName||'')+' · '+(o.customerRevealed||'')+' · ':'')+BS.fmt(tot)+' · '+(o.contractAt?'Confirmed · binding':'Awaiting the supplier\'s confirmation')});
-    if(o.paidAt) rows.push({t:o.paidAt, k:'receipt', ico:'RC', id:g.id, title:'Receipt '+(o.paymentRef||''), sub:(g.poRef||'')+' · '+BS.fmt(o.paidTotal||tot)+' · '+(o.paymentMethod||'Yagout Pay')}); });
+    if(o.paidAt) rows.push({t:o.paidAt, k:'receipt', ico:'RC', id:g.id, title:'Receipt '+(o.paymentRef||''), sub:(g.poRef||'')+' · '+BS.fmt(o.paidTotal||tot)+' · '+(o.paymentMethod||'Yagout Pay')});
+    else if(o.depositAt) rows.push({t:o.depositAt, k:'receipt', ico:'RC', id:g.id, title:'Deposit receipt '+(o.depositRef||''), sub:(g.poRef||'')+' · '+BS.fmt(o.depositAmt||0)+' · '+(o.depositMethod||'Yagout Pay')}); });
   rows.sort(function(a,b){ return (b.t||'').localeCompare(a.t||''); });
   if(!rows.length){ box.innerHTML='<div class="empty">Nothing yet. Purchase Order / Sales Agreements and receipts appear here.</div>'; return; }
   var years={}; rows.forEach(function(r){ var y=String(r.t||'').slice(0,4)||'—'; (years[y]=years[y]||[]).push(r); });
@@ -2676,7 +2678,7 @@ function bsSupport(threadId, inputId, sendId){
       var head='<div class="boq-head"><div><h3>'+esc(b.ref)+' · '+b.lines.length+' line'+(b.lines.length>1?'s':'')+' · '+esc(b.subcity)+'</h3><span class="small muted">'+esc(b.deliveryTerm)+' · '+esc(b.paymentTerm)+(b.extended?' · deadline extended once':'')+'</span></div><div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap">'+(withdrawn?'<span class="tag">Withdrawn</span>':'<span class="deadline">'+(left>0?'Quotes close in '+left+' day'+(left>1?'s':''):'Quotes closed')+'</span>'+(!groups.length?'<button class="btn btn-ghost btn-sm" data-withdraw="'+b.id+'">Withdraw</button>':'')+(offers.some(function(o){ return o.boqId===b.id; }) ? (BS.isVerified((BS.me()||{}).phone) ? '<button class="btn btn-ghost btn-sm" type="button" data-dloffers="'+b.id+'">Download offers</button>' : '<span class="btn btn-ghost btn-sm locked" title="Available after verification">🔒 Download offers</span>') : '')+(!b.extended&&!groups.length&&left>0?'<button class="btn btn-ghost btn-sm" data-extend="'+b.id+'" data-days="'+b.validityDays+'">Extend '+b.validityDays+' days</button>':''))+'</div></div>';
       /* orders already placed on this request */
       var ordersHtml = groups.length ? '<div class="orders-box"><strong style="font-family:var(--display)">Your orders</strong>'+groups.map(function(g){ var st=BS.orderStatus(g.first), tot=0; g.offers.forEach(function(o){ tot+=lineExtras(b, lineOfB(b,o.lineN), o).total; });
-          var act = st.who==='buyer' ? (BS.payOpen(g.first)?'Pay '+BS.fmt(tot):g.first.deliveredAt?'Check your items':g.first.dispatchedAt?'Follow the delivery':'Accept the PO/SA') : 'Open';
+          var act = st.who==='buyer' ? (BS.payOpen(g.first)?'Pay '+BS.fmt(BS.payAmount(g.first, tot)):g.first.deliveredAt?'Check your items':g.first.dispatchedAt?'Follow the delivery':'Accept the PO/SA') : 'Open';
           var info='<span><strong>'+esc(g.poRef||'')+'</strong> · '+(BS.namesShown(g.first)?esc(g.supplierName):'<span class="muted">supplier shown when they confirm</span>')+'<br><span class="small muted">'+g.offers.map(function(o){ return esc(lineOfB(b,o.lineN).item||''); }).join(', ')+' · '+BS.fmt(tot)+'</span></span><span class="tag '+st.c+'">'+esc(st.t)+'</span>';
           /* the contract opens in a pop-up right here, so several orders can be agreed one after another without leaving the page */
           if(st.who==='buyer' && g.first.supplierConfirmed && !g.first.buyerAgreedAt && !g.first.dispatchedAt) return '<div class="order-row">'+info+'<span style="display:flex;gap:.4rem;flex-wrap:wrap;justify-content:flex-end"><button class="btn btn-ochre btn-sm" type="button" data-stmt="'+g.id+'" data-kind="posa">Accept the PO/SA</button><a class="btn btn-ghost btn-sm" href="#order-'+g.id+'">Open</a></span></div>';
@@ -2704,7 +2706,7 @@ function bsSupport(threadId, inputId, sendId){
             '<span><span class="k">Brand</span>'+(BS.BRAND_LOGOS[o.brand]?'<img class="blogo" src="'+BS.BRAND_LOGOS[o.brand]+'" alt="">':'')+'<b>'+esc(o.brand||'—')+'</b><span class="small muted"> · '+o.qtyOffered+' '+esc(l.unit)+(o.qtyOffered<l.qty?' (partial)':'')+'</span></span>'+
             '<span><span class="k">'+rateLabel(l)+'</span>'+BS.fmt(o.unitPrice)+' <span class="small muted">'+(o.vat==='incl'?'incl. VAT':'excl. VAT')+'</span></span>'+
             '<span><span class="k">Total</span><strong>'+BS.fmt(total)+'</strong>'+(isBest?'<br><span class="best-tag">Best price</span>':(!po && live.length>1 && o.status!=='rejected' && total>bestTotal)?'<br><span class="diff">+ '+BS.fmt(total-bestTotal)+' vs best</span>':'')+'</span>'+
-            '<span><span class="k">Delivery · ready in · valid</span>'+(o.deliveryCost?BS.fmt(o.deliveryCost)+(o.deliveryTotal&&o.deliveryTotal>o.deliveryCost?' <span class="small" title="One delivery fee for all lines from this supplier, shared by value"><span>share of</span> <span data-notr>'+BS.fmt(o.deliveryTotal)+'</span></span>':''):(b.deliveryTerm==='Supplier delivers to site'?'included':'ex-works'))+' · '+o.leadDays+' d · <span class="cd">'+o.validDays+' d</span></span>'+act+'</div>';
+            '<span><span class="k">Delivery · ready in · valid</span>'+(o.deliveryCost?BS.fmt(o.deliveryCost)+(o.deliveryTotal&&o.deliveryTotal>o.deliveryCost?' <span class="small" title="One delivery fee for all lines from this supplier, shared by value"><span>share of</span> <span data-notr>'+BS.fmt(o.deliveryTotal)+'</span></span>':''):(b.deliveryTerm==='Supplier delivers to site'?'included':'ex-works'))+' · '+o.leadDays+' d · <span class="cd">'+o.validDays+' d</span><br><span class="small"><span class="k" style="display:inline">Payment:</span> '+esc(BS.termLabel(BS.termOf(o)))+'</span></span>'+act+'</div>';
         }).join('');
         return '<section class="lbox'+(po?' done':ch?' chosen':'')+'"><div class="lbox-head"><span class="lbox-pic">'+(BS.itemPic(l.item)||BS.catPic(l.cat)?'<img src="'+esc(BS.itemPic(l.item)||BS.catPic(l.cat))+'" alt="" onerror="this.remove()">':'')+'</span><span><strong>'+lineTitle(l)+'</strong><br><span class="small keyinfo">'+esc(l.cat)+(os.length?' · '+os.length+' of '+invited+' supplier'+(invited!==1?'s':'')+' quoted · cheapest first':' · sent to '+invited+' supplier'+(invited!==1?'s':''))+'</span></span>'+state+'</div>'+
           (os.length ? '<div class="offers">'+rows+'</div>' : '<div class="small muted">No offers yet. You get a notification when the first one arrives.</div>')+'</section>';
@@ -2736,7 +2738,7 @@ function bsSupport(threadId, inputId, sendId){
           if(age<delay+(l.n%3)*10 || autoBusy[key] || offers.some(function(o){ return o.boqId===b.id && o.lineN===l.n && o.supplierId===s.id; })) continue;
           autoBusy[key]=1; var base=BS.baseOf(l.item)||1000; var price=Math.round(base*(s.factor||1)*(0.96+Math.random()*0.08)); var brands=(BS.BRANDS[l.cat]||['Other']).filter(function(x){ return x!=='Other'; }); var brand=brands.length?brands[(k+l.n)%brands.length]:'Other';
           var dEst = b.deliveryTerm==='Supplier delivers to site' && !BS.isHire(l) ? BS.deliveryEstimate([l], s.sub, b.pin||b.subcity).cost : 0;
-          await BS.add('offers', { boqId:b.id, lineN:l.n, supplierId:s.id, supplierName:s.name, supplierSub:s.sub, brand:brand, qtyOffered:l.qty, unitPrice:price, vat:'incl', deliveryCost:dEst, leadDays:1+((k+l.n)%4), validDays:3+(k%2)*4, status:'sent' });
+          await BS.add('offers', { boqId:b.id, lineN:l.n, supplierId:s.id, supplierName:s.name, supplierSub:s.sub, brand:brand, qtyOffered:l.qty, unitPrice:price, vat:'incl', deliveryCost:dEst, leadDays:1+((k+l.n)%4), validDays:3+(k%2)*4, payTerm:BS.termFor(b.paymentTerm), status:'sent' });
         }
       }
     }
@@ -2756,7 +2758,7 @@ function bsSupport(threadId, inputId, sendId){
       if(f.heldForVerify && BS.isVerified(me2.phone)){ var kv='v|'+g.key; if(!autoBusy[kv]){ autoBusy[kv]=1; await BS.updateMany('offers', ids, {heldForVerify:false, verifiedAt:new Date().toISOString()}); } continue; }
       if(f.heldForVerify) continue;
       if(!f.supplierConfirmed && secs(f.verifiedAt||f.acceptedAt)>A.confirmAfter){ var k1='s1|'+g.key; if(autoBusy[k1]) continue; autoBusy[k1]=1; var now1=new Date().toISOString(); await BS.updateMany('offers', ids, Object.assign({supplierConfirmed:true, confirmedAt:now1}, f.buyerAgreedAt?{contractAt:now1}:{})); continue; }
-      if(BS.mayPrepare(f) && !f.readyAt && secs(f.paidAt||f.contractAt)>A.readyAfter){ var k2='s2|'+g.key; if(autoBusy[k2]) continue; autoBusy[k2]=1; await BS.updateMany('offers', ids, {readyAt:new Date().toISOString()}); continue; }
+      if(BS.mayPrepare(f) && !f.readyAt && secs(f.paidAt||f.depositAt||f.contractAt)>A.readyAfter){ var k2='s2|'+g.key; if(autoBusy[k2]) continue; autoBusy[k2]=1; await BS.updateMany('offers', ids, {readyAt:new Date().toISOString()}); continue; }
       if(f.readyAt && !f.dispatchedAt && secs(f.readyAt)>A.dispatchAfter){ var k3='s3|'+g.key; if(autoBusy[k3]) continue; autoBusy[k3]=1; await bsOrderAction('dispatch', f.id, simDriver(g.key)); continue; }
       if(f.dispatchedAt && !f.deliveredAt && f.trackId && window.bsTrack){ var bb=boqs.filter(function(x){ return x.id===g.boqId; })[0]; if(bb) bsTrack.simStep(f, bb).catch(function(){}); }
     }
@@ -2808,7 +2810,7 @@ function bsSupport(threadId, inputId, sendId){
     var bs=useBsTransport(b), ins=!!(document.getElementById('gIns')||{}).checked;
     var goods=0, trans=0, trips=0, insT=0; items.forEach(function(it){ goods+=it.goods; if(!it.hire){ trans+=it.est.cost; trips+=it.est.trips; } insT+=it.ins; });
     var html='<h3 style="margin-top:.3rem">Complete the order · '+esc(b.ref)+'</h3><p class="small muted" style="margin:.2rem 0 .6rem">'+items.length+' line'+(items.length!==1?'s':'')+' from '+groups.length+' supplier'+(groups.length!==1?'s':'')+': '+(groups.length>1?groups.length+' PO/SAs, one per supplier.':'one PO/SA.')+' The supplier\'s name appears once they confirm.</p>'+
-      groups.map(function(g,gi){ var sum=0; g.items.forEach(function(it){ sum+=it.goods; }); return '<div class="ck-group"><div class="small muted" style="font-weight:600">Order '+(gi+1)+'</div>'+g.items.map(function(it){ return '<div class="ck-row"><span>'+esc(it.l.item)+' · '+it.o.qtyOffered+' '+esc(it.l.unit)+' · brand '+esc(it.o.brand)+'</span><strong>'+BS.fmt(it.goods)+'</strong></div>'; }).join('')+(g.items.length>1?'<div class="ck-row small muted"><span>Order '+(gi+1)+' goods</span><span>'+BS.fmt(sum)+'</span></div>':'')+'</div>'; }).join('');
+      groups.map(function(g,gi){ var sum=0; g.items.forEach(function(it){ sum+=it.goods; }); return '<div class="ck-group"><div class="small muted" style="font-weight:600">Order '+(gi+1)+'</div>'+g.items.map(function(it){ return '<div class="ck-row"><span>'+esc(it.l.item)+' · '+it.o.qtyOffered+' '+esc(it.l.unit)+' · brand '+esc(it.o.brand)+'</span><strong>'+BS.fmt(it.goods)+'</strong></div>'; }).join('')+(g.items.length>1?'<div class="ck-row small muted"><span>Order '+(gi+1)+' goods</span><span>'+BS.fmt(sum)+'</span></div>':'')+'<div class="ck-row small"><span>Payment terms</span><strong>'+esc(BS.termLabel(BS.termOf(g.items[0].o)))+'</strong></div></div>'; }).join('');
     var delivery='';
     if(term==='Supplier delivers to site') delivery='<p class="small muted" style="margin:.2rem 0">Delivery to '+esc(b.subcity)+(b.pin?' (pinned site)':'')+' by the supplier, included in the prices above.</p>';
     else if(trips || /^Build Smartly/.test(term) || term==='I collect from supplier') delivery='<div class="su-choices">'+
@@ -2819,9 +2821,9 @@ function bsSupport(threadId, inputId, sendId){
     html+='<div style="margin-top:.6rem"><strong>Delivery</strong>'+delivery+'</div>'+
       '<label class="check" style="margin-top:.5rem"><input type="checkbox" id="gIns"'+(ins?' checked':'')+'><span>Add transit insurance for the whole order · <strong>'+BS.fmt(insT)+'</strong> <span class="small muted">('+BS.pct(BS.INSURANCE.rate)+' of the goods value)</span></span></label>'+
       '<div class="ck-total"><div class="ck-row"><span>Goods</span><span>'+BS.fmt(goods)+'</span></div>'+(bs?'<div class="ck-row"><span>Build Smartly delivery</span><span>'+BS.fmt(trans)+'</span></div>':'')+(ins?'<div class="ck-row"><span>Transit insurance</span><span>'+BS.fmt(insT)+'</span></div>':'')+'<div class="ck-row" style="font-size:1.1rem"><strong>Total</strong><strong>'+BS.fmt(total)+'</strong></div></div>'+
-      '<p class="small muted" style="margin:.4rem 0 0">'+(BS.payFirst()?'Nothing is charged now. You pay once the supplier confirms, before the goods are dispatched.':'Nothing is charged now. You pay after delivery through Yagout Pay.')+'</p>'+
+      '<p class="small muted" style="margin:.4rem 0 0">'+'Nothing is charged now. You pay as the payment terms of each order say, once the supplier confirms.'+'</p>'+
       '<div class="ck-posa"><p class="small" style="margin:0">'+(groups.length>1?'Placing the order issues a Purchase Order / Sales Agreement (PO/SA) to each supplier.':'Placing the order issues a Purchase Order / Sales Agreement (PO/SA) to the supplier.')+' The supplier confirms it within '+BS.CONFIRM_HOURS+' hours; from then it is binding and you see each other\'s names.</p>'+
-      '<details class="small"><summary style="cursor:pointer;font-weight:600">Read the terms</summary><ol style="margin:.4rem 0 0;padding-left:1.2rem;display:grid;gap:.25rem"><li>The supplier sells and you buy the goods above at the stated price. Build Smartly facilitates this transaction and is not a party to this sale.</li><li>The supplier confirms or declines within '+BS.CONFIRM_HOURS+' hours. If it declines or does not answer, nothing is owed and you choose another offer.</li><li>'+(BS.payFirst()?'You pay the full amount before dispatch, through Yagout Pay or bank transfer.':'You pay after delivery, through Yagout Pay.')+'</li><li>You give the driver your handover code only after checking the goods, then check each item within '+BS.CHECK_HOURS+' hours.</li><li>Once confirmed, neither side may withdraw; changes need an amendment both accept.</li></ol></details>'+
+      '<details class="small"><summary style="cursor:pointer;font-weight:600">Read the terms</summary><ol style="margin:.4rem 0 0;padding-left:1.2rem;display:grid;gap:.25rem"><li>The supplier sells and you buy the goods above at the stated price. Build Smartly facilitates this transaction and is not a party to this sale.</li><li>The supplier confirms or declines within '+BS.CONFIRM_HOURS+' hours. If it declines or does not answer, nothing is owed and you choose another offer.</li><li>You pay as the payment terms shown for each order say, through Yagout Pay or bank transfer.</li><li>You give the driver your handover code only after checking the goods, then check each item within '+BS.CHECK_HOURS+' hours.</li><li>Once confirmed, neither side may withdraw; changes need an amendment both accept.</li></ol></details>'+
       '<label class="check"><input type="checkbox" id="gAccept"'+(accWas?' checked':'')+'><span>I have read and accept this Purchase Order / Sales Agreement and its terms and conditions.</span></label>'+(((BS.me()||{}).type==='Government')?'<label class="check"><input type="checkbox" id="gOwnPo"'+(ownPoWas?' checked':'')+'><span>Use our own PO / contract format: I attach the signed document.</span></label><div class="field" id="gOwnPoBox"'+(ownPoWas?'':' hidden')+'><input type="file" id="gOwnPoFile" accept=".pdf,.jpg,.jpeg,.png,.docx"><span class="hint">'+(ownPoPicked?'<span data-notr>'+esc(ownPoPicked.name)+'</span> · ':'')+'<span>The supplier confirms it on the platform; tracking continues the same way.</span></span></div>':'')+'<p class="err" id="gAcceptErr" hidden style="margin:0;font-size:.85rem;color:var(--warn);font-weight:600">Tick the box to accept the PO/SA.</p></div>';
     $('gDeliv').innerHTML=html; $('gDeliv').hidden=false;
     var vst=BS.buyerState((BS.me()||{}).phone); if(vst!=='verified') $('gDeliv').insertAdjacentHTML('afterbegin', '<div style="margin:.3rem 0 .7rem">'+bsVerifyHtml('checkout')+'</div>');
@@ -2862,8 +2864,9 @@ function bsSupport(threadId, inputId, sendId){
     /* PO numbers never repeat on a request, also after a supplier declined or let one lapse */
     var used={}; offers.forEach(function(o){ if(o.boqId===b.id && o.poRef) used[o.poRef]=1; }); var k=Object.keys(used).length, refs=[];
     for(var gi=0; gi<groups.length; gi++){ k++; var poRef='PO-'+b.ref+'-'+k; refs.push(poRef);
+      var gTerm=BS.termOf(groups[gi].items[0].o);
       for(var j=0;j<groups[gi].items.length;j++){ var it=groups[gi].items[j]; var pf=bs && !it.hire;
-        await BS.update('offers', it.o.id, {status:'accepted', poRef:poRef, acceptedAt:now, customerRevealed:m.company||vrec.company||m.name||b.company||'', customerTin:m.tin||vrec.tin||'', heldForVerify:held, ownPo:ownPo, buyerAgreedAt:now, buyerAgreedBy:m.contact||m.name||m.company||'', platformDelivery:pf, deliveryAmt:pf?it.est.cost:0, deliveryTrips:pf?it.est.trips:0, insurance:ins, insuranceAmt:ins?it.ins:0}); } }
+        await BS.update('offers', it.o.id, {status:'accepted', poRef:poRef, acceptedAt:now, customerRevealed:m.company||vrec.company||m.name||b.company||'', customerTin:m.tin||vrec.tin||'', heldForVerify:held, ownPo:ownPo, buyerAgreedAt:now, buyerAgreedBy:m.contact||m.name||m.company||'', platformDelivery:pf, deliveryAmt:pf?it.est.cost:0, deliveryTrips:pf?it.est.trips:0, insurance:ins, insuranceAmt:ins?it.ins:0, payTerm:gTerm}); } }
     var ch=Object.assign({}, b.chosen||{}); items.forEach(function(it){ delete ch[it.l.n]; }); await BS.update('boqs', b.id, {chosen:ch});
     $('gSave').disabled=false; $('poGate').hidden=true; checkoutBoq=null;
     bsToast(held ? (refs.length>1?refs.length+' PO/SAs issued: ':'PO/SA issued: ')+refs.join(', ')+'. The supplier holds it until our team has verified you; then the supplier has '+BS.CONFIRM_HOURS+' hours to confirm.'
@@ -2889,8 +2892,8 @@ function bsSupport(threadId, inputId, sendId){
     if(c){ var inp=document.querySelector('[data-cin="'+c.dataset.counter+'"]'); var price=+(inp&&inp.value); if(!(price>0)){ bsToast('Type the price you propose.'); return; } c.disabled=true;
       var co2=offers.filter(function(x){ return x.id===c.dataset.counter; })[0]; var cbq=co2&&boqById(co2.boqId); if(cbq && (cbq.chosen||{})[co2.lineN]===co2.id){ var ch3=Object.assign({}, cbq.chosen); delete ch3[co2.lineN]; await BS.update('boqs', cbq.id, {chosen:ch3}); }
       await BS.update('offers', c.dataset.counter, {counter:{price:price, at:new Date().toISOString(), state:'open'}}); bsToast('Your price was sent to the supplier. You get a notification with the answer.'); return; }
-    var dl=t.closest('[data-dloffers]'); if(dl){ var bd=boqById(dl.dataset.dloffers); if(!bd) return; var rows=[['Line','Item','Quantity','Unit','Offer','Brand','Unit price','VAT','Delivery share','Total','Ready in (days)','Valid for (days)']];
-      bd.lines.forEach(function(l){ offersOn(bd,l).forEach(function(o,i){ rows.push([l.n, l.item, l.qty, l.unit, String.fromCharCode(65+i), o.brand, o.unitPrice, o.vat==='incl'?'included':'excluded', Math.round(o.deliveryCost||0), Math.round(totalOf(o)), o.leadDays||'', o.validDays||'']); }); });
+    var dl=t.closest('[data-dloffers]'); if(dl){ var bd=boqById(dl.dataset.dloffers); if(!bd) return; var rows=[['Line','Item','Quantity','Unit','Offer','Brand','Unit price','VAT','Delivery share','Total','Ready in (days)','Valid for (days)','Payment terms']];
+      bd.lines.forEach(function(l){ offersOn(bd,l).forEach(function(o,i){ rows.push([l.n, l.item, l.qty, l.unit, String.fromCharCode(65+i), o.brand, o.unitPrice, o.vat==='incl'?'included':'excluded', Math.round(o.deliveryCost||0), Math.round(totalOf(o)), o.leadDays||'', o.validDays||'', BS.termLabel(BS.termOf(o))]); }); });
       var csv='\ufeff'+rows.map(function(r){ return r.map(function(c){ c=String(c==null?'':c); return /[",\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c; }).join(','); }).join('\r\n');
       var a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='offers-'+bd.ref+'.csv'; document.body.appendChild(a); a.click(); a.remove(); return; }
     var w=t.closest('[data-withdraw]');
@@ -3158,7 +3161,7 @@ function bsSupport(threadId, inputId, sendId){
       if(BS.poLapsed(o)) return;
       if(!o.supplierConfirmed && o.heldForVerify) out.push({ico:'PO', title:'New PO/SA '+what, sub:'<span>Held: the buyer is being verified by our team. You can confirm once they are; your hours start then.</span>', btn:'<a class="btn btn-ghost btn-sm" href="#order-'+g.id+'">Open</a>'});
       else if(!o.supplierConfirmed) out.push({ico:'PO', title:'New PO/SA '+what, sub:'<span>Confirm by</span> <span data-notr>'+new Date(BS.confirmDue(o)).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})+'</span> <span>to make it binding, or decline it with a reason.</span>', btn:'<a class="btn btn-ochre btn-sm" href="#order-'+g.id+'">Read and confirm</a>'});
-      else if(BS.mayPrepare(o) && !o.readyAt) out.push({ico:'✓', title:'Prepare '+what, sub:(BS.payFirst()?'Paid by the buyer.':'The PO/SA is binding.')+' Mark the goods ready when packed.', btn:'<button class="btn btn-primary btn-sm" type="button" data-oact="ready" data-id="'+g.id+'">Ready for dispatch</button>'});
+      else if(BS.mayPrepare(o) && !o.readyAt) out.push({ico:'✓', title:'Prepare '+what, sub:(BS.termOf(o).kind==='before'?'Paid by the buyer.':BS.termOf(o).kind==='deposit'?'Deposit paid by the buyer.':'The PO/SA is binding.')+' Mark the goods ready when packed.', btn:'<button class="btn btn-primary btn-sm" type="button" data-oact="ready" data-id="'+g.id+'">Ready for dispatch</button>'});
       else if(o.readyAt && !o.dispatchedAt) out.push({ico:'→', title:'Dispatch '+what, sub:'Add the driver and send them the tracking link · '+(b.subcity||'the site'), btn:'<a class="btn btn-primary btn-sm" href="#order-'+g.id+'">Dispatch</a>'});
     });
     return out;
@@ -3197,6 +3200,7 @@ function bsSupport(threadId, inputId, sendId){
         var ft=document.createElement('form'); ft.className='qfoot'; ft.dataset.dboq=b.id;
         ft.innerHTML = dlv ? '<div><strong>Delivery for the whole request</strong><span class="small muted"><span>One fee for all lines; the customer sees it shared across the lines by value.</span> <span data-notr>'+fromS+' → '+b.subcity+(b.pin?' ⌖':'')+' · '+est.km+' km · '+est.tonnes+' t</span> · <span>'+est.trips+' truck trip'+(est.trips!==1?'s':'')+'</span></span></div><div class="field"><label>Delivery (ETB)</label><input name="dtot" data-dtot="'+b.id+'" type="number" min="0" step="1" value="'+(sentD?sentD.deliveryTotal:est.cost)+'"'+(sentD?' readonly title="Set with your first offer on this request"':'')+'></div>'+(can&&openL.length>1?'<button class="btn btn-primary btn-sm" type="button" data-sendall="'+b.id+'">Send all '+openL.length+' offers</button>':'')
           : '<div><strong>No delivery to price</strong><span class="small muted">'+(b.deliveryTerm==='I collect from supplier'?'The customer collects from you: quote ex-works.':'The customer uses Build Smartly transport: quote ex-works.')+'</span></div>'+(can&&openL.length>1?'<button class="btn btn-primary btn-sm" type="button" data-sendall="'+b.id+'">Send all '+openL.length+' offers</button>':'');
+        ft.insertAdjacentHTML('beforeend', termRow(b, sentD||mine.filter(function(o){ return o.boqId===b.id; })[0]));
         card.appendChild(ft); }
       box.appendChild(card);
     });
@@ -3223,6 +3227,27 @@ function bsSupport(threadId, inputId, sendId){
     renderPrices(); renderStats(mine);
     }
   }
+  /* Payment terms for the whole request (14 Nov 2026): one choice per request, from the terms staff allow; fixed with the first offer */
+  var termPick={};
+  function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function termRow(b, sent){
+    if(sent) return '<div class="qterm"><strong>Payment terms</strong> <span class="small">'+esc(BS.termLabel(BS.termOf(sent)))+'</span> <span class="small muted">Set with your first offer on this request.</span></div>';
+    var pick=termPick[b.id] || BS.termFor(b.paymentTerm), on=BS.TERMS_ON.length?BS.TERMS_ON:['before'];
+    var lbl={before:'Full payment before dispatch', deposit:'Deposit, balance after delivery', after:'Full payment after delivery', credit:'Credit'};
+    return '<div class="qterm"><div class="field"><label for="pt-'+b.id+'">Payment terms</label><select id="pt-'+b.id+'" data-pterm="'+b.id+'">'+on.map(function(k){ return '<option value="'+k+'"'+(k===pick.kind?' selected':'')+'>'+lbl[k]+'</option>'; }).join('')+'</select></div>'+
+      '<div class="field"'+(pick.kind==='deposit'?'':' hidden')+'><label for="pp-'+b.id+'">Deposit (%)</label><input id="pp-'+b.id+'" data-ppct="'+b.id+'" type="number" min="1" max="99" step="1" value="'+(+pick.pct||BS.DEPOSIT_PCT)+'"></div>'+
+      '<div class="field"'+(pick.kind==='credit'?'':' hidden')+'><label for="pd-'+b.id+'">Days to pay after delivery</label><input id="pd-'+b.id+'" data-pdays="'+b.id+'" type="number" min="1" max="'+BS.CREDIT_MAX+'" step="1" value="'+Math.min(+pick.days||BS.CREDIT_MAX, BS.CREDIT_MAX)+'"></div>'+
+      (b.paymentTerm && b.paymentTerm!=='Any terms'?'<span class="small muted" style="align-self:center"><span>The customer prefers:</span> '+esc(b.paymentTerm)+'</span>':'')+'</div>';
+  }
+  function termPicked(boqId){
+    var sent=offers.filter(function(o){ return o.boqId===boqId && o.supplierId===sup.id && o.payTerm; })[0]; if(sent) return sent.payTerm;
+    var sel=document.querySelector('#tab-requests [data-pterm="'+boqId+'"]'); if(!sel) return BS.termDefault();
+    var k=sel.value; if(k==='deposit'){ var pc=Math.round(+(document.querySelector('#tab-requests [data-ppct="'+boqId+'"]')||{}).value||BS.DEPOSIT_PCT); return {kind:k, pct:Math.min(99, Math.max(1, pc))}; }
+    if(k==='credit'){ var dy=Math.round(+(document.querySelector('#tab-requests [data-pdays="'+boqId+'"]')||{}).value||BS.CREDIT_MAX); return {kind:k, days:Math.min(BS.CREDIT_MAX, Math.max(1, dy))}; }
+    return {kind:k};
+  }
+  $('tab-requests').addEventListener('change', function(e){ var t=e.target, id=t.dataset.pterm||t.dataset.ppct||t.dataset.pdays; if(!id) return;
+    termPick[id]=termPicked(id); if(t.dataset.pterm){ var pp=$('pp-'+id), pd=$('pd-'+id); if(pp) pp.closest('.field').hidden=t.value!=='deposit'; if(pd) pd.closest('.field').hidden=t.value!=='credit'; } });
   /* one delivery fee per request, shared across the lines by value (qty × price) so each offer still has its own delivered total */
   function delivShare(boqId, lineN){
     var inp=document.querySelector('#tab-requests [data-dtot="'+boqId+'"]'); var tot=inp?Math.max(0,+inp.value||0):0; if(!tot) return {cost:0, total:0, lines:0};
@@ -3235,7 +3260,7 @@ function bsSupport(threadId, inputId, sendId){
   }
   $('tab-requests').addEventListener('submit', async function(e){
     e.preventDefault(); var f=e.target; if(!f.dataset.boq) return; if(!verified() || !profile.agree){ bsToast(onHold()?'Your account is on hold for review. Quoting is locked.':'Quoting is locked.'); return; } var btn=f.querySelector('button[type=submit]'); btn.disabled=true; btn.textContent='Sending…'; var ds=delivShare(f.dataset.boq, f.dataset.line);
-    await BS.add('offers', { boqId:f.dataset.boq, lineN:+f.dataset.line, supplierId:sup.id, supplierName:sup.name, supplierSub:(profile.locs[0]||{}).sub||sup.sub||'', brand:f.brand.value.trim(), qtyOffered:+f.qty.value, unitPrice:+f.price.value, vat:f.vat.value, deliveryCost:ds.cost, deliveryTotal:ds.total||0, deliveryLines:ds.lines||0, leadDays:+f.lead.value||0, validDays:+f.valid.value, status:'sent' });
+    await BS.add('offers', { boqId:f.dataset.boq, lineN:+f.dataset.line, supplierId:sup.id, supplierName:sup.name, supplierSub:(profile.locs[0]||{}).sub||sup.sub||'', brand:f.brand.value.trim(), qtyOffered:+f.qty.value, unitPrice:+f.price.value, vat:f.vat.value, deliveryCost:ds.cost, deliveryTotal:ds.total||0, deliveryLines:ds.lines||0, leadDays:+f.lead.value||0, validDays:+f.valid.value, payTerm:termPicked(f.dataset.boq), status:'sent' });
     bsToast('Offer sent. The customer sees it as an anonymous offer.');
   });
   $('spDealSearch').addEventListener('input', function(){ render(); var el=$('spDealSearch'); el.focus(); });
@@ -3252,7 +3277,7 @@ function bsSupport(threadId, inputId, sendId){
     var s=e.target.closest('[data-sendall]'); if(!s) return; if(!verified() || !profile.agree){ bsToast(onHold()?'Your account is on hold for review. Quoting is locked.':'Quoting is locked.'); return; } s.disabled=true; s.textContent='Sending…';
     var forms=Array.prototype.slice.call(document.querySelectorAll('#tab-requests form[data-boq="'+s.dataset.sendall+'"]')).filter(function(f){ return +f.price.value>0; });
     var shares=forms.map(function(f){ return delivShare(f.dataset.boq, f.dataset.line); });
-    for(var i=0;i<forms.length;i++){ var f=forms[i], ds=shares[i]; await BS.add('offers', { boqId:f.dataset.boq, lineN:+f.dataset.line, supplierId:sup.id, supplierName:sup.name, supplierSub:(profile.locs[0]||{}).sub||sup.sub||'', brand:f.brand.value.trim(), qtyOffered:+f.qty.value, unitPrice:+f.price.value, vat:f.vat.value, deliveryCost:ds.cost, deliveryTotal:ds.total||0, deliveryLines:ds.lines||0, leadDays:+f.lead.value||0, validDays:+f.valid.value, status:'sent' }); }
+    for(var i=0;i<forms.length;i++){ var f=forms[i], ds=shares[i]; await BS.add('offers', { boqId:f.dataset.boq, lineN:+f.dataset.line, supplierId:sup.id, supplierName:sup.name, supplierSub:(profile.locs[0]||{}).sub||sup.sub||'', brand:f.brand.value.trim(), qtyOffered:+f.qty.value, unitPrice:+f.price.value, vat:f.vat.value, deliveryCost:ds.cost, deliveryTotal:ds.total||0, deliveryLines:ds.lines||0, leadDays:+f.lead.value||0, validDays:+f.valid.value, payTerm:termPicked(f.dataset.boq), status:'sent' }); }
     bsToast(forms.length+' offer'+(forms.length===1?'':'s')+' sent, with one delivery fee shared across them.');
   });
 })();
@@ -3282,9 +3307,9 @@ function bsSupport(threadId, inputId, sendId){
   function stageOf(b, os, gs){
     if(b.status==='withdrawn') return -1;
     if(gs.length){ var f=function(k){ return gs.every(function(g){ return g.first[k]; }); };
-      var ok=function(){ return gs.every(function(g){ return BS.isChecked(g.first); }); }; CHAIN=BS.payFirst()?CHAIN_PAYFIRST:CHAIN_PAYLATER;
-      if(BS.payFirst()) return ok()?8:f('deliveredAt')?7:f('dispatchedAt')?6:f('readyAt')?5:f('paidAt')?4:f('contractAt')?3:2;
-      return f('paidAt')?8:ok()?7:f('deliveredAt')?6:f('dispatchedAt')?5:f('readyAt')?4:f('contractAt')?3:2; }
+      var ok=function(){ return gs.every(function(g){ return BS.isChecked(g.first); }); };
+      var st=BS.orderSteps(gs[0].first), r=2; CHAIN=['Request sent','Offers arriving'].concat(st.map(function(x){ return x[1]; }));
+      st.forEach(function(x,i){ if(x[0]==='checkedAt' ? ok() : f(x[0])) r=2+i; }); return r; }
     return os.length?1:0;
   }
   function render(){
@@ -3465,10 +3490,10 @@ window.bsPublishProfile = async function(fields){
 
 BSRoute.start();
 </script>
-<script src="assets/track.js?v=20261113f"></script>
-<script src="assets/order.js?v=20261113f"></script>
-<script src="assets/notify.js?v=20261113f"></script>
-<script src="assets/help.js?v=20261113f"></script>
-<script src="assets/admin.js?v=20261113f"></script>
-<script src="assets/editor.js?v=20261113f"></script>
-<script src="assets/i18n.js?v=20261113f"></script>
+<script src="assets/track.js?v=20261114a"></script>
+<script src="assets/order.js?v=20261114a"></script>
+<script src="assets/notify.js?v=20261114a"></script>
+<script src="assets/help.js?v=20261114a"></script>
+<script src="assets/admin.js?v=20261114a"></script>
+<script src="assets/editor.js?v=20261114a"></script>
+<script src="assets/i18n.js?v=20261114a"></script>

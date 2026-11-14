@@ -37,7 +37,9 @@
         if(o.buyerAgreedAt && o.supplierConfirmed && o.buyerAgreedAt>o.confirmedAt) add(o.buyerAgreedAt, 'PO/SA accepted', 'The buyer accepted the PO/SA '+g.poRef+'.', h);
         add(o.deliveredAt, 'Handed over', (o.deliveredHow==='code'?'Your driver entered the buyer\'s handover code for ':o.deliveredHow==='note'?'The buyer entered the delivery-note code for ':'The buyer confirmed delivery of ')+g.poRef+'.', h);
         g.offers.forEach(function(x){ if(x.check && !x.check.auto) add(x.check.at, x.check.state==='ok'?'Item received':'Problem reported', g.poRef+' · '+lineName(b,x.lineN)+(x.check.state==='ok'?' · received in full':' · the buyer reported a problem'), h); });
-        add(o.paidAt, 'Paid', g.poRef+' paid · '+BS.fmt(o.paidTotal||0)+(BS.payFirst()&&!o.readyAt?'. Prepare the goods.':''), h); });
+        add(o.depositAt, 'Deposit paid', g.poRef+' deposit paid · '+BS.fmt(o.depositAmt||0)+(!o.readyAt?'. Prepare the goods.':''), h);
+        add(o.paidAt, 'Paid', g.poRef+' paid · '+BS.fmt(o.paidTotal||0)+(BS.payFirst(o)&&!o.readyAt?'. Prepare the goods.':''), h);
+        if(BS.payOverdue(o)) add(new Date(BS.creditDue(o)).toISOString(), 'Payment overdue', g.poRef+': the buyer\'s credit payment is overdue. Build Smartly follows it up.', h); });
     } else {
       var mine=data.boqs.filter(function(b){ return b.ownerPhone===w.phone; }).map(function(b){ return b.id; });
       data.offers.forEach(function(o){ if(mine.indexOf(o.boqId)<0) return; var b=boqOf(o.boqId);
@@ -53,7 +55,12 @@
         else add(o.confirmedAt, 'PO/SA to accept', g.poRef+' is confirmed by the supplier. Read and accept it.', h);
         add(o.readyAt, 'Ready for dispatch', g.poRef+' is ready at '+g.supplierName+'.', h);
         add(o.dispatchedAt, 'Dispatched', g.poRef+' is on its way'+(o.trackId?'; follow the truck on the map':'')+'. Handover code '+(o.handoverCode||'')+'.', h);
-        if(BS.payFirst()) add(o.contractAt, 'Payment due', 'Pay '+g.poRef+' so the supplier can prepare the goods.', h);
+        var tk=BS.termOf(o).kind, chkT=o.checkedAt||(BS.isChecked(o)?new Date(BS.checkDue(o)).toISOString():'');
+        if(tk==='before') add(o.contractAt, 'Payment due', 'Pay '+g.poRef+' so the supplier can prepare the goods.', h);
+        if(tk==='deposit') add(o.contractAt, 'Deposit due', 'Pay the deposit for '+g.poRef+' so the supplier can prepare the goods.', h);
+        if(chkT && !o.paidAt){ if(tk==='deposit') add(chkT, 'Balance due', 'Pay the balance of '+g.poRef+'.', h); else if(tk==='after') add(chkT, 'Payment due', 'The items are checked. Pay '+g.poRef+'.', h); else if(tk==='credit') add(chkT, 'Payment due', 'Pay '+g.poRef+' by '+new Date(BS.creditDue(o)).toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' (credit).', h); }
+        if(BS.payOverdue(o)) add(new Date(BS.creditDue(o)).toISOString(), 'Payment overdue', g.poRef+': your credit payment is overdue. Please pay now.', h);
+        add(o.depositAt, 'Receipt', 'Deposit for '+g.poRef+' received. Receipt in your Statements.', '#statements');
         add(o.deliveredAt, 'Handed over', g.poRef+' was handed over'+(o.deliveredHow==='code'?' with your handover code':'')+'. Check each item within '+BS.CHECK_HOURS+' hours.', h);
         add(o.paidAt, 'Receipt', 'Payment for '+g.poRef+' received. Receipt in your Statements.', '#statements'); });
       data.news.forEach(function(n){ if(n.status==='published') add(n.publishedAt||n.createdAt, 'Newsletter', (n.company?n.company+': ':'')+(n.title||''), '#newsletter'); });
