@@ -1037,7 +1037,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
           <div class="field"><label for="liPhone">Mobile</label><div class="su-phone"><span class="cc">🇪🇹 +251</span><input id="liPhone" type="tel" inputmode="numeric" placeholder="9 12 34 56 78" autocomplete="tel-national"></div><span class="err" id="liErr" hidden>Enter your mobile number, for example 0912345678.</span></div>
           <div class="field" id="liOtpBox" hidden><label>Enter the code we sent</label><div class="su-otp"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"></div><span class="hint" id="liHint">Type the 6-digit code we sent you by SMS.</span></div>
           <div class="su-nav"><span></span><button class="btn btn-primary" type="button" id="liGo">Send code</button></div>
-          <div class="card" id="liSupplier" style="padding:.9rem;display:flex;gap:.6rem;align-items:center;justify-content:space-between;flex-wrap:wrap"><span><strong style="font-family:var(--display)">Supplier with a password?</strong><br><span class="small muted">Suppliers can also sign in with their mobile number and password.</span></span><a class="btn btn-ghost btn-sm" href="#supplier">Sign in with a password</a></div>
+          <p class="small muted" id="liSupplier" style="margin:0">Suppliers sign in here too and go straight to their supplier portal.</p>
           <div class="card" id="liNew" style="display:grid;gap:.6rem;padding:1rem"><strong style="font-family:var(--display)">New to Build Smartly?</strong><p class="small muted">Sign up in two short steps: your mobile number and the SMS code, then your name and whether you buy, sell or both. No documents until you are ready to order.</p><div style="display:flex;gap:.5rem;flex-wrap:wrap"><a class="btn btn-ghost btn-sm" href="#signup">Sign up</a><a class="btn btn-ochre btn-sm" href="#signup-supplier">Register as a supplier</a></div></div>
         </section>
 
@@ -1071,7 +1071,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
             <div class="su-nav"><a class="small muted" href="#signin">Only buying? Sign in with your number</a><button class="btn btn-primary" type="button" id="sendCode">Send code</button></div>
           </div>
           <div class="su-step" data-step="4" hidden>
-            <div><h1 style="font-size:1.6rem">Your company</h1><p class="muted" id="detailSub">Step 2 of 4. Company, TIN, what you supply and a password. Documents come in the next step. The same account can also send requests to buy.</p></div>
+            <div><h1 style="font-size:1.6rem">Your company</h1><p class="muted" id="detailSub">Step 2 of 4. Company, TIN and what you supply. Documents come in the next step. The same account can also send requests to buy.</p></div>
             <div style="display:grid;gap:.9rem">
               <div class="field"><label for="legal">Legal name of the company</label><input id="legal"><span class="hint">As on the business licence.</span></div>
               <div class="su-row2">
@@ -1092,7 +1092,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
               <div class="field"><label for="wSub">Dispatch point · sub-city of your main store</label><select id="wSub"></select><span class="hint">Used to work out transport to each site. Never shown to buyers.</span></div>
               <div class="field"><label for="wType">Supplier type</label><select id="wType"><option>Distributor</option><option>Manufacturer</option><option>Importer</option><option>Wholesaler</option><option>Retailer</option><option>Equipment owner</option></select></div>
             </div>
-            <div class="field"><label for="pw">Password</label><input id="pw" type="password" autocomplete="new-password"><span class="hint">At least 8 characters. You sign in to the supplier portal with your mobile number and this password.</span><span class="err" id="pwErr" hidden>Use at least 8 characters.</span></div>
+            
             <label class="check"><input type="checkbox" id="terms"><span>I accept the Supplier Service Agreement, the terms of use and the privacy policy.</span></label>
             <span class="err" id="termsErr" hidden>Please accept the terms to continue.</span>
             <div class="su-nav"><button class="btn btn-ghost" type="button" data-back>Back</button><button class="btn btn-primary" type="button" id="create">Continue to documents</button></div>
@@ -1234,13 +1234,10 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 <!-- ================= SUPPLIER PORTAL ================= -->
 <div id="view-supplier" data-view hidden class="wrap view">
   <section class="sp-login" id="login">
-    <div class="topbar"><div><span class="eyebrow">Supplier portal</span><h1 style="font-size:1.6rem">Sign in as a supplier</h1><p class="small muted">Only registered suppliers can see requests and quote. A buyer number cannot sign in here.</p></div><a class="btn btn-ochre" href="#signup-supplier">New supplier? Register</a></div>
+    <div class="topbar"><div><span class="eyebrow">Supplier portal</span><h1 style="font-size:1.6rem" id="spLoginTitle">Sign in to sell</h1><p class="small muted" id="spLoginText">Suppliers sign in like everyone else: your mobile number and the SMS code. You go straight to your supplier portal.</p></div></div>
     <div class="card" style="display:grid;gap:.9rem">
-      <div><strong style="font-family:var(--display)">Your supplier account</strong><p class="small muted">The mobile number and password you registered with.</p></div>
-      <div class="field"><label for="spPhone">Mobile</label><div class="su-phone"><span class="cc">🇪🇹 +251</span><input id="spPhone" type="tel" inputmode="numeric" placeholder="9 12 34 56 78"></div></div>
-      <div class="field"><label for="spPw">Password</label><input id="spPw" type="password"><span class="err" id="spPwErr" hidden>Wrong password.</span></div>
-      <div class="card" id="spErr" hidden style="border-color:var(--ochre);display:grid;gap:.5rem;padding:.9rem"><strong style="font-family:var(--display)" id="spErrTitle">No supplier account with that number</strong><p class="small muted" id="spErrText"></p><div><a class="btn btn-ochre btn-sm" href="#signup-supplier" id="spErrReg">Register this number as a supplier</a></div></div>
-      <button class="btn btn-primary" type="button" id="spGo">Sign in</button>
+      <div class="btns"><a class="btn btn-primary" href="#signin" id="spSignIn">Sign in</a><a class="btn btn-ochre" href="#signup-supplier" id="spRegister">New supplier? Register</a></div>
+      <p class="small muted" id="spLoginNote" style="margin:0">One account for buying and selling: after signing in, switch between them at the top of the page.</p>
     </div>
   </section>
   <section id="portal" hidden style="display:grid;gap:1.2rem">
@@ -1655,9 +1652,9 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 </div>
 <div id="view-start" data-view hidden class="wrap view">
   <div><span class="eyebrow">Test site</span><h1 style="font-size:1.6rem">Start here</h1><p class="muted">Build Smartly is the working name. Everything works, but no SMS is sent and no money moves. One buyer, two suppliers and two staff logins.</p></div>
-  <section class="card panel" style="display:grid;gap:.6rem"><div><strong style="font-family:var(--display);font-size:1.05rem">Watch how it works</strong><p class="small muted">A 7-minute walkthrough with sound (turn your volume up): a buyer sends a request, suppliers quote, the buyer chooses and completes the order, agrees to the contracts, receives the goods and pays; then the staff page and the three languages.</p></div><video controls preload="metadata" playsinline style="width:100%;max-width:960px;border-radius:12px;background:#0D2C21" src="docs/how-it-works.mp4?v=20261031c"></video></section>
+  <section class="card panel" style="display:grid;gap:.6rem"><div><strong style="font-family:var(--display);font-size:1.05rem">Watch how it works</strong><p class="small muted">A 7-minute walkthrough with sound (turn your volume up): a buyer sends a request, suppliers quote, the buyer chooses and completes the order, agrees to the contracts, receives the goods and pays; then the staff page and the three languages.</p></div><video controls preload="metadata" playsinline style="width:100%;max-width:960px;border-radius:12px;background:#0D2C21" src="docs/how-it-works.mp4?v=20261114z1"></video></section>
   <section class="card panel">
-    <div><strong style="font-family:var(--display);font-size:1.05rem">Your logins</strong><p class="small muted">SMS code for every number: <strong>123456</strong>. Supplier portal password: <strong>smartly</strong>.</p></div>
+    <div><strong style="font-family:var(--display);font-size:1.05rem">Your logins</strong><p class="small muted">SMS code for every number: <strong>123456</strong>. Suppliers sign in the same way and go straight to their portal.</p></div>
     <div class="docs" id="startLogins"></div>
   </section>
   <div class="grid2">
@@ -1674,7 +1671,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     <section class="card panel">
       <div><strong style="font-family:var(--display);font-size:1.05rem">As a supplier</strong></div>
       <ol class="small" style="margin:0;padding-left:1.1rem;display:grid;gap:.35rem">
-        <li>Open the <a href="#supplier">Supplier portal</a> with 0911 000 301 or 0911 000 302 and the password smartly.</li>
+        <li>Sign in with 0911 000 301 or 0911 000 302 and the SMS code: you land in the <a href="#supplier">Supplier portal</a>.</li>
         <li>Price list: tick what you sell, type prices, Save. Quotes are pre-filled from it.</li>
         <li>Requests: send your offer per line. The buyer sees your brand, not your name.</li>
         <li>Offers and orders: <strong>Waiting for your action</strong> lists counter-offers to answer and PO/SAs to confirm, orders to prepare and dispatch.</li>
@@ -1695,7 +1692,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     <strong style="font-family:var(--display)">How to test the site in five minutes</strong>
     <ol>
       <li>Tap <a href="#boq">Send a request</a>, tick a few materials, type the quantities, then "Send request to suppliers". Enter your name, your buyer number and the code 123456.</li>
-      <li>Offers arrive by themselves within a few minutes. Or open the <a href="#supplier">Supplier portal</a> with your supplier number and password smartly, and send an offer yourself.</li>
+      <li>Offers arrive by themselves within a few minutes. Or sign in with your supplier number and the SMS code, and send an offer yourself from the <a href="#supplier">Supplier portal</a>.</li>
       <li>Go back to <a href="#boq">Send a request</a>, open "My requests", and accept the offer. You are asked once who is buying (name and TIN); then the PO is issued and the supplier's name appears.</li>
       <li>Open the <a href="#workspace">Buyer portal</a> to see Tracking, Notifications, Inbox and Outbox update. In the supplier portal, open Orders and Analytics.</li>
     </ol>
@@ -2342,7 +2339,7 @@ function bsSupport(threadId, inputId, sendId){
   /* accounts already used on this phone: one tap to switch (demo shortcut) */
   function renderAccts(){
     var cur=bsDigits((BS.me()||{}).phone); var list=BS.accounts().filter(function(a){ return bsDigits(a.phone)!==cur; });
-    $('acctBox').hidden = true; /* 14 Nov 2026: no one-tap switching; every sign-in takes the number and its code (or the supplier password) */
+    $('acctBox').hidden = true; /* 14 Nov 2026: no one-tap switching; every sign-in takes the number and its code */
     $('acctList').innerHTML = list.map(function(a){ var d=bsDigits(a.phone); var sup=!!(a.supplierId||(a.role&&a.role!=='Request materials')); return '<button type="button" data-acct="'+d+'"><span style="display:grid"><strong>'+(a.company||a.name||'0'+d)+'</strong><span>0'+d+' · '+(sup?'supplier':'buyer')+'</span></span><span class="tag '+(sup?'tag-ochre':'tag-green')+'">'+(sup?'Supplier portal':'My workspace')+'</span></button>'; }).join('');
   }
   $('acctList').addEventListener('click', function(e){ var b=e.target.closest('[data-acct]'); if(!b) return; var kind=bsSignInByPhone(b.dataset.acct); bsToast('Switched to '+((BS.me()||{}).company||(BS.me()||{}).name||'0'+b.dataset.acct)+'.'); afterSignIn(kind); });
@@ -2350,11 +2347,11 @@ function bsSupport(threadId, inputId, sendId){
     var supplier = kind==='supplier';
     $('signinBox').hidden=supplier; $('wizard').hidden=!supplier;
     $('suSideTitle').textContent = supplier ? 'Suppliers: four short steps.' : 'Your mobile number is your account.';
-    $('suSideText').textContent = supplier ? 'Mobile and code; company, TIN, what you supply and a password; licence and TIN copies; done. Documents can also wait until the portal.' : 'Your number and the SMS code, then your name and whether you buy, sell or both. Start straight away; get verified when you are ready to order.';
+    $('suSideText').textContent = supplier ? 'Mobile and code; company, TIN and what you supply; licence and TIN copies; done. Documents can also wait until the portal.' : 'Your number and the SMS code, then your name and whether you buy, sell or both. Start straight away; get verified when you are ready to order.';
     $('liTitle').textContent = kind==='signup' ? 'Sign up' : 'Sign in';
     $('liSub').textContent = kind==='signup' ? 'Step 1 of 2. Your mobile number and the SMS code we send you.' : 'For buyers and suppliers: your mobile number and an SMS code. One account does both: you can buy and, once registered as a supplier, sell. New number? The account is created for you.';
     $('liNameField').hidden = true; $('liNew').hidden = kind==='signup'; liKind=kind; $('suProfile').hidden=true;
-    liReset(); var wf=window.__bsWizardFrom; if(supplier && wf){ window.__bsWizardFrom=null; $('acctBox').hidden=true; data.phone='+251 '+wf.phone; $('phone').value='0'+wf.phone; $('legal').value=wf.org||wf.name; $('contact').value=wf.name; showStep(4); }
+    liReset(); var wf=window.__bsWizardFrom; if(supplier && wf){ window.__bsWizardFrom=null; $('acctBox').hidden=true; data.phone='+251 '+wf.phone; $('phone').value='0'+wf.phone; $('legal').value=wf.org||wf.name; $('contact').value=wf.name; if(wf.tin) $('tin').value=wf.tin; showStep(4); }
     else if(supplier){ showStep(1); $('acctBox').hidden=true; if(window.__bsPrefillPhone){ $('phone').value=window.__bsPrefillPhone; window.__bsPrefillPhone=''; } } else { renderAccts(); }
   });
   function afterSignIn(kind){
@@ -2439,12 +2436,11 @@ function bsSupport(threadId, inputId, sendId){
     var ok=true;
     var okC=wcats.length>0; $('wCatsErr').hidden=okC; ok=ok&&okC;
     var email=$('email').value.trim(); var okE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); $('emailErr').hidden=okE; ok=ok&&okE;
-    var okP=$('pw').value.length>=8; $('pwErr').hidden=okP; ok=ok&&okP;
     var okT=$('terms').checked; $('termsErr').hidden=okT; ok=ok&&okT;
     var tin=$('tin').value.replace(/[\s-]/g,''); var okTin=/^\d{10}$/.test(tin); $('tinErr').hidden=okTin; ok=ok&&okTin;
     var name=$('legal').value.trim(); var okN=!!name; $('legal').style.borderColor = okN?'':'var(--warn)'; ok=ok&&okN;
     if(!ok) return;
-    data.legal=name; data.tin=tin; data.email=email; data.password=$('pw').value; data.contact=$('contact').value.trim(); data.jobtitle=$('jobtitle').value.trim();
+    data.legal=name; data.tin=tin; data.email=email; data.contact=$('contact').value.trim(); data.jobtitle=$('jobtitle').value.trim();
     showStep(6);
   };
 })();
@@ -3041,19 +3037,16 @@ function bsSupport(threadId, inputId, sendId){
     return null;
   }
   window.BSSupplierLogin = function(phone){ var s=supplierForPhone(phone); if(s){ login(s); return true; } return false; };
-  $('spGo').onclick=async function(){
-    var digits=bsDigits($('spPhone').value); var s=supplierForPhone(digits); $('spErr').hidden=!!s;
-    if(s && s.status==='suspended'){ $('spErr').hidden=false; $('spErrTitle').textContent='This supplier account is paused'; $('spErrText').textContent='Build Smartly staff paused '+s.name+'. Write to support or call the office to reactivate it.'; $('spErrReg').hidden=true; return; }
-    if(s){ var pw=$('spPw').value; /* the test password opens only the built-in test suppliers, never one registered on the site */
-      var okPw = (!s.own && pw===BS.DEMO_PASSWORD) || (!!pw && pw===(BS.known(digits)||{}).password) || (!!s.password && pw===s.password) || (!!s.pwHash && !!pw && (await BS.hashPw(digits, pw))===s.pwHash); $('spPwErr').hidden=okPw; if(!okPw){ $('spPw').focus(); return; } if(bsDigits((BS.me()||{}).phone)!==digits) BS.setMe(BS.known(digits)||{}); login(s); return; }
-    $('spPwErr').hidden=true;
-    var known=BS.known(digits), isBuyer=!!(known && known.phone), okNum=/^[97]\d{8}$/.test(digits);
-    $('spErrTitle').textContent = !okNum ? 'Enter your mobile number, for example 0912345678' : isBuyer ? 'This number is a buyer account' : 'No supplier account with that number';
-    $('spErrText').textContent = !okNum ? '' : isBuyer ? ((known.company||known.name||'This account')+' can send requests but not quote. To quote, add the supplier role to the same number: company name, TIN and a password. It takes a minute.') : 'Check the number, or register as a supplier.';
-    $('spErrReg').hidden=!okNum; window.__bsPrefillPhone = okNum ? digits : '';
-  };
-  $('spPw').addEventListener('keydown', function(e){ if(e.key==='Enter') $('spGo').click(); });
-  BSRoute.on('supplier', function(){ var me=BS.me()||{}; if(sup && me.supplierId && me.supplierId!==sup.id){ var s2=supplierForPhone(me.phone); if(s2){ login(s2); return; } } if(!sup && me.phone){ var s=supplierForPhone(me.phone); if(s){ login(s); return; } if(!$('spPhone').value) $('spPhone').value=me.phone.replace('+251 ',''); } });
+  BSRoute.on('supplier', function(){ var me=BS.me()||{}; if(sup && me.supplierId && me.supplierId!==sup.id){ var s2=supplierForPhone(me.phone); if(s2){ login(s2); return; } } if(!sup && me.phone){ var s=supplierForPhone(me.phone); if(s){ login(s); return; } } loginState(); });
+  /* signed out: "Sign in" (the same page as everyone); signed in without a supplier account: start selling with the same number */
+  function loginState(){ var me=BS.me()||{}, buyer=!!me.phone && !supplierForPhone(me.phone), s=me.phone && supplierForPhone(me.phone);
+    if(s && s.status==='suspended'){ $('spLoginTitle').textContent='This supplier account is paused'; $('spLoginText').textContent='Build Smartly staff paused '+s.name+'. Write to support or call the office to reactivate it.'; $('spSignIn').hidden=true; $('spRegister').hidden=true; return; }
+    $('spSignIn').hidden=buyer; $('spRegister').hidden=false;
+    $('spLoginTitle').textContent = buyer ? 'Start selling with the same account' : 'Sign in to sell';
+    $('spLoginText').textContent = buyer ? 'Your number is a buyer account. Add the selling side: your company details are filled in; add what you supply and your dispatch point. Our team checks it, then requests start arriving. You keep buying as before.' : 'Suppliers sign in like everyone else: your mobile number and the SMS code. You go straight to your supplier portal.';
+    $('spRegister').textContent = buyer ? 'Start selling' : 'New supplier? Register';
+    if(buyer) $('spRegister').onclick=function(){ var v=BS.buyerVer(me.phone)||{}; window.__bsWizardFrom={phone:BS.d9(me.phone), name:me.person||me.name||'', org:me.company||v.company||'', tin:v.tin||me.tin||''}; }; else $('spRegister').onclick=null; }
+  window.addEventListener('bs-me', function(){ if(!sup) loginState(); });
 
   /* ----- profile and price persistence (this device) ----- */
   function loadProfile(s){
@@ -3099,9 +3092,9 @@ function bsSupport(threadId, inputId, sendId){
     $('login').hidden=true; $('portal').hidden=false; $('supName').textContent=s.name;
     fillProfileForm(); showTab(s.own && !profile.docs.verified ? 'home' : 'home'); render();
   }
-  $('logout').onclick=function(){ sup=null; BS.setMe({}); $('portal').hidden=true; $('login').hidden=false; $('spPhone').value=''; $('spPw').value=''; if(window.BSAuth) BSAuth.refresh(); bsToast('Signed out.'); BSRoute.go('home'); };
+  $('logout').onclick=function(){ sup=null; BS.setMe({}); $('portal').hidden=true; $('login').hidden=false; loginState(); if(window.BSAuth) BSAuth.refresh(); bsToast('Signed out.'); BSRoute.go('home'); };
   /* when another account is switched in from the sign-in page, drop the portal session without wiping that account */
-  window.BSSupplierLogout=function(){ if(!sup) return; sup=null; $('portal').hidden=true; $('login').hidden=false; $('spPhone').value=''; $('spPw').value=''; };
+  window.BSSupplierLogout=function(){ if(!sup) return; sup=null; $('portal').hidden=true; $('login').hidden=false; loginState(); };
 
   /* ----- tabs ----- */
   function showTab(t){ var sub=t; t=TABMAP[t]||t; document.querySelectorAll('#spTabs button').forEach(function(x){x.classList.toggle('on',x.dataset.tab===t);}); TABS.forEach(function(k){ $('tab-'+k).hidden = k!==t; }); if(t==='mail'){ $('spMailBadge').hidden=true; } if(sub==='profile'||sub==='stats'){ var el=$('tab-'+sub); if(el) setTimeout(function(){ el.scrollIntoView({behavior:'smooth',block:'start'}); },30); return; } window.scrollTo(0,0); }
@@ -3426,7 +3419,7 @@ function bsSupport(threadId, inputId, sendId){
     var st=BS.buyerState(me.phone), wv=$('wsVerify'), lockIt=st!=='verified';
     var lg=document.querySelector('#view-workspace label.logo'); if(lg) lg.classList.toggle('locked', lockIt); $('wsProfBlock').classList.toggle('locked', lockIt); $('wsProfLock').hidden=!lockIt || !me.phone;
     var ts=$('tileSell'); ts.hidden = isSup || me.type!=='Organisation'; ts.classList.toggle('locked', lockIt); $('tileSellSub').textContent = lockIt ? '🔒 Complete verification to start selling' : 'Quote on requests in your categories';
-    ts.onclick=function(){ window.__bsWizardFrom={phone:BS.d9(me.phone), name:me.person||me.name||'', org:me.company||''}; }; if(wv){ wv.hidden=!me.phone || st==='verified'; if(!wv.hidden) wv.innerHTML=bsVerifyHtml('workspace'); }
+    ts.onclick=function(){ var v=BS.buyerVer(me.phone)||{}; window.__bsWizardFrom={phone:BS.d9(me.phone), name:me.person||me.name||'', org:me.company||v.company||'', tin:v.tin||me.tin||''}; }; if(wv){ wv.hidden=!me.phone || st==='verified'; if(!wv.hidden) wv.innerHTML=bsVerifyHtml('workspace'); }
     $('wsMeta').innerHTML = (st==='verified'?'<span class="vbadge ok">✓ Verified buyer</span>':st==='pending'?'<span class="vbadge wait">Verification in progress</span>':'<span class="vbadge no">Not verified yet</span>')+' <span>'+(me.type==='Individual'?'Person':me.type==='Government'?'Government office':'Company')+(isSup?' · also a supplier':'')+'</span>'; }
   refreshMe(); BSRoute.on('workspace', function(){ refreshMe(); render(); }); window.BSWorkspaceRefresh=refreshMe;
   BS.SUBCITIES.forEach(function(s){ var o=document.createElement('option'); o.textContent=s; $('locSub').appendChild(o); });
@@ -3544,7 +3537,7 @@ window.bsPublishProfile = async function(fields){
       ['forsuppliers','For suppliers section','Message, work queue example','#suppliers'],
       ['partners','Our partners','Logo row','#partners'],
       ['signup','Sending without an account','Mobile number and code at Send, nothing else','#boq'],
-      ['signin','Sign in and supplier registration','Phone plus code; suppliers add company, TIN, password','#signin'],
+      ['signin','Sign in and supplier registration','Phone plus code; suppliers add company, TIN and categories','#signin'],
       ['pogate','Buyer details at first acceptance','Who is buying, name, TIN before the PO','#boq'],
       ['boq','Request a quote (BOQ form)','Fields, units, stages, routing box','#boq'],
       ['offers','Offers and accept per line','Offer A, B, C layout, PO issue','#boq'],
@@ -3555,7 +3548,7 @@ window.bsPublishProfile = async function(fields){
       ['discounts','Sliding banner for discounts','In the workspace','#workspace']
     ]],
     ['Supplier side', [
-      ['splogin','Supplier sign-in','Number and password','#supplier'],
+      ['splogin','Supplier portal (signed out)','Sign in or register to sell','#supplier'],
       ['sptabs','Supplier portal layout','Home, Requests, Offers and orders, Price list, Mailbox, Settings','#supplier'],
       ['queue','Work queue numbers','New requests, offers sent, orders won, prices due','#supplier'],
       ['quote','Requests and quote form','Fields: brand, qty, price, VAT, delivery, lead time, validity','#supplier'],
