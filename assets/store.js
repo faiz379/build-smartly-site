@@ -127,7 +127,10 @@
   var VER=[], verCbs=[], verOn=false;
   BS.onVerify = function(cb){ if(cb) verCbs.push(cb); if(!verOn){ verOn=true; BS.subscribe("verifications", function(d){ VER=d||[]; verCbs.forEach(function(f){ try{ f(); }catch(e){} }); }); } };
   BS.buyerVer = function(phone){ var d=BS.d9(phone); if(!d) return null; var v=VER.filter(function(x){ return x.id==="buyer-"+d; })[0]; if(v) return v; return BS.VERIFIED_TEST.indexOf(d)>=0 ? {status:"verified", test:true} : null; };
-  BS.buyerState = function(phone){ var v=BS.buyerVer(phone); return v ? (v.status||"pending") : "none"; };
+  /* one account, two sides (14 Nov 2026): a supplier verified by staff is also a verified buyer; no second check */
+  BS.supplierOfPhone = function(phone){ var d=BS.d9(phone); if(!d) return null; var t=(BS.TEST_ACCOUNTS||[]).filter(function(a){ return BS.d9(a.phone)===d && a.supplierId; })[0];
+    if(t) return BS.supplierById ? BS.supplierById(t.supplierId) : null; return (BS.suppliersAll ? BS.suppliersAll() : []).filter(function(x){ return x.own && BS.d9(x.phone)===d; })[0] || null; };
+  BS.buyerState = function(phone){ var v=BS.buyerVer(phone), st=v ? (v.status||"pending") : "none"; if(st!=="verified"){ var s=BS.supplierOfPhone(phone); if(s && s.status==="active") return "verified"; } return st; };
   BS.isVerified = function(phone){ return BS.buyerState(phone)==="verified"; };
   /* Simulated suppliers: how many seconds after a request each one answers, and how the simulated supplier
      handles counter-offers and the order steps. Test site only. */
@@ -588,6 +591,7 @@
   BS.setMe = function(obj){
     try { sessionStorage.setItem("bs_demo_me", JSON.stringify(obj)); localStorage.setItem("bs_demo_me", JSON.stringify(obj)); } catch(e){}
     if(obj && obj.phone){ try { var reg=JSON.parse(localStorage.getItem("bs_demo_accounts")||"{}"); reg[digitsOf(obj.phone)]=obj; localStorage.setItem("bs_demo_accounts", JSON.stringify(reg)); } catch(e){} }
+    try { window.dispatchEvent(new Event("bs-me")); } catch(e){} /* the header and menus follow every sign-in and sign-out at once */
   };
   /* sign this tab out without touching the device default (used when staff sign in) */
   BS.clearMeTab = function(){ try { sessionStorage.setItem("bs_demo_me", "{}"); } catch(e){} };

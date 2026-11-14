@@ -41,7 +41,7 @@ a{color:inherit}
 img{max-width:100%}
 [hidden]{display:none!important}
 .wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.eyebrow{font-family:var(--display);font-size:.76rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--green)}
+.eyebrow{font-family:var(--display);font-size:.86rem;font-weight:600;letter-spacing:.01em;color:var(--green)}
 .muted{color:var(--fg-2)}
 .small{font-size:.88rem}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;font-family:var(--display);font-weight:600;font-size:.95rem;padding:.8rem 1.25rem;border-radius:999px;text-decoration:none;border:1.5px solid transparent;cursor:pointer;transition:transform .15s ease;color:inherit;background:transparent}
@@ -54,7 +54,7 @@ img{max-width:100%}
 .btn-ochre:hover{transform:translateY(-1px);box-shadow:0 10px 24px color-mix(in srgb,var(--ochre) 45%,transparent)}
 .btn{transition:transform .2s ease,box-shadow .2s ease,background-color .2s ease}
 .btn-sm{padding:.5rem .9rem;font-size:.85rem}
-.tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--bg-2);color:var(--fg);padding:.25rem .55rem;border-radius:6px}
+.tag{display:inline-block;font-size:.8rem;font-weight:600;letter-spacing:0;background:var(--bg-2);color:var(--fg);padding:.25rem .55rem;border-radius:6px}
 .tag-ochre{background:color-mix(in srgb,var(--ochre) 22%,transparent);color:var(--ochre-ink)}
 .tag-green{background:color-mix(in srgb,var(--green) 16%,transparent);color:var(--green)}
 .card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:1.3rem;min-width:0;transition:transform .25s ease,box-shadow .25s ease}
@@ -143,6 +143,10 @@ header.site{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;backgrou
 .acct-menu a,.acct-menu button{font:inherit;font-size:.9rem;font-weight:600;text-decoration:none;color:var(--fg);background:none;border:0;text-align:left;padding:.55rem .8rem;border-radius:8px;cursor:pointer}
 .acct-menu a:hover,.acct-menu button:hover{background:var(--bg-2)}
 .acct-ico,.nav-lang{display:none}
+.modesw{display:inline-flex;border:1.5px solid var(--line);border-radius:999px;padding:2px;background:var(--white)}.modesw[hidden]{display:none}
+.modesw a{padding:.32rem .8rem;border-radius:999px;font-size:.85rem;font-weight:600;color:var(--fg-2);text-decoration:none;white-space:nowrap}.modesw a.on{background:var(--green);color:#F6F7F4}
+@media (max-width:1400px){#modeSw{display:none}}
+.sidebar-switch{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;justify-content:space-between;border:1.5px solid var(--line);border-radius:12px;padding:.55rem .8rem;background:var(--white)}
 /* phones: the header row keeps logo, account, bell and menu on screen; the language choice moves into the menu */
 @media (max-width:640px){
   .nav-cta{gap:.4rem}
@@ -230,6 +234,8 @@ footer.site .staff-link:hover{opacity:1;text-decoration:underline}
 @media (prefers-reduced-motion:reduce){.hslide{transition:none}}
 .helpbtn{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:60;display:inline-flex;align-items:center;gap:.45rem;background:var(--green);color:#F6F7F4;border:0;border-radius:999px;padding:.7rem 1rem;font:inherit;font-family:var(--display);font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25);cursor:pointer;transition:transform .2s}
 .helpbtn:hover{transform:translateY(-2px)}
+body:has(.modal:not([hidden])) .helpbtn{display:none}
+@media (max-width:640px){.helpbtn{font-size:0;gap:0;padding:.8rem;width:3.1rem;height:3.1rem;justify-content:center}} /* a round icon on phones, so it covers less */
 .helppanel{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(68px + env(safe-area-inset-bottom,0px));width:min(380px,calc(100vw - 28px));max-height:min(560px,calc(100vh - 100px));z-index:61;background:var(--white);border:1px solid var(--line);border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.25);display:grid;grid-template-rows:auto 1fr auto;overflow:hidden}
 .helppanel[hidden]{display:none}
 .helppanel .hhead{display:flex;justify-content:space-between;align-items:center;gap:.6rem;padding:.8rem 1rem;background:var(--green-deep);color:var(--band-fg)}
@@ -313,6 +319,16 @@ footer.site .staff-link:hover{opacity:1;text-decoration:underline}
 .act{border:2px solid var(--ochre)!important;background:color-mix(in srgb,var(--ochre) 6%,var(--white))}
 .payform{display:grid;gap:.7rem;border:2px solid var(--ochre);border-radius:12px;padding:.9rem;background:color-mix(in srgb,var(--ochre) 6%,transparent)}
 .docsheet{font-size:.92rem}
+/* tables on phones (14 Nov 2026 test): each row becomes a small card, every value with its column name */
+@media (max-width:640px){
+  .doctable thead{display:none}
+  .doctable,.doctable tbody,.doctable tr,.doctable td{display:block;width:100%}
+  .doctable tr{border:1px solid var(--line);border-radius:10px;padding:.45rem .65rem;margin-bottom:.5rem;background:var(--white)}
+  .doctable td{border:0!important;padding:.12rem 0!important;display:flex;justify-content:space-between;gap:.8rem;text-align:right!important}
+  .doctable td[data-label]::before{content:attr(data-label);font-weight:600;color:var(--fg-2);text-align:left}
+  .doctable td:first-child{display:block;text-align:left!important;font-weight:700}
+  .doctable tr:has(td[colspan]){display:flex;justify-content:space-between;gap:.8rem}.doctable tr:has(td[colspan]) td{display:block;width:auto}
+}
 .docsheet .dochead{display:flex;justify-content:space-between;gap:1rem;border-bottom:2px solid var(--green);padding-bottom:.6rem;margin-bottom:.6rem}
 .docsheet .docparties{margin:.6rem 0}
 .docsheet .doctable{width:100%;border-collapse:collapse;margin:.6rem 0;font-size:.88rem}
@@ -386,13 +402,13 @@ footer.site .staff-link:hover{opacity:1;text-decoration:underline}
 @media (max-width:900px){.cats{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:560px){.cats{grid-template-columns:1fr}}
 .cat{display:grid;gap:.6rem;align-content:start}
-.cat .num{font-family:var(--display);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ochre-ink);font-weight:700}
+.cat .num{font-family:var(--display);font-size:.82rem;letter-spacing:.01em;color:var(--ochre-ink);font-weight:700}
 .cat ul{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:.4rem}
 .cat li{font-size:.85rem;background:var(--bg-2);border-radius:999px;padding:.25rem .7rem}
 .cat .foot{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-top:.3rem}
 .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;counter-reset:s}
 .hstep{border-top:3px solid var(--line);padding-top:.9rem;display:grid;gap:.35rem;min-width:0}
-.hstep::before{counter-increment:s;content:"Step " counter(s);font-family:var(--display);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ochre-ink);font-weight:700}
+.hstep::before{counter-increment:s;content:"Step " counter(s);font-family:var(--display);font-size:.82rem;letter-spacing:.01em;color:var(--ochre-ink);font-weight:700}
 .hstep:first-child{border-top-color:var(--ochre)}
 .hstep p{color:var(--fg-2);font-size:.92rem}
 @media (max-width:860px){.steps{grid-template-columns:repeat(2,1fr)}}
@@ -407,6 +423,7 @@ footer.site .staff-link:hover{opacity:1;text-decoration:underline}
 .portal{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:var(--radius);padding:1.2rem;display:grid;gap:.6rem;min-width:0}
 .portal .row{display:flex;justify-content:space-between;gap:1rem;font-size:.92rem;border-bottom:1px solid rgba(255,255,255,.12);padding-bottom:.5rem;font-variant-numeric:tabular-nums}
 .portal .row:last-of-type{border-bottom:0}
+.trust-about{grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr)}@media (max-width:760px){.trust-about{grid-template-columns:minmax(0,1fr)}}
 .portal .row span{color:var(--band-muted)}
 .portal .fine{font-size:.76rem;color:var(--band-muted)}
 @media (max-width:860px){.band .wrap{grid-template-columns:1fr}}
@@ -496,7 +513,7 @@ footer.site .staff-link:hover{opacity:1;text-decoration:underline}
 .bellitem{display:grid;gap:.15rem;padding:.55rem .6rem;border-radius:10px;text-decoration:none;color:inherit;border-left:3px solid transparent}
 .bellitem:hover{background:var(--bg)}
 .bellitem.new{border-left-color:var(--ochre);background:color-mix(in srgb,var(--ochre) 8%,transparent)}
-.bellitem .k{font-size:.72rem;color:var(--fg-2);text-transform:uppercase;letter-spacing:.06em}
+.bellitem .k{font-size:.8rem;color:var(--fg-2);font-weight:600}
 html{overflow-x:clip}
 .sup-pill{display:inline-flex;gap:.4rem;align-items:center;border:1px solid var(--ochre);background:color-mix(in srgb,var(--ochre) 8%,var(--white));border-radius:999px;padding:.2rem .3rem .2rem .7rem;font-size:.82rem}
 .sup-pill.ok{border-color:var(--green);background:color-mix(in srgb,var(--green) 7%,var(--white));padding-right:.7rem}
@@ -505,9 +522,10 @@ html{overflow-x:clip}
 .lbox{border:1.5px solid var(--line);border-radius:14px;padding:.8rem;display:grid;gap:.6rem;background:var(--white)}
 .lbox.chosen{border:2px solid var(--green)}
 .lbox.done{border:2px solid var(--green);background:color-mix(in srgb,var(--green) 4%,var(--white))}
-.lbox-head{display:grid;grid-template-columns:auto 1fr auto;gap:.7rem;align-items:center}
+.lbox-head{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.7rem;align-items:center}
 .lbox-pic img{width:3.6rem;height:2.7rem;object-fit:cover;border-radius:8px;display:block}
 .lbox-pic:empty{display:none}
+@media (max-width:640px){.lbox-head{grid-template-columns:auto minmax(0,1fr)}.lbox-head>:last-child{grid-column:1/-1;justify-self:start}}
 .orders-box{display:grid;gap:.45rem;border:1.5px solid var(--green);border-radius:14px;padding:.8rem;background:color-mix(in srgb,var(--green) 5%,var(--white))}
 .order-row{display:grid;grid-template-columns:1fr auto auto;gap:.6rem;align-items:center;text-decoration:none;color:inherit;border:1px solid var(--line);border-radius:10px;padding:.55rem .75rem;background:var(--white)}
 .order-row:hover{border-color:var(--green)}
@@ -515,7 +533,7 @@ html{overflow-x:clip}
 .basket .muted{color:#C9DBD2}
 .basket .btn-ghost{color:#F6F7F4;border-color:rgba(246,247,244,.4)}
 .ck-group{border:1px solid var(--line);border-radius:10px;padding:.55rem .75rem;display:grid;gap:.3rem;margin-bottom:.45rem}
-.ck-row{display:flex;justify-content:space-between;gap:.8rem;font-size:.92rem}
+.ck-row{display:flex;justify-content:space-between;gap:.8rem;font-size:.92rem}.ck-row>:last-child{white-space:nowrap}
 .tllist{display:grid;gap:.45rem}
 .tlrow{display:grid;grid-template-columns:auto minmax(0,2.4fr) 5.5rem 7rem 9.5rem auto;gap:.45rem;align-items:start;padding:.45rem;border:1px solid var(--line);border-radius:10px}
 .tlrow .ico{display:grid;place-items:center;width:1.8rem;height:1.8rem;border-radius:8px;background:var(--bg-2,#eef1ec);font-weight:700;font-size:.8rem}
@@ -535,8 +553,9 @@ html{overflow-x:clip}
 .docverify{display:flex;gap:.8rem;align-items:center;margin-top:.7rem;padding-top:.6rem;border-top:1px solid var(--line)}
 .docqr{width:96px;height:96px;flex:none;image-rendering:pixelated}
 .bname{display:grid;line-height:1.1}
-.tagline{display:none;font-size:.62rem;font-weight:600;letter-spacing:.02em;color:var(--fg-2,#55605c);font-style:normal;white-space:nowrap}
-@media (min-width:1180px){ .tagline{display:block} }
+.tagline{display:flex;flex-wrap:wrap;justify-content:center;gap:.3rem 1.1rem;margin:.9rem auto 0;font-family:var(--display);font-weight:600;font-size:.98rem;color:var(--green-deep,var(--green))}
+.tagline span{white-space:nowrap}.tagline span+span::before{content:'•';color:var(--ochre);margin-right:1.1rem}
+@media (max-width:640px){.tagline{font-size:.86rem;gap:.2rem .7rem}.tagline span+span::before{margin-right:.7rem}}
 .mbar{display:none}
 body.home-visitor .mbar{display:flex;gap:.5rem;position:fixed;left:1rem;bottom:1rem;z-index:40;padding:.45rem;border-radius:999px;background:var(--bg-1,#fff);box-shadow:0 8px 24px rgba(0,0,0,.14)}
 body.home-visitor .mbar .btn{border-radius:999px}
@@ -565,7 +584,7 @@ body.home-visitor .mbar .btn{border-radius:999px}
 .offer.dim{opacity:.6}
 .offer .k{font-size:.76rem;color:var(--fg);font-weight:700;display:block}
 .offer .diff{font-size:.76rem;color:var(--fg-2)}
-.offer .best-tag{font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ochre-ink)}
+.offer .best-tag{font-size:.8rem;font-weight:700;color:var(--ochre-ink)}
 .members{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem}
 @media (max-width:900px){.members{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:560px){.members{grid-template-columns:1fr}}
@@ -594,7 +613,7 @@ details.line-offers[open] summary::before{content:"▾"}
 .steps-mini span{border:1px solid var(--line);border-radius:999px;padding:.15rem .55rem;color:var(--fg-2);background:var(--white)}
 .steps-mini span.done{border-color:var(--green);color:var(--green)}
 .steps-mini span.now{border-color:var(--ochre);color:var(--ochre-ink);font-weight:700}
-@media (max-width:760px){.offer{grid-template-columns:auto 1fr 1fr}.offer .btn{grid-column:1/-1}}
+@media (max-width:760px){.offer{grid-template-columns:auto minmax(0,1fr) minmax(0,1fr)}.offer>*{min-width:0}.offer .letter{grid-row:span 2}.offer>:nth-child(5),.offer>:nth-child(6){grid-column:1/-1}.offer .btn{grid-column:auto}.offer input{max-width:100%}}
 .chat{display:grid;gap:.4rem;max-height:22rem;overflow:auto;padding:.2rem}
 .msg{max-width:34rem;border-radius:14px;padding:.55rem .85rem;font-size:.9rem;background:var(--white);border:1px solid var(--line);justify-self:start;border-bottom-left-radius:4px}
 .msg.me{justify-self:end;background:color-mix(in srgb,var(--green) 12%,transparent);border-color:transparent;border-bottom-left-radius:14px;border-bottom-right-radius:4px}
@@ -648,6 +667,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 .sent{font-size:.88rem;color:var(--ok);font-weight:600}
 .qfoot{display:grid;grid-template-columns:1fr 11rem auto;gap:.7rem;align-items:end;border:2px solid var(--green);border-radius:12px;padding:.8rem;background:color-mix(in srgb,var(--green) 6%,var(--white));margin-top:.2rem}
 .qfoot>div:first-child{display:grid;gap:.2rem}
+.paylist{display:grid;gap:.1rem;border:1.5px solid var(--line);border-radius:12px;padding:.3rem .8rem}.payrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.8rem;align-items:center;padding:.55rem 0;border-bottom:1px solid var(--line)}.payrow .num{white-space:nowrap}.payrow.tot{border-bottom:0;font-size:1.05rem}
 .ck-credit{border:1.5px solid var(--line);border-radius:12px;padding:.7rem .8rem;margin-top:.7rem}.ck-credit.act{border:2px solid var(--ochre)}
 .qfoot .qterm{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:.4rem .8rem;align-items:end;border-top:1px dashed var(--line);padding-top:.6rem}.qfoot .qterm .field{min-width:10rem}.qfoot .field label{font-size:.76rem}
 @media (max-width:640px){.qfoot{grid-template-columns:1fr}}
@@ -717,7 +737,9 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 .order{display:grid;gap:.6rem}
 .order-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.5rem;align-items:center}
 .docs{display:grid;gap:.4rem}
-.doc{display:grid;grid-template-columns:auto 1fr auto;gap:.7rem;align-items:center;border:1px solid var(--line);border-radius:10px;padding:.55rem .8rem;background:var(--white);font-size:.9rem}
+.doc{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.7rem;align-items:center;border:1px solid var(--line);border-radius:10px;padding:.55rem .8rem;background:var(--white);font-size:.9rem}
+.doc>*{min-width:0;overflow-wrap:anywhere}
+@media (max-width:640px){.doc{grid-template-columns:auto minmax(0,1fr)!important}.doc>:nth-child(n+3){grid-column:1/-1;justify-self:start;flex-wrap:wrap}}
 .doc .ico{width:34px;height:34px;border-radius:8px;background:var(--bg-2);display:grid;place-items:center;font-family:var(--display);font-size:.7rem;font-weight:700;color:var(--green)}
 .notif{display:grid;gap:.4rem}
 .notif .item{border-left:3px solid var(--ochre);padding:.4rem .8rem;background:var(--white);border-radius:0 10px 10px 0;font-size:.9rem}
@@ -764,7 +786,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
   <div class="wrap nav" id="nav">
     <a class="brand" href="#home" aria-label="Build Smartly home">
       <svg class="mark" viewBox="0 0 96 96" aria-hidden="true"><rect x="4" y="4" width="88" height="88" rx="20" fill="#1E6B4E"/><rect x="20" y="62" width="34" height="14" rx="3" fill="#F6F7F4"/><rect x="32" y="44" width="34" height="14" rx="3" fill="#F6F7F4"/><rect x="44" y="26" width="34" height="14" rx="3" fill="#E3A63A"/><path d="M64 17 l7 -7 l7 7" fill="none" stroke="#E3A63A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span class="bname">Build <em>Smartly</em><small class="tagline">Intelligent Process • Buy Smarter • Sell Stronger • Build Better</small></span>
+      <span class="bname">Build <em>Smartly</em></span>
     </a>
     <ul class="links">
       <li><a href="#home">Home</a></li>
@@ -781,13 +803,14 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
       <span id="authOut" style="display:contents"><a class="btn btn-primary btn-sm" href="#signin">Sign in</a></span>
       <div class="bell" id="bellBox" hidden><button type="button" class="bellbtn" id="bellBtn" aria-label="Notifications" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><em id="bellN" hidden>0</em></button>
         <div class="bellpanel" id="bellPanel" hidden><div class="bellhead"><strong>Notifications</strong><span class="small muted">last 30 days · <button type="button" class="linkbtn" id="bellAll">Mark all as read</button></span></div><div id="bellList"></div></div></div>
+      <div class="modesw" id="modeSw" hidden role="group" aria-label="Buying or selling"><a href="#workspace" data-mode="buy">Buying</a><a href="#supplier" data-mode="sell">Selling</a></div>
       <details class="acct" id="authIn" hidden>
         <summary class="btn btn-primary btn-sm" aria-label="Account"><svg class="acct-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span id="authName">Account</span> <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l5 5 5-5"/></svg></summary>
         <div class="acct-menu">
           <a href="#staff" id="authStaff" hidden>Staff page</a>
-          <a href="#workspace" id="authHome">My workspace</a>
-          <a href="#" id="authVerify" data-getverified hidden>Get verified</a>
           <a href="#supplier" id="authPortal">Supplier portal</a>
+          <a href="#workspace" id="authHome">Buyer portal</a>
+          <a href="#" id="authVerify" data-getverified hidden>Get verified</a>
           <a href="#boq" id="authBoq">Send a request</a>
           <a href="#statements" id="authStmt">Statements</a>
           <a href="#support">Support</a>
@@ -820,6 +843,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
       <button class="harrow r" id="hNext" aria-label="Next picture"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg></button>
       <div class="hdots" id="hDots"></div>
     </div>
+    <p class="wrap tagline" aria-label="Intelligent Process, Buy Smarter, Sell Stronger, Build Better"><span>Intelligent Process</span><span>Buy Smarter</span><span>Sell Stronger</span><span>Build Better</span></p>
   </div>
 
   <section class="wrap intro" id="about">
@@ -961,7 +985,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 
   <section data-hsec="about" id="aboutus" class="wrap hsec" style="padding-top:0">
     <div class="sec-head"><span class="eyebrow">About us</span><h2>A share company built by people who build.</h2></div>
-    <div class="trust" style="grid-template-columns:1.2fr .8fr">
+    <div class="trust trust-about">
       <div class="card" style="gap:.7rem">
         <p>Build Smartly S.C. is an Ethiopian share company. Its shareholders are contractors, engineers, suppliers and investors who have all bought materials the hard way: many phone calls, prices that change by the day, and no record of what was agreed.</p>
         <p>We are building one place where a contractor sends a list once, verified suppliers quote in writing, and the Purchase Order / Sales Agreement is issued with a full record. Addis Ababa first, then the regional cities.</p>
@@ -1008,12 +1032,12 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
           <div class="acct-list" id="acctList"></div>
         </section>
         <section id="signinBox" hidden class="su-step">
-          <div><h1 style="font-size:1.6rem" id="liTitle">Sign in</h1><p class="muted" id="liSub">Your mobile number and an SMS code. New number? The account is created for you.</p></div>
+          <div><h1 style="font-size:1.6rem" id="liTitle">Sign in</h1><p class="muted" id="liSub">For buyers and suppliers: your mobile number and an SMS code. One account does both: you can buy and, once registered as a supplier, sell. New number? The account is created for you.</p></div>
           <div class="field" id="liNameField" hidden><label for="liName">Your name or company</label><input id="liName" autocomplete="organization" placeholder="e.g. Tana Construction PLC"><span class="err" id="liNameErr" hidden>Please enter your name.</span></div>
           <div class="field"><label for="liPhone">Mobile</label><div class="su-phone"><span class="cc">🇪🇹 +251</span><input id="liPhone" type="tel" inputmode="numeric" placeholder="9 12 34 56 78" autocomplete="tel-national"></div><span class="err" id="liErr" hidden>Enter your mobile number, for example 0912345678.</span></div>
           <div class="field" id="liOtpBox" hidden><label>Enter the code we sent</label><div class="su-otp"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"></div><span class="hint" id="liHint">Type the 6-digit code we sent you by SMS.</span></div>
           <div class="su-nav"><span></span><button class="btn btn-primary" type="button" id="liGo">Send code</button></div>
-          <div class="card" id="liSupplier" style="padding:.9rem;display:flex;gap:.6rem;align-items:center;justify-content:space-between;flex-wrap:wrap"><span><strong style="font-family:var(--display)">Are you a supplier?</strong><br><span class="small muted">Suppliers sign in to the supplier portal with their mobile number and password.</span></span><a class="btn btn-ochre btn-sm" href="#supplier">Supplier sign-in</a></div>
+          <div class="card" id="liSupplier" style="padding:.9rem;display:flex;gap:.6rem;align-items:center;justify-content:space-between;flex-wrap:wrap"><span><strong style="font-family:var(--display)">Supplier with a password?</strong><br><span class="small muted">Suppliers can also sign in with their mobile number and password.</span></span><a class="btn btn-ghost btn-sm" href="#supplier">Sign in with a password</a></div>
           <div class="card" id="liNew" style="display:grid;gap:.6rem;padding:1rem"><strong style="font-family:var(--display)">New to Build Smartly?</strong><p class="small muted">Sign up in two short steps: your mobile number and the SMS code, then your name and whether you buy, sell or both. No documents until you are ready to order.</p><div style="display:flex;gap:.5rem;flex-wrap:wrap"><a class="btn btn-ghost btn-sm" href="#signup">Sign up</a><a class="btn btn-ochre btn-sm" href="#signup-supplier">Register as a supplier</a></div></div>
         </section>
 
@@ -1027,12 +1051,12 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
           </div></div>
           <div class="field"><label>Who are you?</label><div class="su-choices su-choices3">
             <div class="choice"><input type="radio" name="spfType" id="spf-ind" value="Individual" checked><label for="spf-ind"><strong>Individual</strong><span>Building or renovating for yourself.</span></label></div>
-            <div class="choice"><input type="radio" name="spfType" id="spf-org" value="Organisation"><label for="spf-org"><strong>Organization</strong><span>Contractor, developer, trader, factory.</span></label></div>
+            <div class="choice"><input type="radio" name="spfType" id="spf-org" value="Organisation"><label for="spf-org"><strong>Organisation</strong><span>Contractor, developer, trader, factory.</span></label></div>
             <div class="choice"><input type="radio" name="spfType" id="spf-gov" value="Government"><label for="spf-gov"><strong>Government office</strong><span>A public body or office.</span></label></div>
           </div></div>
-          <div class="field" id="spfOrgField" hidden><label for="spfOrg" id="spfOrgLabel">Name of the organization</label><input id="spfOrg" autocomplete="organization"><span class="err" id="spfOrgErr" hidden>Please enter the name.</span></div>
-          <span class="err" id="spfSellErr" hidden>Only organizations with a business licence can sell. Choose Organization, or choose Buy.</span>
-          <label class="check"><input type="checkbox" id="spfTerms"><span>I agree to the Terms of Use and the Privacy Policy.</span></label>
+          <div class="field" id="spfOrgField" hidden><label for="spfOrg" id="spfOrgLabel">Name of the organisation</label><input id="spfOrg" autocomplete="organization"><span class="err" id="spfOrgErr" hidden>Please enter the name.</span></div>
+          <span class="err" id="spfSellErr" hidden>Only organisations with a business licence can sell. Choose Organisation, or choose Buy.</span>
+          <label class="check"><input type="checkbox" id="spfTerms"><span>I agree to the terms of use and the privacy policy.</span></label>
           <label class="check"><input type="checkbox" id="spfContact"><span>I agree that Build Smartly may contact me by phone, SMS or WhatsApp about my requests and its services.</span></label>
           <span class="err" id="spfConsentErr" hidden>Please tick both boxes to continue.</span>
           <div class="su-nav"><span></span><button class="btn btn-primary" type="button" id="spfGo">Done</button></div>
@@ -1106,7 +1130,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 <!-- ================= BOQ (customer) ================= -->
 <div id="view-boq" data-view hidden class="wrap view">
   <div class="topbar">
-    <div><span class="eyebrow">Customer workspace</span><h1 style="font-size:1.6rem">Request a quote</h1><p class="small muted" id="who"></p></div>
+    <div><span class="eyebrow">Buyer portal</span><h1 style="font-size:1.6rem">Request a quote</h1><p class="small muted" id="who"></p></div>
     <span class="status" id="bqStatus"><i></i><span>Connecting…</span></span>
   </div>
   <div class="tabs" role="tablist">
@@ -1220,6 +1244,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     </div>
   </section>
   <section id="portal" hidden style="display:grid;gap:1.2rem">
+    <div class="sidebar-switch" data-modebar hidden><span><strong>Selling</strong> · <span class="small muted">Requests you receive, your offers and the orders you supply.</span></span><a class="btn btn-ghost btn-sm" href="#workspace">Switch to buying →</a></div>
     <div class="topbar">
       <div><span class="eyebrow" id="supKicker">Work queue</span><h1 style="font-size:1.5rem" id="supName"></h1><p class="small muted" id="supMeta"></p></div>
       <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap"><span class="status" id="spStatus"><i></i><span>Connecting…</span></span><a class="btn btn-ghost btn-sm" href="#boq">Need materials? Send a request</a><button class="btn btn-ghost btn-sm" id="logout">Log out</button></div>
@@ -1367,6 +1392,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 
 <!-- ================= WORKSPACE ================= -->
 <div id="view-workspace" data-view hidden class="wrap view">
+  <div class="sidebar-switch" data-modebar hidden><span><strong>Buying</strong> · <span class="small muted">The requests you send and the orders you place, with the same account.</span></span><a class="btn btn-ghost btn-sm" href="#supplier">Switch to selling →</a></div>
   <div class="tiles" id="tiles">
     <a class="tile" href="#boq"><strong>Send a request</strong><span>Build a list or upload your BOQ</span></a>
     <button class="tile on" data-panel="tracking"><strong>My orders</strong><span>Requests, offers and orders, step by step</span><em class="n" id="nTrack" hidden>0</em></button>
@@ -1380,7 +1406,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
   </div>
   <div class="idrow">
     <label class="logo up"><input type="file" accept="image/*" hidden><span>＋ Upload logo</span></label>
-    <div><span class="eyebrow">Member</span><h1 id="wsName">Your company</h1><p class="small muted" id="wsMeta"></p></div>
+    <div><span class="eyebrow">Buyer portal</span><h1 id="wsName">Your company</h1><p class="small muted" id="wsMeta"></p></div>
     <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap"><span class="status" id="wsStatus"><i></i><span>Connecting…</span></span><button class="btn btn-ghost btn-sm" type="button" id="wsLogout">Log out</button></div>
   </div>
   <section class="card" id="wsVerify" hidden style="display:grid;gap:.6rem"></section>
@@ -1671,7 +1697,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
       <li>Tap <a href="#boq">Send a request</a>, tick a few materials, type the quantities, then "Send request to suppliers". Enter your name, your buyer number and the code 123456.</li>
       <li>Offers arrive by themselves within a few minutes. Or open the <a href="#supplier">Supplier portal</a> with your supplier number and password smartly, and send an offer yourself.</li>
       <li>Go back to <a href="#boq">Send a request</a>, open "My requests", and accept the offer. You are asked once who is buying (name and TIN); then the PO is issued and the supplier's name appears.</li>
-      <li>Open <a href="#workspace">My workspace</a> to see Tracking, Notifications, Inbox and Outbox update. In the supplier portal, open Orders and Analytics.</li>
+      <li>Open the <a href="#workspace">Buyer portal</a> to see Tracking, Notifications, Inbox and Outbox update. In the supplier portal, open Orders and Analytics.</li>
     </ol>
   </section>
 
@@ -1729,7 +1755,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
       <div><span class="eyebrow">Get verified</span><h3 style="margin-top:.2rem">Show us who is buying</h3><p class="small muted">Needed once, before your first order. Our team checks it, usually within one working day. Only Build Smartly staff see your documents.</p></div>
       <div class="su-choices">
         <div class="choice"><input type="radio" name="vType" id="v-ind" value="Individual" checked><label for="v-ind"><strong>An individual</strong><span>Your Fayda national ID number.</span></label></div>
-        <div class="choice"><input type="radio" name="vType" id="v-org" value="Organisation"><label for="v-org"><strong>An organization</strong><span>TIN and a copy of the business licence.</span></label></div>
+        <div class="choice"><input type="radio" name="vType" id="v-org" value="Organisation"><label for="v-org"><strong>An organisation</strong><span>TIN and a copy of the business licence.</span></label></div>
         <div class="choice"><input type="radio" name="vType" id="v-gov" value="Government"><label for="v-gov"><strong>A government office</strong><span>An official letter or staff ID.</span></label></div>
       </div>
       <div class="field"><label for="vName" id="vNameLabel">Full name as on your Fayda ID</label><input id="vName"></div>
@@ -1772,8 +1798,8 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 </div>
 
 
-<script src="assets/firebase-config.js?v=20261114d" onerror="this.remove()"></script>
-<script src="assets/store.js?v=20261114d"></script>
+<script src="assets/firebase-config.js?v=20261114e" onerror="this.remove()"></script>
+<script src="assets/store.js?v=20261114e"></script>
 <script>
 /* ---------- Router: one page, views switched by hash ---------- */
 window.BSRoute = (function(){
@@ -1823,7 +1849,7 @@ window.BSRoute = (function(){
       if(BS.isStaff && BS.isStaff()){ show('admin'); if(hooks.admin) hooks.admin(); if(window.bsAdminTab) bsAdminTab(h==='support'?'support':'overview'); window.scrollTo(0,0); return; }
       if(!me.phone){ show('contact'); window.scrollTo(0,0); return; }
       if(me.supplierId && (me.role==='Supply materials') && window.bsSupplierTab){ show('supplier'); if(hooks.supplier) hooks.supplier(); bsSupplierTab(h==='orders'?'deals':'mail', h==='support'?'support':'statements'); return; }
-      show('workspace'); if(hooks.workspace) hooks.workspace(); if(window.bsWorkspacePanel) bsWorkspacePanel(h==='orders'?'tracking':h); window.scrollTo(0,0); return; }
+      show('workspace'); if(hooks.workspace) hooks.workspace(); window.scrollTo(0,0); if(window.bsWorkspacePanel) bsWorkspacePanel(h==='orders'?'tracking':h, true); return; }
     if(h.indexOf('supplier-')===0){ show('supplier'); if(hooks.supplier) hooks.supplier(); if(window.bsSupplierTab) bsSupplierTab(h.slice(9)); return; }
     if(h.indexOf('staff-')===0){ show('admin'); if(hooks.admin) hooks.admin(); if(window.bsAdminTab) bsAdminTab(h.slice(6)); window.scrollTo(0,0); return; }
     if(h==='supplier'){ show('supplier'); if(hooks.supplier) hooks.supplier(); window.scrollTo(0,0); return; }
@@ -1866,6 +1892,12 @@ function bsOtp(box, onComplete){
     if(d.textContent!==CREDIT) d.textContent=CREDIT; if(d.hidden) d.hidden=false; if(d.parentNode!==f) f.appendChild(d); }
   function start(){ keep(); var f=document.querySelector('footer.site'); if(f && window.MutationObserver) new MutationObserver(keep).observe(f, {childList:true, subtree:true, characterData:true, attributes:true}); }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', start); else start(); })();
+/* fill each table cell's column name for the phone layout of .doctable */
+(function(){ function label(){ document.querySelectorAll('table.doctable').forEach(function(t){ var hs=[].map.call(t.querySelectorAll('thead th'), function(th){ return th.textContent.trim(); }); if(!hs.length) return;
+    t.querySelectorAll('tbody tr').forEach(function(tr){ if(tr.querySelector('td[colspan]')) return; var i=0; [].forEach.call(tr.children, function(td){ var sp=+td.getAttribute('colspan')||1; if(sp===1 && hs[i] && i>0 && !td.hasAttribute('data-label')) td.setAttribute('data-label', hs[i]); i+=sp; }); }); }); }
+  var tm=null; function soon(){ if(tm) return; tm=setTimeout(function(){ tm=null; label(); }, 60); }
+  function start(){ label(); if(window.MutationObserver) new MutationObserver(soon).observe(document.body, {childList:true, subtree:true}); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', start); else start(); })();
 function bsDigits(v){ var d=(v||'').replace(/\D/g,''); if(d.indexOf('251')===0 && d.length>=12) d=d.slice(3); if(d.charAt(0)==='0') d=d.slice(1); return d; }
 /* Phone-only account: the number is the account. Known test numbers map to the demo buyers and suppliers. */
 /* SMS code rules (Abdullah v4): a code is valid 5 minutes; 3 wrong tries end it; at most 3 codes per number per hour.
@@ -1904,7 +1936,7 @@ function bsSignInByPhone(digits){
   function vtype(){ return (document.querySelector('input[name=vType]:checked')||{}).value||'Individual'; }
   function show(){ var t=vtype();
     document.querySelectorAll('#verGate [data-vfor]').forEach(function(el){ el.hidden=el.dataset.vfor.split(' ').indexOf(t)<0; });
-    $('vNameLabel').textContent = t==='Individual'?'Full name as on your Fayda ID':t==='Organisation'?'Legal name of the organization':'Name of the office';
+    $('vNameLabel').textContent = t==='Individual'?'Full name as on your Fayda ID':t==='Organisation'?'Legal name of the organisation':'Name of the office';
     $('vTinLabel').textContent = t==='Government'?'TIN (if the office has one)':'TIN';
     var pass=$('vIdType').value==='passport'; document.querySelectorAll('#verGate [data-vid]').forEach(function(el){ el.hidden = t!=='Individual' || el.dataset.vid!==(pass?'passport':'fayda'); });
     $('vFileLabel').textContent = t==='Individual'?(pass?'Copy of your passport (photo page)':'Photo of your Fayda card (optional)'):t==='Organisation'?'Copy of the business licence':'Official authorization letter (on letterhead, stamped)';
@@ -2220,7 +2252,11 @@ window.BSAuth = (function(){
     inEl.hidden=!signed; inEl.style.display='';
     ['authStaff','authHome','authPortal','authBoq','authSwitch'].forEach(function(id){ document.getElementById(id).hidden = staff ? id!=='authStaff' : id==='authStaff'; });
     if(staff){ var sn=BS.staffName(); document.getElementById('authName').textContent = 'Staff · '+(sn.length>12 ? sn.slice(0,11)+'…' : sn); }
-    else if(signed){ var isSup = !!(me.supplierId || (me.role && me.role!=='Request materials')); var nm=(me.person||me.company||me.name||'Account'); document.getElementById('authName').textContent = nm.length>18 ? nm.slice(0,17)+'…' : nm; document.getElementById('authPortal').hidden=!isSup; }
+    else if(signed){ var isSup = !!(me.supplierId || (me.role && me.role!=='Request materials')); var nm=(me.person||me.company||me.name||'Account'); document.getElementById('authName').textContent = nm.length>16 ? nm.slice(0,15)+'…' : nm; document.getElementById('authPortal').hidden=!isSup;
+      document.getElementById('authPortal').textContent = 'Selling · Supplier portal'; document.getElementById('authHome').textContent = isSup ? 'Buying · Buyer portal' : 'Buyer portal'; }
+    var ms=document.getElementById('modeSw'), sup2=!staff && signed && !!(me.supplierId || (me.role && me.role!=='Request materials'));
+    if(ms){ ms.hidden=!sup2; var cur=(window.BSRoute&&BSRoute.current())||''; var sell=/^supplier/.test(cur); ms.querySelectorAll('a').forEach(function(a){ a.classList.toggle('on', (a.dataset.mode==='sell')===sell); }); }
+    document.querySelectorAll('[data-modebar]').forEach(function(x){ x.hidden=!sup2; });
     var wsOut=document.getElementById('wsLogout'); if(wsOut) wsOut.hidden=!signed;
     var av=document.getElementById('authVerify'); if(av) av.hidden = staff || !signed || BS.buyerState(me.phone)==='verified';
     document.body.classList.toggle('home-visitor', !signed && window.BSRoute && BSRoute.current()==='home');
@@ -2230,6 +2266,7 @@ window.BSAuth = (function(){
   document.addEventListener('click', function(e){ var d=document.getElementById('authIn'); if(d && d.open && !e.target.closest('summary')) d.open=false; });
   var wsOut=document.getElementById('wsLogout'); if(wsOut) wsOut.onclick=function(){ document.getElementById('authLogout').click(); };
   window.addEventListener('hashchange', refresh); document.addEventListener('click', function(){ setTimeout(refresh, 50); });
+  ['bs-me','storage','pageshow','focus','popstate'].forEach(function(ev){ window.addEventListener(ev, function(){ setTimeout(refresh, 0); }); }); document.addEventListener('visibilitychange', function(){ if(!document.hidden) refresh(); });
   refresh(); return {refresh:refresh};
 })();
 
@@ -2315,7 +2352,7 @@ function bsSupport(threadId, inputId, sendId){
     $('suSideTitle').textContent = supplier ? 'Suppliers: four short steps.' : 'Your mobile number is your account.';
     $('suSideText').textContent = supplier ? 'Mobile and code; company, TIN, what you supply and a password; licence and TIN copies; done. Documents can also wait until the portal.' : 'Your number and the SMS code, then your name and whether you buy, sell or both. Start straight away; get verified when you are ready to order.';
     $('liTitle').textContent = kind==='signup' ? 'Sign up' : 'Sign in';
-    $('liSub').textContent = kind==='signup' ? 'Step 1 of 2. Your mobile number and the SMS code we send you.' : 'Your mobile number and an SMS code.';
+    $('liSub').textContent = kind==='signup' ? 'Step 1 of 2. Your mobile number and the SMS code we send you.' : 'For buyers and suppliers: your mobile number and an SMS code. One account does both: you can buy and, once registered as a supplier, sell. New number? The account is created for you.';
     $('liNameField').hidden = true; $('liNew').hidden = kind==='signup'; liKind=kind; $('suProfile').hidden=true;
     liReset(); var wf=window.__bsWizardFrom; if(supplier && wf){ window.__bsWizardFrom=null; $('acctBox').hidden=true; data.phone='+251 '+wf.phone; $('phone').value='0'+wf.phone; $('legal').value=wf.org||wf.name; $('contact').value=wf.name; showStep(4); }
     else if(supplier){ showStep(1); $('acctBox').hidden=true; if(window.__bsPrefillPhone){ $('phone').value=window.__bsPrefillPhone; window.__bsPrefillPhone=''; } } else { renderAccts(); }
@@ -2342,7 +2379,7 @@ function bsSupport(threadId, inputId, sendId){
   /* sign-up step 2: name, buy / sell / both, who you are. Selling continues in the supplier details (no second code). */
   var spfDigits='';
   function spfType(){ return (document.querySelector('input[name=spfType]:checked')||{}).value||'Individual'; }
-  document.querySelectorAll('input[name=spfType]').forEach(function(r){ r.addEventListener('change', function(){ var t=spfType(); $('spfOrgField').hidden=t==='Individual'; $('spfOrgLabel').textContent=t==='Government'?'Name of the office':'Name of the organization'; }); });
+  document.querySelectorAll('input[name=spfType]').forEach(function(r){ r.addEventListener('change', function(){ var t=spfType(); $('spfOrgField').hidden=t==='Individual'; $('spfOrgLabel').textContent=t==='Government'?'Name of the office':'Name of the organisation'; }); });
   $('spfGo').onclick=function(){
     var name=$('spfName').value.trim(), t=spfType(), org=$('spfOrg').value.trim(), want=(document.querySelector('input[name=spfWant]:checked')||{}).value||'buy';
     $('spfNameErr').hidden=!!name; if(!name){ $('spfName').focus(); return; }
@@ -2421,7 +2458,7 @@ function bsSupport(threadId, inputId, sendId){
   $('who').textContent = me.name ? ('Signed in as ' + me.name + (me.company? ' · ' + me.company : '')) : 'Build your list first. You sign in when you send it.';
   BS.SUBCITIES.forEach(function(s){ var o=document.createElement('option'); o.textContent=s; if(s==='Bole') o.selected=true; $('subcity').appendChild(o); });
   bsStatus('bqStatus','Online','On this device only');
-  BS.ready().then(function(m){ $('clearLocal').hidden = m!=='local'; });
+  /* the local test-data button is never shown to customers */
   BSRoute.on('boq', function(stage){ if(['foundation','structure','services','finishing','equipment'].indexOf(stage)>=0){ $('stage').value=stage; renderLines(); } var me2=BS.me()||{}; if(me2.company) $('company').value=me2.company; $('who').textContent = me2.phone ? ('Signed in as '+(me2.company||me2.name||me2.phone)) : 'No account needed to build your list. You enter your mobile number when you send it.'; $('submitHint').hidden=!!me2.phone; $('sendAuth').hidden=true; $('sentBox').hidden=true; show(stage==='mine'?'mine':'new'); });
   function show(tab){ $('viewNew').hidden = tab!=='new'; $('viewMine').hidden = tab!=='mine'; $('tabNew').classList.toggle('on',tab==='new'); $('tabMine').classList.toggle('on',tab==='mine'); if(typeof renderMine==='function') renderMine(); }
   $('tabNew').onclick=function(){show('new');}; $('tabMine').onclick=function(){show('mine');};
@@ -2697,7 +2734,7 @@ function bsSupport(threadId, inputId, sendId){
       var withdrawn=b.status==='withdrawn', inReview=b.status==='review';
       var head='<div class="boq-head"><div><h3>'+esc(b.ref)+' · '+b.lines.length+' line'+(b.lines.length>1?'s':'')+' · '+esc(b.subcity)+'</h3><span class="small muted">'+esc(b.deliveryTerm)+' · '+esc(b.paymentTerm)+(b.extended?' · deadline extended once':'')+'</span></div><div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap">'+(withdrawn?'<span class="tag">Withdrawn</span>':'<span class="deadline">'+(left>0?'Quotes close in '+left+' day'+(left>1?'s':''):'Quotes closed')+'</span>'+(!groups.length?'<button class="btn btn-ghost btn-sm" data-withdraw="'+b.id+'">Withdraw</button>':'')+(offers.some(function(o){ return o.boqId===b.id; }) ? (BS.isVerified((BS.me()||{}).phone) ? '<button class="btn btn-ghost btn-sm" type="button" data-dloffers="'+b.id+'">Download offers</button>' : '<span class="btn btn-ghost btn-sm locked" title="Available after verification">🔒 Download offers</span>') : '')+(!b.extended&&!groups.length&&left>0?'<button class="btn btn-ghost btn-sm" data-extend="'+b.id+'" data-days="'+b.validityDays+'">Extend '+b.validityDays+' days</button>':''))+'</div></div>';
       /* orders already placed on this request */
-      var ordersHtml = groups.length ? '<div class="orders-box"><strong style="font-family:var(--display)">Your orders</strong>'+groups.map(function(g){ var st=BS.orderStatus(g.first), tot=0; g.offers.forEach(function(o){ tot+=lineExtras(b, lineOfB(b,o.lineN), o).total; });
+      var dueN=groups.filter(function(g){ return BS.payOpen(g.first); }).length; var ordersHtml = groups.length ? '<div class="orders-box"><strong style="font-family:var(--display)">Your orders</strong>'+(dueN>1?'<div><button class="btn btn-ochre btn-sm" type="button" data-payall>Pay all '+dueN+' orders due in one payment</button></div>':'')+groups.map(function(g){ var st=BS.orderStatus(g.first), tot=0; g.offers.forEach(function(o){ tot+=lineExtras(b, lineOfB(b,o.lineN), o).total; });
           var act = st.who==='buyer' ? (BS.payOpen(g.first)?'Pay '+BS.fmt(BS.payAmount(g.first, tot)):g.first.deliveredAt?'Check your items':g.first.dispatchedAt?'Follow the delivery':'Accept the PO/SA') : 'Open';
           var info='<span><strong>'+esc(g.poRef||'')+'</strong> · '+(BS.namesShown(g.first)?esc(g.supplierName):'<span class="muted">supplier shown when they confirm</span>')+'<br><span class="small muted">'+g.offers.map(function(o){ return esc(lineOfB(b,o.lineN).item||''); }).join(', ')+' · '+BS.fmt(tot)+'</span></span><span class="tag '+st.c+'">'+esc(st.t)+'</span>';
           /* the contract opens in a pop-up right here, so several orders can be agreed one after another without leaving the page */
@@ -2796,6 +2833,41 @@ function bsSupport(threadId, inputId, sendId){
     return { goods:goods, delivery:delivery, insurance:insurance, total:goods+delivery+insurance };
   }
   window.bsLineExtras=lineExtras;
+  /* Pay everything due at once (14 Nov 2026 test): a buyer with orders from several suppliers makes ONE payment.
+     Build Smartly receives it and pays each supplier its part under that supplier's PO/SA. Each order is still its own
+     agreement with its own payment terms, so the list shows what is due on each: a deposit, a balance or the full amount. */
+  function dueList(){ var me=BS.me()||{}, d=BS.d9(me.phone); if(!d) return [];
+    var mine=boqs.filter(function(b){ return BS.d9(b.ownerPhone)===d; }), ids=mine.map(function(b){ return b.id; });
+    return BS.orderGroups(offers, function(o){ return ids.indexOf(o.boqId)>=0; }).filter(function(g){ return BS.payOpen(g.first); }).map(function(g){
+      var b=boqById(g.boqId)||{}, tot=0; g.offers.forEach(function(x){ var l=(b.lines||[]).filter(function(y){ return y.n===x.lineN; })[0]||{}; tot+=lineExtras(b, l, x).total; });
+      var f=g.first, stage=BS.payStage(f), base=BS.payAmount(f, tot, stage), late=(stage==='balance'||stage==='full')?BS.lateFee(f, base):0;
+      return {g:g, b:b, stage:stage, amount:base+late, late:late, what: stage==='deposit' ? 'Deposit ('+(+BS.termOf(f).pct||BS.DEPOSIT_PCT)+'%), balance after delivery' : stage==='balance' ? 'Balance after delivery' : BS.termOf(f).kind==='credit' ? 'Full payment (credit)' : 'Full payment'}; }); }
+  window.bsDueTotal=function(){ return dueList().reduce(function(a,x){ return a+x.amount; },0); };
+  window.bsDueCount=function(){ return dueList().length; };
+  var payAllM='';
+  window.bsPayAll=function(){
+    var list=dueList(); if(!list.length){ bsToast('Nothing to pay right now.'); return; }
+    var g=document.getElementById('payAllGate'); if(!g){ g=document.createElement('div'); g.className='modal'; g.id='payAllGate'; g.hidden=true; document.body.appendChild(g); }
+    var methods=BS.PAY_METHODS.filter(function(m){ return BS.PAY_ON.indexOf(m[0])>=0; }); if(!methods.length) methods=BS.PAY_METHODS.slice(0,1); if(!methods.some(function(m){ return m[1]===payAllM; })) payAllM=methods[0][1];
+    var total=list.reduce(function(a,x){ return a+x.amount; },0), bk=BS.BANK||{};
+    g.innerHTML='<div class="card" style="max-width:34rem;display:grid;gap:.8rem"><div><h3 style="margin:0">Pay everything due</h3><p class="small muted" style="margin:.3rem 0 0">One payment for all your orders. Build Smartly receives it and pays each supplier its part under its own PO/SA.</p></div>'+
+      '<div class="paylist">'+list.map(function(x){ return '<div class="payrow"><span><strong>'+esc(x.g.poRef)+'</strong> · <span data-notr>'+esc(x.g.supplierName||'')+'</span><br><span class="small muted">'+esc(x.what)+(x.late?' · <span>late charge</span> '+BS.fmt(x.late):'')+'</span></span><strong class="num">'+BS.fmt(x.amount)+'</strong></div>'; }).join('')+
+      '<div class="payrow tot"><span>Total</span><strong class="num">'+BS.fmt(total)+'</strong></div></div>'+
+      '<div class="su-choices">'+methods.map(function(m,i){ return '<div class="choice"><input type="radio" name="payAllM" id="pam'+i+'" value="'+m[1]+'"'+(m[1]===payAllM?' checked':'')+'><label for="pam'+i+'"><strong>'+m[1]+'</strong><span>'+m[2]+'</span></label></div>'; }).join('')+'</div>'+
+      '<div class="doc" id="payAllBank"'+(payAllM==='Bank transfer'?'':' hidden')+' style="display:grid;grid-template-columns:1fr;gap:.2rem"><strong>Transfer to</strong>'+(bk.number?'<span data-notr>'+esc(bk.bank||'')+' · '+esc(bk.name||'Build Smartly')+' · '+esc(bk.number)+'</span>':'<span class="small muted">Build Smartly sends you the account details by SMS.</span>')+'<span class="small muted">Use your request number as the reference.</span></div>'+
+      '<label class="check"><input type="checkbox" id="payAllOk"><span>I authorise '+BS.fmt(total)+' for these orders.</span></label>'+
+      '<div class="btns" style="justify-content:flex-end"><button class="btn btn-ghost" type="button" id="payAllNo">Not now</button><button class="btn btn-ochre" type="button" id="payAllGo">Pay '+BS.fmt(total)+'</button></div></div>';
+    g.hidden=false;
+    g.onchange=function(e){ if(e.target.name==='payAllM'){ payAllM=e.target.value; document.getElementById('payAllBank').hidden = payAllM!=='Bank transfer'; } };
+    document.getElementById('payAllNo').onclick=function(){ g.hidden=true; };
+    document.getElementById('payAllGo').onclick=async function(){ if(!document.getElementById('payAllOk').checked){ bsToast('Tick the box to authorise the payment.'); return; }
+      var btn=this; btn.disabled=true; btn.textContent='Paying…'; var me=BS.me()||{}, by=me.person||me.company||me.name||'', ref='YP-'+Math.floor(100000+Math.random()*900000), now=new Date().toISOString();
+      var fresh=dueList();
+      for(var i=0;i<fresh.length;i++){ var x=fresh[i], f=x.g.first, ids=x.g.offers.map(function(o){ return o.id; });
+        await BS.updateMany('offers', ids, x.stage==='deposit' ? {depositAt:now, depositRef:ref, depositMethod:payAllM, depositAmt:x.amount, depositBy:by, payAllRef:ref} : {paidAt:now, paymentRef:ref, paymentMethod:payAllM, paidTotal:(+f.depositAmt||0)+x.amount, lateFee:x.late, paidBy:by, payAllRef:ref}); }
+      g.hidden=true; bsToast(fresh.length+' order'+(fresh.length===1?'':'s')+' paid in one payment ('+ref+'). Each receipt is under Statements.'); };
+  };
+  document.addEventListener('click', function(e){ var a=e.target.closest('[data-payall]'); if(!a) return; e.preventDefault(); bsPayAll(); });
   /* bar at the top of every page while something waits for the customer */
   function renderAlert(list){
     list = list || myBoqs();
@@ -2811,11 +2883,11 @@ function bsSupport(threadId, inputId, sendId){
     if(toAgree.length) parts.push(toAgree.length+' PO/SA'+(toAgree.length>1?'s':'')+' to accept');
     if(waiting.length) parts.push(waiting.length+' offer'+(waiting.length>1?'s':'')+' to compare');
     if(toReceive.length) parts.push(toReceive.length+(toReceive.length>1?' deliveries':' delivery')+' on the way');
-    if(toPay.length) parts.push(toPay.length+' payment due');
+    if(toPay.length) parts.push(toPay.length+(toPay.length>1?' payments due':' payment due'));
     if(toCheck.length) parts.push(toCheck.length+(toCheck.length>1?' deliveries':' delivery')+' to check');
     var showBar = parts.length>0 && !!(BS.me()||{}).phone && !(BS.isStaff&&BS.isStaff());
     $('alertBar').hidden = !showBar;
-    if(showBar){ $('alertText').textContent = parts.join(' · ')+'.'; $('alertGo').href = toAgree.length ? '#order-'+toAgree[0].id : toPay.length ? '#order-'+toPay[0].id : toCheck.length ? '#order-'+toCheck[0].id : toReceive.length ? '#order-'+toReceive[0].id : '#boq-mine'; $('alertGo').textContent = toAgree.length ? 'Accept the PO/SA' : toPay.length ? 'Pay now' : toCheck.length ? 'Check your items' : toReceive.length ? 'Follow the delivery' : 'Compare offers'; }
+    if(showBar){ $('alertText').textContent = parts.join(' · ')+'.'; if(!toAgree.length && toPay.length>1) $('alertGo').setAttribute('data-payall',''); else $('alertGo').removeAttribute('data-payall'); $('alertGo').href = toAgree.length ? '#order-'+toAgree[0].id : toPay.length>1 ? '#' : toPay.length ? '#order-'+toPay[0].id : toCheck.length ? '#order-'+toCheck[0].id : toReceive.length ? '#order-'+toReceive[0].id : '#boq-mine'; $('alertGo').textContent = toAgree.length ? 'Accept the PO/SA' : toPay.length>1 ? 'Pay all · '+BS.fmt(window.bsDueTotal?bsDueTotal():0) : toPay.length ? 'Pay now' : toCheck.length ? 'Check your items' : toReceive.length ? 'Follow the delivery' : 'Compare offers'; }
   }
   /* ---------- Complete the order: delivery, insurance and (first time only) the company details, once ---------- */
   var checkoutBoq=null;
@@ -3049,7 +3121,7 @@ function bsSupport(threadId, inputId, sendId){
     var d=profile.docs; var state = d.verified ? 'Verified' : d.submitted ? 'Under review' : 'Registered';
     $('verTag').textContent=state; $('verTag').className='tag '+(d.verified?'tag-green':d.submitted?'tag-ochre':'');
     $('verText').textContent = d.verified ? 'Your licence and TIN were checked. You receive requests in your categories and can quote.' : d.rejected ? 'Your documents were not accepted: '+d.rejected+'. Correct them under Settings → Documents and submit again.' : d.submitted ? 'Staff are checking your documents. Target: 2 working days. You will be notified by SMS and Telegram.' : 'Add your licence and TIN under Settings → Documents, then submit for review. Until then you can see requests but not quote.';
-    $('supKicker').textContent = state==='Verified' ? 'Verified supplier' : 'Supplier · '+state;
+    $('supKicker').textContent = state==='Verified' ? 'Supplier portal · Verified' : 'Supplier portal · '+state;
     $('supMeta').textContent = (sup.branch||'')+' · '+(profile.cats.length? profile.cats.join(', ') : 'no categories chosen yet');
     var items=[
       ['Business licence and TIN submitted', d.submitted, 'profile'],
@@ -3359,8 +3431,8 @@ function bsSupport(threadId, inputId, sendId){
   refreshMe(); BSRoute.on('workspace', function(){ refreshMe(); render(); }); window.BSWorkspaceRefresh=refreshMe;
   BS.SUBCITIES.forEach(function(s){ var o=document.createElement('option'); o.textContent=s; $('locSub').appendChild(o); });
   bsStatus('wsStatus','Online','On this device only');
-  function showPanel(p){ document.querySelectorAll('.tile[data-panel]').forEach(function(x){ x.classList.toggle('on', x.dataset.panel===p); }); ['tracking','statements','support','inbox','news','settings'].forEach(function(k){ $('p-'+k).hidden = k!==p; }); if(p==='support'){ $('nNotif').hidden=true; } }
-  document.querySelectorAll('.tile[data-panel]').forEach(function(t){ t.onclick=function(){ showPanel(t.dataset.panel); }; });
+  function showPanel(p, reveal){ /* reveal: scroll to the panel (opened from the menu, a link or a tile) */ document.querySelectorAll('.tile[data-panel]').forEach(function(x){ x.classList.toggle('on', x.dataset.panel===p); }); ['tracking','statements','support','inbox','news','settings'].forEach(function(k){ $('p-'+k).hidden = k!==p; }); if(p==='support'){ $('nNotif').hidden=true; } if(reveal){ setTimeout(function(){ var el=$('p-'+p); if(el && !el.hidden){ var y=el.getBoundingClientRect().top+scrollY-80; window.scrollTo({top:Math.max(0,y), behavior:'smooth'}); } }, 60); } }
+  document.querySelectorAll('.tile[data-panel]').forEach(function(t){ t.onclick=function(){ showPanel(t.dataset.panel, true); }; });
   window.bsWorkspacePanel=showPanel;
   bsSupport('supportThread','supportIn','supportSend'); bsInbox('wsInbox');
   var boqs=[], offers=[];
@@ -3553,10 +3625,10 @@ window.bsPublishProfile = async function(fields){
 
 BSRoute.start();
 </script>
-<script src="assets/track.js?v=20261114d"></script>
-<script src="assets/order.js?v=20261114d"></script>
-<script src="assets/notify.js?v=20261114d"></script>
-<script src="assets/help.js?v=20261114d"></script>
-<script src="assets/admin.js?v=20261114d"></script>
-<script src="assets/editor.js?v=20261114d"></script>
-<script src="assets/i18n.js?v=20261114d"></script>
+<script src="assets/track.js?v=20261114e"></script>
+<script src="assets/order.js?v=20261114e"></script>
+<script src="assets/notify.js?v=20261114e"></script>
+<script src="assets/help.js?v=20261114e"></script>
+<script src="assets/admin.js?v=20261114e"></script>
+<script src="assets/editor.js?v=20261114e"></script>
+<script src="assets/i18n.js?v=20261114e"></script>
