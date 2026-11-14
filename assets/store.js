@@ -708,6 +708,11 @@
   /* advert placements and their prices (newsletter page); an advert goes live only after staff approval and payment */
   BS.AD_PRICES = {news:5000, feature:15000, pulse:5000, banner:4000, directory:3000};
   BS.AD_LABELS = {news:'Newsletter item', feature:'Featured supplier of the month', pulse:'Price pulse tile', banner:'Workspace banner', directory:'Highlighted Members card', platform:'From Build Smartly'};
+  /* dates and countdowns shown on lists (14 Nov 2026 test): "14 Nov", "3 days left" */
+  BS.day = function(iso){ if(!iso) return ""; var d=new Date(iso); return isNaN(d) ? "" : d.toLocaleDateString("en-GB",{day:"numeric",month:"short"}); };
+  BS.validUntil = function(o){ return o && o.createdAt ? new Date(o.createdAt).getTime() + (+o.validDays||0)*86400000 : 0; };
+  BS.leftText = function(ms){ if(!ms) return ""; var d=ms-Date.now(); if(d<=0) return "validity ended"; if(d<86400000){ var h=Math.ceil(d/3600000); return h+" hour"+(h===1?"":"s")+" left"; } var n=Math.ceil(d/86400000); return n+" day"+(n===1?"":"s")+" left"; };
+  BS.lastStepAt = function(o){ var t=""; ["acceptedAt","confirmedAt","contractAt","depositAt","paidAt","readyAt","dispatchedAt","deliveredAt","checkedAt","cancelledAt","declinedAt","expiredAt"].forEach(function(k){ if(o && o[k] && String(o[k])>t) t=String(o[k]); }); return t; };
   BS.offerTotal = function(o){ return (+o.qtyOffered||0)*(+o.unitPrice||0)+(+o.deliveryCost||0); };
   BS.orderGroup = function(offers, o){ if(!o) return []; if(!o.poRef) return [o]; return offers.filter(function(x){ return x.poRef===o.poRef && x.boqId===o.boqId && x.status===(o.status==='declined'||o.status==='expired'||o.status==='cancelled'?o.status:'accepted'); }).sort(function(a,b){ return a.lineN-b.lineN; }); };
   BS.orderGroups = function(offers, filter){

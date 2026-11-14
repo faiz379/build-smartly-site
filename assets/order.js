@@ -278,11 +278,11 @@
       body='<div class="vbox"><strong>Amendment '+pend.n+' · <span>'+(pend.by==='buyer'?'asked by the buyer':'asked by the supplier')+'</span></strong><p class="small" style="margin:0" data-notr>'+esc(amdSummary(pend,b))+'</p>'+
         (role==='staff' ? '<p class="small muted" style="margin:0">Waiting for the other party.</p>' : mine ? '<p class="small muted" style="margin:0">Waiting for the other party to accept or decline.</p>' :
          '<div class="chat-in"><div class="field"><input id="amdWhy" placeholder="Reason, if you decline"></div><button class="btn btn-ghost btn-sm" type="button" data-amdno="'+pend.id+'">Decline</button><button class="btn btn-primary btn-sm" type="button" data-amdyes="'+pend.id+'">Accept the change</button></div>')+'</div>'; }
-    else if(can && role!=='staff'){
+    else if(can){ /* staff may ask for a change on the supplier's behalf (a supplier who typed a wrong figure); the buyer still accepts it */
       body = amdOpen ? '<div style="display:grid;gap:.5rem">'+g.map(function(x){ var l=lineOf(b,x.lineN)||{}; return '<div class="su-row2"><div class="field"><label>'+esc(l.item||'')+' · <span>quantity</span> ('+esc(l.unit||'')+')</label><input type="number" min="0" step="any" data-amq="'+x.id+'" value="'+x.qtyOffered+'"></div><div class="field"><label>Unit price (ETB)</label><input type="number" min="0" step="any" data-amp="'+x.id+'" value="'+x.unitPrice+'"></div></div>'; }).join('')+
           '<div class="su-row2"><div class="field"><label for="amdNeeded">Needed by</label><input id="amdNeeded" type="date" value="'+esc((lineOf(b,o.lineN)||{}).needed||'')+'"></div><div class="field"><label for="amdNote">Why</label><input id="amdNote" placeholder="e.g. the site needs less cement"></div></div>'+
           '<div class="btns"><button class="btn btn-ghost btn-sm" type="button" data-amdclose>Not now</button><button class="btn btn-primary btn-sm" type="button" data-amdsend="'+o.id+'">Send the change for agreement</button></div></div>'
-        : '<div class="btns"><button class="btn btn-ghost btn-sm" type="button" data-amdopen>Ask for a change</button></div>'; }
+        : '<div class="btns"><button class="btn btn-ghost btn-sm" type="button" data-amdopen>'+(role==='staff'?'Change it for the supplier':'Ask for a change')+'</button></div>'; }
     return card('Changes (amendments)', (past?'<div style="display:grid;gap:.3rem">'+past+'</div>':'')+body, 'After confirmation the PO/SA is not edited: a change is asked for and binds only when the other party accepts it.', 'orderAmd');
   }
   function openDoc(kind, id){ var o=offerOf(id||cur); if(!o) return; var g=groupOf(o), b=boqOf(o.boqId)||{}, r=roleFor(o,b); if(kind==='note' && (r==='buyer' || r==='none')) return; $('docBody').innerHTML=docHtml(kind,g,b,r); $('docGate').hidden=false; $('docBody').scrollTop=0; fillQr(); }
@@ -326,7 +326,7 @@
       var nd=($('amdNeeded')||{}).value||'', od=(lineOf(ba,oa.lineN)||{}).needed||'', note=(($('amdNote')||{}).value||'').trim();
       if(ch.some(function(c){ return !(c.qty>0) || !(c.price>0); })){ bsToast('Each line needs a quantity and a price above zero.'); return; }
       if(!ch.some(function(c){ return c.qty!==c.oldQty || c.price!==c.oldPrice; }) && (!nd || nd===od)){ bsToast('Change a quantity, a price or the date first.'); return; }
-      as.disabled=true; await BS.add('amendments', {poRef:oa.poRef, boqId:oa.boqId, orderId:ga[0].id, n:amdsOf(oa).length+1, by:ra, byName:meName(), changes:ch, needed:nd, oldNeeded:od, note:note, status:'pending', at:new Date().toISOString()});
+      as.disabled=true; await BS.add('amendments', {poRef:oa.poRef, boqId:oa.boqId, orderId:ga[0].id, n:amdsOf(oa).length+1, by:ra==='staff'?'supplier':ra, byName:ra==='staff'?'Build Smartly staff for the supplier ('+meName()+')':meName(), changes:ch, needed:nd, oldNeeded:od, note:note, status:'pending', at:new Date().toISOString()});
       amdOpen=false; bsToast('Sent. The change binds once the other party accepts it.'); return; }
     var ay=t.closest('[data-amdyes]'); if(ay){ var a=data.amendments.filter(function(x){ return x.id===ay.dataset.amdyes; })[0]; if(!a) return; ay.disabled=true; var now=new Date().toISOString();
       for(var ci=0; ci<(a.changes||[]).length; ci++){ var c=a.changes[ci]; await BS.update('offers', c.offerId, {qtyOffered:c.qty, unitPrice:c.price}); }

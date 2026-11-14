@@ -82,6 +82,7 @@ img{max-width:100%}
 .tabs{display:flex;gap:.4rem;border-bottom:1px solid var(--line);overflow-x:auto}
 .tabs button{font:inherit;font-family:var(--display);font-weight:600;background:none;border:0;border-bottom:3px solid transparent;padding:.7rem 1rem;color:var(--fg-2);cursor:pointer;white-space:nowrap}
 .tabs button.on{color:var(--fg);border-bottom-color:var(--ochre)}
+@media (max-width:640px){.tabs{flex-wrap:wrap;overflow:visible;border-bottom:0;gap:.4rem}.tabs button{border:1.5px solid var(--line);border-radius:999px;padding:.45rem .85rem;font-size:.92rem;background:var(--white)}.tabs button.on{border-color:var(--ochre);background:color-mix(in srgb,var(--ochre) 14%,var(--white))}}
 .tabs button .badge{background:var(--green);color:#F6F7F4;border-radius:999px;font-size:.7rem;padding:.1rem .45rem;margin-left:.3rem}
 /* staff page: left navigation. Wide screens: a sidebar with icons and names, the three-line button folds it to icons only. Phones: the three-line button opens it as a drawer. */
 .adlayout{display:grid;grid-template-columns:13.5rem minmax(0,1fr);grid-template-rows:auto 1fr;gap:1rem;align-items:start;position:relative}
@@ -89,7 +90,7 @@ img{max-width:100%}
 .adburger{grid-column:1;width:3.6rem;height:2.6rem;border:1px solid var(--line);background:var(--white);border-radius:10px;display:grid;place-items:center;gap:0;cursor:pointer;padding:.55rem .9rem;box-sizing:border-box}
 .adburger span{display:block;width:20px;height:2px;background:var(--fg);border-radius:2px}
 .adburger span+span{margin-top:4px}
-.adnav{grid-column:1;display:grid;align-content:start;gap:.15rem;background:var(--white);border:1px solid var(--line);border-radius:14px;padding:.4rem;position:sticky;top:5rem}
+.adnav{grid-column:1;display:grid;align-content:start;gap:.15rem;background:var(--white);border:1px solid var(--line);border-radius:14px;padding:.4rem;position:sticky;top:5rem;max-height:calc(100vh - 6rem);overflow-y:auto;overscroll-behavior:contain}
 .adnav button{font:inherit;font-family:var(--display);font-weight:600;background:none;border:0;border-radius:10px;padding:.6rem .7rem;color:var(--fg-2);cursor:pointer;display:flex;align-items:center;gap:.6rem;text-align:left;white-space:nowrap;width:100%}
 .adnav button i{font-style:normal;width:1.6rem;height:1.6rem;border-radius:8px;background:var(--bg-2,#EEF3EF);display:grid;place-items:center;font-size:.8rem;flex:none;color:var(--green)}
 .adnav button.on{background:var(--bg-2,#EEF3EF);color:var(--fg)}
@@ -117,7 +118,8 @@ img{max-width:100%}
 .toast{position:fixed;right:max(12px,env(safe-area-inset-right,0px));bottom:calc(52px + env(safe-area-inset-bottom,0px));background:var(--green-deep);color:var(--band-fg);padding:.7rem 1rem;border-radius:12px;box-shadow:var(--shadow);font-size:.9rem;z-index:40;max-width:min(92vw,360px)}
 .deadline,.cd{font-size:.92rem;color:var(--alert);font-weight:700}
 .keyinfo{color:var(--fg);font-weight:600}
-.view{padding-block:1.6rem 3rem;display:grid;gap:1.4rem}
+.view{padding-block:1.6rem 3rem;display:grid;gap:1.4rem;grid-template-columns:minmax(0,1fr)}
+.view>*{min-width:0}
 
 /* Header */
 header.site{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
@@ -160,6 +162,8 @@ header.site{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;backgrou
   .nav.open .links{display:flex;flex-direction:column;align-items:flex-start;gap:.9rem;position:absolute;left:0;right:0;top:100%;background:var(--bg);border-bottom:1px solid var(--line);padding:1rem max(16px,env(safe-area-inset-left,0px)) 1.2rem}
 }
 footer.site{border-top:1px solid var(--line);padding-block:2.2rem;color:var(--fg-2);font-size:.88rem;margin-top:1rem}
+body:has(#mBar:not([hidden])) footer.site{padding-bottom:5.5rem}
+footer.site .devby{display:block!important;visibility:visible!important;opacity:1!important;font-size:.78rem;color:var(--fg-2);padding-top:.6rem;margin-top:.6rem;border-top:1px solid var(--line)}
 footer.site .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem 2rem;align-items:center}
 footer.site nav{display:flex;flex-wrap:wrap;gap:1.2rem}
 footer.site a{text-decoration:none}
@@ -222,7 +226,7 @@ footer.site .staff-link:hover{opacity:1;text-decoration:underline}
 .hdots button.on{background:var(--ochre)}
 .harrow{position:absolute;top:50%;transform:translateY(-50%);z-index:2;background:rgba(20,36,30,.45);border:0;color:#F6F7F4;width:36px;height:36px;border-radius:50%;cursor:pointer;display:grid;place-items:center}
 .harrow.l{left:.6rem}.harrow.r{right:.6rem}
-@media (max-width:600px){.hero{aspect-ratio:4/3}.hslide.msg .pic{display:none}.harrow{display:none}}
+@media (max-width:600px){.hero{aspect-ratio:4/3}.hslide.msg .pic{display:none}.harrow{width:30px;height:30px;top:auto;bottom:.35rem;transform:none}.harrow.l{left:.5rem}.harrow.r{right:.5rem}}
 @media (prefers-reduced-motion:reduce){.hslide{transition:none}}
 .helpbtn{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:60;display:inline-flex;align-items:center;gap:.45rem;background:var(--green);color:#F6F7F4;border:0;border-radius:999px;padding:.7rem 1rem;font:inherit;font-family:var(--display);font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25);cursor:pointer;transition:transform .2s}
 .helpbtn:hover{transform:translateY(-2px)}
@@ -348,7 +352,9 @@ footer.site .staff-link:hover{opacity:1;text-decoration:underline}
 .slide .head button{border:1.5px solid var(--line);background:var(--white);color:var(--fg);border-radius:999px;width:34px;height:34px;cursor:pointer;display:grid;place-items:center}
 .track{display:flex;gap:.8rem;overflow-x:auto;min-width:0;max-width:100%;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:.2rem}
 .track::-webkit-scrollbar{display:none}
-.tick{flex:0 0 240px;scroll-snap-align:start;background:var(--white);border:1px solid var(--line);border-radius:12px;padding:.8rem .95rem;display:grid;gap:.2rem;min-width:0}
+.tick{flex:0 0 calc((100% - 2.4rem)/4);scroll-snap-align:start;background:var(--white);border:1px solid var(--line);border-radius:12px;padding:.8rem .95rem;display:grid;gap:.2rem;min-width:0}
+/* whole cards only (14 Nov 2026 test): 4, 3, 2 or 1 cards fill the width exactly; the arrows and the timer move one full page */
+@media (max-width:1000px){.tick{flex-basis:calc((100% - 1.6rem)/3)}}@media (max-width:760px){.tick{flex-basis:calc((100% - .8rem)/2)}}@media (max-width:340px){.tick{flex-basis:100%}}
 .tick .img{display:block;width:100%;height:84px;border-radius:8px;background:var(--bg-2);margin-bottom:.4rem;overflow:hidden}
 .tick .img svg{width:100%;height:100%}
 .tick .name{font-family:var(--display);font-weight:600;font-size:.95rem}
@@ -485,6 +491,7 @@ footer.site .staff-link:hover{opacity:1;text-decoration:underline}
 .bellbtn{position:relative;background:var(--white);border:1.5px solid var(--line);border-radius:999px;width:2.5rem;height:2.5rem;display:grid;place-items:center;cursor:pointer;color:var(--fg)}
 .bellbtn em{position:absolute;top:-4px;right:-4px;background:var(--ochre);color:#14241E;font-style:normal;font-weight:700;font-size:.7rem;border-radius:999px;min-width:1.2rem;height:1.2rem;display:grid;place-items:center;padding:0 .25rem}
 .bellpanel{position:absolute;right:0;top:calc(100% + .5rem);width:min(360px,calc(100vw - 2rem));max-height:70vh;overflow:auto;background:var(--white);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 40px rgba(0,0,0,.18);z-index:60;padding:.5rem}
+@media (max-width:640px){.bellpanel{position:fixed;left:12px;right:12px;width:auto;top:4.6rem}}
 .bellhead{display:flex;justify-content:space-between;align-items:center;padding:.3rem .4rem .5rem}
 .bellitem{display:grid;gap:.15rem;padding:.55rem .6rem;border-radius:10px;text-decoration:none;color:inherit;border-left:3px solid transparent}
 .bellitem:hover{background:var(--bg)}
@@ -663,7 +670,8 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 @media (prefers-reduced-motion:reduce){.tile .n.blink{animation:none}}
 @media (max-width:900px){.tiles{grid-template-columns:repeat(3,1fr)}}
 @media (max-width:560px){.tiles{grid-template-columns:repeat(2,1fr)}}
-.idrow{display:grid;grid-template-columns:auto 1fr auto;gap:1rem;align-items:center}
+.idrow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:1rem;align-items:center}
+@media (max-width:640px){.idrow{grid-template-columns:auto minmax(0,1fr)}.idrow>:last-child{grid-column:1/-1}}
 .idrow .logo{width:84px;height:84px;border-radius:14px;border:1.5px dashed var(--line);display:grid;place-items:center;font-size:.72rem;color:var(--fg-2);background:var(--white);text-align:center}
 .idrow h1{font-size:1.4rem}
 @media (max-width:560px){.idrow{grid-template-columns:auto 1fr}.idrow .status{grid-column:1/-1}}
@@ -1695,6 +1703,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     <span>© 2026 Build Smartly S.C. · Addis Ababa, Ethiopia<span id="ftContact"></span><br></span>
     <nav><a href="#supply">Materials</a><a href="#how">How it works</a><a href="#suppliers">For suppliers</a><a href="#members">Members</a><a href="#newsletter">Newsletter</a><a href="#aboutus">About us</a><a href="#contact">Contact</a><a href="#faq">FAQ</a><a href="#terms">Terms</a><a href="#privacy">Privacy</a></nav>
   </div>
+  <div class="wrap devby" id="devBy" data-notr>Website developed by Faiz Al-Sharafi · Velun Systems</div>
 </footer>
   <div class="modal" id="poGate" hidden>
     <div class="card">
@@ -1763,8 +1772,8 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 </div>
 
 
-<script src="assets/firebase-config.js?v=20261114c" onerror="this.remove()"></script>
-<script src="assets/store.js?v=20261114c"></script>
+<script src="assets/firebase-config.js?v=20261114d" onerror="this.remove()"></script>
+<script src="assets/store.js?v=20261114d"></script>
 <script>
 /* ---------- Router: one page, views switched by hash ---------- */
 window.BSRoute = (function(){
@@ -1851,6 +1860,12 @@ function bsOtp(box, onComplete){
   return { code:code, reset:function(){ inputs.forEach(function(i){ i.value=''; }); }, focus:function(){ inputs[0].focus(); } };
 }
 /* Accepts 0912345678, +251 912345678, 251912345678 or 912345678 and returns the 9 digits. */
+(function(){ var CREDIT='Website developed by Faiz Al-Sharafi · Velun Systems';
+  function keep(){ var f=document.querySelector('footer.site'); if(!f) return; var d=document.getElementById('devBy');
+    if(!d){ d=document.createElement('div'); d.id='devBy'; d.className='wrap devby'; d.setAttribute('data-notr',''); f.appendChild(d); }
+    if(d.textContent!==CREDIT) d.textContent=CREDIT; if(d.hidden) d.hidden=false; if(d.parentNode!==f) f.appendChild(d); }
+  function start(){ keep(); var f=document.querySelector('footer.site'); if(f && window.MutationObserver) new MutationObserver(keep).observe(f, {childList:true, subtree:true, characterData:true, attributes:true}); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', start); else start(); })();
 function bsDigits(v){ var d=(v||'').replace(/\D/g,''); if(d.indexOf('251')===0 && d.length>=12) d=d.slice(3); if(d.charAt(0)==='0') d=d.slice(1); return d; }
 /* Phone-only account: the number is the account. Known test numbers map to the demo buyers and suppliers. */
 /* SMS code rules (Abdullah v4): a code is valid 5 minutes; 3 wrong tries end it; at most 3 codes per number per hour.
@@ -2160,11 +2175,14 @@ bsAdShow('nwAds', function(){ return !document.getElementById('view-advertise').
   window.bsHeroRender=function(list, secs, show){ hero.querySelectorAll('.hslide').forEach(function(x){ x.remove(); }); var html = list && list.length ? list.map(slideHtml).join('') : hOrig; document.getElementById('hPrev').insertAdjacentHTML('beforebegin', html); hSecs=Math.max(3, +secs||6); hDots(); hGo(show!=null && show>=0 ? show : Math.min(hi, hSlides().length-1)); hRestart(); if(window.bsApplyPics) bsApplyPics(); };
   window.bsHeroGo=function(i){ hGo(i); hRestart(); };
   document.getElementById('hPrev').onclick=function(){ hGo(hi-1); hRestart(); }; document.getElementById('hNext').onclick=function(){ hGo(hi+1); hRestart(); };
+  /* swipe left or right on a phone; the timer starts again after each move */
+  (function(){ var x0=null, y0=0; hero.addEventListener('touchstart', function(e){ var t=e.touches[0]; x0=t.clientX; y0=t.clientY; }, {passive:true});
+    hero.addEventListener('touchend', function(e){ if(x0===null) return; var t=e.changedTouches[0], dx=t.clientX-x0, dy=t.clientY-y0; x0=null; if(Math.abs(dx)>40 && Math.abs(dx)>Math.abs(dy)){ hGo(hi+(dx<0?1:-1)); hRestart(); } }, {passive:true}); })();
   hDots(); hGo(0); hRestart();
   var hKey='null';
   if(window.BS && BS.onSettings) BS.onSettings(function(){ if(window.bsEditor && bsEditor.active()) return; var sv=BS.SLIDES, key=JSON.stringify(sv||null); if(key===hKey) return; hKey=key; bsHeroRender(sv && sv.list && sv.list.length ? sv.list : null, sv && sv.secs); });
   /* price pulse: example figures, replaced by the median of real quotes on this link when there are enough */
-  var track=document.getElementById('track'), step=256;
+  var track=document.getElementById('track'), step=256; function pageStep(){ var g=parseFloat(getComputedStyle(track).columnGap)||13; return track.clientWidth+g; }
   function pulseTick(p){
     var chg = p.chg>0.4 ? '<span class="chg up">▲ '+p.chg.toFixed(1)+'% since last week</span>' : p.chg<-0.4 ? '<span class="chg down">▼ '+Math.abs(p.chg).toFixed(1)+'% since last week</span>' : '<span class="chg flat">■ unchanged since last week</span>';
     return '<div class="tick"><span class="img" aria-hidden="true">'+p.svg+'</span><span class="name">'+p.name+(p.brand?' · <em class="brand">'+p.brand+'</em>':'')+'</span><span class="unit">'+p.unit+'</span><span class="price">'+BS.fmt(p.price)+'</span>'+chg+'<span class="when">'+p.when+'</span></div>';
@@ -2186,11 +2204,11 @@ bsAdShow('nwAds', function(){ return !document.getElementById('view-advertise').
   BS.subscribe('offers', function(d){ pOffers=d; rePulse(); });
   BS.subscribe('boqs', function(d){ pBoqs=d; rePulse(); });
   BS.onSuppliers(rePulse);
-  document.getElementById('prev').addEventListener('click',function(){track.scrollBy({left:-step,behavior:'smooth'});});
-  document.getElementById('next').addEventListener('click',function(){track.scrollBy({left:step,behavior:'smooth'});});
+  document.getElementById('prev').addEventListener('click',function(){ if(track.scrollLeft<=4){ track.scrollTo({left:track.scrollWidth,behavior:'smooth'}); return; } track.scrollBy({left:-pageStep(),behavior:'smooth'});});
+  document.getElementById('next').addEventListener('click',function(){ var max=track.scrollWidth-track.clientWidth; if(track.scrollLeft>=max-4){ track.scrollTo({left:0,behavior:'smooth'}); return; } track.scrollBy({left:pageStep(),behavior:'smooth'});});
   var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches, paused=false;
   track.addEventListener('mouseenter',function(){paused=true;}); track.addEventListener('mouseleave',function(){paused=false;}); track.addEventListener('touchstart',function(){paused=true;},{passive:true});
-  if(!reduce){ setInterval(function(){ if(paused||document.hidden||document.getElementById('view-home').hidden)return; var max=track.scrollWidth-track.clientWidth; if(track.scrollLeft>=max-4){track.scrollTo({left:0,behavior:'smooth'});} else {track.scrollBy({left:step,behavior:'smooth'});} },3500); }
+  if(!reduce){ setInterval(function(){ if(paused||document.hidden||document.getElementById('view-home').hidden)return; var max=track.scrollWidth-track.clientWidth; if(track.scrollLeft>=max-4){track.scrollTo({left:0,behavior:'smooth'});} else {track.scrollBy({left:pageStep(),behavior:'smooth'});} },5000); }
 })();
 
 /* ---------- Signed-in state in the header ---------- */
@@ -2287,7 +2305,7 @@ function bsSupport(threadId, inputId, sendId){
   /* accounts already used on this phone: one tap to switch (demo shortcut) */
   function renderAccts(){
     var cur=bsDigits((BS.me()||{}).phone); var list=BS.accounts().filter(function(a){ return bsDigits(a.phone)!==cur; });
-    $('acctBox').hidden = !list.length;
+    $('acctBox').hidden = true; /* 14 Nov 2026: no one-tap switching; every sign-in takes the number and its code (or the supplier password) */
     $('acctList').innerHTML = list.map(function(a){ var d=bsDigits(a.phone); var sup=!!(a.supplierId||(a.role&&a.role!=='Request materials')); return '<button type="button" data-acct="'+d+'"><span style="display:grid"><strong>'+(a.company||a.name||'0'+d)+'</strong><span>0'+d+' · '+(sup?'supplier':'buyer')+'</span></span><span class="tag '+(sup?'tag-ochre':'tag-green')+'">'+(sup?'Supplier portal':'My workspace')+'</span></button>'; }).join('');
   }
   $('acctList').addEventListener('click', function(e){ var b=e.target.closest('[data-acct]'); if(!b) return; var kind=bsSignInByPhone(b.dataset.acct); bsToast('Switched to '+((BS.me()||{}).company||(BS.me()||{}).name||'0'+b.dataset.acct)+'.'); afterSignIn(kind); });
@@ -2657,7 +2675,7 @@ function bsSupport(threadId, inputId, sendId){
   function totalOf(o){ return BS.offerTotal(o); }
   function boqById(id){ return boqs.filter(function(x){ return x.id===id; })[0]; }
   function lineOfB(b,n){ return (b.lines||[]).filter(function(x){ return x.n===+n; })[0]||{}; }
-  function offersOn(b,l){ return offers.filter(function(o){ return o.boqId===b.id && o.lineN===l.n; }).sort(function(a,c){ return totalOf(a)-totalOf(c) || (a.createdAt||'').localeCompare(c.createdAt||''); }); }
+  function offersOn(b,l){ return offers.filter(function(o){ return o.boqId===b.id && o.lineN===l.n && o.status!=='withdrawn'; }).sort(function(a,c){ return totalOf(a)-totalOf(c) || (a.createdAt||'').localeCompare(c.createdAt||''); }); }
   function validOffer(o){ return o.status==='sent' && !(o.counter && o.counter.state==='open'); }
   function chosenOf(b,l){ var id=(b.chosen||{})[l.n]; var o=id && offers.filter(function(x){ return x.id===id; })[0]; return (o && validOffer(o)) ? o : null; }
   function poOf(b,l){ return offers.filter(function(o){ return o.boqId===b.id && o.lineN===l.n && o.status==='accepted'; })[0]||null; }
@@ -2708,7 +2726,7 @@ function bsSupport(threadId, inputId, sendId){
             '<span><span class="k">Brand</span>'+(BS.BRAND_LOGOS[o.brand]?'<img class="blogo" src="'+BS.BRAND_LOGOS[o.brand]+'" alt="">':'')+'<b>'+esc(o.brand||'—')+'</b><span class="small muted"> · '+o.qtyOffered+' '+esc(l.unit)+(o.qtyOffered<l.qty?' (partial)':'')+'</span></span>'+
             '<span><span class="k">'+rateLabel(l)+'</span>'+BS.fmt(o.unitPrice)+' <span class="small muted">'+(o.vat==='incl'?'incl. VAT':'excl. VAT')+'</span></span>'+
             '<span><span class="k">Total</span><strong>'+BS.fmt(total)+'</strong>'+(isBest?'<br><span class="best-tag">Best price</span>':(!po && live.length>1 && o.status!=='rejected' && total>bestTotal)?'<br><span class="diff">+ '+BS.fmt(total-bestTotal)+' vs best</span>':'')+'</span>'+
-            '<span><span class="k">Delivery · ready in · valid</span>'+(o.deliveryCost?BS.fmt(o.deliveryCost)+(o.deliveryTotal&&o.deliveryTotal>o.deliveryCost?' <span class="small" title="One delivery fee for all lines from this supplier, shared by value"><span>share of</span> <span data-notr>'+BS.fmt(o.deliveryTotal)+'</span></span>':''):(b.deliveryTerm==='Supplier delivers to site'?'included':'ex-works'))+' · '+o.leadDays+' d · <span class="cd">'+o.validDays+' d</span><br><span class="small"><span class="k" style="display:inline">Payment:</span> '+esc(BS.termLabel(BS.termOf(o)))+'</span></span>'+act+'</div>';
+            '<span><span class="k">Delivery · ready in · valid</span>'+(o.deliveryCost?BS.fmt(o.deliveryCost)+(o.deliveryTotal&&o.deliveryTotal>o.deliveryCost?' <span class="small" title="One delivery fee for all lines from this supplier, shared by value"><span>share of</span> <span data-notr>'+BS.fmt(o.deliveryTotal)+'</span></span>':''):(b.deliveryTerm==='Supplier delivers to site'?'included':'ex-works'))+' · '+o.leadDays+' d · <span class="cd">'+esc(BS.leftText(BS.validUntil(o)))+'</span>'+(o.correctedAt?' · <span class="small">corrected by the supplier</span>':'')+'<br><span class="small"><span class="k" style="display:inline">Payment:</span> '+esc(BS.termLabel(BS.termOf(o)))+'</span></span>'+act+'</div>';
         }).join('');
         return '<section class="lbox'+(po?' done':ch?' chosen':'')+'"><div class="lbox-head"><span class="lbox-pic">'+(BS.itemPic(l.item)||BS.catPic(l.cat)?'<img src="'+esc(BS.itemPic(l.item)||BS.catPic(l.cat))+'" alt="" onerror="this.remove()">':'')+'</span><span><strong>'+lineTitle(l)+'</strong><br><span class="small keyinfo">'+esc(l.cat)+(os.length?' · '+os.length+' of '+invited+' supplier'+(invited!==1?'s':'')+' quoted · cheapest first':' · sent to '+invited+' supplier'+(invited!==1?'s':''))+'</span></span>'+state+'</div>'+
           (os.length ? '<div class="offers">'+rows+'</div>' : '<div class="small muted">No offers yet. You get a notification when the first one arrives.</div>')+'</section>';
@@ -3015,7 +3033,7 @@ function bsSupport(threadId, inputId, sendId){
 
   /* ----- tabs ----- */
   function showTab(t){ var sub=t; t=TABMAP[t]||t; document.querySelectorAll('#spTabs button').forEach(function(x){x.classList.toggle('on',x.dataset.tab===t);}); TABS.forEach(function(k){ $('tab-'+k).hidden = k!==t; }); if(t==='mail'){ $('spMailBadge').hidden=true; } if(sub==='profile'||sub==='stats'){ var el=$('tab-'+sub); if(el) setTimeout(function(){ el.scrollIntoView({behavior:'smooth',block:'start'}); },30); return; } window.scrollTo(0,0); }
-  document.querySelectorAll('#spTabs button').forEach(function(b){ b.onclick=function(){ showTab(b.dataset.tab); }; });
+  document.querySelectorAll('#spTabs button').forEach(function(b){ b.onclick=function(){ /* each tab is a step in the browser history, so Back returns to the previous tab */ if(window.BSRoute && BSRoute.current && /^supplier/.test(BSRoute.current())) BSRoute.go('supplier-'+b.dataset.tab); else showTab(b.dataset.tab); }; });
   window.bsSupplierTab=function(t, sub){ if(!sup) return; showTab(t); if(sub){ var mb=document.querySelector('#spMailTabs [data-m="'+sub+'"]'); if(mb) mb.click(); } };
   $('spMailTabs').addEventListener('click', function(e){ var b=e.target.closest('[data-m]'); if(!b) return; $('spMailTabs').querySelectorAll('button').forEach(function(x){ x.classList.toggle('on', x===b); }); ['statements','support','inbox','news'].forEach(function(k){ $('spm-'+k).hidden = k!==b.dataset.m; }); });
   bsSupport('spSupportThread','spSupportIn','spSupportSend'); bsInbox('spInbox');
@@ -3198,37 +3216,37 @@ function bsSupport(threadId, inputId, sendId){
     if(!sup) return;
     renderHome();
     var mine=offers.filter(function(o){return o.supplierId===sup.id;});
-    var reqs=boqs.filter(function(b){ return open(b) && matches(b).some(function(l){ return !mine.some(function(o){return o.boqId===b.id && o.lineN===l.n;}); }); }).sort(function(a,b){return (b.createdAt||'').localeCompare(a.createdAt||'');});
+    var reqs=boqs.filter(function(b){ return open(b) && matches(b).some(function(l){ return !mine.some(function(o){return o.boqId===b.id && o.lineN===l.n && o.status!=='withdrawn';}); }); }).sort(function(a,b){return (b.createdAt||'').localeCompare(a.createdAt||'');});
     $('qNew').textContent=reqs.length; $('reqBadge').hidden=!reqs.length; $('reqBadge').textContent=reqs.length;
     var myGroups=BS.orderGroups(mine), acts=actionsFor(mine, myGroups);
     $('qSent').textContent=mine.filter(function(o){return o.status==='sent' && !(o.counter&&o.counter.state==='open');}).length; $('qWon').textContent=acts.length;
     var can=verified() && profile.agree;
     var rq=(window.__spReqQ||'').trim().toLowerCase(); if(rq) reqs=reqs.filter(function(b){ return (b.ref+' '+b.subcity+' '+matches(b).map(function(l){ return l.item; }).join(' ')).toLowerCase().indexOf(rq)>=0; });
-    var box=$('tab-requests'); var typing=document.activeElement && document.activeElement.closest && document.activeElement.closest('#tab-requests form'); if(typing){ renderRest(); return; } box.innerHTML='<div class="field" style="max-width:26rem;margin-bottom:.6rem"><input id="spReqSearch" type="search" placeholder="Search requests: reference, item, sub-city" value="'+(window.__spReqQ||'').replace(/"/g,'&quot;')+'"></div>';
+    var box=$('tab-requests'); var ae=document.activeElement, typing=ae && ae.closest && /^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName) && ae.closest('#tab-requests form'); /* a pressed button does not hold the page */ if(typing){ renderRest(); return; } box.innerHTML='<div class="field" style="max-width:26rem;margin-bottom:.6rem"><input id="spReqSearch" type="search" placeholder="Search requests: reference, item, sub-city" value="'+(window.__spReqQ||'').replace(/"/g,'&quot;')+'"></div>';
     if(!can){ box.innerHTML='<div class="card" style="border-color:var(--ochre);margin-bottom:.8rem"><strong style="font-family:var(--display)">Quoting is locked</strong><p class="small muted">'+(licExpired()?'Your business licence expired on '+profile.docs.exp+'. Upload the renewed licence under Profile and documents; quoting opens again once our team has checked it.':onHold()?'Build Smartly staff have put your account on hold for review. You cannot quote until staff make it active again. Write to support if you have a question.':verified()?'Accept the supplier agreement under Profile and documents.':'Submit your licence and TIN and wait for verification. You can prepare your price list meanwhile.')+'</p></div>'; }
     if(!profile.cats.length){ box.innerHTML+='<div class="empty">Choose your categories under Profile and documents to start receiving requests.</div>'; }
     else if(!reqs.length){ box.innerHTML+='<div class="empty">No open requests in your categories right now. When a customer sends a BOQ with your materials, it appears here and you get a notification.</div>'; }
     reqs.forEach(function(b){
       var card=document.createElement('div'); card.className='card req'; var left=BS.days(new Date(b.deadlineAt)-Date.now());
-      var prefilled=matches(b).filter(function(l){ return priceFor(l.item) && !mine.some(function(o){return o.boqId===b.id && o.lineN===l.n;}); }).length;
+      var prefilled=matches(b).filter(function(l){ return priceFor(l.item) && !mine.some(function(o){return o.boqId===b.id && o.lineN===l.n && o.status!=='withdrawn';}); }).length;
       card.innerHTML='<div class="req-head"><div><h3>'+b.ref+' · Customer '+b.customerNo+' · '+b.subcity+', '+b.city+' '+(BS.isVerified(b.ownerPhone)?'<span class="vbadge ok">✓ Verified buyer</span>':'<span class="vbadge no">Buyer not verified yet</span>')+'</h3><span class="small muted">'+b.deliveryTerm+' · '+b.paymentTerm+(b.partial?' · partial quotes accepted':'')+' · customer name and exact address hidden until the PO</span></div><div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap"><span class="deadline">Reply within '+left+' day'+(left!==1?'s':'')+'</span></div></div>';
       matches(b).forEach(function(l){
-        var done=mine.filter(function(o){return o.boqId===b.id && o.lineN===l.n;})[0]; var pl=priceFor(l.item);
+        var done=mine.filter(function(o){return o.boqId===b.id && o.lineN===l.n && o.status!=='withdrawn';})[0]; var pl=priceFor(l.item);
         var fromSub=(profile.locs[0]||{}).sub||sup.sub||'Akaki Kaliti', dEst=BS.deliveryEstimate([l], fromSub, b.pin||b.subcity), delivers=b.deliveryTerm==='Supplier delivers to site';
         var dHint = BS.isHire(l) ? 'Mobilisation to '+b.subcity+(b.pin?' (site pinned)':'')+': about '+dEst.km+' km from '+fromSub+'.' : 'Transport to '+b.subcity+(b.pin?' (site pinned)':'')+': about '+dEst.km+' km from '+fromSub+', '+dEst.trips+' truck trip'+(dEst.trips!==1?'s':'')+' ('+dEst.tonnes+' t) · typical cost '+BS.fmt(dEst.cost)+'.'+(delivers?' Pre-filled below; change it to your own figure, or put 0 and quote a delivered unit price.':' The customer '+(b.deliveryTerm==='I collect from supplier'?'collects: quote ex-works.':'uses Build Smartly transport: quote ex-works.'));
         var d=document.createElement('div'); d.className='qline';
         d.innerHTML='<div class="what"><strong>Line '+l.n+' · '+l.item+'</strong><span class="small keyinfo">'+l.qty+' '+l.unit+(l.returnBy?' · hire from '+l.needed+' to '+l.returnBy:l.needed?' · needed by '+l.needed:'')+' · <span class="tag">'+l.cat+'</span></span></div>'+
-          (done ? '<div class="sent">Offer sent: '+BS.fmt(done.unitPrice)+' per '+l.unit+(done.deliveryTotal?', share of delivery '+BS.fmt(done.deliveryCost||0):', delivery '+BS.fmt(done.deliveryCost||0))+', valid '+done.validDays+' days.</div>' :
+          (done ? '<div class="sent">Offer sent: '+BS.fmt(done.unitPrice)+' per '+l.unit+(done.deliveryTotal?', share of delivery '+BS.fmt(done.deliveryCost||0):', delivery '+BS.fmt(done.deliveryCost||0))+' · '+BS.leftText(BS.validUntil(done))+'. <a href="#supplier-deals">Correct or withdraw it</a></div>' :
           '<form class="qform" data-boq="'+b.id+'" data-line="'+l.n+'">'+(pl?'<div class="small" style="grid-column:1/-1;color:var(--ok);font-weight:600">Pre-filled from your price list ('+(isStale(pl)?'stale, please check':'confirmed '+(ageDays(pl.confirmedAt)===0?'today':ageDays(pl.confirmedAt)+' d ago'))+'). One tap to send.</div>':'')+
           '<div class="field"><label>Brand / origin</label><select name="brand" required>'+(BS.BRANDS[l.cat]||['Other']).map(function(bn){ return '<option'+(bn===(profile.brands.split(',')[0]||'').trim()?' selected':'')+'>'+bn+'</option>'; }).join('')+'</select></div><div class="field"><label>'+(BS.isHire(l)?(l.unit==='day'?'Days':l.unit==='hour'?'Hours':'Quantity')+(l.returnBy?' ('+l.needed+' to '+l.returnBy+')':''):'Qty offered ('+l.unit+')')+'</label><input name="qty" type="number" min="1" value="'+l.qty+'" required></div><div class="field"><label>'+(BS.isHire(l)?'Rate per '+l.unit+' (ETB)':'Unit price (ETB)')+'</label><input name="price" type="number" min="1" step="1" placeholder="0" value="'+(pl?pl.price:'')+'" required></div><div class="field"><label>VAT</label><select name="vat"><option value="incl"'+(!pl||pl.vat==='incl'?' selected':'')+'>Included</option><option value="excl"'+(pl&&pl.vat==='excl'?' selected':'')+'>Excluded</option></select></div><div class="field"><label>Lead time (days)</label><input name="lead" type="number" min="0" value="2"></div><div class="field"><label>Valid for (days)</label><select name="valid"><option>1</option><option>2</option><option'+(!pl||pl.valid===3?' selected':'')+'>3</option><option'+(pl&&pl.valid===7?' selected':'')+'>7</option></select></div><div class="field" style="grid-column:span 2"><label>&nbsp;</label><button class="btn btn-primary btn-sm" type="submit" style="width:100%" '+(can?'':'disabled')+'>'+(can?'Send offer':'Locked until verified')+'</button></div></form>');
         card.appendChild(d);
       });
-      var openL=matches(b).filter(function(l){ return !mine.some(function(o){return o.boqId===b.id && o.lineN===l.n;}); });
-      if(openL.length){ var fromS=(profile.locs[0]||{}).sub||sup.sub||'Akaki Kaliti', est=BS.deliveryEstimate(matches(b), fromS, b.pin||b.subcity), dlv=b.deliveryTerm==='Supplier delivers to site', sentD=mine.filter(function(o){ return o.boqId===b.id && o.deliveryTotal; })[0];
+      var openL=matches(b).filter(function(l){ return !mine.some(function(o){return o.boqId===b.id && o.lineN===l.n && o.status!=='withdrawn';}); });
+      if(openL.length){ var fromS=(profile.locs[0]||{}).sub||sup.sub||'Akaki Kaliti', est=BS.deliveryEstimate(matches(b), fromS, b.pin||b.subcity), dlv=b.deliveryTerm==='Supplier delivers to site', sentD=mine.filter(function(o){ return o.boqId===b.id && o.deliveryTotal && o.status!=='withdrawn'; })[0];
         var ft=document.createElement('form'); ft.className='qfoot'; ft.dataset.dboq=b.id;
         ft.innerHTML = dlv ? '<div><strong>Delivery for the whole request</strong><span class="small muted"><span>One fee for all lines; the customer sees it shared across the lines by value.</span> <span data-notr>'+fromS+' → '+b.subcity+(b.pin?' ⌖':'')+' · '+est.km+' km · '+est.tonnes+' t</span> · <span>'+est.trips+' truck trip'+(est.trips!==1?'s':'')+'</span></span></div><div class="field"><label>Delivery (ETB)</label><input name="dtot" data-dtot="'+b.id+'" type="number" min="0" step="1" value="'+(sentD?sentD.deliveryTotal:est.cost)+'"'+(sentD?' readonly title="Set with your first offer on this request"':'')+'></div>'+(can&&openL.length>1?'<button class="btn btn-primary btn-sm" type="button" data-sendall="'+b.id+'">Send all '+openL.length+' offers</button>':'')
           : '<div><strong>No delivery to price</strong><span class="small muted">'+(b.deliveryTerm==='I collect from supplier'?'The customer collects from you: quote ex-works.':'The customer uses Build Smartly transport: quote ex-works.')+'</span></div>'+(can&&openL.length>1?'<button class="btn btn-primary btn-sm" type="button" data-sendall="'+b.id+'">Send all '+openL.length+' offers</button>':'');
-        ft.insertAdjacentHTML('beforeend', termRow(b, sentD||mine.filter(function(o){ return o.boqId===b.id; })[0]));
+        ft.insertAdjacentHTML('beforeend', termRow(b, sentD||mine.filter(function(o){ return o.boqId===b.id && o.status!=='withdrawn'; })[0]));
         card.appendChild(ft); }
       box.appendChild(card);
     });
@@ -3241,13 +3259,17 @@ function bsSupport(threadId, inputId, sendId){
     /* orders, one per purchase order */
     var orb=$('tab-orders'); var gs=myGroups.filter(function(g){ var b=boqs.filter(function(x){return x.id===g.boqId;})[0]||{}; return hit(g.poRef, g.first.customerRevealed, b.ref, g.offers.map(function(o){ return lineName(b,o.lineN); }).join(' ')); });
     orb.innerHTML = gs.length ? gs.map(function(g){ var b=boqs.filter(function(x){return x.id===g.boqId;})[0]||{}, st=BS.orderStatus(g.first), tot=0; g.offers.forEach(function(o){ tot+=BS.offerTotal(o); });
-        return '<a class="order-row" href="#order-'+g.id+'"><span><strong>'+g.poRef+'</strong> · '+(BS.namesShown(g.first)?(g.first.customerRevealed||''):'Customer '+(b.customerNo||''))+'<br><span class="small muted">'+g.offers.map(function(o){ return lineName(b,o.lineN); }).join(', ')+' · '+BS.fmt(tot)+' · '+(b.subcity||'')+'</span></span><span class="tag '+st.c+'">'+st.t+'</span><span class="btn btn-ghost btn-sm">Open</span></a>'; }).join('')
+        return '<a class="order-row" href="#order-'+g.id+'"><span><strong>'+g.poRef+'</strong> · '+(BS.namesShown(g.first)?(g.first.customerRevealed||''):'Customer '+(b.customerNo||''))+'<br><span class="small muted">'+g.offers.map(function(o){ return lineName(b,o.lineN); }).join(', ')+' · '+BS.fmt(tot)+' · '+(b.subcity||'')+'<br><span>Issued</span> '+BS.day(g.first.acceptedAt)+(BS.lastStepAt(g.first)&&BS.lastStepAt(g.first)!==g.first.acceptedAt?' · <span>'+st.t+'</span> '+BS.day(BS.lastStepAt(g.first)):'')+'</span></span><span class="tag '+st.c+'">'+st.t+'</span><span class="btn btn-ghost btn-sm">Open</span></a>'; }).join('')
       : '<div class="empty">'+(dq?'No order matches.':'No orders yet. When a customer completes an order with your offers, it appears here.')+'</div>';
     /* offers sent */
-    var ob=$('tab-offers'); var sent=mine.filter(function(o){ return o.status!=='accepted'; }).sort(function(a,b){return (b.createdAt||'').localeCompare(a.createdAt||'');}).filter(function(o){ var b=boqs.filter(function(x){return x.id===o.boqId;})[0]||{}; return hit(b.ref, lineName(b,o.lineN), o.brand); });
-    ob.innerHTML = sent.length ? sent.map(function(o){ var b=boqs.filter(function(x){return x.id===o.boqId;})[0]; var l=b?b.lines.filter(function(x){return x.n===o.lineN;})[0]:null; var other=offers.filter(function(x){ return x.boqId===o.boqId && x.lineN===o.lineN && x.status==='accepted'; })[0];
-        var st = o.status==='rejected' ? '<span class="tag">Rejected by the customer</span>' : o.status==='declined' ? '<span class="tag">You declined the PO/SA</span>' : o.status==='expired' ? '<span class="tag">PO/SA lapsed · not confirmed in time</span>' : o.status==='cancelled' ? '<span class="tag">PO/SA cancelled by Build Smartly</span>' : other ? '<span class="tag">The customer chose another offer</span>' : (o.counter&&o.counter.state==='open') ? '<span class="tag tag-ochre">Customer proposes '+BS.fmt(o.counter.price)+' · your answer needed</span>' : (o.counter&&o.counter.state==='accepted') ? '<span class="tag tag-green">You accepted the customer\'s price · waiting for the customer</span>' : (o.counter&&o.counter.state==='declined') ? '<span class="tag">You declined the counter · offer stands</span>' : (b && (b.chosen||{})[o.lineN]===o.id) ? '<span class="tag tag-green">Chosen by the customer · waiting for the order</span>' : '<span class="tag">Waiting for the customer</span>';
-        return '<div class="doc"><span class="ico">'+o.lineN+'</span><span><strong>'+(b?b.ref:'')+' · '+(l?l.item:'')+'</strong><br><span class="small muted">'+o.brand+' · '+o.qtyOffered+' '+(l?l.unit:'')+' · '+BS.fmt(o.unitPrice)+' · total '+BS.fmt(BS.offerTotal(o))+' · <span class="cd">valid '+o.validDays+' d</span></span></span>'+st+'</div>'; }).join('')
+    var ob=$('tab-offers'), obHold=ob.contains(document.activeElement) && /^(INPUT|SELECT)$/.test(document.activeElement.tagName); var sent=mine.filter(function(o){ return o.status!=='accepted'; }).sort(function(a,b){return (b.createdAt||'').localeCompare(a.createdAt||'');}).filter(function(o){ var b=boqs.filter(function(x){return x.id===o.boqId;})[0]||{}; return hit(b.ref, lineName(b,o.lineN), o.brand); });
+    if(!obHold) ob.innerHTML = sent.length ? sent.map(function(o){ var b=boqs.filter(function(x){return x.id===o.boqId;})[0]; var l=b?b.lines.filter(function(x){return x.n===o.lineN;})[0]:null; var other=offers.filter(function(x){ return x.boqId===o.boqId && x.lineN===o.lineN && x.status==='accepted'; })[0];
+        var st = o.status==='withdrawn' ? '<span class="tag">You withdrew this offer</span>' : o.status==='rejected' ? '<span class="tag">Rejected by the customer</span>' : o.status==='declined' ? '<span class="tag">You declined the PO/SA</span>' : o.status==='expired' ? '<span class="tag">PO/SA lapsed · not confirmed in time</span>' : o.status==='cancelled' ? '<span class="tag">PO/SA cancelled by Build Smartly</span>' : other ? '<span class="tag">The customer chose another offer</span>' : (o.counter&&o.counter.state==='open') ? '<span class="tag tag-ochre">Customer proposes '+BS.fmt(o.counter.price)+' · your answer needed</span>' : (o.counter&&o.counter.state==='accepted') ? '<span class="tag tag-green">You accepted the customer\'s price · waiting for the customer</span>' : (o.counter&&o.counter.state==='declined') ? '<span class="tag">You declined the counter · offer stands</span>' : (b && (b.chosen||{})[o.lineN]===o.id) ? '<span class="tag tag-green">Chosen by the customer · waiting for the order</span>' : '<span class="tag">Waiting for the customer</span>';
+        var chosen=b && (b.chosen||{})[o.lineN]===o.id, canFix=o.status==='sent' && !chosen && !other && !(o.counter&&o.counter.state==='open') && BS.validUntil(o)>Date.now(), ed=offerEdit[o.id];
+        var fix = canFix ? (ed ? '<div class="corr" style="grid-column:1/-1;display:flex;flex-wrap:wrap;gap:.4rem;align-items:end"><div class="field"><label for="cq-'+o.id+'">Quantity</label><input id="cq-'+o.id+'" type="number" min="1" value="'+o.qtyOffered+'" style="width:7rem"></div><div class="field"><label for="cp-'+o.id+'">Unit price (ETB)</label><input id="cp-'+o.id+'" type="number" min="1" value="'+o.unitPrice+'" style="width:9rem"></div><button class="btn btn-primary btn-sm" type="button" data-ofsave="'+o.id+'">Save the correction</button><button class="btn btn-ghost btn-sm" type="button" data-ofcancel="'+o.id+'">Cancel</button></div>'
+            : '<span style="display:flex;gap:.3rem;flex-wrap:wrap"><button class="btn btn-ghost btn-sm" type="button" data-ofedit="'+o.id+'">Correct</button><button class="btn btn-ghost btn-sm" type="button" data-ofwd="'+o.id+'">Withdraw</button></span>')
+          : (o.status==='sent' && chosen ? '<span class="small muted" style="grid-column:1/-1">The customer chose this offer: to change it, write to Build Smartly in Support.</span>' : '');
+        return '<div class="doc" style="grid-template-columns:2.4rem 1fr auto"><span class="ico">'+o.lineN+'</span><span><strong>'+(b?b.ref:'')+' · '+(l?l.item:'')+'</strong><br><span class="small muted">'+o.brand+' · '+o.qtyOffered+' '+(l?l.unit:'')+' · '+BS.fmt(o.unitPrice)+' · total '+BS.fmt(BS.offerTotal(o))+'</span><br><span class="small"><span>Sent</span> '+BS.day(o.createdAt)+(o.correctedAt?' · <span>corrected</span> '+BS.day(o.correctedAt)+(o.correctedBy?' · <span data-notr>'+esc(o.correctedBy)+'</span>':''):'')+(o.withdrawnAt?' · <span>withdrawn</span> '+BS.day(o.withdrawnAt):'')+(o.status==='sent'?' · <span class="cd">'+esc(BS.leftText(BS.validUntil(o)))+'</span>':'')+'</span></span>'+st+fix+'</div>'; }).join('')
       : '<div class="empty">'+(dq?'No offer matches.':'No open offers.')+'</div>';
     /* statements: purchase orders, contracts and receipts by year */
     renderStatements('spStatements', myGroups, boqs);
@@ -3268,7 +3290,7 @@ function bsSupport(threadId, inputId, sendId){
       (b.paymentTerm && b.paymentTerm!=='Any terms'?'<span class="small muted" style="align-self:center"><span>The customer prefers:</span> '+esc(b.paymentTerm)+'</span>':'')+'</div>';
   }
   function termPicked(boqId){
-    var sent=offers.filter(function(o){ return o.boqId===boqId && o.supplierId===sup.id && o.payTerm; })[0]; if(sent) return sent.payTerm;
+    var sent=offers.filter(function(o){ return o.boqId===boqId && o.supplierId===sup.id && o.payTerm && o.status!=='withdrawn'; })[0]; if(sent) return sent.payTerm;
     var sel=document.querySelector('#tab-requests [data-pterm="'+boqId+'"]'); if(!sel) return BS.termDefault();
     var k=sel.value; if(k==='deposit'){ var pc=Math.round(+(document.querySelector('#tab-requests [data-ppct="'+boqId+'"]')||{}).value||BS.DEPOSIT_PCT); return {kind:k, pct:Math.min(99, Math.max(1, pc))}; }
     if(k==='credit'){ var dy=Math.round(+(document.querySelector('#tab-requests [data-pdays="'+boqId+'"]')||{}).value||BS.CREDIT_MAX); return {kind:k, days:Math.min(BS.CREDIT_MAX, Math.max(1, dy))}; }
@@ -3279,7 +3301,7 @@ function bsSupport(threadId, inputId, sendId){
   /* one delivery fee per request, shared across the lines by value (qty × price) so each offer still has its own delivered total */
   function delivShare(boqId, lineN){
     var inp=document.querySelector('#tab-requests [data-dtot="'+boqId+'"]'); var tot=inp?Math.max(0,+inp.value||0):0; if(!tot) return {cost:0, total:0, lines:0};
-    var vals=[], mineQ=offers.filter(function(o){ return o.boqId===boqId && o.supplierId===sup.id; });
+    var vals=[], mineQ=offers.filter(function(o){ return o.boqId===boqId && o.supplierId===sup.id && o.status!=='withdrawn'; });
     mineQ.forEach(function(o){ vals.push({n:o.lineN, v:(+o.qtyOffered||0)*(+o.unitPrice||0)}); });
     document.querySelectorAll('#tab-requests form.qform[data-boq="'+boqId+'"]').forEach(function(f){ vals.push({n:+f.dataset.line, v:(+f.qty.value||0)*(+f.price.value||0)}); });
     var sum=vals.reduce(function(a,x){ return a+x.v; },0), me=vals.filter(function(x){ return x.n===+lineN; })[0];
@@ -3287,13 +3309,24 @@ function bsSupport(threadId, inputId, sendId){
     return {cost:share, total:tot, lines:vals.length};
   }
   $('tab-requests').addEventListener('submit', async function(e){
-    e.preventDefault(); var f=e.target; if(!f.dataset.boq) return; if(!verified() || !profile.agree){ bsToast(onHold()?'Your account is on hold for review. Quoting is locked.':'Quoting is locked.'); return; } var btn=f.querySelector('button[type=submit]'); btn.disabled=true; btn.textContent='Sending…'; var ds=delivShare(f.dataset.boq, f.dataset.line);
+    e.preventDefault(); var f=e.target; if(!f.dataset.boq) return; if(offers.some(function(o){ return o.boqId===f.dataset.boq && o.lineN===+f.dataset.line && o.supplierId===sup.id && o.status!=='withdrawn'; })){ bsToast('You already sent an offer on this line.'); render(); return; } if(!verified() || !profile.agree){ bsToast(onHold()?'Your account is on hold for review. Quoting is locked.':'Quoting is locked.'); return; } var btn=f.querySelector('button[type=submit]'); btn.disabled=true; btn.textContent='Sending…'; var ds=delivShare(f.dataset.boq, f.dataset.line);
     await BS.add('offers', { boqId:f.dataset.boq, lineN:+f.dataset.line, supplierId:sup.id, supplierName:sup.name, supplierSub:(profile.locs[0]||{}).sub||sup.sub||'', brand:f.brand.value.trim(), qtyOffered:+f.qty.value, unitPrice:+f.price.value, vat:f.vat.value, deliveryCost:ds.cost, deliveryTotal:ds.total||0, deliveryLines:ds.lines||0, leadDays:+f.lead.value||0, validDays:+f.valid.value, payTerm:termPicked(f.dataset.boq), status:'sent' });
-    bsToast('Offer sent. The customer sees it as an anonymous offer.');
+    bsToast('Offer sent. The customer sees it as an anonymous offer.'); if(document.activeElement) document.activeElement.blur(); render();
   });
   $('spDealSearch').addEventListener('input', function(){ render(); var el=$('spDealSearch'); el.focus(); });
   $('tab-requests').addEventListener('input', function(e){ if(e.target.id!=='spReqSearch') return; window.__spReqQ=e.target.value; var pos=e.target.selectionStart; render(); var el=$('spReqSearch'); if(el){ el.focus(); try{ el.setSelectionRange(pos,pos); }catch(err){} } });
+  var offerEdit={};
   $('tab-deals').addEventListener('click', async function(e){
+    var oe=e.target.closest('[data-ofedit]'); if(oe){ offerEdit[oe.dataset.ofedit]=1; render(); var q=$('cp-'+oe.dataset.ofedit); if(q) q.focus(); return; }
+    var oc=e.target.closest('[data-ofcancel]'); if(oc){ delete offerEdit[oc.dataset.ofcancel]; if(document.activeElement) document.activeElement.blur(); render(); return; }
+    var os2=e.target.closest('[data-ofsave]'); if(os2){ var id=os2.dataset.ofsave, o=offers.filter(function(x){ return x.id===id; })[0]; if(!o) return; var nq=Math.round(+$('cq-'+id).value||0), np=Math.round(+$('cp-'+id).value||0);
+      if(nq<1 || np<1){ bsToast('Type a quantity and a price.'); return; } if(nq===+o.qtyOffered && np===+o.unitPrice){ delete offerEdit[id]; render(); return; }
+      var b=boqs.filter(function(x){ return x.id===o.boqId; })[0]||{}; if((b.chosen||{})[o.lineN]===o.id || o.status!=='sent'){ bsToast('The customer has already chosen this offer. Write to Build Smartly in Support to change it.'); delete offerEdit[id]; render(); return; }
+      os2.disabled=true; await BS.update('offers', id, {qtyOffered:nq, unitPrice:np, correctedAt:new Date().toISOString(), corrections:(o.corrections||[]).concat([{at:new Date().toISOString(), qty:o.qtyOffered, price:o.unitPrice}])});
+      delete offerEdit[id]; if(document.activeElement) document.activeElement.blur(); bsToast('Corrected. The customer sees the new figures, marked as corrected.'); render(); return; }
+    var ow=e.target.closest('[data-ofwd]'); if(ow){ var o2=offers.filter(function(x){ return x.id===ow.dataset.ofwd; })[0]; if(!o2) return;
+      if(!(await bsConfirm('Withdraw this offer?', 'The customer will no longer see it. You can send a new offer on the line while the request is open.', 'Withdraw'))) return;
+      await BS.update('offers', o2.id, {status:'withdrawn', withdrawnAt:new Date().toISOString()}); bsToast('Offer withdrawn.'); return; }
     var oa=e.target.closest('[data-oact]'); if(oa){ oa.disabled=true; await bsOrderAction(oa.dataset.oact, oa.dataset.id); return; }
     var a=e.target.closest('[data-cacc]');
     if(a){ a.disabled=true; var o=offers.filter(function(x){return x.id===a.dataset.cacc;})[0];
@@ -3304,9 +3337,11 @@ function bsSupport(threadId, inputId, sendId){
   $('tab-requests').addEventListener('click', async function(e){
     var s=e.target.closest('[data-sendall]'); if(!s) return; if(!verified() || !profile.agree){ bsToast(onHold()?'Your account is on hold for review. Quoting is locked.':'Quoting is locked.'); return; } s.disabled=true; s.textContent='Sending…';
     var forms=Array.prototype.slice.call(document.querySelectorAll('#tab-requests form[data-boq="'+s.dataset.sendall+'"]')).filter(function(f){ return +f.price.value>0; });
+    forms=forms.filter(function(f){ return !offers.some(function(o){ return o.boqId===f.dataset.boq && o.lineN===+f.dataset.line && o.supplierId===sup.id && o.status!=='withdrawn'; }); });
+    if(!forms.length){ bsToast('Type a price on at least one line.'); s.disabled=false; s.textContent='Send all offers'; return; }
     var shares=forms.map(function(f){ return delivShare(f.dataset.boq, f.dataset.line); });
     for(var i=0;i<forms.length;i++){ var f=forms[i], ds=shares[i]; await BS.add('offers', { boqId:f.dataset.boq, lineN:+f.dataset.line, supplierId:sup.id, supplierName:sup.name, supplierSub:(profile.locs[0]||{}).sub||sup.sub||'', brand:f.brand.value.trim(), qtyOffered:+f.qty.value, unitPrice:+f.price.value, vat:f.vat.value, deliveryCost:ds.cost, deliveryTotal:ds.total||0, deliveryLines:ds.lines||0, leadDays:+f.lead.value||0, validDays:+f.valid.value, payTerm:termPicked(f.dataset.boq), status:'sent' }); }
-    bsToast(forms.length+' offer'+(forms.length===1?'':'s')+' sent, with one delivery fee shared across them.');
+    bsToast(forms.length+' offer'+(forms.length===1?'':'s')+' sent, with one delivery fee shared across them.'); if(document.activeElement) document.activeElement.blur(); render();
   });
 })();
 
@@ -3518,10 +3553,10 @@ window.bsPublishProfile = async function(fields){
 
 BSRoute.start();
 </script>
-<script src="assets/track.js?v=20261114c"></script>
-<script src="assets/order.js?v=20261114c"></script>
-<script src="assets/notify.js?v=20261114c"></script>
-<script src="assets/help.js?v=20261114c"></script>
-<script src="assets/admin.js?v=20261114c"></script>
-<script src="assets/editor.js?v=20261114c"></script>
-<script src="assets/i18n.js?v=20261114c"></script>
+<script src="assets/track.js?v=20261114d"></script>
+<script src="assets/order.js?v=20261114d"></script>
+<script src="assets/notify.js?v=20261114d"></script>
+<script src="assets/help.js?v=20261114d"></script>
+<script src="assets/admin.js?v=20261114d"></script>
+<script src="assets/editor.js?v=20261114d"></script>
+<script src="assets/i18n.js?v=20261114d"></script>

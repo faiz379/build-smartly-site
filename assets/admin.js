@@ -4,6 +4,7 @@
    test staff numbers and the staff password still work. The session is kept per browser tab. */
 (function(){
   var $=function(id){ return document.getElementById(id); };
+  var offerFix={};
   var data={boqs:[],offers:[],messages:[],profiles:[],news:[],verifications:[],settings:[],issues:[],promotions:[],suppliers:[],tasks:[],staff:[],tracks:[],leads:[],credit:[]}, query='';
   var tab='overview', mode='local', booted=false, adTilesHtml='', actN=8;
   var CATS=BS.CATEGORIES.filter(function(c){ return c.indexOf('Other')<0; });
@@ -73,7 +74,7 @@
   ['boqs','offers','messages','profiles','news','verifications','settings','issues','promotions','suppliers','tasks','staff','tracks','leads','credit'].forEach(sub);
   /* staff-only lists are refused before sign-in; ask again once signed in */
   function resubStaffOnly(){ sub('tasks'); sub('staff'); sub('tracks'); sub('leads'); sub('credit'); }
-  $('adTabs').addEventListener('click', function(e){ var b=e.target.closest('[data-tab]'); if(!b) return; tab=b.dataset.tab; render(); $('adLayout').classList.remove('open'); $('adBurger').setAttribute('aria-expanded','false'); window.scrollTo({top:0,behavior:'smooth'}); });
+  $('adTabs').addEventListener('click', function(e){ var b=e.target.closest('[data-tab]'); if(!b) return; tab=b.dataset.tab; if(window.BSRoute && BSRoute.current && BSRoute.current()!=='staff-'+tab && /^(staff|admin)/.test(BSRoute.current())){ BSRoute.go('staff-'+tab); } else render(); $('adLayout').classList.remove('open'); $('adBurger').setAttribute('aria-expanded','false'); window.scrollTo({top:0,behavior:'smooth'}); });
   /* three-line button: on a phone it opens the menu as a drawer; on a wide screen it folds the sidebar to icons */
   $('adBurger').onclick=function(){ var L=$('adLayout'); if(window.matchMedia('(max-width:860px)').matches){ var o=!L.classList.contains('open'); L.classList.toggle('open', o); $('adBurger').setAttribute('aria-expanded', o?'true':'false'); } else { L.classList.toggle('fold'); try{ localStorage.setItem('bs_adfold', L.classList.contains('fold')?'1':''); }catch(e){} } };
   $('adScrim').onclick=function(){ $('adLayout').classList.remove('open'); $('adBurger').setAttribute('aria-expanded','false'); };
@@ -245,7 +246,9 @@
         var lo=os.filter(function(o){ return o.lineN===l.n; }).sort(function(x,y){ return BS.offerTotal(x)-BS.offerTotal(y); });
         var other=/Other/.test(l.cat||'');
         return '<div class="doc" style="grid-template-columns:auto 1fr auto"><span class="ico">'+l.n+'</span><span><strong>'+esc(l.item)+'</strong> · '+l.qty+' '+esc(l.unit)+(l.returnBy?' · '+l.needed+' to '+l.returnBy:l.needed?' · by '+l.needed:'')+'<br>'+
-          (lo.length ? lo.map(function(o){ return '<span class="small">'+esc(o.supplierName)+' · '+esc(o.brand)+' · '+BS.fmt(o.unitPrice)+' · total '+BS.fmt(BS.offerTotal(o))+' · <em>'+(o.status==='accepted'?'in '+esc(o.poRef):o.status==='rejected'?'rejected':(o.counter&&o.counter.state==='open')?'counter '+BS.fmt(o.counter.price)+' open':(b.chosen||{})[l.n]===o.id?'chosen':'open')+'</em></span>'; }).join('<br>') : '<span class="small muted">'+(other?'Typed by the customer, not in the catalogue':'No offers yet')+'</span>')+'</span>'+
+          (lo.length ? lo.map(function(o){ var ed=offerFix[o.id], canEd=o.status==='sent';
+            return '<span class="small">'+esc(o.supplierName)+' · '+esc(o.brand)+' · '+o.qtyOffered+' × '+BS.fmt(o.unitPrice)+' · total '+BS.fmt(BS.offerTotal(o))+' · <em>'+(o.status==='accepted'?'in '+esc(o.poRef):o.status==='withdrawn'?'withdrawn':o.status==='rejected'?'rejected':(o.counter&&o.counter.state==='open')?'counter '+BS.fmt(o.counter.price)+' open':(b.chosen||{})[l.n]===o.id?'chosen':'open')+'</em>'+(o.correctedAt?' · corrected'+(o.correctedBy?' by '+esc(o.correctedBy):''):'')+
+              (canEd ? (ed ? '</span><span style="display:flex;gap:.3rem;flex-wrap:wrap;align-items:center;margin:.2rem 0"><input type="number" min="1" value="'+o.qtyOffered+'" data-sfq="'+o.id+'" aria-label="Quantity" style="width:6rem;font:inherit;font-size:.85rem;padding:.3rem .45rem;border:1.5px solid var(--line);border-radius:8px"><input type="number" min="1" value="'+o.unitPrice+'" data-sfp="'+o.id+'" aria-label="Unit price (ETB)" style="width:8rem;font:inherit;font-size:.85rem;padding:.3rem .45rem;border:1.5px solid var(--line);border-radius:8px"><button class="btn btn-primary btn-sm" type="button" data-sfsave="'+o.id+'">Save for the supplier</button><button class="btn btn-ghost btn-sm" type="button" data-sfcancel="'+o.id+'">Cancel</button></span>' : ' <button class="btn btn-ghost btn-sm" type="button" data-sfedit="'+o.id+'">Edit</button></span>') : (o.status==='accepted' ? ' <a href="#order-'+o.id+'">Change it on the order</a></span>' : '</span>')); }).join('<br>') : '<span class="small muted">'+(other?'Typed by the customer, not in the catalogue':'No offers yet')+'</span>')+'</span>'+
           (other ? '<select data-classify="'+b.id+'" data-line="'+l.n+'" style="font:inherit;font-size:.85rem;padding:.35rem .5rem;border:1.5px solid var(--ochre);border-radius:8px"><option value="">Category…</option>'+CATS.map(function(c){ return '<option>'+c+'</option>'; }).join('')+'</select>' : '<span class="small muted">'+esc(l.cat)+'</span>')+'</div>';
       }).join('');
       var ordersHtml=groups.map(function(g){ var st=BS.orderStatus(g.first); return '<a class="order-row" href="#order-'+g.id+'"><span><strong>'+esc(g.poRef)+'</strong> · '+esc(g.supplierName)+'</span><span class="tag '+st.c+'">'+esc(st.t)+'</span><span class="btn btn-ghost btn-sm">Open</span></a>'; }).join('');
@@ -310,6 +313,13 @@
   $('adBody').addEventListener('click', async function(e){
     var v=e.target.closest('[data-verify]'); if(v){ v.disabled=true; await BS.update('verifications', v.dataset.verify, {status:'verified', verifiedAt:new Date().toISOString(), by:staffName(), reason:''}); if(BS.supplierDoc(v.dataset.verify)) await BS.update('suppliers', v.dataset.verify, {status:'active'}); bsToast('Approved. The supplier can quote now.'); return; }
     var r=e.target.closest('[data-reject]'); if(r){ var inp=document.querySelector('[data-reason="'+r.dataset.reject+'"]'); var why=(inp&&inp.value.trim())||'Documents not readable'; r.disabled=true; await BS.update('verifications', r.dataset.reject, {status:'rejected', rejectedAt:new Date().toISOString(), by:staffName(), reason:why}); bsToast('Rejected. The supplier sees the reason and can resubmit.'); return; }
+    var sfe=e.target.closest('[data-sfedit]'); if(sfe){ offerFix[sfe.dataset.sfedit]=1; render(); return; }
+    var sfc=e.target.closest('[data-sfcancel]'); if(sfc){ delete offerFix[sfc.dataset.sfcancel]; render(); return; }
+    var sfs=e.target.closest('[data-sfsave]'); if(sfs){ var id=sfs.dataset.sfsave, o=data.offers.filter(function(x){ return x.id===id; })[0]; if(!o) return;
+      var nq=Math.round(+(document.querySelector('[data-sfq="'+id+'"]')||{}).value||0), np=Math.round(+(document.querySelector('[data-sfp="'+id+'"]')||{}).value||0);
+      if(nq<1 || np<1){ bsToast('Type a quantity and a price.'); return; } if(o.status!=='sent'){ bsToast('This offer is already in an order: change it on the order page.'); delete offerFix[id]; render(); return; }
+      sfs.disabled=true; await BS.update('offers', id, {qtyOffered:nq, unitPrice:np, correctedAt:new Date().toISOString(), correctedBy:'Build Smartly staff ('+staffName()+')', corrections:(o.corrections||[]).concat([{at:new Date().toISOString(), qty:o.qtyOffered, price:o.unitPrice, by:staffName()}])});
+      delete offerFix[id]; bsToast('Saved. The buyer sees the corrected offer; the supplier sees who changed it.'); return; }
     var c=e.target.closest('[data-close]'); if(c){ c.disabled=true; await BS.update('boqs', c.dataset.close, {status:'withdrawn', withdrawnAt:new Date().toISOString(), closedBy:staffName()}); bsToast('Request closed.'); return; }
   });
 
