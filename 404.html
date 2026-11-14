@@ -640,6 +640,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 .sent{font-size:.88rem;color:var(--ok);font-weight:600}
 .qfoot{display:grid;grid-template-columns:1fr 11rem auto;gap:.7rem;align-items:end;border:2px solid var(--green);border-radius:12px;padding:.8rem;background:color-mix(in srgb,var(--green) 6%,var(--white));margin-top:.2rem}
 .qfoot>div:first-child{display:grid;gap:.2rem}
+.ck-credit{border:1.5px solid var(--line);border-radius:12px;padding:.7rem .8rem;margin-top:.7rem}.ck-credit.act{border:2px solid var(--ochre)}
 .qfoot .qterm{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:.4rem .8rem;align-items:end;border-top:1px dashed var(--line);padding-top:.6rem}.qfoot .qterm .field{min-width:10rem}.qfoot .field label{font-size:.76rem}
 @media (max-width:640px){.qfoot{grid-template-columns:1fr}}
 .prices{display:grid;gap:.4rem}
@@ -1761,8 +1762,8 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 </div>
 
 
-<script src="assets/firebase-config.js?v=20261114a" onerror="this.remove()"></script>
-<script src="assets/store.js?v=20261114a"></script>
+<script src="assets/firebase-config.js?v=20261114b" onerror="this.remove()"></script>
+<script src="assets/store.js?v=20261114b"></script>
 <script>
 /* ---------- Router: one page, views switched by hash ---------- */
 window.BSRoute = (function(){
@@ -2805,6 +2806,26 @@ function bsSupport(threadId, inputId, sendId){
   function checkoutItems(b){ return b.lines.map(function(l){ if(poOf(b,l)) return null; var o=chosenOf(b,l); if(!o) return null; var sub=o.supplierSub||(BS.supplierById(o.supplierId)||{}).sub||'Akaki Kaliti'; var est=BS.deliveryEstimate([{item:l.item, qty:o.qtyOffered, unit:l.unit}], sub, b.pin||b.subcity||'Bole'); return {o:o, l:l, goods:totalOf(o), est:est, ins:BS.insuranceFor(totalOf(o)), hire:BS.isHire(l)}; }).filter(Boolean); }
   function checkoutGroups(items){ var by={}, out=[]; items.forEach(function(it){ var k=it.o.supplierId; if(!by[k]){ by[k]={items:[]}; out.push(by[k]); } by[k].items.push(it); }); return out; }
   function useBsTransport(b){ var t=b.deliveryTerm||''; if(/^Build Smartly/.test(t)) return !document.getElementById('gDel-own') || !document.getElementById('gDel-own').checked; if(t==='I collect from supplier') return !!(document.getElementById('gDel-bs')||{}).checked; return false; }
+  /* Pay-later check at checkout: orders on "after", "credit" or "deposit" terms need a verified buyer with a credit
+     limit that covers them and no overdue payment. Returns {block:'' | 'verify' | 'overdue' | 'limit', lim, used, need, html}. */
+  function creditState(groups){
+    var defG=groups.filter(function(g){ return BS.deferred(g.items[0].o); }); if(!defG.length) return {block:'', html:''};
+    var ph=(BS.me()||{}).phone, d=BS.d9(ph), ids=boqs.filter(function(b){ return b.ownerPhone===d; }).map(function(b){ return b.id; });
+    var lim=BS.creditLimit(ph), used=BS.creditUsed(offers, ids), od=BS.creditOverdue(offers, ids);
+    var need=defG.reduce(function(a,g){ var t=BS.termOf(g.items[0].o); return a+g.items.reduce(function(x,it){ return x+BS.exposure(Object.assign({}, it.o, {status:'accepted', payTerm:t})); },0); },0);
+    var block=!BS.isVerified(ph) ? 'verify' : od ? 'overdue' : (used+need>lim) ? 'limit' : '';
+    var nums='<div class="ck-row small"><span>Your credit limit</span><strong>'+BS.fmt(lim)+'</strong></div><div class="ck-row small"><span>Already in use</span><strong>'+BS.fmt(used)+'</strong></div><div class="ck-row small"><span>This order on pay-later terms</span><strong>'+BS.fmt(need)+'</strong></div>';
+    var txt = block==='verify' ? 'Pay-later terms (payment after delivery, credit, or a deposit with the balance later) are for verified buyers with a credit limit. Choose offers with full payment before dispatch, or get verified and ask us for credit.'
+      : block==='overdue' ? 'You have an overdue payment. Pay it first: pay-later terms are paused until then.'
+      : block==='limit' ? (lim ? 'This order is over your credit limit. Choose offers with full payment before dispatch, or ask us for a higher limit.' : 'You have no credit limit yet. Choose offers with full payment before dispatch, or ask us for credit.')
+      : 'Pay later: you receive the goods before paying in full. It fits within your credit limit.';
+    var late = BS.LATE.on ? '<p class="small muted" style="margin:.3rem 0 0">A payment made after its due date carries a late charge: '+BS.LATE.rate+'% a month after '+BS.LATE.grace+' days of grace, at most '+BS.LATE.cap+'% of the amount.</p>' : '';
+    var html='<div class="ck-credit'+(block?' act':'')+'" id="gCredit"><strong>Pay later</strong><p class="small" style="margin:.2rem 0 .4rem">'+txt+'</p>'+(block==='verify'?'':nums)+late+
+      (block && block!=='overdue' && block!=='verify' ? '<div class="btns" style="margin-top:.4rem"><button class="btn btn-ghost btn-sm" type="button" data-askcredit="'+BS.fmt(used+need)+'">Ask for credit</button></div>' : '')+
+      (block==='overdue' ? '<div class="btns" style="margin-top:.4rem"><a class="btn btn-ochre btn-sm" href="#orders">Pay the overdue order</a></div>' : '')+'</div>';
+    return {block:block, lim:lim, used:used, need:need, html:html};
+  }
+  var creditWatch=null;
   function drawCheckout(){ var accWas=!!(document.getElementById('gAccept')||{}).checked, ownPoWas=!!(document.getElementById('gOwnPo')||{}).checked;
     var b=boqById(checkoutBoq); if(!b) return; var items=checkoutItems(b), groups=checkoutGroups(items), term=b.deliveryTerm||'';
     var bs=useBsTransport(b), ins=!!(document.getElementById('gIns')||{}).checked;
@@ -2822,8 +2843,9 @@ function bsSupport(threadId, inputId, sendId){
       '<label class="check" style="margin-top:.5rem"><input type="checkbox" id="gIns"'+(ins?' checked':'')+'><span>Add transit insurance for the whole order · <strong>'+BS.fmt(insT)+'</strong> <span class="small muted">('+BS.pct(BS.INSURANCE.rate)+' of the goods value)</span></span></label>'+
       '<div class="ck-total"><div class="ck-row"><span>Goods</span><span>'+BS.fmt(goods)+'</span></div>'+(bs?'<div class="ck-row"><span>Build Smartly delivery</span><span>'+BS.fmt(trans)+'</span></div>':'')+(ins?'<div class="ck-row"><span>Transit insurance</span><span>'+BS.fmt(insT)+'</span></div>':'')+'<div class="ck-row" style="font-size:1.1rem"><strong>Total</strong><strong>'+BS.fmt(total)+'</strong></div></div>'+
       '<p class="small muted" style="margin:.4rem 0 0">'+'Nothing is charged now. You pay as the payment terms of each order say, once the supplier confirms.'+'</p>'+
+      creditState(groups).html+
       '<div class="ck-posa"><p class="small" style="margin:0">'+(groups.length>1?'Placing the order issues a Purchase Order / Sales Agreement (PO/SA) to each supplier.':'Placing the order issues a Purchase Order / Sales Agreement (PO/SA) to the supplier.')+' The supplier confirms it within '+BS.CONFIRM_HOURS+' hours; from then it is binding and you see each other\'s names.</p>'+
-      '<details class="small"><summary style="cursor:pointer;font-weight:600">Read the terms</summary><ol style="margin:.4rem 0 0;padding-left:1.2rem;display:grid;gap:.25rem"><li>The supplier sells and you buy the goods above at the stated price. Build Smartly facilitates this transaction and is not a party to this sale.</li><li>The supplier confirms or declines within '+BS.CONFIRM_HOURS+' hours. If it declines or does not answer, nothing is owed and you choose another offer.</li><li>You pay as the payment terms shown for each order say, through Yagout Pay or bank transfer.</li><li>You give the driver your handover code only after checking the goods, then check each item within '+BS.CHECK_HOURS+' hours.</li><li>Once confirmed, neither side may withdraw; changes need an amendment both accept.</li></ol></details>'+
+      '<details class="small"><summary style="cursor:pointer;font-weight:600">Read the terms</summary><ol style="margin:.4rem 0 0;padding-left:1.2rem;display:grid;gap:.25rem"><li>The supplier sells and you buy the goods above at the stated price. Build Smartly facilitates this transaction and is not a party to this sale.</li><li>The supplier confirms or declines within '+BS.CONFIRM_HOURS+' hours. If it declines or does not answer, nothing is owed and you choose another offer.</li><li>You pay as the payment terms shown for each order say, through Yagout Pay or bank transfer.'+(BS.LATE.on?' A payment after its due date carries a late charge of '+BS.LATE.rate+'% a month after '+BS.LATE.grace+' days of grace, at most '+BS.LATE.cap+'%.':'')+'</li><li>You give the driver your handover code only after checking the goods, then check each item within '+BS.CHECK_HOURS+' hours.</li><li>Once confirmed, neither side may withdraw; changes need an amendment both accept.</li></ol></details>'+
       '<label class="check"><input type="checkbox" id="gAccept"'+(accWas?' checked':'')+'><span>I have read and accept this Purchase Order / Sales Agreement and its terms and conditions.</span></label>'+(((BS.me()||{}).type==='Government')?'<label class="check"><input type="checkbox" id="gOwnPo"'+(ownPoWas?' checked':'')+'><span>Use our own PO / contract format: I attach the signed document.</span></label><div class="field" id="gOwnPoBox"'+(ownPoWas?'':' hidden')+'><input type="file" id="gOwnPoFile" accept=".pdf,.jpg,.jpeg,.png,.docx"><span class="hint">'+(ownPoPicked?'<span data-notr>'+esc(ownPoPicked.name)+'</span> · ':'')+'<span>The supplier confirms it on the platform; tracking continues the same way.</span></span></div>':'')+'<p class="err" id="gAcceptErr" hidden style="margin:0;font-size:.85rem;color:var(--warn);font-weight:600">Tick the box to accept the PO/SA.</p></div>';
     $('gDeliv').innerHTML=html; $('gDeliv').hidden=false;
     var vst=BS.buyerState((BS.me()||{}).phone); if(vst!=='verified') $('gDeliv').insertAdjacentHTML('afterbegin', '<div style="margin:.3rem 0 .7rem">'+bsVerifyHtml('checkout')+'</div>');
@@ -2831,10 +2853,14 @@ function bsSupport(threadId, inputId, sendId){
   }
   function openCheckout(boqId){
     checkoutBoq=boqId; var m=BS.me()||{}; if(m.company && !$('gName').value) $('gName').value=m.company; gateLabels();
+    if(creditWatch) creditWatch(); creditWatch=BS.watchCredit(m.phone, function(){ if(checkoutBoq && !$('poGate').hidden) drawCheckout(); });
     var needCompany=false; /* who is buying now comes from the verification */ $('gCompany').hidden=!needCompany; $('gCompany').style.display=needCompany?'grid':'none';
     $('gDeliv').innerHTML=''; drawCheckout(); $('poGate').hidden=false;
   }
   var ownPoPicked=null;
+  $('gDeliv').addEventListener('click', async function(e){ var a=e.target.closest('[data-askcredit]'); if(!a) return; a.disabled=true; var me=BS.me()||{};
+    await BS.add('messages', {phone:bsDigits(me.phone), who:'customer', name:me.company||me.name||'', credit:true, text:'Credit limit request: please allow pay-later orders up to '+a.dataset.askcredit+'.'});
+    a.textContent='Request sent'; bsToast('Sent to our team. We answer in Support, usually within one working day.'); });
   $('gDeliv').addEventListener('change', function(e){ if(e.target.id==='gOwnPoFile'){ ownPoPicked=(e.target.files||[])[0]||null; return; } if(e.target.id==='gOwnPo'){ $('gOwnPoBox').hidden=!e.target.checked; return; } drawCheckout(); });
   window.bsCheckoutRedraw=function(){ if(checkoutBoq && !$('poGate').hidden) drawCheckout(); };
   function openGate(){ checkoutBoq=null; var m=BS.me()||{}; if(m.company && !$('gName').value) $('gName').value=m.company; gateLabels(); $('gDeliv').hidden=true; $('gCompany').hidden=false; $('gCompany').style.display='grid'; $('gSave').textContent='Save'; $('poGate').hidden=false; $('gName').focus(); }
@@ -2857,6 +2883,7 @@ function bsSupport(threadId, inputId, sendId){
     var held = vs!=='verified', vrec=BS.buyerVer((BS.me()||{}).phone)||{};
     var b=boqById(checkoutBoq); if(!b) return; var items=checkoutItems(b), groups=checkoutGroups(items); if(!items.length){ $('poGate').hidden=true; return; }
     var acc=$('gAccept'); if(acc && !acc.checked){ $('gAcceptErr').hidden=false; acc.focus(); return; }
+    var cst=creditState(groups); if(cst.block){ bsToast(cst.block==='overdue'?'Pay your overdue order first: pay-later terms are paused.':cst.block==='verify'?'Pay-later terms need a verified account and a credit limit.':'This order is over your credit limit.'); var gc=$('gCredit'); if(gc) gc.scrollIntoView({behavior:'smooth', block:'center'}); return; }
     var ownPo=null, own=$('gOwnPo'); if(own && own.checked){ var of=ownPoPicked; if(!of){ bsToast('Attach your signed PO or contract, or untick "Use our own PO".'); return; } if(of.size>BS.FILE_MAX){ bsToast('The file is larger than 10 MB.'); return; }
       $('gSave').disabled=true; $('gSave').textContent='Sending your PO…'; var sv=null; try{ sv=await BS.saveFile(of, {kind:'ownpo'}); }catch(e){ sv=null; } $('gSave').disabled=false; if(!sv){ bsToast('The file could not be stored. Try again, or untick "Use our own PO".'); drawCheckout(); return; } ownPo={name:of.name, fileId:sv.fileId, parts:sv.parts}; }
     var bs=useBsTransport(b), ins=!!(document.getElementById('gIns')||{}).checked, m=BS.me()||{}, now=new Date().toISOString();
@@ -2864,7 +2891,7 @@ function bsSupport(threadId, inputId, sendId){
     /* PO numbers never repeat on a request, also after a supplier declined or let one lapse */
     var used={}; offers.forEach(function(o){ if(o.boqId===b.id && o.poRef) used[o.poRef]=1; }); var k=Object.keys(used).length, refs=[];
     for(var gi=0; gi<groups.length; gi++){ k++; var poRef='PO-'+b.ref+'-'+k; refs.push(poRef);
-      var gTerm=BS.termOf(groups[gi].items[0].o);
+      var gTerm=Object.assign({}, BS.termOf(groups[gi].items[0].o)); if(BS.deferred({payTerm:gTerm})){ if(gTerm.kind!=='credit') gTerm.payDays=BS.PAY_DAYS; if(BS.LATE.on) gTerm.late={rate:BS.LATE.rate, grace:BS.LATE.grace, cap:BS.LATE.cap}; }
       for(var j=0;j<groups[gi].items.length;j++){ var it=groups[gi].items[j]; var pf=bs && !it.hire;
         await BS.update('offers', it.o.id, {status:'accepted', poRef:poRef, acceptedAt:now, customerRevealed:m.company||vrec.company||m.name||b.company||'', customerTin:m.tin||vrec.tin||'', heldForVerify:held, ownPo:ownPo, buyerAgreedAt:now, buyerAgreedBy:m.contact||m.name||m.company||'', platformDelivery:pf, deliveryAmt:pf?it.est.cost:0, deliveryTrips:pf?it.est.trips:0, insurance:ins, insuranceAmt:ins?it.ins:0, payTerm:gTerm}); } }
     var ch=Object.assign({}, b.chosen||{}); items.forEach(function(it){ delete ch[it.l.n]; }); await BS.update('boqs', b.id, {chosen:ch});
@@ -3490,10 +3517,10 @@ window.bsPublishProfile = async function(fields){
 
 BSRoute.start();
 </script>
-<script src="assets/track.js?v=20261114a"></script>
-<script src="assets/order.js?v=20261114a"></script>
-<script src="assets/notify.js?v=20261114a"></script>
-<script src="assets/help.js?v=20261114a"></script>
-<script src="assets/admin.js?v=20261114a"></script>
-<script src="assets/editor.js?v=20261114a"></script>
-<script src="assets/i18n.js?v=20261114a"></script>
+<script src="assets/track.js?v=20261114b"></script>
+<script src="assets/order.js?v=20261114b"></script>
+<script src="assets/notify.js?v=20261114b"></script>
+<script src="assets/help.js?v=20261114b"></script>
+<script src="assets/admin.js?v=20261114b"></script>
+<script src="assets/editor.js?v=20261114b"></script>
+<script src="assets/i18n.js?v=20261114b"></script>

@@ -191,7 +191,9 @@
       if(d.id==="ads" && Array.isArray(d.hidden)){ BS.ADS_HIDDEN=d.hidden.slice(); }
       if(d.id==="payment"){ if(d.when==="before" || d.when==="after") BS.PAY_WHEN=d.when;
         if(Array.isArray(d.terms) && d.terms.length) BS.TERMS_ON=d.terms.filter(function(k){ return BS.TERM_KINDS.indexOf(k)>=0; }); if(!BS.TERMS_ON.length) BS.TERMS_ON=["before"];
-        if(+d.depositPct>0 && +d.depositPct<100) BS.DEPOSIT_PCT=+d.depositPct; if(+d.creditMax>0) BS.CREDIT_MAX=+d.creditMax; if(Array.isArray(d.methods) && d.methods.length) BS.PAY_ON=d.methods.slice(); if(d.bank) BS.BANK=Object.assign({}, d.bank); }
+        if(+d.depositPct>0 && +d.depositPct<100) BS.DEPOSIT_PCT=+d.depositPct; if(+d.creditMax>0) BS.CREDIT_MAX=+d.creditMax;
+        if(+d.payDays>0) BS.PAY_DAYS=+d.payDays; if(d.creditDefault>=0) BS.CREDIT_DEFAULT=+d.creditDefault||0;
+        if(d.late) BS.LATE={on:d.late.on!==false, rate:+d.late.rate>=0?+d.late.rate:1, grace:+d.late.grace>=0?+d.late.grace:3, cap:+d.late.cap>=0?+d.late.cap:10}; if(Array.isArray(d.methods) && d.methods.length) BS.PAY_ON=d.methods.slice(); if(d.bank) BS.BANK=Object.assign({}, d.bank); }
       if(d.id==="leadSms"){ BS.LEAD_SMS_EDIT=d.map||{}; }
       if(d.id==="verify"){ if(+d.unverifiedMax>0) BS.UNVERIFIED_MAX=+d.unverifiedMax; if(["unverified","all","none"].indexOf(d.review)>=0) BS.REVIEW_MODE=d.review; if(+d.holdDays>0) BS.HOLD_DAYS=+d.holdDays; }
       if(d.id==="delivery"){ if(+d.confirmHours>0) BS.CONFIRM_HOURS=+d.confirmHours; if(+d.checkHours>0) BS.CHECK_HOURS=+d.checkHours; if(+d.proofMin>0) BS.PROOF_MIN=+d.proofMin; if(d.proofOn!==undefined) BS.PROOF_ON=!!d.proofOn; if(+d.linkHours>0) BS.TRACK_HOURS=Math.min(48, +d.linkHours); if(/^(am|en|om)$/.test(d.driverLang||"")) BS.DRIVER_LANG=d.driverLang; }
@@ -748,9 +750,39 @@
     if(stage==="deposit") return Math.round(total*(+t.pct||BS.DEPOSIT_PCT)/100);
     if(stage==="balance") return Math.max(0, total-(+o.depositAmt||0));
     return total; };
-  /* credit: the date the payment is due (handover + days) */
-  BS.creditDue = function(o){ var t=BS.termOf(o); return t.kind==="credit" && o && o.deliveredAt ? new Date(o.deliveredAt).getTime() + (+t.days||BS.CREDIT_MAX)*86400000 : 0; };
-  BS.payOverdue = function(o){ var d=BS.creditDue(o); return !!(d && !o.paidAt && Date.now()>d); };
+  /* Pay-later (14 Nov 2026): every term where goods leave before full payment ("after", "credit", and the balance of a
+     "deposit") has a due date, a late charge and counts against the buyer's credit limit.
+       due date · credit: handover + days; after and deposit balance: item check + BS.PAY_DAYS days
+       late charge · BS.LATE {on, rate % a month counted per day, grace days, cap % of the amount}; the rule is copied
+         onto the order (payTerm.late, payTerm.payDays) when the buyer accepts the PO/SA, so later changes never alter it
+       credit limit · per buyer, set by staff (collection "credit", doc buyer-<9 digits> {limit}); BS.CREDIT_DEFAULT for
+         verified buyers without one (0 = staff approve each buyer); unverified buyers and buyers with an overdue
+         payment cannot order on pay-later terms */
+  BS.PAY_DAYS = 3;
+  BS.LATE = {on:true, rate:1, grace:3, cap:10};
+  BS.CREDIT_DEFAULT = 0;
+  BS.CREDIT = {};
+  BS.deferred = function(o){ var k=BS.termOf(o).kind; return k==="after" || k==="credit" || k==="deposit"; };
+  BS.checkedTime = function(o){ return o && o.deliveredAt ? (o.checkedAt ? new Date(o.checkedAt).getTime() : BS.isChecked(o) ? BS.checkDue(o) : 0) : 0; };
+  BS.payDueAt = function(o){ if(!o || !o.deliveredAt) return 0; var t=BS.termOf(o);
+    if(t.kind==="credit") return new Date(o.deliveredAt).getTime() + (+t.days||BS.CREDIT_MAX)*86400000;
+    if(t.kind==="after" || (t.kind==="deposit" && o.depositAt)){ var c=BS.checkedTime(o); return c ? c + (+t.payDays||BS.PAY_DAYS)*86400000 : 0; }
+    return 0; };
+  BS.creditDue = BS.payDueAt;
+  BS.payOverdue = function(o){ var d=BS.payDueAt(o); return !!(d && !o.paidAt && o.status!=='cancelled' && Date.now()>d); };
+  /* the late charge on an amount still owed; only orders accepted with a late rule carry one */
+  BS.lateFee = function(o, owed){ var L=BS.termOf(o).late, d=BS.payDueAt(o); if(!L || !d || !owed || o.paidAt) return 0;
+    var days=Math.floor((Date.now()-d)/86400000) - (+L.grace||0); if(days<=0) return 0;
+    return Math.min(Math.round(owed*(+L.cap||0)/100), Math.round(owed*(+L.rate||0)/100*days/30)); };
+  BS.lateText = function(L){ return L ? L.rate+"% a month after "+L.grace+" days of grace, at most "+L.cap+"%" : ""; };
+  /* what pay-later on an order puts at risk: the whole amount, or the balance after a deposit */
+  BS.exposure = function(o){ if(!BS.deferred(o) || o.paidAt || o.status!=="accepted") return 0; var t=BS.termOf(o), v=BS.offerTotal(o);
+    return t.kind==="deposit" ? Math.round(v*(100-(+t.pct||BS.DEPOSIT_PCT))/100) : v; };
+  BS.creditUsed = function(offers, boqIds){ return (offers||[]).filter(function(o){ return boqIds.indexOf(o.boqId)>=0; }).reduce(function(a,o){ return a+BS.exposure(o); },0); };
+  BS.creditOverdue = function(offers, boqIds){ return (offers||[]).some(function(o){ return boqIds.indexOf(o.boqId)>=0 && o.status==="accepted" && BS.payOverdue(o); }); };
+  BS.creditLimit = function(phone){ var d=BS.d9(phone); if(!d || !BS.isVerified(phone)) return 0; var c=BS.CREDIT["buyer-"+d]; return c && c.limit>=0 ? +c.limit : BS.CREDIT_DEFAULT; };
+  /* a buyer's own limit (get by id: the list is for staff only) */
+  BS.watchCredit = function(phone, cb){ var d=BS.d9(phone); if(!d) return function(){}; return BS.watch("credit", "buyer-"+d, function(doc){ if(doc) BS.CREDIT["buyer-"+d]=doc; else delete BS.CREDIT["buyer-"+d]; if(cb) try{ cb(doc); }catch(e){} }); };
   /* After the handover the buyer checks every item; an item not answered within this many hours counts as received. */
   BS.CHECK_HOURS = 48;
   /* the delivery record is shown on the home page only from this many checked deliveries */
@@ -792,7 +824,8 @@
     var checked = BS.isChecked(o), k = BS.termOf(o).kind;
     if(o.contractAt){
       if(checked && o.paidAt) return o.problemAt ? {t:'Delivered · problem reported', c:'tag-ochre', who:'none'} : {t:'Completed', c:'tag-green', who:'none'};
-      if(checked) return k==="credit" ? (BS.payOverdue(o) ? {t:'Delivered · payment overdue', c:'tag-ochre', who:'buyer'} : {t:'Delivered · on credit', c:'tag-ochre', who:'buyer'})
+      if(checked && BS.payOverdue(o)) return {t:'Delivered · payment overdue', c:'tag-ochre', who:'buyer'};
+      if(checked) return k==="credit" ? {t:'Delivered · on credit', c:'tag-ochre', who:'buyer'}
         : {t:k==="deposit"?'Delivered · balance due':'Delivered · payment due', c:'tag-ochre', who:'buyer'};
       if(o.deliveredAt) return {t:'Handed over · check the items', c:'tag-ochre', who:'buyer'};
       if(o.dispatchedAt) return {t:'Dispatched', c:'tag-ochre', who:'buyer'};

@@ -4,7 +4,7 @@
    test staff numbers and the staff password still work. The session is kept per browser tab. */
 (function(){
   var $=function(id){ return document.getElementById(id); };
-  var data={boqs:[],offers:[],messages:[],profiles:[],news:[],verifications:[],settings:[],issues:[],promotions:[],suppliers:[],tasks:[],staff:[],tracks:[],leads:[]}, query='';
+  var data={boqs:[],offers:[],messages:[],profiles:[],news:[],verifications:[],settings:[],issues:[],promotions:[],suppliers:[],tasks:[],staff:[],tracks:[],leads:[],credit:[]}, query='';
   var tab='overview', mode='local', booted=false, adTilesHtml='', actN=8;
   var CATS=BS.CATEGORIES.filter(function(c){ return c.indexOf('Other')<0; });
   function esc(t){ return String(t||'').replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
@@ -70,9 +70,9 @@
   function laterRender(){ if(pressing){ missed=true; return; } if(choosingFile()){ clearTimeout(rTimer); rTimer=setTimeout(laterRender, 400); return; } clearTimeout(rTimer); rTimer=setTimeout(function(){ if(pressing){ missed=true; return; } if(choosingFile()){ laterRender(); return; } if(isAdmin() && !$('adPanel').hidden) render(); }, 120); }
   document.addEventListener('pointerdown', function(e){ if(e.target.closest && e.target.closest('#adBody')) pressing=true; }, true);
   ['pointerup','pointercancel'].forEach(function(ev){ document.addEventListener(ev, function(){ if(!pressing) return; pressing=false; if(missed){ missed=false; setTimeout(laterRender, 60); } }, true); });
-  ['boqs','offers','messages','profiles','news','verifications','settings','issues','promotions','suppliers','tasks','staff','tracks','leads'].forEach(sub);
+  ['boqs','offers','messages','profiles','news','verifications','settings','issues','promotions','suppliers','tasks','staff','tracks','leads','credit'].forEach(sub);
   /* staff-only lists are refused before sign-in; ask again once signed in */
-  function resubStaffOnly(){ sub('tasks'); sub('staff'); sub('tracks'); sub('leads'); }
+  function resubStaffOnly(){ sub('tasks'); sub('staff'); sub('tracks'); sub('leads'); sub('credit'); }
   $('adTabs').addEventListener('click', function(e){ var b=e.target.closest('[data-tab]'); if(!b) return; tab=b.dataset.tab; render(); $('adLayout').classList.remove('open'); $('adBurger').setAttribute('aria-expanded','false'); window.scrollTo({top:0,behavior:'smooth'}); });
   /* three-line button: on a phone it opens the menu as a drawer; on a wide screen it folds the sidebar to icons */
   $('adBurger').onclick=function(){ var L=$('adLayout'); if(window.matchMedia('(max-width:860px)').matches){ var o=!L.classList.contains('open'); L.classList.toggle('open', o); $('adBurger').setAttribute('aria-expanded', o?'true':'false'); } else { L.classList.toggle('fold'); try{ localStorage.setItem('bs_adfold', L.classList.contains('fold')?'1':''); }catch(e){} } };
@@ -484,6 +484,7 @@
       card('Published · '+issueLabel(),'What members see under Newsletter, on top of the example issue.', pub.length? '<div class="docs">'+pub.map(function(x){ return item(x, '<button class="btn btn-ghost btn-sm" type="button" data-nedit="'+x.id+'">Edit</button><button class="btn btn-ghost btn-sm" type="button" data-unpublish="'+x.id+'">Take down</button>'); }).join('')+'</div>' : '<div class="empty">Nothing published yet.</div>');
   }
   $('adBody').addEventListener('click', async function(e){
+    var cl=e.target.closest('[data-climsave]'); if(cl){ var d9=cl.dataset.climsave, v=Math.max(0, Math.round(+((document.querySelector('[data-climit="'+d9+'"]')||{}).value)||0)); cl.disabled=true; try{ await BS.set('credit', 'buyer-'+d9, {limit:v, name:cl.dataset.cname||'', setBy:staffName(), at:new Date().toISOString()}); bsToast('Credit limit saved: '+BS.fmt(v)+'.'); }catch(err){} cl.disabled=false; return; }
     var nr=e.target.closest('[data-nreject]'); if(nr){ var why=(document.querySelector('[data-nreason="'+nr.dataset.nreject+'"]')||{}).value||'Does not follow the advertising rules'; await BS.update('news', nr.dataset.nreject, {status:'rejected', reason:why, by:staffName(), reviewedAt:new Date().toISOString()}); bsToast('Rejected. The sender is told why.'); return; }
     var na=e.target.closest('[data-napprove]'); if(na){ na.disabled=true; var nx=data.news.filter(function(y){ return y.id===na.dataset.napprove; })[0]||{}, amt=(BS.AD_PRICES||{})[nx.kind]||0; await BS.update('news', na.dataset.napprove, {status:'approved', amount:amt, invoiceRef:'INV-AD-'+String(Date.now()).slice(-6), approvedAt:new Date().toISOString(), by:staffName()}); bsToast('Approved. The sender sees the invoice; it goes live when you mark it paid.'); return; }
     var np=e.target.closest('[data-npaid]'); if(np){ np.disabled=true; await BS.update('news', np.dataset.npaid, {status:'published', paidAt:new Date().toISOString(), issue:issueLabel(), publishedAt:new Date().toISOString(), by:staffName()}); bsToast('Paid and published. Members see it under Newsletter.'); return; }
@@ -604,17 +605,32 @@
     return periodBar()+card('Completed sales and fees'+(period!=='all'?' · '+esc(period):''),'Fee '+BS.pct(BS.FEE_RATE)+' of each paid order. Settled with the supplier when the gateway confirms.',
       (rows.length? '<div style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:.9rem"><thead><tr style="text-align:left;color:var(--fg-2)"><th>Paid</th><th>PO</th><th>Buyer</th><th>Supplier</th><th style="text-align:right">Order value</th><th style="text-align:right">Fee</th><th>Payment ref</th></tr></thead><tbody>'+html+'</tbody><tfoot><tr style="font-weight:700"><td colspan="4">Total · '+rows.length+' orders</td><td style="text-align:right">'+BS.fmt(goods)+'</td><td style="text-align:right">'+BS.fmt(fees)+'</td><td></td></tr></tfoot></table></div><div><button class="btn btn-ghost btn-sm" type="button" id="adCsv">Download as CSV</button></div>' : '<div class="empty">No paid orders yet.</div>'))+
       card('Orders in progress','Accepted, not yet paid.', inprog.length? '<div class="docs">'+inprog.map(function(o){ var b=boqOf(o.boqId)||{}; return '<div class="doc"><span class="ico">PO</span><span><strong><a href="#order-'+o.id+'">'+esc(o.poRef)+'</a></strong> · '+esc(b.company||'')+' ← '+esc(o.supplierName)+' · '+BS.fmt(offerTotal(o))+'<br><span class="small muted">'+esc(BS.termLabel(BS.termOf(o)))+(o.depositAt?' · deposit '+BS.fmt(o.depositAmt||0)+' received':'')+'</span></span><span class="tag'+(BS.payOverdue(o)?' tag-ochre':'')+'">'+esc(BS.orderStatus(o).t)+'</span></div>'; }).join('')+'</div>' : '<div class="empty">None.</div>')+
-      creditCard();
+      creditCard()+limitsCard();
+  }
+  /* Credit limits per buyer (collection "credit", doc buyer-<9 digits> {limit, note}): what each verified buyer may have on
+     pay-later terms at once; overdue buyers are paused automatically. Requests for credit arrive in Support. */
+  function limitsCard(){
+    var vers=data.verifications.filter(function(v){ return v.kind==='buyer' && v.status==='verified'; }), seen={}, rows=[];
+    var add=function(d9, name){ if(!d9 || seen[d9]) return; seen[d9]=1; var ids=data.boqs.filter(function(b){ return BS.d9(b.ownerPhone)===d9; }).map(function(b){ return b.id; });
+      var c=data.credit.filter(function(x){ return x.id==='buyer-'+d9; })[0], lim=c&&c.limit>=0?+c.limit:BS.CREDIT_DEFAULT, used=BS.creditUsed(data.offers, ids), od=BS.creditOverdue(data.offers, ids);
+      rows.push({d9:d9, name:name, c:c, lim:lim, used:used, od:od}); };
+    vers.forEach(function(v){ add(v.id.replace('buyer-',''), v.company||v.name||''); });
+    BS.VERIFIED_TEST.forEach(function(d){ var b=data.boqs.filter(function(x){ return BS.d9(x.ownerPhone)===d; })[0]; add(d, (b&&b.company)||''); });
+    data.credit.forEach(function(c){ add(String(c.id).replace('buyer-',''), c.name||''); });
+    var asks=data.messages.filter(function(m){ return m.credit; }).length;
+    return card('Credit limits','How much each verified buyer may have on pay-later terms at once (payment after delivery, credit, or a deposit balance). A buyer with an overdue payment is paused until it is paid.',
+      (asks?'<p class="small" style="margin:0"><strong>'+asks+' request'+(asks===1?'':'s')+' for credit in Support.</strong></p>':'')+(rows.length ? '<div class="docs">'+rows.map(function(r){ return '<div class="doc" style="grid-template-columns:2.4rem 1fr auto"><span class="ico">CL</span><span><strong data-notr>'+esc(r.name||('0'+r.d9))+'</strong> <span class="small muted" data-notr>0'+esc(r.d9)+'</span><br><span class="small muted"><span>In use</span> '+BS.fmt(r.used)+' · <span>limit</span> '+BS.fmt(r.lim)+(r.c?'':' · <span>standard</span>')+(r.c&&r.c.setBy?' · <span data-notr>'+esc(r.c.setBy)+'</span>':'')+'</span>'+(r.od?' <span class="tag tag-ochre">Overdue · paused</span>':'')+'</span><span style="display:flex;gap:.3rem;align-items:center"><input type="number" min="0" step="1000" value="'+r.lim+'" data-climit="'+r.d9+'" aria-label="Credit limit (ETB)" style="width:8.5rem;font:inherit;font-size:.85rem;padding:.35rem .5rem;border:1.5px solid var(--line);border-radius:8px"><button class="btn btn-primary btn-sm" type="button" data-climsave="'+r.d9+'" data-cname="'+esc(r.name)+'">Save</button></span></div>'; }).join('')+'</div>'
+      : '<div class="empty">No verified buyers yet. Verified buyers appear here.</div>'));
   }
   /* credit and balances: what buyers still owe after delivery, the oldest due first; overdue ones to follow up */
   function creditCard(){
-    var gs=BS.orderGroups(data.offers).filter(function(g){ var f=g.first; return !f.paidAt && f.contractAt && (BS.termOf(f).kind==='credit' || f.depositAt) ; });
+    var gs=BS.orderGroups(data.offers).filter(function(g){ var f=g.first; return !f.paidAt && f.contractAt && BS.deferred(f) && (BS.termOf(f).kind!=='deposit' || f.depositAt); });
     if(!gs.length) return '';
-    var due=function(f){ return BS.creditDue(f) || (BS.isChecked(f) ? BS.checkDue(f) : 0); };
+    var due=function(f){ return BS.payDueAt(f); };
     gs.sort(function(a,c){ return (due(a.first)||9e15)-(due(c.first)||9e15); });
     return card('Credit and balances due','Orders on credit, and deposits whose balance is still open. Overdue ones first: call the buyer.',
       '<div class="docs">'+gs.map(function(g){ var f=g.first, b=boqOf(g.boqId)||{}, tot=g.offers.reduce(function(a,x){ return a+offerTotal(x); },0), owe=tot-(+f.depositAmt||0), d=due(f);
-        return '<div class="doc"><span class="ico">'+(BS.termOf(f).kind==='credit'?'CR':'BL')+'</span><span><strong><a href="#order-'+g.id+'">'+esc(g.poRef)+'</a></strong> · '+esc(f.customerRevealed||b.company||'')+' ← '+esc(g.supplierName)+'<br><span class="small muted">'+esc(BS.termLabel(BS.termOf(f)))+' · <span>still to pay</span> '+BS.fmt(owe)+(d?' · <span>due</span> '+when(new Date(d).toISOString()):' · <span>due after delivery</span>')+'</span></span><span class="tag'+(BS.payOverdue(f)?' tag-ochre':'')+'">'+(BS.payOverdue(f)?'Overdue':d?'Due':'Not delivered yet')+'</span></div>'; }).join('')+'</div>');
+        return '<div class="doc"><span class="ico">'+(BS.termOf(f).kind==='credit'?'CR':'BL')+'</span><span><strong><a href="#order-'+g.id+'">'+esc(g.poRef)+'</a></strong> · '+esc(f.customerRevealed||b.company||'')+' ← '+esc(g.supplierName)+'<br><span class="small muted">'+esc(BS.termLabel(BS.termOf(f)))+' · <span>still to pay</span> '+BS.fmt(owe)+(BS.lateFee(f, owe)?' · <span>late charge</span> '+BS.fmt(BS.lateFee(f, owe)):'')+(d?' · <span>due</span> '+when(new Date(d).toISOString()):' · <span>due after delivery</span>')+'</span></span><span class="tag'+(BS.payOverdue(f)?' tag-ochre':'')+'">'+(BS.payOverdue(f)?'Overdue':d?'Due':'Not delivered yet')+'</span></div>'; }).join('')+'</div>');
   }
   $('adBody').addEventListener('change', function(e){ if(e.target.id!=='adPeriod') return; period=e.target.value; render(); });
   $('adBody').addEventListener('click', function(e){
@@ -927,6 +943,11 @@
       '<div class="grid2" style="align-items:start"><div style="display:grid;gap:.6rem"><strong>Payment</strong>'+
       '<div class="field"><label>Payment terms suppliers may offer</label>'+[['before','Full payment before dispatch'],['deposit','Deposit, balance after delivery'],['after','Full payment after delivery'],['credit','Credit: pay within a number of days of delivery']].map(function(t){ return '<label class="check"><input type="checkbox" data-dpt="'+t[0]+'"'+(BS.TERMS_ON.indexOf(t[0])>=0?' checked':'')+'><span>'+t[1]+'</span></label>'; }).join('')+'<span class="hint">The supplier picks one per request when quoting; the first ticked is the starting choice. It becomes part of the PO/SA.</span></div>'+
       inp('dpDepPct','Usual deposit (%)',BS.DEPOSIT_PCT,'number',' min="5" max="95"')+inp('dpCredMax','Longest credit (days after delivery)',BS.CREDIT_MAX,'number',' min="1" max="180"')+
+      inp('dpPayDays','Days to pay after the item check (payment after delivery, deposit balance)',BS.PAY_DAYS,'number',' min="1" max="30"')+
+      inp('dpCredDef','Credit limit for a verified buyer without their own (ETB; 0 = we approve each buyer)',BS.CREDIT_DEFAULT,'number',' min="0" step="1000"')+
+      '<label class="check"><input type="checkbox" id="dpLateOn"'+(BS.LATE.on?' checked':'')+'><span>Late payment charge</span></label>'+
+      '<div class="su-row2">'+inp('dpLateRate','% a month',BS.LATE.rate,'number',' min="0" max="5" step="0.1"')+inp('dpLateGrace','Days of grace',BS.LATE.grace,'number',' min="0" max="30"')+'</div>'+
+      inp('dpLateCap','At most (% of the amount)',BS.LATE.cap,'number',' min="0" max="50"')+'<span class="hint">Counted per day after the due date and the grace days. Written into each PO/SA when the buyer accepts it; a change applies to new orders only. Have the lawyer confirm the rate.</span>'+
       '<div class="field"><label>Payment methods buyers can choose</label>'+BS.PAY_METHODS.map(function(m){ return '<label class="check"><input type="checkbox" data-dpm="'+m[0]+'"'+(on.indexOf(m[0])>=0?' checked':'')+'><span>'+m[1]+'</span></label>'; }).join('')+'</div>'+
       inp('dpBank','Bank for transfers',bk.bank)+inp('dpBankName','Account name',bk.name)+inp('dpBankNo','Account number',bk.number)+inp('dpBankNote','Note for the buyer (optional)',bk.note)+
       '</div><div style="display:grid;gap:.6rem"><strong>Delivery</strong>'+
@@ -987,7 +1008,7 @@
       if(!terms.length){ bsToast('Keep at least one payment term.'); return; }
       var ch=Math.max(12, Math.min(168, +g('dpCheckH').value||48)), cfh=Math.max(4, Math.min(168, +g('dpConfH').value||48)), lh=Math.max(2, Math.min(48, +g('dpLinkH').value||24)), pm=Math.max(1, +g('dpProofMin').value||20);
       e.target.disabled=true;
-      await BS.set('settings','payment',{when:BS.PAY_WHEN, terms:terms, depositPct:Math.max(5, Math.min(95, Math.round(+g('dpDepPct').value||50))), creditMax:Math.max(1, Math.min(180, Math.round(+g('dpCredMax').value||30))), methods:methods, bank:{bank:g('dpBank').value.trim(), name:g('dpBankName').value.trim(), number:g('dpBankNo').value.trim(), note:g('dpBankNote').value.trim()}, setBy:staffName()});
+      await BS.set('settings','payment',{when:BS.PAY_WHEN, terms:terms, payDays:Math.max(1, Math.min(30, Math.round(+g('dpPayDays').value||3))), creditDefault:Math.max(0, Math.round(+g('dpCredDef').value||0)), late:{on:g('dpLateOn').checked, rate:Math.max(0, Math.min(5, +g('dpLateRate').value||0)), grace:Math.max(0, Math.min(30, Math.round(+g('dpLateGrace').value||0))), cap:Math.max(0, Math.min(50, +g('dpLateCap').value||0))}, depositPct:Math.max(5, Math.min(95, Math.round(+g('dpDepPct').value||50))), creditMax:Math.max(1, Math.min(180, Math.round(+g('dpCredMax').value||30))), methods:methods, bank:{bank:g('dpBank').value.trim(), name:g('dpBankName').value.trim(), number:g('dpBankNo').value.trim(), note:g('dpBankNote').value.trim()}, setBy:staffName()});
       await BS.set('settings','verify',{unverifiedMax:Math.max(1, Math.min(20, +g('dpUnvMax').value||2)), review:g('dpReview').value, holdDays:Math.max(1, Math.min(10, +g('dpHoldDays').value||3)), setBy:staffName()});
       await BS.set('settings','delivery',{confirmHours:cfh, checkHours:ch, proofOn:g('dpProofOn').checked, proofMin:pm, linkHours:lh, driverLang:g('dpDrvLang').value, setBy:staffName()});
       $('adDeliveryMsg').textContent='Saved and applied.'; bsToast('Delivery and payment saved for every device.'); e.target.disabled=false; return; }
