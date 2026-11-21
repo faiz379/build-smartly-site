@@ -344,7 +344,7 @@ body:has(.modal:not([hidden])) .helpbtn{display:none}
 .tick .chg.up{color:var(--warn)}.tick .chg.down{color:var(--ok)}.tick .chg.flat{color:var(--fg-2)}
 /* modal (PO details gate) */
 .modal{position:fixed;inset:0;background:rgba(20,36,30,.55);display:grid;place-items:center;z-index:50;padding:1rem}
-.modal .card{max-width:34rem;width:100%;display:grid;gap:.9rem;max-height:92vh;overflow:auto}
+.modal .card{max-width:34rem;width:100%;display:grid;gap:.9rem;max-height:92vh;overflow:auto;grid-template-columns:minmax(0,1fr)}.modal .card>*{min-width:0}
 .sent-box{border-color:var(--green);background:color-mix(in srgb,var(--green) 8%,transparent)}
 .intro{padding-block:2.6rem 2.2rem;display:grid;grid-template-columns:1.1fr .9fr;gap:2.5rem;align-items:start}
 .intro-copy{display:grid;gap:1.1rem;min-width:0}
@@ -553,6 +553,7 @@ html{overflow-x:clip}
 .docverify{display:flex;gap:.8rem;align-items:center;margin-top:.7rem;padding-top:.6rem;border-top:1px solid var(--line)}
 .docqr{width:96px;height:96px;flex:none;image-rendering:pixelated}
 .bname{display:grid;line-height:1.1}
+body.staff-page #authOut{display:none!important}
 .tagline{display:flex;flex-wrap:wrap;justify-content:center;gap:.3rem 1.1rem;margin:.9rem auto 0;font-family:var(--display);font-weight:600;font-size:.98rem;color:var(--green-deep,var(--green))}
 .tagline span{white-space:nowrap}.tagline span+span::before{content:'•';color:var(--ochre);margin-right:1.1rem}
 @media (max-width:640px){.tagline{font-size:.86rem;gap:.2rem .7rem}.tagline span+span::before{margin-right:.7rem}}
@@ -1795,8 +1796,8 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 </div>
 
 
-<script src="assets/firebase-config.js?v=20261114z1" onerror="this.remove()"></script>
-<script src="assets/store.js?v=20261114z1"></script>
+<script src="assets/firebase-config.js?v=20261121a" onerror="this.remove()"></script>
+<script src="assets/store.js?v=20261121a"></script>
 <script>
 /* ---------- Router: one page, views switched by hash ---------- */
 window.BSRoute = (function(){
@@ -1806,6 +1807,7 @@ window.BSRoute = (function(){
     views.forEach(function(v){ var el=document.getElementById('view-'+v); if(el) el.hidden = v!==name; });
     var nav=document.getElementById('nav'); if(nav) nav.classList.remove('open');
     document.body.classList.toggle('drive-mode', name==='drive');
+    document.body.classList.toggle('staff-page', name==='admin'); /* staff sign in with their email here; the header Sign in (buyers and suppliers) is hidden so nobody presses the wrong one */
     var meV=(window.BS && BS.me && BS.me())||{}; document.body.classList.toggle('home-visitor', name==='home' && !meV.phone && !(BS.isStaff && BS.isStaff())); /* the driver's page shows only the delivery */
   }
   var current='home';
@@ -2753,8 +2755,8 @@ function bsSupport(threadId, inputId, sendId){
           else if(o.status==='rejected') act='<span style="display:grid;gap:.25rem"><span class="small muted">You rejected this offer</span><button class="btn btn-ghost btn-sm" data-unreject="'+o.id+'">Undo</button></span>';
           else if(o.counter && o.counter.state==='open') act='<span class="tag tag-ochre" style="text-transform:none;letter-spacing:0">You proposed '+BS.fmt(o.counter.price)+' · waiting for the supplier\'s answer</span>';
           else act='<span style="display:grid;gap:.3rem">'+(o.counter&&o.counter.state==='declined'?'<span class="small muted">The supplier declined '+BS.fmt(o.counter.price)+'. The offer stands.</span>':o.counter&&o.counter.state==='accepted'?'<span class="small" style="color:var(--ok);font-weight:600">The supplier accepted your price.</span>':'')+
-            '<span style="display:flex;gap:.3rem;flex-wrap:wrap">'+(isCh?'<button class="btn btn-ghost btn-sm" data-unchoose="'+b.id+'" data-line="'+l.n+'">✓ Chosen · undo</button>':'<button class="btn btn-primary btn-sm" data-choose="'+o.id+'" data-boq="'+b.id+'" data-line="'+l.n+'">Choose</button>')+'<button class="btn btn-ghost btn-sm" data-reject="'+o.id+'">Reject</button></span>'+
-            (o.counter&&o.counter.state!=='open'?'':'<span style="display:flex;gap:.3rem"><input type="number" min="1" step="1" placeholder="Your price per '+esc(l.unit)+'" data-cin="'+o.id+'" style="width:9.5rem;font:inherit;font-size:.85rem;padding:.35rem .5rem;border:1.5px solid var(--line);border-radius:8px"><button class="btn btn-ghost btn-sm" data-counter="'+o.id+'">Propose</button></span>')+'</span>';
+            '<span style="display:flex;gap:.3rem;flex-wrap:wrap;min-width:0">'+(isCh?'<button class="btn btn-ghost btn-sm" data-unchoose="'+b.id+'" data-line="'+l.n+'">✓ Chosen · undo</button>':'<button class="btn btn-primary btn-sm" data-choose="'+o.id+'" data-boq="'+b.id+'" data-line="'+l.n+'">Choose</button>')+'<button class="btn btn-ghost btn-sm" data-reject="'+o.id+'">Reject</button></span>'+
+            (o.counter&&o.counter.state!=='open'?'':'<span style="display:flex;gap:.3rem;flex-wrap:wrap;min-width:0"><input type="number" min="1" step="1" placeholder="Your price per '+esc(l.unit)+'" data-cin="'+o.id+'" style="flex:1 1 7.5rem;min-width:0;width:9.5rem;font:inherit;font-size:.85rem;padding:.35rem .5rem;border:1.5px solid var(--line);border-radius:8px"><button class="btn btn-ghost btn-sm" data-counter="'+o.id+'">Propose</button></span>')+'</span>';
           return '<div class="'+cls+'"><span class="letter">'+String.fromCharCode(65+i)+'</span>'+
             '<span><span class="k">Brand</span>'+(BS.BRAND_LOGOS[o.brand]?'<img class="blogo" src="'+BS.BRAND_LOGOS[o.brand]+'" alt="">':'')+'<b>'+esc(o.brand||'—')+'</b><span class="small muted"> · '+o.qtyOffered+' '+esc(l.unit)+(o.qtyOffered<l.qty?' (partial)':'')+'</span></span>'+
             '<span><span class="k">'+rateLabel(l)+'</span>'+BS.fmt(o.unitPrice)+' <span class="small muted">'+(o.vat==='incl'?'incl. VAT':'excl. VAT')+'</span></span>'+
@@ -2918,7 +2920,7 @@ function bsSupport(threadId, inputId, sendId){
     var bs=useBsTransport(b), ins=!!(document.getElementById('gIns')||{}).checked;
     var goods=0, trans=0, trips=0, insT=0; items.forEach(function(it){ goods+=it.goods; if(!it.hire){ trans+=it.est.cost; trips+=it.est.trips; } insT+=it.ins; });
     var html='<h3 style="margin-top:.3rem">Complete the order · '+esc(b.ref)+'</h3><p class="small muted" style="margin:.2rem 0 .6rem">'+items.length+' line'+(items.length!==1?'s':'')+' from '+groups.length+' supplier'+(groups.length!==1?'s':'')+': '+(groups.length>1?groups.length+' PO/SAs, one per supplier.':'one PO/SA.')+' The supplier\'s name appears once they confirm.</p>'+
-      groups.map(function(g,gi){ var sum=0; g.items.forEach(function(it){ sum+=it.goods; }); return '<div class="ck-group"><div class="small muted" style="font-weight:600">Order '+(gi+1)+'</div>'+g.items.map(function(it){ return '<div class="ck-row"><span>'+esc(it.l.item)+' · '+it.o.qtyOffered+' '+esc(it.l.unit)+' · brand '+esc(it.o.brand)+'</span><strong>'+BS.fmt(it.goods)+'</strong></div>'; }).join('')+(g.items.length>1?'<div class="ck-row small muted"><span>Order '+(gi+1)+' goods</span><span>'+BS.fmt(sum)+'</span></div>':'')+'<div class="ck-row small"><span>Payment terms</span><strong>'+esc(BS.termLabel(BS.termOf(g.items[0].o)))+'</strong></div></div>'; }).join('');
+      groups.map(function(g,gi){ var sum=0; g.items.forEach(function(it){ sum+=it.goods; }); return '<div class="ck-group"><div class="small muted" style="font-weight:600">Order '+(gi+1)+'</div>'+g.items.map(function(it){ return '<div class="ck-row"><span>'+esc(it.l.item)+' · '+it.o.qtyOffered+' '+esc(it.l.unit)+' · brand '+esc(it.o.brand)+'</span><strong>'+BS.fmt(it.goods)+'</strong></div>'; }).join('')+(g.items.length>1?'<div class="ck-row small muted"><span>Order '+(gi+1)+' goods</span><span>'+BS.fmt(sum)+'</span></div>':'')+'<div class="ck-row small"><span>Payment terms</span><strong style="white-space:normal;text-align:right">'+esc(BS.termLabel(BS.termOf(g.items[0].o)))+'</strong></div></div>'; }).join('');
     var delivery='';
     if(term==='Supplier delivers to site') delivery='<p class="small muted" style="margin:.2rem 0">Delivery to '+esc(b.subcity)+(b.pin?' (pinned site)':'')+' by the supplier, included in the prices above.</p>';
     else if(trips || /^Build Smartly/.test(term) || term==='I collect from supplier') delivery='<div class="su-choices">'+
@@ -3618,10 +3620,10 @@ window.bsPublishProfile = async function(fields){
 
 BSRoute.start();
 </script>
-<script src="assets/track.js?v=20261114z1"></script>
-<script src="assets/order.js?v=20261114z1"></script>
-<script src="assets/notify.js?v=20261114z1"></script>
-<script src="assets/help.js?v=20261114z1"></script>
-<script src="assets/admin.js?v=20261114z1"></script>
-<script src="assets/editor.js?v=20261114z1"></script>
-<script src="assets/i18n.js?v=20261114z1"></script>
+<script src="assets/track.js?v=20261121a"></script>
+<script src="assets/order.js?v=20261121a"></script>
+<script src="assets/notify.js?v=20261121a"></script>
+<script src="assets/help.js?v=20261121a"></script>
+<script src="assets/admin.js?v=20261121a"></script>
+<script src="assets/editor.js?v=20261121a"></script>
+<script src="assets/i18n.js?v=20261121a"></script>
