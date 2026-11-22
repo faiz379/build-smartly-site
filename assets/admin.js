@@ -977,13 +977,13 @@
      and the driver's link, changed here without a new build (settings docs "payment" and "delivery") */
   function nameCard(){ var st=cSettings('site'), sec=cSettings('security');
     return card('Name, languages and sign-in','Owner only. The platform name is used everywhere on the site and on documents. Amharic and Afaan Oromoo stay hidden from visitors until a native speaker has checked them (staff always see them).',
-      '<div class="grid3"><div class="field"><label for="snName">Platform name</label><input id="snName" value="'+esc(st.name||'Build Smartly')+'"></div>'+
-      '<div class="field"><label for="snIdleM">Sign members out after (minutes without activity)</label><input id="snIdleM" type="number" min="5" value="'+(+sec.memberIdle||BS.IDLE.member)+'"></div>'+
-      '<div class="field"><label for="snIdleS">Sign staff out after (minutes without activity)</label><input id="snIdleS" type="number" min="5" value="'+(+sec.staffIdle||BS.IDLE.staff)+'"></div></div>'+
-      '<label class="check"><input type="checkbox" id="snLangs"'+(BS.langsOn()?' checked':'')+'><span>Show Amharic and Afaan Oromoo to visitors (only after the native check)</span></label>'+
-      '<div><button class="btn btn-primary btn-sm" type="button" id="snSave">Save</button></div>'); }
-  $('adBody').addEventListener('click', async function(e){ if(e.target.id!=='snSave') return; var nm=$('snName').value.trim()||'Build Smartly', m=Math.max(5, Math.round(+$('snIdleM').value||60)), st2=Math.max(5, Math.round(+$('snIdleS').value||30));
-    e.target.disabled=true; await BS.set('settings','security',{memberIdle:m, staffIdle:st2, setBy:staffName()}); await cSaveSite({name:nm, langsOn:$('snLangs').checked}, 'Saved for every device.'); e.target.disabled=false; });
+      '<div class="grid3"><div class="field"><label for="plName">Platform name</label><input id="plName" value="'+esc(st.name||'Build Smartly')+'"></div>'+
+      '<div class="field"><label for="plIdleM">Sign members out after (minutes without activity)</label><input id="plIdleM" type="number" min="5" value="'+(+sec.memberIdle||BS.IDLE.member)+'"></div>'+
+      '<div class="field"><label for="plIdleS">Sign staff out after (minutes without activity)</label><input id="plIdleS" type="number" min="5" value="'+(+sec.staffIdle||BS.IDLE.staff)+'"></div></div>'+
+      '<label class="check"><input type="checkbox" id="plLangs"'+(BS.langsOn()?' checked':'')+'><span>Show Amharic and Afaan Oromoo to visitors (only after the native check)</span></label>'+
+      '<div><button class="btn btn-primary btn-sm" type="button" id="plSave">Save</button></div>'); }
+  $('adBody').addEventListener('click', async function(e){ if(e.target.id!=='plSave') return; var nm=$('plName').value.trim()||'Build Smartly', m=Math.max(5, Math.round(+$('plIdleM').value||60)), st2=Math.max(5, Math.round(+$('plIdleS').value||30));
+    e.target.disabled=true; await BS.set('settings','security',{memberIdle:m, staffIdle:st2, setBy:staffName()}); await cSaveSite({name:nm, langsOn:$('plLangs').checked}, 'Saved for every device.'); e.target.disabled=false; });
   function deliveryPayCard(){
     var bk=BS.BANK||{}, on=BS.PAY_ON||[];
     var inp=function(id,label,val,type,extra){ return '<div class="field"><label for="'+id+'">'+label+'</label><input id="'+id+'" type="'+(type||'text')+'" value="'+esc(val==null?'':val)+'"'+(extra||'')+'></div>'; };
