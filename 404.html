@@ -1037,6 +1037,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
           <div class="field" id="liNameField" hidden><label for="liName">Your name or company</label><input id="liName" autocomplete="organization" placeholder="e.g. Tana Construction PLC"><span class="err" id="liNameErr" hidden>Please enter your name.</span></div>
           <div class="field"><label for="liPhone">Mobile</label><div class="su-phone"><span class="cc">🇪🇹 +251</span><input id="liPhone" type="tel" inputmode="numeric" placeholder="9 12 34 56 78" autocomplete="tel-national"></div><span class="err" id="liErr" hidden>Enter your mobile number, for example 0912345678.</span></div>
           <div class="field" id="liOtpBox" hidden><label>Enter the code we sent</label><div class="su-otp"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"></div><span class="hint" id="liHint">Type the 6-digit code we sent you by SMS.</span></div>
+          <div class="field" id="liPinBox" hidden><label for="liPin" id="liPinLabel">Your supplier PIN</label><input id="liPin" type="password" inputmode="numeric" maxlength="6" autocomplete="off" style="max-width:12rem"><input id="liPin2" type="password" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="Type it again" style="max-width:12rem" hidden><span class="small muted" id="liPinHint">Suppliers confirm sign-in with their 4 to 6 digit PIN.</span></div>
           <div class="su-nav"><span></span><button class="btn btn-primary" type="button" id="liGo">Send code</button></div>
           <p class="small muted" id="liSupplier" style="margin:0">Suppliers sign in here too and go straight to their supplier portal.</p>
           <div class="card" id="liNew" style="display:grid;gap:.6rem;padding:1rem"><strong style="font-family:var(--display)">New to Build Smartly?</strong><p class="small muted">Sign up in two short steps: your mobile number and the SMS code, then your name and whether you buy, sell or both. No documents until you are ready to order.</p><div style="display:flex;gap:.5rem;flex-wrap:wrap"><a class="btn btn-ghost btn-sm" href="#signup">Sign up</a><a class="btn btn-ochre btn-sm" href="#signup-supplier">Register as a supplier</a></div></div>
@@ -1058,8 +1059,8 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
           <div class="field" id="spfOrgField" hidden><label for="spfOrg" id="spfOrgLabel">Name of the organisation</label><input id="spfOrg" autocomplete="organization"><span class="err" id="spfOrgErr" hidden>Please enter the name.</span></div>
           <span class="err" id="spfSellErr" hidden>Only organisations with a business licence can sell. Choose Organisation, or choose Buy.</span>
           <label class="check"><input type="checkbox" id="spfTerms"><span>I agree to the terms of use and the privacy policy.</span></label>
-          <label class="check"><input type="checkbox" id="spfContact"><span>I agree that Build Smartly may contact me by phone, SMS or WhatsApp about my requests and its services.</span></label>
-          <span class="err" id="spfConsentErr" hidden>Please tick both boxes to continue.</span>
+          <label class="check"><input type="checkbox" id="spfContact"><span>Optional: send me news and offers by phone, SMS or WhatsApp. I can stop this at any time. (Sign-in codes and messages about my requests and orders are always sent.)</span></label>
+          <span class="err" id="spfConsentErr" hidden>Please accept the terms and the privacy policy to continue.</span>
           <div class="su-nav"><span></span><button class="btn btn-primary" type="button" id="spfGo">Done</button></div>
         </section>
 
@@ -1082,6 +1083,8 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
               <div class="su-row2">
                 <div class="field"><label for="contact">Contact person</label><input id="contact" placeholder="Full name"></div>
                 <div class="field"><label for="jobtitle">Job title</label><input id="jobtitle" placeholder="e.g. Sales manager"></div>
+                <div class="field"><label for="wPin">Choose a PIN (4 to 6 digits)</label><input id="wPin" type="password" inputmode="numeric" maxlength="6" autocomplete="off"><span class="small muted">You type it after the SMS code each time you sign in to sell.</span></div>
+                <div class="field"><label for="wPin2">Type the PIN again</label><input id="wPin2" type="password" inputmode="numeric" maxlength="6" autocomplete="off"><span class="err" id="wPinErr" hidden>Type the same 4 to 6 digits twice.</span></div>
               </div>
             </div>
             <div class="su-row2">
@@ -1362,6 +1365,12 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
         <label class="check"><input type="checkbox" id="agree"><span>I accept the supplier agreement: a fee on completed deals only, payment within the agreed deadline, the introduced-customer clause, and no use of request information to deal outside Build Smartly during the protection period. (Draft.)</span></label>
       </div>
 
+      <div class="card" style="display:grid;gap:.8rem" id="sec-secure">
+        <div><strong style="font-family:var(--display)">Security and payout</strong><p class="small muted">Your PIN protects sign-in and changes to your payout details. Our team checks the payout details before your account goes live.</p></div>
+        <label class="check"><input type="checkbox" id="spVerOnly"><span>Only send me requests from verified buyers</span></label>
+        <div id="spSecBox" style="display:grid;gap:.8rem"></div>
+      </div>
+
       <div class="card" style="display:grid;gap:.8rem" id="sec-intro">
         <div><strong style="font-family:var(--display)">5 · Public profile (optional)</strong><p class="small muted">Published in the <a href="#members">Members directory</a> after a staff check. No addresses, phone numbers or prices in the text.</p></div>
         <div class="field"><label for="spIntro">Company introduction</label><textarea id="spIntro" rows="3" placeholder="History, brands, certifications, key products"></textarea></div>
@@ -1535,6 +1544,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     <h3>Why</h3><p class="muted">To verify members, match requests with suppliers, issue documents, deliver goods and keep the legal records of each deal.</p>
     <h3>Who sees it</h3><p class="muted">Only the staff whose job needs it, and only with a log entry. Other members see your identity only in a purchase order. Nothing is sold or shared with advertisers.</p>
     <h3>Where</h3><p class="muted">On servers in Ethiopia. Cross-border transfers only as the law allows.</p>
+    <h3>How long</h3><p class="muted">An account that is not verified and has not been used for 12 months is deleted, or its personal details are removed. Records of orders, payments and agreements are kept for as long as the law requires.</p>
     <h3>Your rights</h3><p class="muted">You can see, correct and ask for deletion of your data, subject to legal record-keeping. Write to the contact on the Contact page.</p>
   </div>
 </div>
@@ -1768,14 +1778,14 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
       <div class="field" data-vfor="Organisation" ><label for="vLicExp">Licence valid until</label><input id="vLicExp" type="date"><span class="hint">We remind you 30 days before it ends.</span></div>
       <div class="su-row2" data-vfor="Organisation Government">
         <div class="field"><label for="vContact" id="vContactLabel">Authorized person</label><input id="vContact" placeholder="Full name"></div>
-        <div class="field"><label for="vRepId">Their Fayda or passport number</label><input id="vRepId"></div>
+        <div class="field" data-vfor="none" hidden><label for="vRepId">Their Fayda or passport number</label><input id="vRepId"></div>
       </div>
       <div class="su-row2">
         <div class="field"><label for="vAddr">Address</label><input id="vAddr" placeholder="Sub-city, woreda, street or building"></div>
         <div class="field"><label for="vEmail">Email</label><input id="vEmail" type="email" autocomplete="email" placeholder="For your documents"></div>
       </div>
       <div class="field"><label for="vFile" id="vFileLabel">Photo of your Fayda card (optional)</label><input id="vFile" type="file" accept=".pdf,.jpg,.jpeg,.png"><span class="hint">A photo, or a PDF under 700 KB.</span></div>
-      <div class="field" data-vfor="Organisation Government"><label for="vFile2" id="vFile2Label">ID of the authorized person (optional)</label><input id="vFile2" type="file" accept=".pdf,.jpg,.jpeg,.png"></div>
+      <div class="field" data-vfor="none" hidden><label for="vFile2" id="vFile2Label">ID of the authorized person (optional)</label><input id="vFile2" type="file" accept=".pdf,.jpg,.jpeg,.png"></div>
       <div class="field" data-vfor="Organisation"><label for="vFile3">Commercial registration certificate (where you have one)</label><input id="vFile3" type="file" accept=".pdf,.jpg,.jpeg,.png"></div>
       <p class="err" id="vErr" hidden style="margin:0;font-size:.85rem;color:var(--warn);font-weight:600"></p>
       <div class="su-nav"><button class="btn btn-ghost" type="button" id="vCancel">Not now</button><button class="btn btn-primary" type="button" id="vGo">Send for verification</button></div>
@@ -1796,8 +1806,8 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
 </div>
 
 
-<script src="assets/firebase-config.js?v=20261121a" onerror="this.remove()"></script>
-<script src="assets/store.js?v=20261121a"></script>
+<script src="assets/firebase-config.js?v=20261122a" onerror="this.remove()"></script>
+<script src="assets/store.js?v=20261122a"></script>
 <script>
 /* ---------- Router: one page, views switched by hash ---------- */
 window.BSRoute = (function(){
@@ -1918,6 +1928,7 @@ window.bsOtpGuard=(function(){
 function bsSignInByPhone(digits){
   var t=BS.TEST_ACCOUNTS.filter(function(a){ return a.phone===digits; })[0]; var me=BS.me()||{};
   var mine=(me.phone||'').replace(/\D/g,'').replace(/^251/,'');
+  var ox=!t && BS.supplierOfPhone(digits); if(ox && ox.own){ var kx=BS.known(digits)||{}; BS.setMe(Object.assign({}, kx, mine===digits?me:{}, {supplierId:ox.id, name:kx.name||ox.name, company:ox.name, type:'Organisation', role:'Supply materials', phone:'+251 '+digits, tin:ox.tin||kx.tin||''})); return 'supplier'; }
   var known=BS.known(digits); if(!t && mine!==digits && known){ BS.setMe(known); return (known.role && known.role!=='Request materials') ? 'supplier' : 'buyer'; }
   if(t && mine===digits) known=me;
   if(t && t.supplierId){ var s=BS.SUPPLIERS.filter(function(x){return x.id===t.supplierId;})[0]; BS.setMe(Object.assign({}, known||{}, {supplierId:s.id, name:s.name, company:s.name, type:'Organisation', role:'Supply materials', phone:'+251 '+digits, tin:'0012345678', person:t.person||''})); return 'supplier'; }
@@ -2020,7 +2031,7 @@ function bsSignInByPhone(digits){
     var hit=null; Object.keys(by).some(function(k){ var g=by[k], f=g[0]; if(BS.verifyNo(f)===no){ hit=g; return true; } return false; });
     if(!hit){ $('ckOut').innerHTML='<div class="vbox"><strong>No document with this number.</strong><p class="small" style="margin:0">Check the number again. If it is right, the document is not genuine: please tell us under Support.</p></div>'; return; }
     var f=hit[0], st=BS.orderStatus(f), tot=0; hit.forEach(function(o){ tot+=BS.offerTotal(o); }); var b=boqs.filter(function(x){ return x.id===f.boqId; })[0]||{}, shown=BS.namesShown(f);
-    $('ckOut').innerHTML='<div class="vbox ok"><div><span class="vbadge ok">✓ Genuine</span></div><div class="kv small"><span>Document</span><strong data-notr>'+esc(f.poRef)+'</strong><span>Issued</span><strong data-notr>'+new Date(f.acceptedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})+'</strong><span>Status</span><strong>'+esc(st.t)+'</strong><span>Lines</span><strong data-notr>'+hit.length+'</strong><span>Total</span><strong data-notr>'+BS.fmt(tot)+'</strong>'+(shown?'<span>Buyer</span><strong data-notr>'+esc(f.customerRevealed||b.company||'')+'</strong><span>Supplier</span><strong data-notr>'+esc(f.supplierName||'')+'</strong>':'')+'</div>'+(shown?'':'<p class="small muted" style="margin:0">The names are shown once the supplier has confirmed it.</p>')+'</div>'; }
+    $('ckOut').innerHTML='<div class="vbox ok"><div><span class="vbadge ok">✓ Genuine</span></div><div class="kv small"><span>Document</span><strong data-notr>'+esc(f.poRef)+'</strong><span>Issued</span><strong data-notr>'+new Date(f.acceptedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})+'</strong><span>Status</span><strong>'+esc(st.t)+'</strong></div><p class="small muted" style="margin:0">For privacy this page shows no names, prices or addresses. The parties see the full document in their account.</p></div>'; }
   $('ckGo').onclick=look; $('ckNo').addEventListener('keydown', function(e){ if(e.key==='Enter') look(); });
   BSRoute.on('check', function(no){ if(no){ $('ckNo').value=decodeURIComponent(no).toUpperCase(); } setTimeout(look, 300); });
 })();
@@ -2042,6 +2053,25 @@ function bsApplySite(){
   var fl=$('faqList'); if(fl){ fl.querySelectorAll('[data-faqx]').forEach(function(x){ x.remove(); }); (st.faq||[]).forEach(function(q){ if(!q.q) return; var d=document.createElement('details'); d.className='card'; d.setAttribute('data-faqx','1'); d.innerHTML='<summary style="cursor:pointer;font-weight:600;font-family:var(--display)">'+esc(q.q)+'</summary><p class="muted" style="margin-top:.5rem">'+esc(q.a).replace(/\n/g,'<br>')+'</p>'; fl.appendChild(d); }); }
 }
 BS.onSettings && BS.onSettings(bsApplySite);
+/* Amharic and Afaan Oromoo are shown only when staff switch them on (after the native check); staff always see them.
+   The platform name is one setting (Staff → Settings → Name, languages and sign-in). */
+function bsApplyLangs(){ var on=BS.langsOn() || (BS.isStaff && BS.isStaff());
+  ['lang','lang2'].forEach(function(id){ var el=document.getElementById(id); if(!el) return; el.querySelectorAll('option').forEach(function(o){ if(o.value!=='en') o.hidden=!on; }); var li=el.closest('li.nav-lang'); (li||el).hidden=!on; });
+  if(!on && window.bsLang && bsLang()!=='en' && !document.body.classList.contains('drive-mode')) bsSetLang('en'); }
+function bsApplyName(){ var n=((BS.SITE||{}).name||'').trim(); if(window.bsSetName) bsSetName(n && n!=='Build Smartly' ? n : ''); if(n) document.title=document.title.replace(/Build Smartly/g, n); }
+BS.onSettings && BS.onSettings(function(){ bsApplyLangs(); bsApplyName(); });
+window.addEventListener('load', function(){ setTimeout(function(){ bsApplyLangs(); bsApplyName(); }, 50); });
+/* sign out after a while without activity (Abdullah, 22 Nov 2026): members after BS.IDLE.member minutes, staff after
+   BS.IDLE.staff minutes (staff setting). The last activity is shared by the tabs of this browser. */
+(function(){ var KEY='bs_last_act', last=Date.now(), prev=0; try{ prev=+localStorage.getItem(KEY)||0; }catch(e){}
+  function stamp(n){ last=n; try{ localStorage.setItem(KEY, String(n)); }catch(e){} }
+  function check(start){ var l=last; try{ l=Math.max(l, +localStorage.getItem(KEY)||0); }catch(e){} if(start) l=prev||Date.now();
+    var idle=(Date.now()-l)/60000;
+    if(BS.isStaff && BS.isStaff()){ if(idle>=BS.IDLE.staff){ BS.audit('staff signed out (inactive)', ''); BS.staffSignOut(); bsToast('Signed out after '+BS.IDLE.staff+' minutes without activity.'); if(window.BSRoute) BSRoute.go('staff'); } return; }
+    var me=BS.me()||{}; if(me.phone && idle>=BS.IDLE.member && !document.body.classList.contains('drive-mode')){ BS.setMe({}); if(window.BSAuth) BSAuth.refresh(); bsToast('For your safety you were signed out after '+BS.IDLE.member+' minutes without activity. Sign in again with your mobile number.'); if(window.BSRoute) BSRoute.go('signin'); } }
+  ['pointerdown','keydown','touchstart','wheel'].forEach(function(ev){ window.addEventListener(ev, function(){ var n=Date.now(); if(n-last>10000) stamp(n); }, {passive:true, capture:true}); });
+  setTimeout(function(){ check(true); stamp(Date.now()); }, 1500); setInterval(function(){ check(false); }, 30000);
+})();
 function bsApplyPics(){
   /* the logo: a picture set by staff replaces the drawn mark in the header, the footer and the browser tab */
   var lg=BS.PICS&&BS.PICS.logo; document.querySelectorAll('.brand .mark').forEach(function(m){
@@ -2245,6 +2275,7 @@ bsAdShow('nwAds', function(){ return !document.getElementById('view-advertise').
 /* ---------- Signed-in state in the header ---------- */
 window.BSAuth = (function(){
   function refresh(){
+    if(window.bsApplyLangs) setTimeout(bsApplyLangs, 0); /* staff always see the language switch */
     var me=BS.me()||{}; var inEl=document.getElementById('authIn'), outEl=document.getElementById('authOut');
     var staff=BS.isStaff && BS.isStaff(); var signed=!!me.phone || staff;
     inEl.style.display = signed ? 'inline-flex' : 'none'; outEl.style.display = signed ? 'none' : 'contents';
@@ -2337,7 +2368,13 @@ function bsSupport(threadId, inputId, sendId){
   var $=function(id){return document.getElementById(id);};
   /* --- sign in / create: one box, the number is the account --- */
   var liOtp=bsOtp($('liOtpBox'), function(){ $('liGo').click(); }), liStage=0, liKind='signin';
-  function liReset(){ liStage=0; $('liOtpBox').hidden=true; liOtp.reset(); $('liGo').textContent='Send code'; $('liErr').hidden=true; }
+  function liReset(){ liStage=0; $('liOtpBox').hidden=true; $('liPinBox').hidden=true; $('liPin').value=''; $('liPin2').value=''; liOtp.reset(); $('liGo').textContent='Send code'; $('liErr').hidden=true; }
+  /* suppliers (organisations) confirm sign-in with a PIN after the SMS code (Abdullah, 22 Nov 2026). 5 wrong PINs lock it
+     for 15 minutes; staff reset a forgotten PIN. The built-in test suppliers have none until they set one. */
+  var liPinNew=false, liSup=null;
+  function pinLock(d){ try{ var s=JSON.parse(localStorage.getItem('bs_pin_'+d)||'{}'); return s; }catch(e){ return {}; } }
+  function pinSave(d,s){ try{ localStorage.setItem('bs_pin_'+d, JSON.stringify(s)); }catch(e){} }
+  function needPin(sp){ return !!(sp && (sp.pinHash || sp.own)); }
   /* accounts already used on this phone: one tap to switch (demo shortcut) */
   function renderAccts(){
     var cur=bsDigits((BS.me()||{}).phone); var list=BS.accounts().filter(function(a){ return bsDigits(a.phone)!==cur; });
@@ -2369,11 +2406,30 @@ function bsSupport(threadId, inputId, sendId){
     var nm='';
     var digits=bsDigits($('liPhone').value); var ok=/^[97]\d{8}$/.test(digits); $('liErr').textContent='Enter your mobile number, for example 0912345678.'; $('liErr').hidden=ok; if(!ok){ $('liPhone').focus(); return; }
     if(liStage===0){ var lim=bsOtpGuard.send(digits); if(lim){ $('liErr').textContent=lim; $('liErr').hidden=false; return; } liStage=1; $('liOtpBox').hidden=false; $('liGo').textContent='Verify code'; liOtp.focus(); return; }
+    if(liStage===2){ var pin=$('liPin').value.trim(), lk=pinLock(digits);
+      if(lk.until && Date.now()<lk.until){ $('liErr').textContent='Too many wrong PINs. Try again after '+new Date(lk.until).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' or ask Build Smartly to reset it.'; $('liErr').hidden=false; return; }
+      if(!/^\d{4,6}$/.test(pin)){ $('liErr').textContent='Type your 4 to 6 digit PIN.'; $('liErr').hidden=false; $('liPin').focus(); return; }
+      if(liPinNew && $('liPin2').value.trim()!==pin){ $('liErr').textContent='The two PINs are not the same.'; $('liErr').hidden=false; $('liPin2').focus(); return; }
+      $('liGo').disabled=true;
+      BS.hashPin(digits, pin).then(function(h){ $('liGo').disabled=false;
+        if(liPinNew){ BS.update('suppliers', liSup.docId||liSup.id, {pinHash:h}); BS.audit('supplier PIN set', liSup.name); }
+        else if(h!==liSup.pinHash){ lk.wrong=(lk.wrong||0)+1; if(lk.wrong>=5){ lk={until:Date.now()+15*60000}; } pinSave(digits, lk); BS.audit('wrong supplier PIN', liSup.name); $('liErr').textContent=lk.until?'5 wrong PINs: locked for 15 minutes.':'Wrong PIN. Try again.'; $('liErr').hidden=false; $('liPin').value=''; $('liPin').focus(); return; }
+        pinSave(digits, {}); finishSignIn(digits); });
+      return; }
     var lc=bsOtpGuard.check(digits, liOtp.code()); if(!lc.ok){ if(lc.reset){ liReset(); $('liErr').textContent=lc.msg; $('liErr').hidden=false; } else $('liHint').textContent=lc.msg; return; }
+    liSup=BS.supplierOfPhone(digits);
+    if(needPin(liSup)){ liStage=2; liPinNew=!liSup.pinHash; $('liOtpBox').hidden=true; $('liPinBox').hidden=false; $('liPin2').hidden=!liPinNew;
+      $('liPinLabel').textContent=liPinNew?'Choose a supplier PIN (4 to 6 digits)':'Your supplier PIN'; $('liPinHint').textContent=liPinNew?'You will type it each time you sign in to sell, and to change payout details. Keep it secret.':'Forgot it? Write to Build Smartly support: our team resets it after checking who you are.';
+      $('liGo').textContent=liPinNew?'Save PIN and sign in':'Sign in'; $('liPin').focus(); return; }
+    finishSignIn(digits);
+  };
+  function finishSignIn(digits){
+    var nm='';
     var kind=bsSignInByPhone(digits); var m=BS.me()||{}; if(nm && !(m.company||m.name)){ BS.setMe(Object.assign({}, m, {name:nm, company:nm})); }
     if(liKind==='signup' && (kind==='new' || !(m.company||m.name))){ liReset(); if(window.BSAuth) BSAuth.refresh(); spfDigits=digits; $('signinBox').hidden=true; $('acctBox').hidden=true; $('suProfile').hidden=false; $('suSideTitle').textContent='Almost done.'; $('spfName').focus(); return; }
     liReset(); afterSignIn(kind);
-  };
+  }
+  $('liPin').addEventListener('keydown', function(e){ if(e.key==='Enter') $('liGo').click(); }); $('liPin2').addEventListener('keydown', function(e){ if(e.key==='Enter') $('liGo').click(); });
   $('liPhone').addEventListener('keydown', function(e){ if(e.key==='Enter') $('liGo').click(); });
   /* sign-up step 2: name, buy / sell / both, who you are. Selling continues in the supplier details (no second code). */
   var spfDigits='';
@@ -2384,8 +2440,8 @@ function bsSupport(threadId, inputId, sendId){
     $('spfNameErr').hidden=!!name; if(!name){ $('spfName').focus(); return; }
     var needOrg=t!=='Individual'; $('spfOrgErr').hidden=!needOrg||!!org; if(needOrg && !org){ $('spfOrg').focus(); return; }
     var sellOk = want==='buy' || t==='Organisation'; $('spfSellErr').hidden=sellOk; if(!sellOk) return;
-    var cons=$('spfTerms').checked && $('spfContact').checked; $('spfConsentErr').hidden=cons; if(!cons) return;
-    var nowJ=new Date().toISOString(); BS.set('leads', 'lead-'+BS.d9(spfDigits), {phone:BS.d9(spfDigits), name:name, type:t, org: needOrg?org:'', want:want, consentTerms:nowJ, consentContact:nowJ, joinedAt:nowJ, source:'signup', status:'new', optOut:false}); /* a lead for the marketing team (staff only) */
+    var cons=$('spfTerms').checked; $('spfConsentErr').hidden=cons; if(!cons) return; /* marketing consent is optional (Abdullah, 22 Nov 2026) */
+    var nowJ=new Date().toISOString(); BS.set('leads', 'lead-'+BS.d9(spfDigits), {phone:BS.d9(spfDigits), name:name, type:t, org: needOrg?org:'', want:want, consentTerms:nowJ, consentContact:$('spfContact').checked?nowJ:'', optOut:!$('spfContact').checked, joinedAt:nowJ, source:'signup', status:'new', optOut:false}); /* a lead for the marketing team (staff only) */
     var m=BS.me()||{}; BS.setMe(Object.assign({}, m, {name:name, person:name, company: needOrg?org:name, type:t, want:want}));
     if(window.BSAuth) BSAuth.refresh();
     if(want==='buy'){ bsToast('Welcome to Build Smartly. You can send requests now; get verified when you are ready to order.'); BSRoute.go('workspace'); return; }
@@ -2416,7 +2472,7 @@ function bsSupport(threadId, inputId, sendId){
     var profile={ docs:{lic:$('wLic').value.trim(), issuer:'Addis Ababa Trade Bureau', exp:$('wExp').value, tin:data.tin, vat:$('wVat').value, submitted:submitted, verified:false}, type:$('wType').value, brands:'', cats:wcats.slice(), locs:[{type:'Main store', sub:$('wSub').value, pin:''}], zones:[$('wSub').value], terms:'Delivered, extra charge per zone', agree:true, intro:'', publish:false };
     try{ localStorage.setItem('bs_demo_supprofile_'+id, JSON.stringify(profile)); }catch(e){}
     var sdoc={name:name, phone:bsDigits(data.phone), tin:data.tin, cats:wcats.slice(), sub:$('wSub').value, status:'pending', source:'registered', prices:[]};
-    BS.hashPw(data.phone, data.password||'').then(function(h){ sdoc.pwHash=h; BS.set('suppliers', id, sdoc); }); /* only a hash of the password is shared */
+    BS.hashPin(data.phone, data.pin||'').then(function(h){ sdoc.pinHash=h; BS.set('suppliers', id, sdoc); }); /* only a hash of the PIN is stored */
     if(submitted){ var files=[]; ['wLicFile','wTinFile','wVatFile'].forEach(function(fid){ var f=$(fid).files&&$(fid).files[0]; if(f) files.push(f.name); }); BS.set('verifications', id, {supplierId:id, company:name, phone:bsDigits(data.phone), tin:data.tin, lic:profile.docs.lic, exp:profile.docs.exp, vat:profile.docs.vat, cats:wcats.slice(), sub:$('wSub').value, files:files, status:'pending', submittedAt:new Date().toISOString()}); }
     var rows=[['Company',name],['Entity type',$('entity').value],['TIN',data.tin],['Contact',(data.contact||'')+(data.jobtitle?' · '+data.jobtitle:'')],['Mobile',data.phone],['Email',data.email],['City',$('city').value],['Supplies',wcats.join(', ')],['Dispatch point',$('wSub').value],['Documents', submitted ? 'Submitted · staff review within 2 working days' : 'Not yet · upload them under Settings in the portal']];
     var dl=$('summary'); dl.innerHTML=''; rows.forEach(function(r){ var dt=document.createElement('dt'); dt.textContent=r[0]; var dd=document.createElement('dd'); dd.textContent=r[1]; dl.appendChild(dt); dl.appendChild(dd); });
@@ -2441,7 +2497,8 @@ function bsSupport(threadId, inputId, sendId){
     var okT=$('terms').checked; $('termsErr').hidden=okT; ok=ok&&okT;
     var tin=$('tin').value.replace(/[\s-]/g,''); var okTin=/^\d{10}$/.test(tin); $('tinErr').hidden=okTin; ok=ok&&okTin;
     var name=$('legal').value.trim(); var okN=!!name; $('legal').style.borderColor = okN?'':'var(--warn)'; ok=ok&&okN;
-    if(!ok) return;
+    var pin=$('wPin').value.trim(), okP=/^\d{4,6}$/.test(pin) && pin===$('wPin2').value.trim(); $('wPinErr').hidden=okP; ok=ok&&okP;
+    if(!ok) return; data.pin=pin;
     data.legal=name; data.tin=tin; data.email=email; data.contact=$('contact').value.trim(); data.jobtitle=$('jobtitle').value.trim();
     showStep(6);
   };
@@ -2680,7 +2737,9 @@ function bsSupport(threadId, inputId, sendId){
       $('submit').textContent='Sending your file…'; var saved=null; try{ saved=await BS.saveFile(pd.file, {boqRef:ref, phone:doc.ownerPhone}); }catch(e){ saved=null; }
       doc.status='review'; doc.upload={name:pd.file.name, type:pd.file.type||'', size:pd.file.size, kind:pd.kind, fileId:saved?saved.fileId:'', parts:saved?saved.parts:0,
         text:pd.rows.slice(0,500).map(function(r){ return r.join(' | '); }).join('\n').slice(0,60000), suggest:pd.suggest, needed:$('docNeeded').value}; }
-    var checkFirst = !pd && BS.needsReview(me2.phone); if(checkFirst) doc.status='review';
+    var prior=boqs.filter(function(x){ return x.ownerPhone===doc.ownerPhone && x.status!=='review' && x.status!=='rejected'; }).length;
+    var flags=BS.requestFlags(doc); if(flags.length) doc.flags=flags.map(function(f){ return f.kind; });
+    var checkFirst = !pd && BS.needsReview(me2.phone, doc, prior); if(checkFirst) doc.status='review';
     await BS.add('boqs', doc);
     $('submit').disabled=false; $('submit').textContent='Send request to suppliers';
     clearDraft(); loading=true; lines=[]; loading=false; renderLines(); pendingDoc=null; $('docBox').hidden=true;
@@ -2732,7 +2791,7 @@ function bsSupport(threadId, inputId, sendId){
       var withdrawn=b.status==='withdrawn', inReview=b.status==='review';
       var head='<div class="boq-head"><div><h3>'+esc(b.ref)+' · '+b.lines.length+' line'+(b.lines.length>1?'s':'')+' · '+esc(b.subcity)+'</h3><span class="small muted">'+esc(b.deliveryTerm)+' · '+esc(b.paymentTerm)+(b.extended?' · deadline extended once':'')+'</span></div><div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap">'+(withdrawn?'<span class="tag">Withdrawn</span>':'<span class="deadline">'+(left>0?'Quotes close in '+left+' day'+(left>1?'s':''):'Quotes closed')+'</span>'+(!groups.length?'<button class="btn btn-ghost btn-sm" data-withdraw="'+b.id+'">Withdraw</button>':'')+(offers.some(function(o){ return o.boqId===b.id; }) ? (BS.isVerified((BS.me()||{}).phone) ? '<button class="btn btn-ghost btn-sm" type="button" data-dloffers="'+b.id+'">Download offers</button>' : '<span class="btn btn-ghost btn-sm locked" title="Available after verification">🔒 Download offers</span>') : '')+(!b.extended&&!groups.length&&left>0?'<button class="btn btn-ghost btn-sm" data-extend="'+b.id+'" data-days="'+b.validityDays+'">Extend '+b.validityDays+' days</button>':''))+'</div></div>';
       /* orders already placed on this request */
-      var dueN=groups.filter(function(g){ return BS.payOpen(g.first); }).length; var ordersHtml = groups.length ? '<div class="orders-box"><strong style="font-family:var(--display)">Your orders</strong>'+(dueN>1?'<div><button class="btn btn-ochre btn-sm" type="button" data-payall>Pay all '+dueN+' orders due in one payment</button></div>':'')+groups.map(function(g){ var st=BS.orderStatus(g.first), tot=0; g.offers.forEach(function(o){ tot+=lineExtras(b, lineOfB(b,o.lineN), o).total; });
+      var dueN=groups.filter(function(g){ return BS.payOpen(g.first); }).length; var ordersHtml = groups.length ? '<div class="orders-box"><strong style="font-family:var(--display)">Your orders</strong>'+(BS.PAY_SPLIT&&dueN>1?'<div><button class="btn btn-ochre btn-sm" type="button" data-payall>Pay all '+dueN+' orders due in one payment</button></div>':'')+groups.map(function(g){ var st=BS.orderStatus(g.first), tot=0; g.offers.forEach(function(o){ tot+=lineExtras(b, lineOfB(b,o.lineN), o).total; });
           var act = st.who==='buyer' ? (BS.payOpen(g.first)?'Pay '+BS.fmt(BS.payAmount(g.first, tot)):g.first.deliveredAt?'Check your items':g.first.dispatchedAt?'Follow the delivery':'Accept the PO/SA') : 'Open';
           var info='<span><strong>'+esc(g.poRef||'')+'</strong> · '+(BS.namesShown(g.first)?esc(g.supplierName):'<span class="muted">supplier shown when they confirm</span>')+'<br><span class="small muted">'+g.offers.map(function(o){ return esc(lineOfB(b,o.lineN).item||''); }).join(', ')+' · '+BS.fmt(tot)+'</span></span><span class="tag '+st.c+'">'+esc(st.t)+'</span>';
           /* the contract opens in a pop-up right here, so several orders can be agreed one after another without leaving the page */
@@ -2885,7 +2944,7 @@ function bsSupport(threadId, inputId, sendId){
     if(toCheck.length) parts.push(toCheck.length+(toCheck.length>1?' deliveries':' delivery')+' to check');
     var showBar = parts.length>0 && !!(BS.me()||{}).phone && !(BS.isStaff&&BS.isStaff());
     $('alertBar').hidden = !showBar;
-    if(showBar){ $('alertText').textContent = parts.join(' · ')+'.'; if(!toAgree.length && toPay.length>1) $('alertGo').setAttribute('data-payall',''); else $('alertGo').removeAttribute('data-payall'); $('alertGo').href = toAgree.length ? '#order-'+toAgree[0].id : toPay.length>1 ? '#' : toPay.length ? '#order-'+toPay[0].id : toCheck.length ? '#order-'+toCheck[0].id : toReceive.length ? '#order-'+toReceive[0].id : '#boq-mine'; $('alertGo').textContent = toAgree.length ? 'Accept the PO/SA' : toPay.length>1 ? 'Pay all · '+BS.fmt(window.bsDueTotal?bsDueTotal():0) : toPay.length ? 'Pay now' : toCheck.length ? 'Check your items' : toReceive.length ? 'Follow the delivery' : 'Compare offers'; }
+    if(showBar){ $('alertText').textContent = parts.join(' · ')+'.'; if(BS.PAY_SPLIT && !toAgree.length && toPay.length>1) $('alertGo').setAttribute('data-payall',''); else $('alertGo').removeAttribute('data-payall'); $('alertGo').href = toAgree.length ? '#order-'+toAgree[0].id : (BS.PAY_SPLIT && toPay.length>1) ? '#' : toPay.length ? '#order-'+toPay[0].id : toCheck.length ? '#order-'+toCheck[0].id : toReceive.length ? '#order-'+toReceive[0].id : '#boq-mine'; $('alertGo').textContent = toAgree.length ? 'Accept the PO/SA' : (BS.PAY_SPLIT && toPay.length>1) ? 'Pay all · '+BS.fmt(window.bsDueTotal?bsDueTotal():0) : toPay.length ? 'Pay now' : toCheck.length ? 'Check your items' : toReceive.length ? 'Follow the delivery' : 'Compare offers'; }
   }
   /* ---------- Complete the order: delivery, insurance and (first time only) the company details, once ---------- */
   var checkoutBoq=null;
@@ -2897,23 +2956,11 @@ function bsSupport(threadId, inputId, sendId){
   function useBsTransport(b){ var t=b.deliveryTerm||''; if(/^Build Smartly/.test(t)) return !document.getElementById('gDel-own') || !document.getElementById('gDel-own').checked; if(t==='I collect from supplier') return !!(document.getElementById('gDel-bs')||{}).checked; return false; }
   /* Pay-later check at checkout: orders on "after", "credit" or "deposit" terms need a verified buyer with a credit
      limit that covers them and no overdue payment. Returns {block:'' | 'verify' | 'overdue' | 'limit', lim, used, need, html}. */
+  /* Abdullah, 22 Nov 2026: the platform does not set credit limits; pay-later terms are offered by each supplier, who sees
+     the buyer's verified facts before quoting or confirming. The checkout only explains it. */
   function creditState(groups){
     var defG=groups.filter(function(g){ return BS.deferred(g.items[0].o); }); if(!defG.length) return {block:'', html:''};
-    var ph=(BS.me()||{}).phone, d=BS.d9(ph), ids=boqs.filter(function(b){ return b.ownerPhone===d; }).map(function(b){ return b.id; });
-    var lim=BS.creditLimit(ph), used=BS.creditUsed(offers, ids), od=BS.creditOverdue(offers, ids);
-    var need=defG.reduce(function(a,g){ var t=BS.termOf(g.items[0].o); return a+g.items.reduce(function(x,it){ return x+BS.exposure(Object.assign({}, it.o, {status:'accepted', payTerm:t})); },0); },0);
-    var block=!BS.isVerified(ph) ? 'verify' : od ? 'overdue' : (used+need>lim) ? 'limit' : '';
-    var nums='<div class="ck-row small"><span>Your credit limit</span><strong>'+BS.fmt(lim)+'</strong></div><div class="ck-row small"><span>Already in use</span><strong>'+BS.fmt(used)+'</strong></div><div class="ck-row small"><span>This order on pay-later terms</span><strong>'+BS.fmt(need)+'</strong></div>';
-    var txt = block==='verify' ? 'Pay-later terms (payment after delivery, credit, or a deposit with the balance later) are for verified buyers with a credit limit. Choose offers with full payment before dispatch, or get verified and ask us for credit.'
-      : block==='overdue' ? 'You have an overdue payment. Pay it first: pay-later terms are paused until then.'
-      : block==='limit' ? (lim ? 'This order is over your credit limit. Choose offers with full payment before dispatch, or ask us for a higher limit.' : 'You have no credit limit yet. Choose offers with full payment before dispatch, or ask us for credit.')
-      : 'Pay later: you receive the goods before paying in full. It fits within your credit limit.';
-    var late = BS.LATE.on ? '<p class="small muted" style="margin:.3rem 0 0">A payment made after its due date carries a late charge: '+BS.LATE.rate+'% a month after '+BS.LATE.grace+' days of grace, at most '+BS.LATE.cap+'% of the amount.</p>' : '';
-    var html='<div class="ck-credit'+(block?' act':'')+'" id="gCredit"><strong>Pay later</strong><p class="small" style="margin:.2rem 0 .4rem">'+txt+'</p>'+(block==='verify'?'':nums)+late+
-      (block && block!=='overdue' && block!=='verify' ? '<div class="btns" style="margin-top:.4rem"><button class="btn btn-ghost btn-sm" type="button" data-askcredit="'+BS.fmt(used+need)+'">Ask for credit</button></div>' : '')+
-      (block==='overdue' ? '<div class="btns" style="margin-top:.4rem"><a class="btn btn-ochre btn-sm" href="#orders">Pay the overdue order</a></div>' : '')+'</div>';
-    return {block:block, lim:lim, used:used, need:need, html:html};
-  }
+    return {block:'', html:'<div class="ck-credit" id="gCredit"><strong>Pay later</strong><p class="small" style="margin:.2rem 0 0">These payment terms were offered by the supplier and become part of the PO/SA between you. Build Smartly does not lend money or set credit limits.</p></div>'}; }
   var creditWatch=null;
   function drawCheckout(){ var accWas=!!(document.getElementById('gAccept')||{}).checked, ownPoWas=!!(document.getElementById('gOwnPo')||{}).checked;
     var b=boqById(checkoutBoq); if(!b) return; var items=checkoutItems(b), groups=checkoutGroups(items), term=b.deliveryTerm||'';
@@ -3008,7 +3055,7 @@ function bsSupport(threadId, inputId, sendId){
     if(c){ var inp=document.querySelector('[data-cin="'+c.dataset.counter+'"]'); var price=+(inp&&inp.value); if(!(price>0)){ bsToast('Type the price you propose.'); return; } c.disabled=true;
       var co2=offers.filter(function(x){ return x.id===c.dataset.counter; })[0]; var cbq=co2&&boqById(co2.boqId); if(cbq && (cbq.chosen||{})[co2.lineN]===co2.id){ var ch3=Object.assign({}, cbq.chosen); delete ch3[co2.lineN]; await BS.update('boqs', cbq.id, {chosen:ch3}); }
       await BS.update('offers', c.dataset.counter, {counter:{price:price, at:new Date().toISOString(), state:'open'}}); bsToast('Your price was sent to the supplier. You get a notification with the answer.'); return; }
-    var dl=t.closest('[data-dloffers]'); if(dl){ var bd=boqById(dl.dataset.dloffers); if(!bd) return; var rows=[['Line','Item','Quantity','Unit','Offer','Brand','Unit price','VAT','Delivery share','Total','Ready in (days)','Valid for (days)','Payment terms']];
+    var dl=t.closest('[data-dloffers]'); if(dl){ var bd=boqById(dl.dataset.dloffers); if(!bd) return; BS.audit('offers exported', bd.ref); var rows=[['Line','Item','Quantity','Unit','Offer','Brand','Unit price','VAT','Delivery share','Total','Ready in (days)','Valid for (days)','Payment terms']];
       bd.lines.forEach(function(l){ offersOn(bd,l).forEach(function(o,i){ rows.push([l.n, l.item, l.qty, l.unit, String.fromCharCode(65+i), o.brand, o.unitPrice, o.vat==='incl'?'included':'excluded', Math.round(o.deliveryCost||0), Math.round(totalOf(o)), o.leadDays||'', o.validDays||'', BS.termLabel(BS.termOf(o))]); }); });
       var csv='\ufeff'+rows.map(function(r){ return r.map(function(c){ c=String(c==null?'':c); return /[",\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c; }).join(','); }).join('\r\n');
       var a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='offers-'+bd.ref+'.csv'; document.body.appendChild(a); a.click(); a.remove(); return; }
@@ -3042,6 +3089,8 @@ function bsSupport(threadId, inputId, sendId){
   BSRoute.on('supplier', function(){ var me=BS.me()||{}; if(sup && me.supplierId && me.supplierId!==sup.id){ var s2=supplierForPhone(me.phone); if(s2){ login(s2); return; } } if(!sup && me.phone){ var s=supplierForPhone(me.phone); if(s){ login(s); return; } } loginState(); });
   /* signed out: "Sign in" (the same page as everyone); signed in without a supplier account: start selling with the same number */
   function loginState(){ var me=BS.me()||{}, buyer=!!me.phone && !supplierForPhone(me.phone), s=me.phone && supplierForPhone(me.phone);
+    var vt=(BS.buyerVer(me.phone)||{}).type||me.type||'';
+    if(buyer && (vt==='Individual' || vt==='Government')){ $('spLoginTitle').textContent='Selling is for registered organisations'; $('spLoginText').textContent='Only a company with a TIN and a trade licence can sell on Build Smartly. Individuals and government offices buy with their account as before.'; $('spSignIn').hidden=true; $('spRegister').hidden=true; return; }
     if(s && s.status==='suspended'){ $('spLoginTitle').textContent='This supplier account is paused'; $('spLoginText').textContent='Build Smartly staff paused '+s.name+'. Write to support or call the office to reactivate it.'; $('spSignIn').hidden=true; $('spRegister').hidden=true; return; }
     $('spSignIn').hidden=buyer; $('spRegister').hidden=false;
     $('spLoginTitle').textContent = buyer ? 'Start selling with the same account' : 'Sign in to sell';
@@ -3081,6 +3130,7 @@ function bsSupport(threadId, inputId, sendId){
     if(d.cats && d.cats.length && JSON.stringify(d.cats)!==JSON.stringify(profile.cats)){ profile.cats=d.cats.slice(); sup.cats=profile.cats; changed=true; }
     if(d.status==='active' && profile.docs && !profile.docs.verified){ profile.docs.verified=true; profile.docs.submitted=true; changed=true; }
     if(d.status!==lastStatus){ if(lastStatus && d.status==='pending') bsToast('Your account is on hold for review. Quoting is locked until staff make it active again.'); if(lastStatus==='pending' && d.status==='active') bsToast('Your account is active again. You can quote.'); lastStatus=d.status; changed=true; }
+    renderSecure();
     if(changed){ try{ localStorage.setItem('bs_demo_supprofile_'+sup.id, JSON.stringify(profile)); }catch(e){} fillProfileForm(); render(); } });
   function ageDays(iso){ return Math.floor((Date.now()-new Date(iso).getTime())/86400000); }
   function isStale(p){ return ageDays(p.confirmedAt)>=p.valid; }
@@ -3132,7 +3182,40 @@ function bsSupport(threadId, inputId, sendId){
 
   /* ----- profile form ----- */
   BS.SUBCITIES.forEach(function(s){ var o=document.createElement('option'); o.textContent=s; $('lSub').appendChild(o); });
-  function fillProfileForm(){
+  /* Security and payout (Abdullah, 22 Nov 2026): verified-buyers-only choice, PIN, payout details (checked by staff,
+     changes need the PIN), and a request to change the mobile number (staff check it). Payout details go to the
+     staff-only "kyc" collection; the supplier doc keeps only a masked hint. */
+  var secSig='';
+  function renderSecure(force){ if(!sup || !$('spSecBox')) return; var s=BS.supplierById(sup.id)||sup, sig=[s.pinHash?1:0, s.payoutHint, s.payoutAt, s.payoutCheckedAt, s.verifiedOnly].join('|'); if(!force && sig===secSig) return; secSig=sig;
+    $('spVerOnly').checked=!!s.verifiedOnly;
+    var payTag = !s.payoutAt ? '<span class="tag tag-ochre">Not added yet</span>' : BS.payoutOk(s) ? '<span class="tag tag-green">Checked</span>' : '<span class="tag tag-ochre">Waiting for our check</span>';
+    $('spSecBox').innerHTML=
+      '<div style="display:grid;gap:.4rem"><strong class="small">Supplier PIN</strong><span class="small muted">'+(s.pinHash?'Set. You type it after the SMS code when you sign in. Forgot it? Write to support.':'Not set yet. You choose it at your next sign-in.')+'</span></div>'+
+      '<div style="display:grid;gap:.5rem"><strong class="small">Payout details '+payTag+'</strong>'+(s.payoutHint?'<span class="small">On file: <span data-notr>'+esc(s.payoutHint)+'</span></span>':'')+
+        '<div class="grid3"><div class="field"><label for="poBank">Bank or wallet</label><select id="poBank"><option>Commercial Bank of Ethiopia</option><option>Awash Bank</option><option>Bank of Abyssinia</option><option>Dashen Bank</option><option>Wegagen Bank</option><option>Hibret Bank</option><option>Nib International Bank</option><option>Cooperative Bank of Oromia</option><option>Telebirr</option><option>Other</option></select></div>'+
+        '<div class="field"><label for="poName">Account name</label><input id="poName" placeholder="As registered with the bank"></div><div class="field"><label for="poNo">Account or wallet number</label><input id="poNo" inputmode="numeric"></div></div>'+
+        '<div class="grid3"><div class="field"><label for="poPin">Your PIN</label><input id="poPin" type="password" inputmode="numeric" maxlength="6" autocomplete="off"></div></div>'+
+        '<div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap"><button class="btn btn-primary btn-sm" type="button" id="poSave">'+(s.payoutAt?'Change payout details':'Save payout details')+'</button><span class="small muted" id="poMsg"></span></div></div>'+
+      '<div style="display:grid;gap:.5rem"><strong class="small">Change the mobile number of this account</strong><span class="small muted">Our team checks who you are before the new number works.</span>'+
+        '<div class="grid3"><div class="field"><label for="phNew">New mobile number</label><input id="phNew" type="tel" inputmode="numeric" placeholder="09…"></div><div class="field"><label for="phPin">Your PIN</label><input id="phPin" type="password" inputmode="numeric" maxlength="6" autocomplete="off"></div></div>'+
+        '<div><button class="btn btn-ghost btn-sm" type="button" id="phSend">Ask to change the number</button></div></div>';
+  }
+  async function pinOk(field){ var s=BS.supplierById(sup.id)||sup, v=($(field)||{}).value||''; if(!s.pinHash){ bsToast('Set your PIN first: sign out and sign in again.'); return false; }
+    if((await BS.hashPin((BS.me()||{}).phone, v.trim()))!==s.pinHash){ bsToast('Wrong PIN.'); BS.audit('wrong supplier PIN', s.name+' · '+field); return false; } return true; }
+  document.addEventListener('change', function(e){ if(e.target.id!=='spVerOnly' || !sup) return; syncSupplierDoc({verifiedOnly:e.target.checked}); BS.audit('verified buyers only '+(e.target.checked?'on':'off'), sup.name); bsToast(e.target.checked?'You will only receive requests from verified buyers.':'You will receive requests from all buyers.'); });
+  document.addEventListener('click', async function(e){ if(!sup) return;
+    if(e.target.id==='poSave'){ var bank=$('poBank').value, nm=$('poName').value.trim(), no=$('poNo').value.replace(/\s/g,'');
+      if(!nm || !/^\d{6,20}$/.test(no)){ $('poMsg').textContent='Type the account name and the number (digits only).'; return; }
+      if(!(await pinOk('poPin'))) return; e.target.disabled=true; var now=new Date().toISOString(), kid='payout-'+sup.id.replace(/[^a-z0-9-]/gi,'')+'-'+Date.now().toString(36);
+      await BS.set('kyc', kid, {phone:bsDigits((BS.me()||{}).phone), type:'Organisation', kind:'payout', supplierId:sup.id, company:sup.name, bank:bank, accName:nm, accNo:no, submittedAt:now});
+      await syncSupplierDoc({payoutHint:bank+' · '+nm+' · •••• '+no.slice(-4), payoutAt:now, payoutKyc:kid}); BS.audit('payout details changed', sup.name);
+      e.target.disabled=false; bsToast('Saved. Our team checks the payout details before money is paid to them.'); renderSecure(true); return; }
+    if(e.target.id==='phSend'){ var nn=bsDigits($('phNew').value); if(!/^[97]\d{8}$/.test(nn)){ bsToast('Type the new mobile number, for example 0912345678.'); return; }
+      if(!(await pinOk('phPin'))) return; e.target.disabled=true; var me3=BS.me()||{};
+      await BS.add('messages', {phone:bsDigits(me3.phone), name:sup.name, text:'Please change the mobile number of '+sup.name+' from 0'+bsDigits(me3.phone)+' to 0'+nn+'.', from:'member', phoneChange:{supplierId:sup.id, from:bsDigits(me3.phone), to:nn}});
+      BS.audit('mobile change asked', sup.name+' → 0'+nn); e.target.disabled=false; $('phNew').value=''; $('phPin').value=''; bsToast('Sent to our team. They call you on the old number to check before changing it.'); return; }
+  });
+  function fillProfileForm(){ renderSecure();
     var d=profile.docs; $('dLic').value=d.lic; $('dIssuer').value=d.issuer; $('dExp').value=d.exp; $('dTin').value=d.tin; $('dVat').value=d.vat;
     $('supType').value=profile.type; $('brands').value=profile.brands; $('dTerms').value=profile.terms; $('agree').checked=profile.agree; $('spIntro').value=profile.intro; $('spPublish').checked=profile.publish;
     $('docMsg').textContent = d.verified ? 'Verified.' : d.submitted ? 'Submitted, under review.' : '';
@@ -3251,7 +3334,7 @@ function bsSupport(threadId, inputId, sendId){
     if(sup && offers.length){ var won=d.filter(function(o){ return o.supplierId===sup.id && o.status==='accepted' && !offers.some(function(p){return p.id===o.id && p.status==='accepted';}); }); if(won.length) bsToast('Order won: '+won[0].poRef+'. Please reconfirm price and stock.'); }
     offers=d; render();
   });
-  function matches(b){ if(!sup) return []; var mine=bsDigits((BS.me()||{}).phone); if(mine && b.ownerPhone===mine) return []; return b.lines.filter(function(l){ return sup.cats.indexOf(l.cat)>=0; }); }
+  function matches(b){ if(!sup) return []; var mine=bsDigits((BS.me()||{}).phone); if(mine && b.ownerPhone===mine) return []; if(!BS.supplierSees(BS.supplierById(sup.id)||sup, b, mine)) return []; return b.lines.filter(function(l){ return sup.cats.indexOf(l.cat)>=0; }); }
   function open(b){ return b.status==='open' && new Date(b.deadlineAt)>new Date(); }
 
   function renderStats(mine){
@@ -3296,7 +3379,7 @@ function bsSupport(threadId, inputId, sendId){
     reqs.forEach(function(b){
       var card=document.createElement('div'); card.className='card req'; var left=BS.days(new Date(b.deadlineAt)-Date.now());
       var prefilled=matches(b).filter(function(l){ return priceFor(l.item) && !mine.some(function(o){return o.boqId===b.id && o.lineN===l.n && o.status!=='withdrawn';}); }).length;
-      card.innerHTML='<div class="req-head"><div><h3>'+b.ref+' · Customer '+b.customerNo+' · '+b.subcity+', '+b.city+' '+(BS.isVerified(b.ownerPhone)?'<span class="vbadge ok">✓ Verified buyer</span>':'<span class="vbadge no">Buyer not verified yet</span>')+'</h3><span class="small muted">'+b.deliveryTerm+' · '+b.paymentTerm+(b.partial?' · partial quotes accepted':'')+' · customer name and exact address hidden until the PO</span></div><div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap"><span class="deadline">Reply within '+left+' day'+(left!==1?'s':'')+'</span></div></div>';
+      card.innerHTML='<div class="req-head"><div><h3>'+b.ref+' · Customer '+b.customerNo+' · '+b.subcity+', '+b.city+' '+(BS.isVerified(b.ownerPhone)?'<span class="vbadge ok">✓ Verified buyer</span>':'<span class="vbadge no">Buyer not verified yet</span>')+'</h3><span class="small keyinfo">'+esc(BS.buyerFactsText(BS.buyerFacts(offers, boqs, b.ownerPhone)))+'</span><br><span class="small muted">'+b.deliveryTerm+' · '+b.paymentTerm+(b.partial?' · partial quotes accepted':'')+' · customer name and exact address hidden until the PO</span></div><div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap"><span class="deadline">Reply within '+left+' day'+(left!==1?'s':'')+'</span></div></div>';
       matches(b).forEach(function(l){
         var done=mine.filter(function(o){return o.boqId===b.id && o.lineN===l.n && o.status!=='withdrawn';})[0]; var pl=priceFor(l.item);
         var fromSub=(profile.locs[0]||{}).sub||sup.sub||'Akaki Kaliti', dEst=BS.deliveryEstimate([l], fromSub, b.pin||b.subcity), delivers=b.deliveryTerm==='Supplier delivers to site';
@@ -3392,6 +3475,7 @@ function bsSupport(threadId, inputId, sendId){
       os2.disabled=true; await BS.update('offers', id, {qtyOffered:nq, unitPrice:np, correctedAt:new Date().toISOString(), corrections:(o.corrections||[]).concat([{at:new Date().toISOString(), qty:o.qtyOffered, price:o.unitPrice}])});
       delete offerEdit[id]; if(document.activeElement) document.activeElement.blur(); bsToast('Corrected. The customer sees the new figures, marked as corrected.'); render(); return; }
     var ow=e.target.closest('[data-ofwd]'); if(ow){ var o2=offers.filter(function(x){ return x.id===ow.dataset.ofwd; })[0]; if(!o2) return;
+      var bw=boqs.filter(function(x){ return x.id===o2.boqId; })[0]||{}; if((bw.chosen||{})[o2.lineN]===o2.id || o2.status!=='sent'){ bsToast('The customer has already chosen this offer. Write to Build Smartly in Support.'); return; }
       if(!(await bsConfirm('Withdraw this offer?', 'The customer will no longer see it. You can send a new offer on the line while the request is open.', 'Withdraw'))) return;
       await BS.update('offers', o2.id, {status:'withdrawn', withdrawnAt:new Date().toISOString()}); bsToast('Offer withdrawn.'); return; }
     var oa=e.target.closest('[data-oact]'); if(oa){ oa.disabled=true; await bsOrderAction(oa.dataset.oact, oa.dataset.id); return; }
@@ -3620,10 +3704,10 @@ window.bsPublishProfile = async function(fields){
 
 BSRoute.start();
 </script>
-<script src="assets/track.js?v=20261121a"></script>
-<script src="assets/order.js?v=20261121a"></script>
-<script src="assets/notify.js?v=20261121a"></script>
-<script src="assets/help.js?v=20261121a"></script>
-<script src="assets/admin.js?v=20261121a"></script>
-<script src="assets/editor.js?v=20261121a"></script>
-<script src="assets/i18n.js?v=20261121a"></script>
+<script src="assets/track.js?v=20261122a"></script>
+<script src="assets/order.js?v=20261122a"></script>
+<script src="assets/notify.js?v=20261122a"></script>
+<script src="assets/help.js?v=20261122a"></script>
+<script src="assets/admin.js?v=20261122a"></script>
+<script src="assets/editor.js?v=20261122a"></script>
+<script src="assets/i18n.js?v=20261122a"></script>

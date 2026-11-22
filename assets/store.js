@@ -115,13 +115,31 @@
   /* Requests staff check before suppliers see them (Abdullah v4: "our team reviews every trial BOQ"): 'unverified' =
      requests from buyers who are not verified yet (default), 'all' = every request, 'none' = straight to suppliers.
      Word/PDF lists always go to staff. Staff setting: Settings → Delivery and payment (settings doc "verify"). */
-  BS.REVIEW_MODE = "unverified";
+  BS.REVIEW_MODE = /^(localhost|127\.)/.test(location.hostname) ? "unverified" : "all"; /* the local test copy keeps the older rule so test requests reach suppliers; tests/v4-round1-test.js checks "all" */ /* Abdullah, 22 Nov 2026: every request is checked at launch. 'smart' is the later, faster rule */
   /* While staff verify a buyer, the supplier holds the order for up to BS.HOLD_DAYS working days (Mon–Fri); after
      that the hold ends and the buyer chooses again once verified (Abdullah v4: "hold for up to 3 working days"). */
   BS.HOLD_DAYS = 3;
   BS.addWorkDays = function(iso, n){ var d=new Date(iso), left=n; while(left>0){ d=new Date(d.getTime()+86400000); var w=d.getDay(); if(w!==0 && w!==6) left--; } return d.getTime(); };
   BS.holdDue = function(o){ return o && o.acceptedAt ? BS.addWorkDays(o.acceptedAt, BS.HOLD_DAYS) : 0; };
-  BS.needsReview = function(phone){ return BS.REVIEW_MODE==="all" || (BS.REVIEW_MODE==="unverified" && !BS.isVerified(phone)); };
+  /* Contact details hidden in a request (Abdullah, 22 Nov 2026): phone numbers, emails, links and social handles.
+     Used to flag requests for staff and to mask what the other side sees. Names and addresses cannot be found by a
+     simple scan; staff still read every request at launch. */
+  BS.contactScan = function(text){ var t=String(text||""), out=[];
+    var rx=[[/(?:(?:\+?251|\b0)[\s.-]*[79](?:[\s.-]?\d){8}\b|\b[79]\d{8}\b)/g,'phone number'],[/\b\d[\d\s.-]{8,}\d\b/g,'number that looks like a phone'],[/[\w.+-]+@[\w-]+\.[\w.]+/g,'email'],[/\b(?:https?:\/\/|www\.)\S+|\b[\w-]+\.(?:com|et|net|org|io|co)\b/gi,'link'],[/(?:^|\s)@[\w.]{3,}/g,'social handle'],[/\b(?:telegram|whatsapp|viber|imo|call me|phone me)\b/gi,'contact word']];
+    rx.forEach(function(r){ var m=t.match(r[0]); if(m) m.forEach(function(x){ out.push({kind:r[1], text:x.trim()}); }); }); return out; };
+  BS.maskContacts = function(text){ var t=String(text||"");
+    return t.replace(/[\w.+-]+@[\w-]+\.[\w.]+/g,'[email hidden]').replace(/\b(?:https?:\/\/|www\.)\S+/gi,'[link hidden]').replace(/(?:(?:\+?251|\b0)[\s.-]*[79](?:[\s.-]?\d){8}\b|\b[79]\d{8}\b)/g,'[phone hidden]').replace(/\b\d[\d\s.-]{8,}\d\b/g,'[number hidden]').replace(/(^|\s)@[\w.]{3,}/g,'$1[handle hidden]'); };
+  BS.requestFlags = function(doc){ var parts=[]; (doc && doc.lines||[]).forEach(function(l){ parts.push(l.item||''); parts.push(l.note||''); }); parts.push((doc&&doc.notes)||''); return BS.contactScan(parts.join('\n')); };
+  /* review modes: 'all' (launch), 'smart' (later: a verified buyer's clean request goes straight through, except their
+     first BS.REVIEW_FIRST requests and a sample of BS.REVIEW_SAMPLE), 'unverified', 'none' */
+  BS.REVIEW_FIRST = 3; BS.REVIEW_SAMPLE = 0.1;
+  BS.needsReview = function(phone, doc, priorCount){ var m=BS.REVIEW_MODE;
+    if(m==="all") return true;
+    var flagged = doc ? BS.requestFlags(doc).length>0 : false;
+    if(m==="none") return flagged;
+    if(!BS.isVerified(phone)) return true;
+    if(m==="unverified") return flagged;
+    return flagged || (priorCount||0) < BS.REVIEW_FIRST || Math.random() < BS.REVIEW_SAMPLE; };
   BS.VERIFIED_TEST = ["911000201"];
   BS.d9 = function(p){ return String(p||"").replace(/\D/g,"").replace(/^251/,"").replace(/^0/,"").slice(-9); };
   var VER=[], verCbs=[], verOn=false;
@@ -196,13 +214,14 @@
         if(Array.isArray(d.terms) && d.terms.length) BS.TERMS_ON=d.terms.filter(function(k){ return BS.TERM_KINDS.indexOf(k)>=0; }); if(!BS.TERMS_ON.length) BS.TERMS_ON=["before"];
         if(+d.depositPct>0 && +d.depositPct<100) BS.DEPOSIT_PCT=+d.depositPct; if(+d.creditMax>0) BS.CREDIT_MAX=+d.creditMax;
         if(+d.payDays>0) BS.PAY_DAYS=+d.payDays; if(d.creditDefault>=0) BS.CREDIT_DEFAULT=+d.creditDefault||0;
-        if(d.late) BS.LATE={on:d.late.on!==false, rate:+d.late.rate>=0?+d.late.rate:1, grace:+d.late.grace>=0?+d.late.grace:3, cap:+d.late.cap>=0?+d.late.cap:10}; if(Array.isArray(d.methods) && d.methods.length) BS.PAY_ON=d.methods.slice(); if(d.bank) BS.BANK=Object.assign({}, d.bank); }
+        if(d.paySplit!==undefined) BS.PAY_SPLIT=!!d.paySplit; if(false && d.late) BS.LATE={on:d.late.on!==false, rate:+d.late.rate>=0?+d.late.rate:1, grace:+d.late.grace>=0?+d.late.grace:3, cap:+d.late.cap>=0?+d.late.cap:10}; if(Array.isArray(d.methods) && d.methods.length) BS.PAY_ON=d.methods.slice(); if(d.bank) BS.BANK=Object.assign({}, d.bank); }
       if(d.id==="leadSms"){ BS.LEAD_SMS_EDIT=d.map||{}; }
-      if(d.id==="verify"){ if(+d.unverifiedMax>0) BS.UNVERIFIED_MAX=+d.unverifiedMax; if(["unverified","all","none"].indexOf(d.review)>=0) BS.REVIEW_MODE=d.review; if(+d.holdDays>0) BS.HOLD_DAYS=+d.holdDays; }
+      if(d.id==="verify"){ if(+d.unverifiedMax>0) BS.UNVERIFIED_MAX=+d.unverifiedMax; if(["unverified","all","none","smart"].indexOf(d.review)>=0) BS.REVIEW_MODE=d.review; if(+d.holdDays>0) BS.HOLD_DAYS=+d.holdDays; }
       if(d.id==="delivery"){ if(+d.confirmHours>0) BS.CONFIRM_HOURS=+d.confirmHours; if(+d.checkHours>0) BS.CHECK_HOURS=+d.checkHours; if(+d.proofMin>0) BS.PROOF_MIN=+d.proofMin; if(d.proofOn!==undefined) BS.PROOF_ON=!!d.proofOn; if(+d.linkHours>0) BS.TRACK_HOURS=Math.min(48, +d.linkHours); if(/^(am|en|om)$/.test(d.driverLang||"")) BS.DRIVER_LANG=d.driverLang; }
       if(d.id==="content" && d.map){ BS.CONTENT=d.map; if(window.bsSetOverrides) bsSetOverrides(d.map); }
       if(d.id==="style"){ BS.applyStyle(d); }
       if(d.id==="site"){ BS.SITE=d; }
+      if(d.id==="security"){ if(+d.memberIdle>=5) BS.IDLE.member=+d.memberIdle; if(+d.staffIdle>=5) BS.IDLE.staff=+d.staffIdle; }
       if(d.id==="slides"){ BS.SLIDES = Array.isArray(d.list) && d.list.length ? {list:d.list, secs:+d.secs||6} : null; }
     });
     (BS._settingsCbs||[]).forEach(function(cb){ try{ cb(); }catch(e){} });
@@ -492,7 +511,7 @@
     var body = Object.assign({}, data, {createdAt: data.createdAt || new Date().toISOString()});
     if(mode==="shared"){
       try { var ref = db.collection(col).doc(); await ref.set(body); return ref.id; }
-      catch(e){ if(denied(e)) return null; degrade(e && e.code); }
+      catch(e){ if(col==="audit" && e && e.code==="permission-denied") return null; /* silent until the rules are published */ if(denied(e)) return null; degrade(e && e.code); }
     }
     var arr = lsRead(col); var nid = id(); arr.push(Object.assign({id:nid}, body)); lsWrite(col, arr); return nid;
   };
@@ -588,10 +607,17 @@
   /* "Who am I" lives per browser tab (sessionStorage), so two tabs can be two people, a buyer and a supplier.
      The last sign-in is also kept for the device, so a new tab starts as that person. */
   BS.me = function(){ try { var t=sessionStorage.getItem("bs_demo_me"); if(t!==null) return JSON.parse(t); return JSON.parse(localStorage.getItem("bs_demo_me")||"null"); } catch(e){ return null; } };
-  BS.setMe = function(obj){
+  /* Audit log (Abdullah, 22 Nov 2026): staff actions, sign-ins, document views and data exports; collection "audit",
+     written by everyone, read only by the owner, never changed or deleted. */
+  BS.audit = function(action, detail){ try { var staff=BS.isStaff&&BS.isStaff(), me=BS.me()||{};
+    var who = staff ? 'Staff · '+(BS.staffName?BS.staffName():'') : (me.phone ? 'Member 0'+digitsOf(me.phone) : 'Visitor');
+    return BS.add("audit", {at:new Date().toISOString(), who:who, role: staff?(BS.staffRole?BS.staffRole():'staff'):(me.supplierId?'supplier':me.phone?'buyer':'visitor'), action:String(action||'').slice(0,80), detail:String(detail||'').slice(0,200), page:String((window.BSRoute&&BSRoute.current&&BSRoute.current())||'').slice(0,60)}); } catch(e){} };
+  window.bsAudit = function(a,d){ return BS.audit(a,d); };
+  BS.setMe = function(obj){ var before=(BS.me()||{}).phone||'';
     try { sessionStorage.setItem("bs_demo_me", JSON.stringify(obj)); localStorage.setItem("bs_demo_me", JSON.stringify(obj)); } catch(e){}
     if(obj && obj.phone){ try { var reg=JSON.parse(localStorage.getItem("bs_demo_accounts")||"{}"); reg[digitsOf(obj.phone)]=obj; localStorage.setItem("bs_demo_accounts", JSON.stringify(reg)); } catch(e){} }
     try { window.dispatchEvent(new Event("bs-me")); } catch(e){} /* the header and menus follow every sign-in and sign-out at once */
+    if(obj && obj.phone && digitsOf(obj.phone)!==digitsOf(before)) BS.audit('sign-in', obj.supplierId?'supplier '+obj.supplierId:'buyer');
   };
   /* sign this tab out without touching the device default (used when staff sign in) */
   BS.clearMeTab = function(){ try { sessionStorage.setItem("bs_demo_me", "{}"); } catch(e){} };
@@ -694,16 +720,32 @@
      pending (documents not yet approved), suspended, removed. Prices live in the doc too, so the supplier portal and the staff page edit the same list. */
   BS.supplierDocs = []; BS._supCbs = [];
   BS.onSuppliers = function(cb){ BS._supCbs.push(cb); };
+  /* security and payout fields of a supplier doc (Abdullah, 22 Nov 2026) */
+  BS.secFields = function(d){ d=d||{}; return {pinHash:d.pinHash||"", verifiedOnly:!!d.verifiedOnly, payoutHint:d.payoutHint||"", payoutAt:d.payoutAt||"", payoutKyc:d.payoutKyc||"", payoutCheckedAt:d.payoutCheckedAt||"", payoutCheckedBy:d.payoutCheckedBy||""}; };
+  BS.payoutOk = function(s){ return !!(s && s.payoutAt && s.payoutCheckedAt && s.payoutCheckedAt>=s.payoutAt); };
+  /* which requests a supplier receives: never its own (same mobile, or the buyer's verified TIN is the supplier's TIN),
+     and none from unverified buyers when the supplier chose so */
+  BS.supplierSees = function(s, b, myPhone){ if(!s || !b) return false; var bp=BS.d9(b.ownerPhone);
+    if(bp && (bp===BS.d9(s.phone) || bp===BS.d9(myPhone))) return false;
+    var v=BS.buyerVer(b.ownerPhone), st=String(s.tin||"").replace(/\D/g,""); if(st && v && v.tin && String(v.tin).replace(/\D/g,"")===st) return false;
+    if(s.verifiedOnly && !BS.isVerified(b.ownerPhone)) return false;
+    return true; };
+  BS.hashPin = function(phone, pin){ return BS.hashPw(phone, "pin|"+String(pin||"")); };
+  /* signed out after this many minutes without activity (staff setting "security") */
+  BS.IDLE = {member:60, staff:30};
+  /* Amharic and Afaan Oromoo are shown once staff switch them on after the native check (settings doc "site", langsOn);
+     the local test copy shows them unless switched off */
+  BS.langsOn = function(){ var v=(BS.SITE||{}).langsOn; return v===true || (v===undefined && /^(localhost|127\.)/.test(location.hostname)); };
   BS.suppliersAll = function(){
     var docs = BS.supplierDocs || [], out = [];
     BS.SUPPLIERS.forEach(function(s){
       var d = docs.filter(function(x){ return x.seedId===s.id; })[0];
       if(d && d.status==="removed") return;
-      out.push(Object.assign({}, s, d ? {name:d.name||s.name, cats:(d.cats&&d.cats.length)?d.cats.slice():s.cats, sub:d.sub||s.sub, status:d.status||"active", prices:Array.isArray(d.prices)?d.prices:null, docId:d.id} : {status:"active", docId:"seed-"+s.id}));
+      out.push(Object.assign({}, s, d ? {name:d.name||s.name, cats:(d.cats&&d.cats.length)?d.cats.slice():s.cats, sub:d.sub||s.sub, status:d.status||"active", prices:Array.isArray(d.prices)?d.prices:null, docId:d.id} : {status:"active", docId:"seed-"+s.id}, BS.secFields(d)));
     });
     docs.forEach(function(d){
       if(d.seedId || d.status==="removed") return;
-      out.push({id:d.id, name:d.name||"", branch:d.branch||"", sub:d.sub||"Akaki Kaliti", cats:(d.cats||[]).slice(), own:true, phone:d.phone||"", tin:d.tin||"", password:d.password||"", pwHash:d.pwHash||"", status:d.status||"pending", prices:Array.isArray(d.prices)?d.prices:[], docId:d.id, auto:false, source:d.source||"registered"});
+      out.push(Object.assign({id:d.id, name:d.name||"", branch:d.branch||"", sub:d.sub||"Akaki Kaliti", cats:(d.cats||[]).slice(), own:true, phone:d.phone||"", tin:d.tin||"", password:d.password||"", pwHash:d.pwHash||"", status:d.status||"pending", prices:Array.isArray(d.prices)?d.prices:[], docId:d.id, auto:false, source:d.source||"registered"}, BS.secFields(d)));
     });
     return out;
   };
@@ -768,7 +810,10 @@
          verified buyers without one (0 = staff approve each buyer); unverified buyers and buyers with an overdue
          payment cannot order on pay-later terms */
   BS.PAY_DAYS = 3;
-  BS.LATE = {on:true, rate:1, grace:3, cap:10};
+  /* Abdullah, 22 Nov 2026: a late charge is a term between buyer and supplier, not collected by the platform; off */
+  BS.LATE = {on:false, rate:1, grace:3, cap:10};
+  /* one payment for several suppliers only through a licensed provider with split settlement (Yagout Pay or other); off until confirmed */
+  BS.PAY_SPLIT = false;
   BS.CREDIT_DEFAULT = 0;
   BS.CREDIT = {};
   BS.deferred = function(o){ var k=BS.termOf(o).kind; return k==="after" || k==="credit" || k==="deposit"; };
@@ -789,6 +834,15 @@
     return t.kind==="deposit" ? Math.round(v*(100-(+t.pct||BS.DEPOSIT_PCT))/100) : v; };
   BS.creditUsed = function(offers, boqIds){ return (offers||[]).filter(function(o){ return boqIds.indexOf(o.boqId)>=0; }).reduce(function(a,o){ return a+BS.exposure(o); },0); };
   BS.creditOverdue = function(offers, boqIds){ return (offers||[]).some(function(o){ return boqIds.indexOf(o.boqId)>=0 && o.status==="accepted" && BS.payOverdue(o); }); };
+  /* Facts a supplier may see about a buyer before giving credit (Abdullah, 22 Nov 2026: the supplier decides credit, the
+     platform only shows verified facts): verified, completed orders, payments on time and late, open pay-later amount. */
+  BS.buyerFacts = function(offers, boqs, phone){ var d=BS.d9(phone), ids=(boqs||[]).filter(function(b){ return BS.d9(b.ownerPhone)===d; }).map(function(b){ return b.id; });
+    var gs=BS.orderGroups(offers||[], function(o){ return ids.indexOf(o.boqId)>=0; }), f={verified:BS.isVerified(phone), orders:0, completed:0, paidOnTime:0, paidLate:0, overdue:0, open:0};
+    gs.forEach(function(g){ var o=g.first; f.orders++; if(BS.orderClosed(o) && o.paidAt) f.completed++;
+      var due=BS.payDueAt(o); if(o.paidAt && due){ if(new Date(o.paidAt).getTime()<=due) f.paidOnTime++; else f.paidLate++; } else if(o.paidAt) f.paidOnTime++;
+      if(BS.payOverdue(o)) f.overdue++; f.open+=g.offers.reduce(function(a,x){ return a+BS.exposure(x); },0); });
+    return f; };
+  BS.buyerFactsText = function(f){ return (f.verified?'Verified buyer':'Not verified yet')+' · '+f.completed+' completed order'+(f.completed===1?'':'s')+' · paid on time '+f.paidOnTime+', late '+f.paidLate+(f.overdue?' · '+f.overdue+' payment overdue now':''); };
   BS.creditLimit = function(phone){ var d=BS.d9(phone); if(!d || !BS.isVerified(phone)) return 0; var c=BS.CREDIT["buyer-"+d]; return c && c.limit>=0 ? +c.limit : BS.CREDIT_DEFAULT; };
   /* a buyer's own limit (get by id: the list is for staff only) */
   BS.watchCredit = function(phone, cb){ var d=BS.d9(phone); if(!d) return function(){}; return BS.watch("credit", "buyer-"+d, function(doc){ if(doc) BS.CREDIT["buyer-"+d]=doc; else delete BS.CREDIT["buyer-"+d]; if(cb) try{ cb(doc); }catch(e){} }); };

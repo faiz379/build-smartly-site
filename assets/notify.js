@@ -27,7 +27,8 @@
       data.issues.forEach(function(x){ if(x.status!=='resolved') add(x.createdAt, 'Problem reported', (x.poRef||'')+': '+x.text, '#staff-support'); });
       groups.forEach(function(g){ add(g.first.acceptedAt, 'Order placed', g.poRef+' · '+g.first.customerRevealed+' → '+g.supplierName, '#order-'+g.id); if(g.first.paidAt) add(g.first.paidAt, 'Paid', g.poRef+' · '+BS.fmt(g.first.paidTotal||0), '#staff-finance'); });
     } else if(w.role==='supplier'){
-      data.boqs.forEach(function(b){ if(b.status!=='open' || b.ownerPhone===w.phone) return; var n=(b.lines||[]).filter(function(l){ return w.cats.indexOf(l.cat)>=0; }).length; if(n) add(b.sentAt||b.createdAt, 'New request', b.ref+' · '+n+' line'+(n>1?'s':'')+' for you · '+b.subcity, '#supplier-requests'); });
+      var meSup=BS.supplierById(w.supplierId);
+      data.boqs.forEach(function(b){ if(b.status!=='open' || b.ownerPhone===w.phone || (meSup && !BS.supplierSees(meSup, b, w.phone))) return; var n=(b.lines||[]).filter(function(l){ return w.cats.indexOf(l.cat)>=0; }).length; if(n) add(b.sentAt||b.createdAt, 'New request', b.ref+' · '+n+' line'+(n>1?'s':'')+' for you · '+b.subcity, '#supplier-requests'); });
       data.offers.forEach(function(o){ if(o.supplierId!==w.supplierId) return; var b=boqOf(o.boqId);
         if(o.counter && o.counter.state==='open') add(o.counter.at, 'Counter-offer', 'The customer proposes '+BS.fmt(o.counter.price)+' on '+b.ref+' · '+lineName(b,o.lineN), '#supplier-deals');
         if(o.status==='rejected') add(o.rejectedAt, 'Offer rejected', b.ref+' · '+lineName(b,o.lineN), '#supplier-deals'); });
@@ -44,6 +45,7 @@
       var mine=data.boqs.filter(function(b){ return b.ownerPhone===w.phone; }).map(function(b){ return b.id; });
       data.offers.forEach(function(o){ if(mine.indexOf(o.boqId)<0) return; var b=boqOf(o.boqId);
         add(o.createdAt, 'New offer', b.ref+' · '+lineName(b,o.lineN)+' · brand '+o.brand+' · '+BS.fmt(BS.offerTotal(o)), '#boq-mine');
+        if(o.correctedAt && o.status==='sent') add(o.correctedAt, 'Offer revised', b.ref+' · '+lineName(b,o.lineN)+' · brand '+o.brand+' · now '+BS.fmt(BS.offerTotal(o)), '#boq-mine');
         if(o.counter && o.counter.answeredAt) add(o.counter.answeredAt, 'Answer to your price', 'The supplier '+(o.counter.state==='accepted'?'accepted':'declined')+' '+BS.fmt(o.counter.price)+' on '+b.ref+' · '+lineName(b,o.lineN), '#boq-mine'); });
       var offSeen={}; data.offers.forEach(function(o){ if(mine.indexOf(o.boqId)<0 || (o.status!=='declined' && o.status!=='expired') || offSeen[o.poRef]) return; offSeen[o.poRef]=1;
         add(o.declinedAt||o.expiredAt, o.status==='declined'?'PO/SA declined':'PO/SA lapsed', (o.poRef||'')+(o.status==='declined'?' was declined by the supplier':' was not confirmed in time')+'. Choose another offer.', '#boq-mine'); });

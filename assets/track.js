@@ -121,15 +121,15 @@
     var kv='';
     if(t){ kv+='<span>Driver</span><strong>'+esc(t.driverName||'—')+(t.driverPhone && c.role!=='supplier'?' · <a href="tel:+251'+digits(t.driverPhone)+'">'+esc(t.driverPhone)+'</a>':'')+'</strong>';
       if(t.plate) kv+='<span>Truck</span><strong>'+esc(t.plate)+'</strong>';
-      kv+='<span>From</span><strong>'+esc(t.fromLabel||c.o.supplierSub||'')+'</strong><span>To</span><strong>'+esc(t.siteLabel||'')+(t.sitePinned?' · pinned':'')+'</strong>';
+      kv+='<span>From</span><strong>'+esc(c.role==='buyer'?(c.o.supplierSub||'Supplier\'s store'):(t.fromLabel||c.o.supplierSub||''))+'</strong><span>To</span><strong>'+esc(t.siteLabel||'')+(t.sitePinned?' · pinned':'')+'</strong>';
       if(t.startedAt) kv+='<span>Left</span><strong>'+hm(new Date(t.startedAt).getTime())+'</strong>'; }
     $('trkKv').innerHTML=kv;
     var ended=!live(t);
     $('trkMapSlot').hidden=ended && !(t && t.arrivedAt && !t.deliveredAt);
     if(!t || ended) return;
     mapIn($('trkMapSlot'), 'order').then(function(m){ if(!m || !current || current.tok!==c.tok) return;
-      var truck=t.lat!=null?[t.lat,t.lng]:null; place(m,'site',t.site,'site','Delivery site'); place(m,'from',t.from,'from','Supplier'); place(m,'truck',truck,'truck',t.driverName||'Truck');
-      fit(m,[t.site,t.from,truck], c.tok+(truck?'+t':''), truck); });
+      var truck=t.lat!=null?[t.lat,t.lng]:null; place(m,'site',t.site,'site','Delivery site'); place(m,'from',c.role==='buyer'?null:t.from,'from','Supplier'); place(m,'truck',truck,'truck',t.driverName||'Truck');
+      fit(m,[t.site,c.role==='buyer'?null:t.from,truck], c.tok+(truck?'+t':''), truck); });
   }
   document.addEventListener('click', function(e){
     if(e.target.id==='trkCopy'){ var i=$('trkLink'); i.select(); var v=i.value; (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(v):Promise.reject()).then(function(){ bsToast('Link copied. Send it to the driver.'); }).catch(function(){ try{ document.execCommand('copy'); bsToast('Link copied. Send it to the driver.'); }catch(err){ bsToast('Press and hold the link to copy it.'); } }); }
@@ -150,7 +150,7 @@
   var drv={tok:null, t:null, stop:null, watchId:null, lastSent:0, lastPt:null, lock:null, sharing:false};
   function lockKey(){ return 'bs_drv_tries_'+drv.tok; }
   var langBefore=null;
-  function driverLang(){ if(!window.bsSetLang){ setTimeout(driverLang, 60); return; } /* the language tools load last */ var want=null; try{ want=localStorage.getItem('bs_drv_lang'); }catch(e){} want=want||BS.DRIVER_LANG||'am'; if(window.bsLang && bsLang()!==want){ if(langBefore===null) langBefore=bsLang(); bsSetLang(want, true); } }
+  function driverLang(){ if(!window.bsSetLang){ setTimeout(driverLang, 60); return; } /* the language tools load last */ var want=null; try{ want=localStorage.getItem('bs_drv_lang'); }catch(e){} want=want||BS.DRIVER_LANG||'am'; if(!BS.langsOn()) want='en'; if(window.bsLang && bsLang()!==want){ if(langBefore===null) langBefore=bsLang(); bsSetLang(want, true); } }
   new MutationObserver(function(){ var v=$('view-drive'); if(v && v.hidden && langBefore!==null){ var back=langBefore; langBefore=null; if(window.bsSetLang) bsSetLang(back, true); } }).observe($('view-drive')||document.body, {attributes:true, attributeFilter:['hidden']});
   BSRoute.on('drive', function(tok){
     driverLang();
@@ -165,7 +165,7 @@
     if(first || !$('drvGo')){
       var maps='https://www.google.com/maps/dir/?api=1&destination='+(+t.site[0])+','+(+t.site[1]);
       var langs=[['am','አማርኛ'],['en','English'],['om','Afaan Oromoo']], cur=window.bsLang?bsLang():'en';
-      box.innerHTML='<div class="drvlang" data-notr>'+langs.map(function(l){ return '<button type="button" data-dl="'+l[0]+'" class="'+(cur===l[0]?'on':'')+'">'+l[1]+'</button>'; }).join('')+'</div>'+
+      box.innerHTML='<div class="drvlang" data-notr'+(BS.langsOn()?'':' hidden')+'>'+langs.map(function(l){ return '<button type="button" data-dl="'+l[0]+'" class="'+(cur===l[0]?'on':'')+'">'+l[1]+'</button>'; }).join('')+'</div>'+
         '<section class="card drvcard"><span class="eyebrow"><span>Delivery</span> <span data-notr>'+esc(t.poRef)+'</span></span><h1 style="font-size:1.4rem"><span>Hello</span>'+(t.driverName?' <span data-notr>'+esc(t.driverName)+'</span>':'')+'</h1>'+
         '<div class="kv"><span>From</span><strong>'+esc(t.supplierName)+' · '+esc(t.fromLabel)+'</strong><span>To</span><strong>'+esc(t.siteLabel)+(t.sitePinned?' · exact site pinned':'')+'</strong><span>Buyer</span><strong>'+esc(t.buyerName)+'</strong><span>Load</span><strong>'+(t.items||[]).map(esc).join('<br>')+'</strong></div>'+
         '<div class="drvduo"><a class="btn btn-ghost drvbig" id="drvNav" target="_blank" rel="noopener" href="'+maps+'"><span class="di">🧭</span><span>Directions</span></a>'+(t.buyerPhone?'<a class="btn btn-ghost drvbig" href="tel:+251'+digits(t.buyerPhone)+'"><span class="di">📞</span><span>Call the buyer</span></a>':'')+'</div></section>'+

@@ -37,7 +37,10 @@
     if(t==null) return null;
     return t.replace(/\{(\d+)\}/g, function(m,k){ return nums[k-1]!=null ? nums[k-1] : m; });
   }
-  function tr(en){
+  /* the platform name is one setting (Abdullah, 22 Nov 2026): "Build Smartly" in any text is shown as the chosen name */
+  var NAME='';
+  function tr(en){ var t=tr0(en); if(!NAME) return t; var base=t!=null?t:en; return base.indexOf('Build Smartly')>=0 ? base.split('Build Smartly').join(NAME) : t; }
+  function tr0(en){
     var core=en.trim(); if(!core) return null;
     var o=OVR[cur] && OVR[cur][core.replace(/\s+/g,' ')]; /* staff edits are stored with single spaces */
     if(o!=null && o!==''){ return en.match(/^\s*/)[0]+o+en.match(/\s*$/)[0]; }
@@ -97,6 +100,7 @@
   window.bsLang=function(){ return cur; };
   window.bsSetLang=function(code, noSave){ if(sel) sel.value=code; var s2=document.getElementById('lang2'); if(s2) s2.value=code; apply(code, noSave); }; /* noSave: for one page only (the driver's page) */
   window.bsTr=function(en){ return tr(en)||en; };
+  window.bsSetName=function(n){ n=n||''; if(n===NAME) return; NAME=n; rewalk(); };
   function rewalk(){ busy=true; try{ walk(document.body); mo.takeRecords(); } finally { busy=false; } }
   window.bsSetOverrides=function(map){ OVR=map||{}; rewalk(); };
   window.bsLoadLang=load;                                            /* the staff editor shows the current translations */
