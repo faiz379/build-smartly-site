@@ -1737,7 +1737,7 @@ button.q{font:inherit;text-align:left;cursor:pointer;color:inherit}button.q:hove
     <span>© 2026 Build Smartly S.C. · Addis Ababa, Ethiopia<span id="ftContact"></span><br></span>
     <nav><a href="#supply">Materials</a><a href="#how">How it works</a><a href="#suppliers">For suppliers</a><a href="#members">Members</a><a href="#newsletter">Newsletter</a><a href="#aboutus">About us</a><a href="#contact">Contact</a><a href="#faq">FAQ</a><a href="#terms">Terms</a><a href="#privacy">Privacy</a></nav>
   </div>
-  <div class="wrap devby" id="devBy" data-notr>Website developed by Faiz Al-Sharafi · Velun Systems</div>
+  <div class="wrap devby" id="devBy" data-notr>Website developed by Velun Systems</div>
 </footer>
   <div class="modal" id="poGate" hidden>
     <div class="card">
@@ -1895,7 +1895,7 @@ function bsOtp(box, onComplete){
   return { code:code, reset:function(){ inputs.forEach(function(i){ i.value=''; }); }, focus:function(){ inputs[0].focus(); } };
 }
 /* Accepts 0912345678, +251 912345678, 251912345678 or 912345678 and returns the 9 digits. */
-(function(){ var CREDIT='Website developed by Faiz Al-Sharafi · Velun Systems';
+(function(){ var CREDIT='Website developed by Velun Systems';
   function keep(){ var f=document.querySelector('footer.site'); if(!f) return; var d=document.getElementById('devBy');
     if(!d){ d=document.createElement('div'); d.id='devBy'; d.className='wrap devby'; d.setAttribute('data-notr',''); f.appendChild(d); }
     if(d.textContent!==CREDIT) d.textContent=CREDIT; if(d.hidden) d.hidden=false; if(d.parentNode!==f) f.appendChild(d); }
